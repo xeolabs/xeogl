@@ -20,7 +20,7 @@
 
         _init: function (cfg) {
 
-            this._box = new xeogl.Entity(this, {
+            this._box = new xeogl.Mesh(this, {
                 geometry: new xeogl.AABBGeometry(this),
                 material: new xeogl.PhongMaterial(this, {
                     emissive: [1, 0, 0],

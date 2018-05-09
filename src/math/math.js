@@ -9,6 +9,10 @@
 
     var tempVec4 = new Float32Array(4);
 
+    var caching = false;
+    var vec3Cache = [];
+    var vec3CacheLen = 0;
+
     /**
      * This utility object provides math functions that are used within xeogl. These functions are also part of xeogl's
      * public API and are therefore available for you to use within your application code.
@@ -21,6 +25,7 @@
 
         MAX_DOUBLE: +100000000,
         MIN_DOUBLE: -100000000,
+
         /**
          * The number of radiians in a degree (0.0174532925).
          * @property DEGTORAD
@@ -28,6 +33,23 @@
          * @type {Number}
          */
         DEGTORAD: 0.0174532925,
+
+        openCache: function () {
+            caching = true;
+            vec3CacheLen = 0;
+        },
+
+        cacheVec3: function (value) {
+            return value || (caching ? (vec3Cache[vec3CacheLen++] || (vec3Cache[vec3CacheLen - 1] = new Float32Array(3))) : new Float32Array(3));
+        },
+
+        cacheVec4: function (value) {
+            return value || (caching ? (vec3Cache[vec4CacheLen++] || (vec3Cache[vec4CacheLen - 1] = new Float32Array(4))) : new Float32Array(4));
+        },
+
+        closeCache: function () {
+            caching = false;
+        },
 
         /**
          * Returns a new, uninitialized two-element vector.
@@ -82,7 +104,24 @@
          * @returns {Float32Array}
          */
         mat3ToMat4: function (mat3, mat4) { // TODO
-            //return new Float32Array(values || 9);
+            mat4 = mat4 || new Float32Array(16);
+            mat4[0] = mat3[0];
+            mat4[1] = mat3[1];
+            mat4[2] = mat3[2];
+            mat4[3] = 0;
+            mat4[4] = mat3[3];
+            mat4[5] = mat3[4];
+            mat4[6] = mat3[5];
+            mat4[7] = 0;
+            mat4[8] = mat3[6];
+            mat4[9] = mat3[7];
+            mat4[10] = mat3[8];
+            mat4[11] = 0;
+            mat4[12] = 0;
+            mat4[13] = 0;
+            mat4[14] = 0;
+            mat4[15] = 1;
+            return mat4;
         },
 
         /**
@@ -687,6 +726,13 @@
             return Math.sqrt(math.sqLenVec3(v));
         },
 
+        distVec3: (function () {
+            var vec = new Float32Array(3);
+            return function (v, w) {
+                return math.lenVec3(math.subVec3(v, w, vec));
+            };
+        })(),
+
         /**
          * Returns the length of a two-element vector.
          * @method lenVec2
@@ -702,13 +748,6 @@
             var vec = new Float32Array(2);
             return function (v, w) {
                 return math.lenVec2(math.subVec2(v, w, vec));
-            };
-        })(),
-
-        distVec3: (function () {
-            var vec = new Float32Array(3);
-            return function (v, w) {
-                return math.lenVec3(math.subVec3(v, w, vec));
             };
         })(),
 
@@ -1267,7 +1306,7 @@
         mulMat4v4: function (m, v, dest) {
             dest = dest || math.vec4();
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
-            dest[0] =  m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
+            dest[0] = m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
             dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
             dest[2] = m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3;
             dest[3] = m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3;
@@ -1317,6 +1356,37 @@
             dest[13] = mat[7];
             dest[14] = mat[11];
             dest[15] = mat[15];
+            return dest;
+        },
+
+        /**
+         * Transposes the given 3x3 matrix.
+         *
+         * @method transposeMat3
+         * @static
+         */
+        transposeMat3: function (mat, dest) {
+            if (dest === mat) {
+                var a01 = mat[1];
+                var a02 = mat[2];
+                var a12 = mat[5];
+                dest[1] = mat[3];
+                dest[2] = mat[6];
+                dest[3] = a01;
+                dest[5] = mat[7];
+                dest[6] = a02;
+                dest[7] = a12;
+            } else {
+                dest[0] = mat[0];
+                dest[1] = mat[3];
+                dest[2] = mat[6];
+                dest[3] = mat[1];
+                dest[4] = mat[4];
+                dest[5] = mat[7];
+                dest[6] = mat[2];
+                dest[7] = mat[5];
+                dest[8] = mat[8];
+            }
             return dest;
         },
 
@@ -1824,6 +1894,82 @@
 
             return dest;
         },
+
+        composeMat4: function (position, quaternion, scale, mat) {
+            mat = mat || math.mat4();
+            math.quaternionToRotationMat4(quaternion, mat);
+            math.translateMat4v(position, mat);
+            math.scaleMat4v(scale, mat);
+
+            return mat;
+        },
+
+        decomposeMat4: function () {
+
+            var vec = new Float32Array(3);
+            var matrix = new Float32Array(16);
+
+            return function decompose(mat, position, quaternion, scale) {
+
+                vec[0] = mat[0];
+                vec[1] = mat[1];
+                vec[2] = mat[2];
+
+                var sx = math.lenVec3(vec);
+
+                vec[0] = mat[4];
+                vec[1] = mat[5];
+                vec[2] = mat[6];
+
+                var sy = math.lenVec3(vec);
+
+                vec[8] = mat[8];
+                vec[9] = mat[9];
+                vec[10] = mat[10];
+
+                var sz = math.lenVec3(vec);
+
+                // if determine is negative, we need to invert one scale
+                var det = math.determinantMat4(mat);
+
+                if (det < 0) {
+                    sx = -sx;
+                }
+
+                position[0] = mat[12];
+                position[1] = mat[13];
+                position[2] = mat[14];
+
+                // scale the rotation part
+                matrix.set(mat);
+
+                var invSX = 1 / sx;
+                var invSY = 1 / sy;
+                var invSZ = 1 / sz;
+
+                matrix[0] *= invSX;
+                matrix[1] *= invSX;
+                matrix[2] *= invSX;
+
+                matrix[4] *= invSY;
+                matrix[5] *= invSY;
+                matrix[6] *= invSY;
+
+                matrix[8] *= invSZ;
+                matrix[9] *= invSZ;
+                matrix[10] *= invSZ;
+
+                math.mat4ToQuaternion(matrix, quaternion);
+
+                scale[0] = sx;
+                scale[1] = sy;
+                scale[2] = sz;
+
+                return this;
+
+            };
+
+        }(),
 
         /**
          * Returns a 4x4 'lookat' viewing transform matrix.
@@ -2631,16 +2777,15 @@
             return dest;
         },
 
-        quaternionToEuler: function (euler, order, dest) {
-            dest = dest || math.vec4();
-            var halfAngle = euler[3] / 2.0;
-            var fsin = Math.sin(halfAngle);
-            dest[0] = fsin * euler[0];
-            dest[1] = fsin * euler[1];
-            dest[2] = fsin * euler[2];
-            dest[3] = Math.cos(halfAngle);
-            return dest;
-        },
+        quaternionToEuler: (function () {
+            var mat = new Float32Array(16);
+            return function (q, order, dest) {
+                dest = dest || math.vec3();
+                math.quaternionToRotationMat4(q, mat);
+                math.mat4ToEuler(mat, order, dest);
+                return dest;
+            };
+        })(),
 
         mulQuaternions: function (p, q, dest) {
             dest = dest || math.vec4();

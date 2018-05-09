@@ -58,43 +58,43 @@ var gltfExplorer = function (menuId, files) {
 
     window.flyTo = (function () {
 
-        var lastEntity;
+        var lastMesh;
 
         return function (id) {
 
             if (!id) {
                 cameraFlight.flyTo();
-                if (lastEntity) {
-                    lastEntity.material.alphaMode = "blend";
-                    lastEntity.material.alpha = 0.4;
-                    lastEntity.outlined = false;
-                    lastEntity = null;
+                if (lastMesh) {
+                    lastMesh.material.alphaMode = "blend";
+                    lastMesh.material.alpha = 0.4;
+                    lastMesh.outlined = false;
+                    lastMesh = null;
                 }
                 return;
             }
 
-            var entity = model.scene.entities[id];
+            var mesh = model.scene.meshes[id];
 
-            if (entity) {
+            if (mesh) {
 
-                if (lastEntity) {
-                    lastEntity.material.alphaMode = "blend";
-                    lastEntity.material.alpha = 0.4;
-                    lastEntity.outlined = false;
+                if (lastMesh) {
+                    lastMesh.material.alphaMode = "blend";
+                    lastMesh.material.alpha = 0.4;
+                    lastMesh.outlined = false;
                 }
 
-                entity.material.alphaMode = "opaque";
-                entity.material.alpha = 1.0;
-                //entity.outlined = true;
+                mesh.material.alphaMode = "opaque";
+                mesh.material.alpha = 1.0;
+                //mesh.outlined = true;
 
                 cameraFlight.flyTo({
-                    aabb: entity.aabb,
+                    aabb: mesh.aabb,
                     fitFOV: 25,
                     duration: 1.0,
                     showAABB: false
                 });
 
-                lastEntity = entity;
+                lastMesh = mesh;
             }
         };
     })();
@@ -103,25 +103,25 @@ var gltfExplorer = function (menuId, files) {
 
     model.on("loaded", function () {
 
-        var entities = model.types["xeogl.Entity"];
-        var entity;
+        var meshes = model.types["xeogl.Mesh"];
+        var mesh;
         var material;
 
         var html = [""];
         var i = 0;
 
-        for (var entityId in entities) {
-            if (entities.hasOwnProperty(entityId)) {
+        for (var meshId in meshes) {
+            if (meshes.hasOwnProperty(meshId)) {
 
-                entity = entities[entityId];
+                mesh = meshes[meshId];
 
-               // entity.material = entity.material.clone();
-               // entity.material.alpha = 0.5;
-               // entity.material.alphaMode = "blend";
+               // mesh.material = mesh.material.clone();
+               // mesh.material.alpha = 0.5;
+               // mesh.material.alphaMode = "blend";
 
-                // model.add(entity.material);
+                // model.add(mesh.material);
 
-                html.push("<a href='javascript:flyTo(\"" + entity.id + "\")'>" + (entity.meta.name || ("entity." + i++)) + "</a><br>")
+                html.push("<a href='javascript:flyTo(\"" + mesh.id + "\")'>" + (mesh.meta.name || ("mesh." + i++)) + "</a><br>")
             }
         }
 

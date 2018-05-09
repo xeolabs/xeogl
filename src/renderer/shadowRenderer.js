@@ -60,7 +60,7 @@
     };
 
     xeogl.renderer.ShadowRenderer.prototype.destroy = function () {
-        if (--this._useCount === 0) {
+        if (--this._useCount) {
             this._program.destroy();
             delete renderers[this._hash];
         }

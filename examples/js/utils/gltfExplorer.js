@@ -69,10 +69,8 @@ var gltfExplorer = function (menuId, files) {
         ghosted: true,
         ghostEdgeThreshold: 20,
         lambertMaterials: true,
-
-        transform: new xeogl.Scale({
-            xyz: [100, 100, 100]
-        })
+        objects: true,
+        scale: [100, 100, 100]
     });
 
     //  model.scene.camera.gimbalLock = false;
@@ -81,35 +79,35 @@ var gltfExplorer = function (menuId, files) {
 
     window.selectObject = (function () {
 
-        var lastEntity;
+        var lastObject;
 
         return function (id) {
 
             if (!id) {
                 cameraFlight.flyTo();
-                if (lastEntity) {
-                    lastEntity.ghosted = true;
-                    lastEntity.highlighted = false;
-                    lastEntity = null;
+                if (lastObject) {
+                    lastObject.ghosted = true;
+                    lastObject.highlighted = false;
+                    lastObject = null;
                 }
                 return;
             }
 
-            var entity = model.scene.entities[id];
-            if (entity) {
-                if (lastEntity) {
-                    lastEntity.ghosted = true;
-                    lastEntity.highlighted = false;
+            var object = model.scene.objects[id];
+            if (object) {
+                if (lastObject) {
+                    lastObject.ghosted = true;
+                    lastObject.highlighted = false;
                 }
-                entity.ghosted = false;
-                entity.highlighted = true;
+                object.ghosted = false;
+                object.highlighted = true;
                 cameraFlight.flyTo({
-                    aabb: entity.aabb,
+                    aabb: object.aabb,
                     fitFOV: 25,
                     duration: 1.0,
                     showAABB: false
                 });
-                lastEntity = entity;
+                lastObject = object;
             }
         };
     })();
@@ -118,10 +116,10 @@ var gltfExplorer = function (menuId, files) {
 
         var html = [""];
         var i = 0;
-        for (var entityId in model.entities) {
-            if (model.entities.hasOwnProperty(entityId)) {
-                var entity = model.entities[entityId];
-                html.push("<a href='javascript:selectObject(\"" + entity.id + "\")'>" + (entity.meta.name || entity.id) + "</a><br>")
+        for (var objectId in model.objects) {
+            if (model.objects.hasOwnProperty(objectId)) {
+                var object = model.objects[objectId];
+                html.push("<a href='javascript:selectObject(\"" + object.id + "\")'>" + (object.meta.name || object.id) + "</a><br>")
             }
         }
         document.getElementById(menuId).innerHTML = html.join("");

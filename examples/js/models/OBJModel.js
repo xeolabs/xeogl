@@ -6,14 +6,20 @@
  ## Overview
 
  * Begins loading as soon as you set its {{#crossLink "OBJModel/src:property"}}{{/crossLink}} property to the location of an OBJ file.
- * Once loaded, contains an {{#crossLink "Entity"}}{{/crossLink}} for each object. The {{#crossLink "Entity"}}Entities{{/crossLink}} can then be independently shown, hidden, colored, transformed etc.
+ * Once loaded, contains an {{#crossLink "Mesh"}}{{/crossLink}} for each object. The {{#crossLink "Mesh"}}Meshes{{/crossLink}} can then be independently shown, hidden, colored, transformed etc.
  * Set {{#crossLink "OBJModel/src:property"}}{{/crossLink}} to a new file path at any time, to clear the OBJModel and load components from the new file.
 
- OBJModel inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
+ OBJModel inherits these capabilities from its {{#crossLink "Group"}}{{/crossLink}} base class:
 
- * Allows you to access and manipulate the components within it (as mentioned).
- * Can be transformed as a unit within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
- * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ * Allows you to access and manipulate the {{#crossLink "Meshes"}}{{/crossLink}} within it.
+ * Can be transformed as a unit within World-space.
+ * Can be a child within a parent {{#crossLink "Group"}}{{/crossLink}}.
+ * Provides its World-space axis-aligned and object-aligned boundaries.
+
+ ## Examples
+
+ * [Basic example](../../examples/#importing_obj_people)
+ * [Models within an object hierarchy](../../examples/#objects_hierarchy_models)
 
  ## Usage
 
@@ -60,34 +66,44 @@
  Let's make everything  transparent, except for the conference table and chairs:
 
  ````javascript
- for (var id in confRoom.entities) {
-    var entity = confRoom.entities[id];
+ for (var id in confRoom.meshes) {
+    var mesh = confRoom.meshes[id];
     switch (id) {
         case "confRoom#mesh31":
         case "confRoom#mesh29":
         case "confRoom#mesh30":
             break;
-        default: // Not a chair entity
-            entity.material.alpha = 0.5;
-            entity.material.blendMode = "blend"
+        default: // Not a chair mesh
+            mesh.material.alpha = 0.5;
+            mesh.material.blendMode = "blend"
     }
  }
  ````
 
- Note the format of the {{#crossLink "Entity"}}{{/crossLink}} IDs - an OBJModel prefixes its own ID to the IDs of its components:
+ Note the format of the {{#crossLink "Mesh"}}{{/crossLink}} IDs - an OBJModel prefixes its own ID to the IDs of its components:
 
  ````<OBJModel ID>#<OBJ object/group ID>````
 
  **Transforms**
 
+ An OBJModel lets us transform its Meshes as a group:
+
+ ```` Javascript
+ var model = new xeogl.OBJModel({
+     src: "models/obj/conference/conference.obj"
+     position: [-35, 0, 0],
+     rotation: [0, 45, 0],
+     scale: [0.5, 0.5, 0.5]
+ });
+
+ model.position = [-20, 0, 0];
+ ````
+
  Let's move the white table top upwards:
 
  ````javascript
- var tableTop = confRoom.entities["confRoom#mesh29"];
- tableTop.transform = new xeogl.Translate({
-    xyz: [0, 150, 0],
-    parent: tableTop.transform
- });
+ var tableTop = confRoom.meshes["confRoom#mesh29"];
+ tableTop.position = [0, 150, 0];
  ````
 
  ## Examples
@@ -107,10 +123,21 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBJModel.
  @param [cfg.src] {String} Path to an OBJ file. You can set this to a new file path at any time, which will cause the
  OBJModel to load components from the new file (after first destroying any components loaded from a previous file path).
+ @param [cfg.quantizeGeometry=true] {Boolean} When true, quantizes geometry to reduce memory and GPU bus usage.
+ @param [cfg.combineGeometry=true] {Boolean} When true, combines geometry vertex buffers to improve rendering performance.
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the OBJModel's Meshes initially ghosted.
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the OBJModel's Meshes initially highlighted.
+ @param [cfg.outline=false] {Boolean} When true, sets all the OBJModel's Meshes initially outlined.
+ @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this OBJModel.
- Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this OBJModel. Internally, the given
+ Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this STLModel. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
- that the OBJModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ that the STLModel attaches to its {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+ @param [cfg.splitMeshes=true] {Boolean} When true, creates a separate {{#crossLink "Mesh"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
+ @param [cfg.position=[0,0,0]] {Float32Array} The STLModel's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The STLModel's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The STLModel's local rotation, as Euler angles given in degrees.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The STLModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
 (function () {
@@ -223,7 +250,7 @@
         loadOBJ(model, src, function (state) {
             loadMTLs(model, state, function () {
 
-                createEntities(model, state);
+                createMeshes(model, state);
 
                 spinner.processes--;
 
@@ -257,7 +284,7 @@
         if (mtlText) {
             parseMTL(model, mtlText, basePath);
         }
-        createEntities(model, state);
+        createMeshes(model, state);
         model.src = null;
         model.fire("loaded", true, true);
     };
@@ -266,7 +293,7 @@
     // Loads OBJ
     //
     // Parses OBJ into an intermediate state object. The object will contain geometry data
-    // and material IDs from which entities can be created later. The object will also
+    // and material IDs from which meshes can be created later. The object will also
     // contain a list of filenames of the MTL files referenced by the OBJ, is any.
     //
     // Originally based on the THREE.js OBJ and MTL loaders:
@@ -853,12 +880,12 @@
             //textureCfg.wrapS = self.wrap;
             //textureCfg.wrapT = self.wrap;
             var texture = new xeogl.Texture(model, textureCfg);
-            model.add(texture);
+            model._addComponent(texture);
             return texture.id;
         }
 
         function createMaterial(model, materialCfg) {
-            model.add(new xeogl.PhongMaterial(model, materialCfg));
+            model._addComponent(new xeogl.PhongMaterial(model, materialCfg));
         }
 
         function parseRGB(value) {
@@ -868,10 +895,10 @@
 
     })();
     //--------------------------------------------------------------------------------------------
-    // Creates entities from parsed state
+    // Creates meshes from parsed state
     //--------------------------------------------------------------------------------------------
 
-    var createEntities = (function () {
+    var createMeshes = (function () {
 
         return function (model, state) {
 
@@ -909,7 +936,7 @@
                 geometryCfg.indices = indices;
 
                 var xeoGeometry = new xeogl.Geometry(model, geometryCfg);
-                model.add(xeoGeometry);
+                model._addComponent(xeoGeometry);
 
                 var materialId = object.material.id;
                 var material;
@@ -924,19 +951,19 @@
                         diffuse: [0.6, 0.6, 0.6],
                         backfaces: true
                     });
-                    model.add(material);
+                    model._addComponent(material);
                 }
 
                 // material.emissive = [Math.random(), Math.random(), Math.random()];
 
-                var entity = new xeogl.Entity(model, {
+                var mesh = new xeogl.Mesh(model, {
                     id: model.id + "#" + object.id,
                     geometry: xeoGeometry,
                     material: material,
                     pickable: true
                 });
 
-                model.add(entity);
+                model.addChild(mesh);
             }
         };
     })();

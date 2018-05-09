@@ -13,9 +13,9 @@
 
  ## Usage
 
- In the example below, we have an {{#crossLink "Entity"}}{{/crossLink}} that's attached by a {{#crossLink "Clips"}}{{/crossLink}}
+ In the example below, we have an {{#crossLink "Mesh"}}{{/crossLink}} that's attached by a {{#crossLink "Clips"}}{{/crossLink}}
  that contains two {{#crossLink "Clip"}}{{/crossLink}} components.  The first {{#crossLink "Clip"}}{{/crossLink}} is on the
- positive diagonal, while the second is on the negative diagonal. The {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
+ positive diagonal, while the second is on the negative diagonal. The {{#crossLink "Mesh"}}Mesh's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
  is a box, which will get two of its corners clipped off.
 
  ````javascript
@@ -37,26 +37,26 @@
      })
  ];
 
- // Create an Entity in the default Scene, that will be clipped by our Clip planes
- var entity = new xeogl.Entity({
+ // Create a Mesh in the default Scene, that will be clipped by our Clip planes
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.SphereGeometry(),
      clippable: true // Enable clipping (default)
  });
  ````
 
- ### Switching clipping on and off for an Entity
+ ### Switching clipping on and off for a Mesh
 
- An {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/clippable:property"}}{{/crossLink}} property indicates
+ An {{#crossLink "Mesh"}}{{/crossLink}}'s {{#crossLink "Mesh/clippable:property"}}{{/crossLink}} property indicates
  whether or not it is affected by Clip components.
 
  You can switch it at any time, like this:
 
  ```` javascript
- // Disable clipping for the Entity
- entity.clippable = false;
+ // Disable clipping for the Mesh
+ mesh.clippable = false;
 
- // Enable clipping for the Entity
- entity.clippable = true;
+ // Enable clipping for the Mesh
+ mesh.clippable = true;
  ````
 
  @class Clip

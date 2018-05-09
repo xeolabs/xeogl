@@ -8,7 +8,7 @@
 
  * A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).
  * Create various assets within a BuilderModel, such as {{#crossLink "Geometry"}}Geometries{{/crossLink}}
- and {{#crossLink "Material"}}Materials{{/crossLink}}, then create {{#crossLink "Entity"}}Entities{{/crossLink}} that use those assets.
+ and {{#crossLink "Material"}}Materials{{/crossLink}}, then create {{#crossLink "Mesh"}}Meshes{{/crossLink}} that use those assets.
  * The BuilderModel then owns those components and will destroy them when you
  call its {{#crossLink "BuildableModel/clear:method"}}clear(){{/crossLink}} or {{#crossLink "Component/destroy:method"}}destroy(){{/crossLink}} methods.
  * A BuildableModel can be transformed within World space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
@@ -46,14 +46,14 @@
  // Set the PhongMaterial asset as the current material
  buildableModel.material("gridMaterial");
 
- // Build ten entities with random sizes and positions,
+ // Build ten meshes with random sizes and positions,
  // that each get the current geometry and material
  for (var i = 0; i < 10; i++) {
 
      buildableModel.scale(Math.random() * 10 + 1, Math.random() * 10 + 1, Math.random() * 10 + 1);
      buildableModel.pos(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);
 
-     buildableModel.entity();
+     buildableModel.mesh();
  }
  ````
 
@@ -67,10 +67,10 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BuildableModel.
- @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this BuildableModel.
- Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this BuildableModel. Internally, the given
- {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
- that the BuildableModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ @param [cfg.position=[0,0,0]] {Float32Array} The BuildableModel's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The BuildableModel's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The BuildableModel's local rotation, as Euler angles given in degrees.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The BuildableModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
 (function () {
@@ -85,22 +85,24 @@
 
             this._super(cfg);
 
-            this._material = null;
-            this._geometry = null;
-            this._pos = xeogl.math.vec3([0, 0, 0]);
-            this._scale = xeogl.math.vec3([1, 1, 1]);
-            this._angles = xeogl.math.vec3([0, 0, 0]);
-            this._axis = [0, 1, 2];
-            this._colorize = xeogl.math.vec3([1, 1, 1]);
-            this._assetCfgs = {};
-            this._assets = {};
+            this._state = { // Less chance of property name collisions with parent classes
+                material: null,
+                geometry: null,
+                pos: xeogl.math.vec3([0, 0, 0]),
+                scale: xeogl.math.vec3([1, 1, 1]),
+                angles: xeogl.math.vec3([0, 0, 0]),
+                axis: [0, 1, 2],
+                colorize: xeogl.math.vec3([1, 1, 1]),
+                assetCfgs: {},
+                assets: {}
+            };
         },
 
         /**
          * Adds an asset to this BuildableModel.
          *
-         * The asset is given as a configuration object, to be lazy-instantiated as soon as an entity is built from
-         * it with {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         * The asset is given as a configuration object, to be lazy-instantiated as soon as an mesh is built from
+         * it with {{#crossLink "BuildableModel/mesh:method"}}mesh(){{/crossLink}}.
          *
          * #### Usage
          *
@@ -134,13 +136,13 @@
          */
         asset: function (assetId, cfg) {
             this._assetCfgs[assetId] = cfg;
-            delete this._assets[assetId];
+            delete this._state.assets[assetId];
         },
 
         /**
          * Selects the {{#crossLink "Geometry"}}{{/crossLink}} asset that will be added to
-         * each {{#crossLink "Entity"}}{{/crossLink}} subsequently created with
-         * {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         * each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created with
+         * {{#crossLink "BuildableModel/mesh:method"}}mesh(){{/crossLink}}.
          *
          * The given ID must belong to a {{#crossLink "Geometry"}}{{/crossLink}} asset that was added previously with
          * {{#crossLink "BuildableModel/asset:method"}}asset(){{/crossLink}}.
@@ -149,13 +151,13 @@
          * @param {String|Number} assetId The asset ID.
          */
         geometry: function (assetId) {
-            this._geometry = assetId;
+            this._state.geometry = assetId;
         },
 
         /**
          * Selects the {{#crossLink "Material"}}{{/crossLink}} asset that will be added to
-         * each {{#crossLink "Entity"}}{{/crossLink}} subsequently created with
-         * {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         * each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created with
+         * {{#crossLink "BuildableModel/mesh:method"}}mesh(){{/crossLink}}.
          *
          * The given ID must belong to a {{#crossLink "Material"}}{{/crossLink}} asset that was added previously with
          * {{#crossLink "BuildableModel/asset:method"}}asset(){{/crossLink}}.
@@ -164,12 +166,12 @@
          * @param {String|Number} assetId The asset ID.
          */
         material: function (assetId) {
-            this._material = assetId;
+            this._state.material = assetId;
         },
 
         /**
-         * Sets the 3D position of each {{#crossLink "Entity"}}{{/crossLink}} subsequently created with
-         * {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         * Sets the 3D position of each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created with
+         * {{#crossLink "BuildableModel/mesh:method"}}mesh(){{/crossLink}}.
          *
          * @method pos
          * @param {Number} x Position on X-axis.
@@ -177,14 +179,14 @@
          * @param {Number} z Position on Z-axis.
          */
         pos: function (x, y, z) {
-            this._pos[0] = x;
-            this._pos[1] = y;
-            this._pos[2] = z;
+            this._state.pos[0] = x;
+            this._state.pos[1] = y;
+            this._state.pos[2] = z;
         },
 
         /**
-         * Sets the 3D scale of each {{#crossLink "Entity"}}{{/crossLink}} subsequently created with
-         * {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         * Sets the 3D scale of each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created with
+         * {{#crossLink "BuildableModel/mesh:method"}}mesh(){{/crossLink}}.
          *
          * @method scale
          * @param {Number} x Scale on X-axis.
@@ -192,14 +194,14 @@
          * @param {Number} z Scale on Z-axis.
          */
         scale: function (x, y, z) {
-            this._scale[0] = x;
-            this._scale[1] = y;
-            this._scale[2] = z;
+            this._state.scale[0] = x;
+            this._state.scale[1] = y;
+            this._state.scale[2] = z;
         },
 
         /**
-         * Sets the 3D Euler rotation angles for each {{#crossLink "Entity"}}{{/crossLink}} subsequently created
-         * with {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         * Sets the 3D Euler rotation angles for each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created
+         * with {{#crossLink "BuildableModel/mesh:method"}}mesh(){{/crossLink}}.
          *
          * @method angles
          * @param {Number} x Angle on X-axis in degrees.
@@ -207,14 +209,14 @@
          * @param {Number} z Angle on Z-axis in degrees.
          */
         angles: function (x, y, z) {
-            this._angles[0] = x;
-            this._angles[1] = y;
-            this._angles[2] = z;
+            this._state.angles[0] = x;
+            this._state.angles[1] = y;
+            this._state.angles[2] = z;
         },
 
         /**
-         * Sets the order of 3D rotations for each {{#crossLink "Entity"}}{{/crossLink}} subsequently created
-         * with {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         * Sets the order of 3D rotations for each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created
+         * with {{#crossLink "BuildableModel/mesh:method"}}mesh(){{/crossLink}}.
          *
          * #### Usage
          *
@@ -232,14 +234,14 @@
          * @param {Number} c Indicates the third rotation axis.
          */
         axis: function (a, b, c) {
-            this._axis[0] = a;
-            this._axis[1] = b;
-            this._axis[2] = c;
+            this._state.axis[0] = a;
+            this._state.axis[1] = b;
+            this._state.axis[2] = c;
         },
 
         /**
-         * Sets the RGBA colorize factors each {{#crossLink "Entity"}}{{/crossLink}} subsequently created
-         * with {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         * Sets the RGBA colorize factors each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created
+         * with {{#crossLink "BuildableModel/mesh:method"}}mesh(){{/crossLink}}.
          *
          * #### Usage
          *
@@ -254,34 +256,28 @@
          * @param {Number} z Indicates the alpha.
          */
         colorize: function (r, g, b, a) {
-            this._colorize[0] = r;
-            this._colorize[1] = g;
-            this._colorize[2] = b;
-            this._colorize[3] = a;
+            this._state.colorize[0] = r;
+            this._state.colorize[1] = g;
+            this._state.colorize[2] = b;
+            this._state.colorize[3] = a;
         },
 
         /**
-         * Creates an {{#crossLink "Entity"}}{{/crossLink}} with whatever assets and states are currently
+         * Creates an {{#crossLink "Mesh"}}{{/crossLink}} with whatever assets and states are currently
          * set on this BuildableModel.
          *
-         * @method entity
-         * @param {String|Number} [id] A unique ID for the new {{#crossLink "Entity"}}{{/crossLink}}.
+         * @method mesh
+         * @param {String|Number} [id] A unique ID for the new {{#crossLink "Mesh"}}{{/crossLink}}.
          */
-        entity: function (id) {
-            this.add({
-                type: "xeogl.Entity",
+        mesh: function (id) {
+            this._addComponent({
+                type: "xeogl.Mesh",
                 id: id,
-                material: this._getAsset(this._material),
-                geometry: this._getAsset(this._geometry),
-                transform: {
-                    type: "xeogl.Scale",
-                    xyz: this._scale,
-                    parent: this.create({
-                        type: "xeogl.Translate",
-                        xyz: this._pos
-                    })
-                },
-                colorize: this._colorize
+                material: this._getAsset(this._state.material),
+                geometry: this._getAsset(this._state.geometry),
+                scale: this._state.scale,
+                position: this._state.pos,
+                colorize: this._state.colorize
             });
         },
 
@@ -289,27 +285,27 @@
             if (assetId === null) {
                 return;
             }
-            var asset = this._assets[assetId];
+            var asset = this._state.assets[assetId];
             if (!asset) {
-                var assetCfg = this._assetCfgs[assetId];
+                var assetCfg = this._state.assetCfgs[assetId];
                 if (!assetCfg) {
                     this.error("Unknown asset: " + assetId);
                     return;
                 }
                 asset = this.create(assetCfg);
-                this._assets[assetId] = asset;
-                this.add(asset);
+                this._state.assets[assetId] = asset;
+                this._addComponent(asset);
             }
             return asset;
         },
 
         /**
-         * Removes all assets and {{#crossLink "Entity"}}Entities{{/crossLink}} from this BuildableModel.
+         * Removes all assets and {{#crossLink "Mesh"}}Meshes{{/crossLink}} from this BuildableModel.
          * @method clear
          */
         clear: function () {
             this._super();
-            this._assets = {};
+            this._state = {};
         },
 
         /**
@@ -321,7 +317,7 @@
             this.scale(1, 1, 1);
             this.angles(0, 0, 0);
             this.axis(0, 1, 2);
-            this.colorize(1,1,1,1);
+            this.colorize(1, 1, 1, 1);
             this.material(null);
             this.geometry(null);
         }

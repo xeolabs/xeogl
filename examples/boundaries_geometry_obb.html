@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -20,7 +20,7 @@
     new xeogl.CameraControl();
 
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
 
         geometry: new xeogl.TorusGeometry({
             radius: 1.0,
@@ -38,10 +38,10 @@
     });
 
 
-    var boundaryObject = new xeogl.Entity({
+    var boundaryObject = new xeogl.Mesh({
 
         geometry: new xeogl.OBBGeometry({
-            targetOBB: entity.geometry.obb
+            targetOBB: mesh.geometry.obb
         }),
 
         material: new xeogl.PhongMaterial({

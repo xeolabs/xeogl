@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -12,7 +12,7 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/Entity.html" target="_parent">Entity</a> with <a
+    <h1><a href="../docs/classes/Mesh.html" target="_parent">Mesh</a> with <a
             href="../docs/classes/TorusGeometry.html" target="_parent">TorusGeometry</a> and <a
             href="../docs/classes/MetallicMaterial.html" target="_parent">MetallicMaterial</a></h1>
 </div>
@@ -36,15 +36,15 @@
         })
     });
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
         geometry: geometry,
         material: material
     });
 
-    entity.scene.camera.eye = [0, 0, -4];
+    mesh.scene.camera.eye = [0, 0, -4];
 
-    entity.scene.on("tick", function () {
-        entity.scene.camera.orbitYaw(0.2);
+    mesh.scene.on("tick", function () {
+        mesh.scene.camera.orbitYaw(0.2);
     });
 
     new xeogl.CameraControl();

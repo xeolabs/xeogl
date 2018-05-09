@@ -3,8 +3,6 @@
 
  * Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.
 
- <img src="../../../assets/images/Input.png"></img>
-
  ## Usage
 
  In this example, we're subscribing to some mouse and key events that will occur on

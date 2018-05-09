@@ -4,11 +4,11 @@
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a PathGeometry, a {{#crossLink "Path"}}{{/crossLink}} and
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a PathGeometry, a {{#crossLink "Path"}}{{/crossLink}} and
  a {{#crossLink "PhongMaterial"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.PathGeometry({
 

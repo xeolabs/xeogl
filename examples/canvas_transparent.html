@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -39,8 +39,8 @@
         transparent: true
     });
 
-    // Torus entity
-    new xeogl.Entity({
+    // Torus mesh
+    new xeogl.Mesh({
         geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,

@@ -13,12 +13,12 @@
 
  ## Usage
 
- Stereo view of an {{#crossLink "Entity"}}{{/crossLink}} using the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}} and {{#crossLink "Viewport"}}{{/crossLink}}:
+ Stereo view of an {{#crossLink "Mesh"}}{{/crossLink}} using the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}} and {{#crossLink "Viewport"}}{{/crossLink}}:
 
  ````javascript
- // Both the Entity and the StereoEffect use their Scene's default Camera and Viewport
+ // Both the Mesh and the StereoEffect use their Scene's default Camera and Viewport
 
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.TorusGeometry()
  });
 
@@ -40,7 +40,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this StereoEffect.
  @param [cfg.fov=45] Field-of-view angle in degrees.
  @param [cfg.active=true] {Boolean} Whether or not this StereoEffect is active.
- @extends Entity
+ @extends Mesh
  */
 (function () {
 

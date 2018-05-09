@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -60,7 +60,7 @@
     buildableModel.material("asphalt");
     buildableModel.pos(20, -.5, 20);
     buildableModel.scale(140, 0.1, 140);
-    buildableModel.entity();
+    buildableModel.mesh();
 
     // Generate the buildings
 
@@ -85,7 +85,7 @@
         buildableModel.pos(xpos, ypos, zpos);
         buildableModel.scale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
         buildableModel.colorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
-        buildableModel.entity();
+        buildableModel.mesh();
 
         // Now generate the building as a bunch of boxes
 
@@ -155,7 +155,7 @@
             buildableModel.material("lightConcrete");
             buildableModel.pos(xpos, ypos + ySize, zpos);
             buildableModel.scale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
-            buildableModel.entity();
+            buildableModel.mesh();
 
             // Decrease current vertical box size
             ySize -= (Math.random() * 5) + 2;

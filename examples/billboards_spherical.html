@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -13,7 +13,7 @@
 <div id="info">
     <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
-    1000 spherically-billboarded <a href="../docs/classes/Entity.html" target="_parent">Entities</a>
+    1000 spherically-billboarded <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a>
 </div>
 
 <script>
@@ -35,13 +35,11 @@
 
     for (var i = 0; i < 300; i++) {
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: geometry,
             material: material,
             billboard: "spherical",
-            transform: new xeogl.Translate({
-                xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
-            })
+            position: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
         });
     }
 

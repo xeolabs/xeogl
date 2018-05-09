@@ -1,5 +1,5 @@
 /**
- A **DirLight** is a directional light source that illuminates all {{#crossLink "Entity"}}Entities{{/crossLink}} equally
+ A **DirLight** is a directional light source that illuminates all {{#crossLink "Mesh"}}Meshes{{/crossLink}} equally
  from a given direction.
 
  ## Overview
@@ -22,7 +22,7 @@
  ## Usage
 
  In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
- DirLights, then create a Phong-shaded box entity.
+ DirLights, then create a Phong-shaded box mesh.
 
  ````javascript
 
@@ -52,8 +52,8 @@
      })
  ];
 
- // Create box entity
- new xeogl.Entity({
+ // Create box mesh
+ new xeogl.Mesh({
     material: new xeogl.PhongMaterial({
         ambient: [0.5, 0.5, 0.5],
         diffuse: [1,0.3,0.3]

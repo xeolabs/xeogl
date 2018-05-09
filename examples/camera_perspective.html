@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -16,7 +16,7 @@
 
 <script>
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
         geometry: new xeogl.BoxGeometry(),
         material: new xeogl.PhongMaterial({
             diffuseMap: new xeogl.Texture({
@@ -25,7 +25,7 @@
         })
     });
 
-    var scene = entity.scene;
+    var scene = mesh.scene;
     var camera = scene.camera;
 
     camera.projection = "perspective";

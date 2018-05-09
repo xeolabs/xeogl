@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -26,8 +26,8 @@
         usage: "dynamic"  // Hint to WebGL that we'll be dynamically updating the Geometry
     });
 
-    // Entity that uses our Geometry
-    var entity = new xeogl.Entity({
+    // Mesh that uses our Geometry
+    var mesh = new xeogl.Mesh({
         geometry: geometry,
         material: new xeogl.PhongMaterial({
             diffuseMap: new xeogl.Texture({
@@ -39,8 +39,8 @@
     });
 
     // Spin the Camera
-    entity.scene.on("tick", function () {
-        entity.scene.camera.orbitYaw(1.0);
+    mesh.scene.on("tick", function () {
+        mesh.scene.camera.orbitYaw(1.0);
     });
 
     // The current torus construction parameters
@@ -60,7 +60,7 @@
 
     var d = 1;
 
-    entity.scene.on("tick", function () {
+    mesh.scene.on("tick", function () {
 
                 // Rebuild the torus according to the torus construction parameters,
                 // put the results in the geometry arrays

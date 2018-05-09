@@ -18,7 +18,7 @@
  ## Usage
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
 
      geometry: new xeogl.Nintendo3DSGeometry({
          src: "models/3ds/lexus.3ds"
@@ -43,13 +43,13 @@
  });
 
  // When the Nintendo3DSGeometry has loaded,
- // fly the camera to fit the entity in view
+ // fly the camera to fit the mesh in view
 
  var cameraFlight = new xeogl.CameraFlightAnimation();
 
- entity.geometry.on("loaded", function () {
+ mesh.geometry.on("loaded", function () {
      cameraFlight.flyTo({
-         aabb: entity.aabb
+         aabb: mesh.aabb
      });
  });
  ````

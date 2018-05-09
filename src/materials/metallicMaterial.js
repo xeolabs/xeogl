@@ -1,6 +1,6 @@
 /**
  A **MetallicMaterial** is a physically-based {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- {{#crossLink "Entity"}}Entities{{/crossLink}} using the *metallic-roughness* workflow.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}} using the *metallic-roughness* workflow.
 
  ## Examples
 
@@ -13,8 +13,6 @@
  * MetallicMaterial is usually used for conductive materials, such as metal.
  * {{#crossLink "SpecularMaterial"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.
  * {{#crossLink "PhongMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
-
- <img src="../../../assets/images/MetallicMaterial.png"></img>
 
  For an introduction to PBR concepts, try these articles:
 
@@ -47,7 +45,7 @@
 
  ## Usage
 
- In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Entity"}}{{/crossLink}} has:
+ In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Mesh"}}{{/crossLink}} has:
 
  * a {{#crossLink "OBJGeometry"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,
  * a MetallicMaterial with {{#crossLink "Texture"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.
@@ -61,7 +59,7 @@
  within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
- var hydrant = new xeogl.Entity({
+ var hydrant = new xeogl.Mesh({
 
     geometry: new xeogl.OBJGeometry({
         src: "models/obj/FireHydrantMesh.obj"
@@ -884,10 +882,10 @@
             },
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
@@ -914,10 +912,10 @@
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"

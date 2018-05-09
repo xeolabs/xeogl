@@ -12,22 +12,22 @@
 
  ## Examples
 
- * [Following an Entity with the Camera](../../examples/#animation_camera_follow_entity)
- * [Following an Entity with the Camera, keeping Entity fitted to view volume](../../examples/#animation_camera_follow_entity_fitToView)
+ * [Following an Mesh with the Camera](../../examples/#animation_camera_follow_entity)
+ * [Following an Mesh with the Camera, keeping Mesh fitted to view volume](../../examples/#animation_camera_follow_entity_fitToView)
 
  ## Usage
 
- In the example below, we'll use a CameraFollowAnimation to automatically follow an {{#crossLink "Entity"}}{{/crossLink}}. Our CameraFollowAnimation's
+ In the example below, we'll use a CameraFollowAnimation to automatically follow an {{#crossLink "Mesh"}}{{/crossLink}}. Our CameraFollowAnimation's
  {{#crossLink "CameraFollowAnimation/fit:property"}}{{/crossLink}} property is set ````true````, which causes it to automatically
- keep the {{#crossLink "Entity"}}{{/crossLink}} fitted to the view volume. Although we can orbit the
- {{#crossLink "Entity"}}{{/crossLink}} using the {{#crossLink "CameraControl"}}{{/crossLink}}, we you can't control the
- distance of the {{#crossLink "Camera"}}{{/crossLink}} from the {{#crossLink "Entity"}}{{/crossLink}} because our CameraFollowAnimation
+ keep the {{#crossLink "Mesh"}}{{/crossLink}} fitted to the view volume. Although we can orbit the
+ {{#crossLink "Mesh"}}{{/crossLink}} using the {{#crossLink "CameraControl"}}{{/crossLink}}, we you can't control the
+ distance of the {{#crossLink "Camera"}}{{/crossLink}} from the {{#crossLink "Mesh"}}{{/crossLink}} because our CameraFollowAnimation
  automatically controls that distance in order to do the automatic fitting.
 
  ````javascript
- // Create a red torus Entity with a Translate modelling transform
+ // Create a red torus Mesh with a Translate modelling transform
  // that allows it to move around in World-space
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.TorusGeometry(),
      material: new xeogl.PhongMaterial({
           diffuse: [1, 0.3, 0.3]
@@ -37,18 +37,18 @@
      })
  });
 
- // Create a CameraFollowAnimation that makes the Scene's Camera's Lookat follow the Entity while keeping it
+ // Create a CameraFollowAnimation that makes the Scene's Camera's Lookat follow the Mesh while keeping it
  // fitted to the view volume. The CameraFollowAnimation will jump to each new location, and since an update will occur on every frame,
- // the effect will be as if we're smoothly flying after the Entity. If the updates occur sporadically,
+ // the effect will be as if we're smoothly flying after the Mesh. If the updates occur sporadically,
  // then we would probably instead configure it to fly to each update, to keep the animation smooth.
  var cameraFollowAnimation = new xeogl.CameraFollowAnimation({
-     target: entity,
+     target: mesh,
      fit: true,   // Fit target to view volume
      fitFOV: 35,  // Target will occupy 35 degrees of the field-of-view
      fly: false // Jump to each updated boundary extents
  });
 
- // Create a SplineCurve along which we'll animate our Entity
+ // Create a SplineCurve along which we'll animate our Mesh
  var curve = new xeogl.SplineCurve({
      points: [
          [-10, 0, 0],
@@ -58,9 +58,9 @@
      ]
  });
 
- // Bind the Entity Translate to a point on the SplineCurve
+ // Bind the Mesh Translate to a point on the SplineCurve
  curve.on("point", function(point) {
-     entity.transform.xyz = point;
+     mesh.transform.xyz = point;
  });
 
  // Animate the point along the SplineCurve using the Scene clock

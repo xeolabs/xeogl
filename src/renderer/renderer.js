@@ -85,9 +85,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         // imageDirty = true;
     };
 
-    this.createObject = function (entityId, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
+    this.createObject = function (meshId, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
         var objectId = ids.addItem({});
-        var object = new xeogl.renderer.Object(objectId, entityId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
+        var object = new xeogl.renderer.Object(objectId, meshId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
         if (object.errors) {
             object.destroy();
             ids.removeItem(objectId);
@@ -429,6 +429,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             opaqueGhostFillObjects[numOpaqueGhostFillObjects++] = object;
                         }
                     }
+
                 } else {
 
                     // Normal render
@@ -829,7 +830,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             }
 
             var hit = {
-                entity: object.entityId
+                mesh: object.meshId
             };
 
             if (params.pickSurface) {

@@ -1,5 +1,5 @@
 /**
- * Rotates, pans and zooms the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} with keyboard, mouse and touch input.
+ Rotates, pans and zooms the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} with keyboard, mouse and touch input.
 
  CameraControl fires these events:
 
@@ -24,6 +24,8 @@
 
  ## Rotating
 
+ ## Pivoting
+
  ## Zooming
 
  ## Events
@@ -33,6 +35,11 @@
  ## Inertia
 
  ## First person
+
+ ## Zoom to pointer
+
+ TODO: describe only works for first-person
+ TODO: make configurable?
 
  ## Keyboard layout
 
@@ -50,9 +57,13 @@
  @param [cfg.firstPerson=false] {Boolean} Whether or not this CameraControl is in "first person" mode.
  @param [cfg.walking=false] {Boolean} Whether or not this CameraControl is in "walking" mode.
  @param [cfg.keyboardLayout="qwerty"] {String} Keyboard layout.
- @param [cfg.doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Entity"}}{{/crossLink}} that's double-clicked.
+ @param [cfg.doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Mesh"}}{{/crossLink}} that's double-clicked.
  @param [cfg.active=true] {Boolean} Indicates whether or not this CameraControl is active.
+ @param [cfg.pivoting=false] {Boolean} When true, clicking on a {{#crossLink "Mesh"}}{{/crossLink}} and dragging will pivot
+ the {{#crossLink "Camera"}}{{/crossLink}} about the picked point on the Mesh's surface.
  @param [cfg.inertia=0.5] {Number} A factor in range [0..1] indicating how much the camera keeps moving after you finish panning or rotating it.
+ @author xeolabs / http://xeolabs.com
+ @author DerSchmale / http://www.derschmale.com
  @extends Component
  */
 (function () {
@@ -73,7 +84,9 @@
 
         _init: function (cfg) {
 
-            this._boundaryHelper = new xeogl.Entity(this, {
+            var self = this;
+
+            this._boundaryHelper = new xeogl.Mesh(this, {
                 geometry: new xeogl.AABBGeometry(this),
                 material: new xeogl.PhongMaterial(this, {
                     diffuse: [0, 0, 0],
@@ -86,6 +99,96 @@
                 collidable: false
             });
 
+            this._pivoter = new (function () { // Pivots the Camera around an arbitrary World-space position
+
+                // Pivot math by: http://www.derschmale.com/
+
+                var math = xeogl.math;
+                var camera = self.scene.camera;
+                var pivotPoint = new Float32Array(3);
+                var cameraOffset;
+                var azimuth = 0;
+                var polar = 0;
+                var radius = 0;
+                var pivotHelper = new xeogl.Mesh(self, { // Shows the pivot position
+                    geometry: new xeogl.SphereGeometry(self, {radius: 1}),
+                    material: new xeogl.PhongMaterial(self, {emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+                    position: [0, 0, 0],
+                    pickable: false,
+                    visible: false,
+                    highlighted: true,
+                    highlightMaterial: new xeogl.EmphasisMaterial(self, {
+                        edges: false
+                    })
+                });
+
+                this.pivoting = false; // True while pivoting
+
+                this.startPivot = function (worldPos) {
+                    pivotHelper.visible = true;
+                    pivotHelper.position = worldPos;
+                    pivotPoint.set(worldPos);
+                    var lookat = math.lookAtMat4v(camera.eye, camera.look, camera.worldUp);
+                    cameraOffset = math.transformPoint3(lookat, pivotPoint);
+                    cameraOffset[2] += math.distVec3(camera.eye, pivotPoint);
+                    lookat = math.inverseMat4(lookat);
+                    var offset = math.transformVec3(lookat, cameraOffset);
+                    var diff = math.vec3();
+                    math.subVec3(camera.eye, pivotPoint, diff);
+                    math.addVec3(diff, offset);
+                    if (camera.worldUp[2] === 1) {
+                        var t = diff[1];
+                        diff[1] = diff[2];
+                        diff[2] = t;
+                    }
+                    radius = math.lenVec3(diff);
+                    polar = Math.acos(diff[1] / radius);
+                    azimuth = Math.atan2(diff[0], diff[2]);
+                    this.pivoting = true;
+                };
+
+                this.continuePivot = function (yawInc, pitchInc) {
+                    if (!this.pivoting) {
+                        return;
+                    }
+                    if (camera.worldUp[2] === 1) {
+                        dx = -dx;
+                    }
+                    var dx = -yawInc;
+                    var dy = -pitchInc;
+                    azimuth += -dx * .01;
+                    polar += dy * .01;
+                    polar = math.clamp(polar, .001, Math.PI - .001);
+                    var pos = [
+                        radius * Math.sin(polar) * Math.sin(azimuth),
+                        radius * Math.cos(polar),
+                        radius * Math.sin(polar) * Math.cos(azimuth)
+                    ];
+                    if (camera.worldUp[2] === 1) {
+                        var t = pos[1];
+                        pos[1] = pos[2];
+                        pos[2] = t;
+                    }
+                    math.addVec3(pos, pivotPoint);
+                    var lookat = math.lookAtMat4v(pos, pivotPoint, camera.worldUp);
+                    lookat = math.inverseMat4(lookat);
+                    var offset = math.transformVec3(lookat, cameraOffset);
+                    lookat[12] -= offset[0];
+                    lookat[13] -= offset[1];
+                    lookat[14] -= offset[2];
+                    var zAxis = [lookat[8], lookat[9], lookat[10]];
+                    camera.eye = [lookat[12], lookat[13], lookat[14]];
+                    math.subVec3(camera.eye, zAxis, camera.look);
+                    camera.up = [lookat[4], lookat[5], lookat[6]];
+                };
+
+                this.endPivot = function () {
+                    pivotHelper.visible = false;
+                    this.pivoting = false;
+                };
+
+            })();
+
             this._cameraFlight = new xeogl.CameraFlightAnimation(this, {
                 duration: 0.5
             });
@@ -95,6 +198,7 @@
             this.keyboardLayout = cfg.keyboardLayout;
             this.doublePickFlyTo = cfg.doublePickFlyTo;
             this.active = cfg.active;
+            this.pivoting = cfg.pivoting;
             this.inertia = cfg.inertia;
 
             this._initEvents(); // Set up all the mouse/touch/kb handlers
@@ -128,6 +232,32 @@
 
                 get: function () {
                     return this._active;
+                }
+            },
+
+            /**
+             When true, clicking on a {{#crossLink "Mesh"}}{{/crossLink}} and dragging will pivot
+             the {{#crossLink "Camera"}}{{/crossLink}} about the picked point on the Mesh's surface.
+
+             @property pivoting
+             @default false
+             @type Boolean
+             */
+            pivoting: {
+
+                set: function (value) {
+                    this._pivoting = !!value;
+
+                    /**
+                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/pivoting:property"}}{{/crossLink}} property changes.
+                     * @event pivoting
+                     * @param value The property's new value
+                     */
+                    this.fire('pivoting', this._pivoting);
+                },
+
+                get: function () {
+                    return this._pivoting;
                 }
             },
 
@@ -437,7 +567,7 @@
                     var worldPos = math.vec4();
                     var eyeCursorVec = math.vec3();
 
-                    var unproject = function (inverseProjMat, inverseViewMat, mousePos, z,  viewPos, worldPos) {
+                    var unproject = function (inverseProjMat, inverseViewMat, mousePos, z, viewPos, worldPos) {
                         var canvas = scene.canvas.canvas;
                         var halfCanvasWidth = canvas.offsetWidth / 2.0;
                         var halfCanvasHeight = canvas.offsetHeight / 2.0;
@@ -453,8 +583,6 @@
                     };
 
                     return function (mousePos, factor) {
-
-                        console.log(mousePos);
 
                         var lastHoverDistance = 0;
                         var inverseProjMat = getInverseProjectMat();
@@ -496,24 +624,37 @@
                         rotateVy = 0;
                     }
 
-                    if (rotateVx !== 0) {
-                        if (self._firstPerson) {
-                            camera.pitch(-rotateVx);
-                        } else {
-                            camera.orbitPitch(rotateVx);
-                        }
-                    }
+                    if (rotateVy !== 0 || rotateVx !== 0) {
 
-                    if (rotateVy !== 0) {
-                        if (self._firstPerson) {
-                            camera.yaw(rotateVy);
-                        } else {
-                            camera.orbitYaw(rotateVy);
-                        }
-                    }
+                        if (self._pivoter.pivoting) {
+                            self._pivoter.continuePivot(rotateVy, rotateVx);
 
-                    rotateVx *= cameraInertia;
-                    rotateVy *= cameraInertia;
+                        } else {
+
+                            if (rotateVx !== 0) {
+
+                                if (self._firstPerson) {
+                                    camera.pitch(-rotateVx);
+
+                                } else {
+                                    camera.orbitPitch(rotateVx);
+                                }
+                            }
+
+                            if (rotateVy !== 0) {
+
+                                if (self._firstPerson) {
+                                    camera.yaw(rotateVy);
+
+                                } else {
+                                    camera.orbitYaw(rotateVy);
+                                }
+                            }
+                        }
+
+                        rotateVx *= cameraInertia;
+                        rotateVy *= cameraInertia;
+                    }
 
                     if (Math.abs(panVx) < EPSILON) {
                         panVx = 0;
@@ -1035,15 +1176,15 @@
             (function () {
 
                 var pickCursorPos = [0, 0];
-                var needPickEntity = false;
+                var needPickMesh = false;
                 var needPickSurface = false;
-                var lastPickedEntityId;
+                var lastPickedMeshId;
                 var hit;
                 var picked = false;
                 var pickedSurface = false;
 
                 function updatePick() {
-                    if (!needPickEntity && !needPickSurface) {
+                    if (!needPickMesh && !needPickSurface) {
                         return;
                     }
                     picked = false;
@@ -1053,67 +1194,67 @@
                             pickSurface: true,
                             canvasPos: pickCursorPos
                         });
-                    } else { // needPickEntity == true
+                    } else { // needPickMesh == true
                         hit = scene.pick({
                             canvasPos: pickCursorPos
                         });
                     }
                     if (hit) {
                         picked = true;
-                        var pickedEntityId = hit.entity.id;
-                        if (lastPickedEntityId !== pickedEntityId) {
-                            if (lastPickedEntityId !== undefined) {
+                        var pickedMeshId = hit.mesh.id;
+                        if (lastPickedMeshId !== pickedMeshId) {
+                            if (lastPickedMeshId !== undefined) {
 
                                 /**
-                                 * Fired whenever the pointer no longer hovers over an {{#crossLink "Entity"}}{{/crossLink}}.
+                                 * Fired whenever the pointer no longer hovers over an {{#crossLink "Mesh"}}{{/crossLink}}.
                                  * @event hoverOut
-                                 * @param entity The Entity
+                                 * @param mesh The Mesh
                                  */
                                 self.fire("hoverOut", {
-                                    entity: scene.entities[lastPickedEntityId]
+                                    mesh: scene.meshes[lastPickedMeshId]
                                 });
                             }
 
                             /**
-                             * Fired when the pointer is over a new {{#crossLink "Entity"}}{{/crossLink}}.
+                             * Fired when the pointer is over a new {{#crossLink "Mesh"}}{{/crossLink}}.
                              * @event hoverEnter
-                             * @param hit A pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                             * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                              */
                             self.fire("hoverEnter", hit);
-                            lastPickedEntityId = pickedEntityId;
+                            lastPickedMeshId = pickedMeshId;
                         }
                         /**
-                         * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Entity"}}{{/crossLink}}.
+                         * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Mesh"}}{{/crossLink}}.
                          * @event hover
-                         * @param hit A pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                         * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                          */
                         self.fire("hover", hit);
                         if (hit.worldPos) {
                             pickedSurface = true;
 
                             /**
-                             * Fired while the pointer hovers over the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
+                             * Fired while the pointer hovers over the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
                              *
                              * This event provides 3D information about the point on the surface that the pointer is
                              * hovering over.
                              *
                              * @event hoverSurface
-                             * @param hit A surface pick hit result, containing the ID of the Entity and 3D info on the
+                             * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
                              * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                              */
                             self.fire("hoverSurface", hit);
                         }
                     } else {
-                        if (lastPickedEntityId !== undefined) {
+                        if (lastPickedMeshId !== undefined) {
                             /**
-                             * Fired whenever the pointer no longer hovers over an {{#crossLink "Entity"}}{{/crossLink}}.
+                             * Fired whenever the pointer no longer hovers over an {{#crossLink "Mesh"}}{{/crossLink}}.
                              * @event hoverOut
-                             * @param entity The Entity
+                             * @param mesh The Mesh
                              */
                             self.fire("hoverOut", {
-                                entity: scene.entities[lastPickedEntityId]
+                                mesh: scene.meshes[lastPickedMeshId]
                             });
-                            lastPickedEntityId = undefined;
+                            lastPickedMeshId = undefined;
                         }
                         /**
                          * Fired continuously while the pointer is moving but not hovering over anything.
@@ -1124,7 +1265,7 @@
                             canvasPos: pickCursorPos
                         });
                     }
-                    needPickEntity = false;
+                    needPickMesh = false;
                     needPickSurface = false;
                 }
 
@@ -1140,14 +1281,10 @@
                             return;
                         }
 
-                        //if (down) {
-                        //    return;
-                        //}
-
                         getCanvasPosFromEvent(e, pickCursorPos);
 
                         if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
-                            needPickEntity = true;
+                            needPickMesh = true;
                         }
                     });
 
@@ -1164,15 +1301,27 @@
                         downY = e.clientY;
                         downCursorX = pickCursorPos[0];
                         downCursorY = pickCursorPos[1];
+
+                        needPickSurface = self._pivoting;
+                        updatePick();
+                        if (hit && self._pivoting) {
+                            self._pivoter.startPivot(hit.worldPos);
+                        }
                     });
 
                     canvas.addEventListener('mouseup', (function (e) {
+
                         var clicks = 0;
                         var timeout;
+
                         return function (e) {
+
                             if (!self._active) {
                                 return;
                             }
+
+                            self._pivoter.endPivot();
+
                             if (Math.abs(e.clientX - downX) > 3 || Math.abs(e.clientY - downY) > 3) {
                                 return;
                             }
@@ -1188,21 +1337,21 @@
                                 if (hit) {
 
                                     /**
-                                     * Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink "Entity"}}{{/crossLink}}.
+                                     * Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink "Mesh"}}{{/crossLink}}.
                                      *
                                      * @event picked
-                                     * @param hit A surface pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                                     * @param hit A surface pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                                      */
                                     self.fire("picked", hit);
                                     if (pickedSurface) {
 
                                         /**
-                                         * Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
+                                         * Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
                                          *
                                          * This event provides 3D information about the point on the surface that the pointer has picked.
                                          *
                                          * @event pickedSurface
-                                         * @param hit A surface pick hit result, containing the ID of the Entity and 3D info on the
+                                         * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
                                          * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                                          */
                                         self.fire("pickedSurface", hit);
@@ -1225,8 +1374,8 @@
                             if (clicks == 1) {
                                 timeout = setTimeout(function () {
 
-                                    needPickEntity = self._doublePickFlyTo;
-                                    needPickSurface = needPickEntity || !!self.hasSubs("pickedSurface");
+                                    needPickMesh = self._doublePickFlyTo;
+                                    needPickSurface = needPickMesh || !!self.hasSubs("pickedSurface");
                                     pickCursorPos[0] = downCursorX;
                                     pickCursorPos[1] = downCursorY;
 
@@ -1248,27 +1397,27 @@
 
                                 clearTimeout(timeout);
 
-                                needPickEntity = self._doublePickFlyTo;
-                                needPickSurface = needPickEntity && !!self.hasSubs("doublePickedSurface");
+                                needPickMesh = self._doublePickFlyTo;
+                                needPickSurface = needPickMesh && !!self.hasSubs("doublePickedSurface");
 
                                 updatePick();
 
                                 if (hit) {
                                     /**
-                                     * Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink "Entity"}}{{/crossLink}}.
+                                     * Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink "Mesh"}}{{/crossLink}}.
                                      *
                                      * @event picked
-                                     * @param hit A surface pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                                     * @param hit A surface pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                                      */
                                     self.fire("doublePicked", hit);
                                     if (pickedSurface) {
                                         /**
-                                         * Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
+                                         * Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
                                          *
                                          * This event provides 3D information about the point on the surface that the pointer has picked.
                                          *
                                          * @event doublePickedSurface
-                                         * @param hit A surface pick hit result, containing the ID of the Entity and 3D info on the
+                                         * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
                                          * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                                          */
                                         self.fire("doublePickedSurface", hit);
@@ -1369,7 +1518,7 @@
 
                                     pickCursorPos[0] = Math.round(changedTouches[0].clientX);
                                     pickCursorPos[1] = Math.round(changedTouches[0].clientY);
-                                    needPickEntity = true;
+                                    needPickMesh = true;
                                     needPickSurface = !!self.hasSubs("pickedSurface");
 
                                     updatePick();
@@ -1397,7 +1546,7 @@
 
                                     pickCursorPos[0] = Math.round(changedTouches[0].clientX);
                                     pickCursorPos[1] = Math.round(changedTouches[0].clientY);
-                                    needPickEntity = true;
+                                    needPickMesh = true;
                                     needPickSurface = !!self.hasSubs("pickedSurface");
 
                                     updatePick();
@@ -1554,7 +1703,7 @@
                 pos = hit.worldPos
             }
 
-            var aabb = hit ? hit.entity.aabb : this.scene.aabb;
+            var aabb = hit ? hit.mesh.aabb : this.scene.aabb;
 
             this._boundaryHelper.geometry.targetAABB = aabb;
             //    this._boundaryHelper.visible = true;

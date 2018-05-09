@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -45,20 +45,18 @@
         for (var x = 0; x <= 1.0; x += inc) {
             for (var z = 0; z <= 1.0; z += inc) {
 
-                new xeogl.Entity({
+                new xeogl.Mesh({
 
                     colorize: [x, z, y, 1],
 
                     geometry: geometries[gi < 3 ? gi++ : gi = 0],
 
-                        material: new xeogl.LambertMaterial({
-                            diffuse: [x, z, y]
-                        }),
+                    material: new xeogl.LambertMaterial({
+                        diffuse: [x, z, y]
+                    }),
 
-                    transform: new xeogl.Translate({
-                                xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
-                            })
-                    });
+                    position: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
+                });
             }
         }
     }
@@ -75,23 +73,23 @@
 
     scene.on("tick", function () {
 
-                // Spin camera
+        // Spin camera
 
-                var camera = scene.camera;
+        var camera = scene.camera;
 
-                camera.orbitYaw(0.5);
-                camera.orbitPitch(0.3);
+        camera.orbitYaw(0.5);
+        camera.orbitPitch(0.3);
 
-                // Get stats from xeogl and log them
+        // Get stats from xeogl and log them
 
-                var stats = xeogl.stats;
+        var stats = xeogl.stats;
 
-                logJSON(stats);
-            });
+        logJSON(stats);
+    });
 
 
     function logJSON(json) {
-        json.client.browser = json.client.browser.substring(0,10) + "...";
+        json.client.browser = json.client.browser.substring(0, 10) + "...";
         document.getElementById("log").innerHTML = "xeogl.stats = " + JSON.stringify(json, null, 4);
     }
 

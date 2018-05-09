@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-05-02
+ * Built on 2018-05-09
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -164,7 +164,8 @@
             components: {
                 scenes: 0,
                 models: 0,
-                entities: 0
+                meshes: 0,
+                objects: 0
             },
             memory: {
 
@@ -382,7 +383,7 @@
          {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
 
          xeogl creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
-         reference this property for the first time, or create your first {{#crossLink "Entity"}}Entity{{/crossLink}} without
+         reference this property for the first time, or create your first {{#crossLink "Mesh"}}Mesh{{/crossLink}} without
          a specified {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
          @property scene
@@ -541,8 +542,8 @@
          * Tests if the given object is an array
          * @private
          */
-        _isArray: function (testEntity) {
-            return testEntity && !(testEntity.propertyIsEnumerable('length')) && typeof testEntity === 'object' && typeof testEntity.length === 'number';
+        _isArray: function (testMesh) {
+            return testMesh && !(testMesh.propertyIsEnumerable('length')) && typeof testMesh === 'object' && typeof testMesh.length === 'number';
         },
 
         /**
@@ -1175,6 +1176,10 @@ xeogl.utils.Map = function (items, baseId) {
 
     var tempVec4 = new Float32Array(4);
 
+    var caching = false;
+    var vec3Cache = [];
+    var vec3CacheLen = 0;
+
     /**
      * This utility object provides math functions that are used within xeogl. These functions are also part of xeogl's
      * public API and are therefore available for you to use within your application code.
@@ -1187,6 +1192,7 @@ xeogl.utils.Map = function (items, baseId) {
 
         MAX_DOUBLE: +100000000,
         MIN_DOUBLE: -100000000,
+
         /**
          * The number of radiians in a degree (0.0174532925).
          * @property DEGTORAD
@@ -1194,6 +1200,23 @@ xeogl.utils.Map = function (items, baseId) {
          * @type {Number}
          */
         DEGTORAD: 0.0174532925,
+
+        openCache: function () {
+            caching = true;
+            vec3CacheLen = 0;
+        },
+
+        cacheVec3: function (value) {
+            return value || (caching ? (vec3Cache[vec3CacheLen++] || (vec3Cache[vec3CacheLen - 1] = new Float32Array(3))) : new Float32Array(3));
+        },
+
+        cacheVec4: function (value) {
+            return value || (caching ? (vec3Cache[vec4CacheLen++] || (vec3Cache[vec4CacheLen - 1] = new Float32Array(4))) : new Float32Array(4));
+        },
+
+        closeCache: function () {
+            caching = false;
+        },
 
         /**
          * Returns a new, uninitialized two-element vector.
@@ -1248,7 +1271,24 @@ xeogl.utils.Map = function (items, baseId) {
          * @returns {Float32Array}
          */
         mat3ToMat4: function (mat3, mat4) { // TODO
-            //return new Float32Array(values || 9);
+            mat4 = mat4 || new Float32Array(16);
+            mat4[0] = mat3[0];
+            mat4[1] = mat3[1];
+            mat4[2] = mat3[2];
+            mat4[3] = 0;
+            mat4[4] = mat3[3];
+            mat4[5] = mat3[4];
+            mat4[6] = mat3[5];
+            mat4[7] = 0;
+            mat4[8] = mat3[6];
+            mat4[9] = mat3[7];
+            mat4[10] = mat3[8];
+            mat4[11] = 0;
+            mat4[12] = 0;
+            mat4[13] = 0;
+            mat4[14] = 0;
+            mat4[15] = 1;
+            return mat4;
         },
 
         /**
@@ -1853,6 +1893,13 @@ xeogl.utils.Map = function (items, baseId) {
             return Math.sqrt(math.sqLenVec3(v));
         },
 
+        distVec3: (function () {
+            var vec = new Float32Array(3);
+            return function (v, w) {
+                return math.lenVec3(math.subVec3(v, w, vec));
+            };
+        })(),
+
         /**
          * Returns the length of a two-element vector.
          * @method lenVec2
@@ -1868,13 +1915,6 @@ xeogl.utils.Map = function (items, baseId) {
             var vec = new Float32Array(2);
             return function (v, w) {
                 return math.lenVec2(math.subVec2(v, w, vec));
-            };
-        })(),
-
-        distVec3: (function () {
-            var vec = new Float32Array(3);
-            return function (v, w) {
-                return math.lenVec3(math.subVec3(v, w, vec));
             };
         })(),
 
@@ -2433,7 +2473,7 @@ xeogl.utils.Map = function (items, baseId) {
         mulMat4v4: function (m, v, dest) {
             dest = dest || math.vec4();
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
-            dest[0] =  m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
+            dest[0] = m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
             dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
             dest[2] = m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3;
             dest[3] = m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3;
@@ -2483,6 +2523,37 @@ xeogl.utils.Map = function (items, baseId) {
             dest[13] = mat[7];
             dest[14] = mat[11];
             dest[15] = mat[15];
+            return dest;
+        },
+
+        /**
+         * Transposes the given 3x3 matrix.
+         *
+         * @method transposeMat3
+         * @static
+         */
+        transposeMat3: function (mat, dest) {
+            if (dest === mat) {
+                var a01 = mat[1];
+                var a02 = mat[2];
+                var a12 = mat[5];
+                dest[1] = mat[3];
+                dest[2] = mat[6];
+                dest[3] = a01;
+                dest[5] = mat[7];
+                dest[6] = a02;
+                dest[7] = a12;
+            } else {
+                dest[0] = mat[0];
+                dest[1] = mat[3];
+                dest[2] = mat[6];
+                dest[3] = mat[1];
+                dest[4] = mat[4];
+                dest[5] = mat[7];
+                dest[6] = mat[2];
+                dest[7] = mat[5];
+                dest[8] = mat[8];
+            }
             return dest;
         },
 
@@ -2990,6 +3061,82 @@ xeogl.utils.Map = function (items, baseId) {
 
             return dest;
         },
+
+        composeMat4: function (position, quaternion, scale, mat) {
+            mat = mat || math.mat4();
+            math.quaternionToRotationMat4(quaternion, mat);
+            math.translateMat4v(position, mat);
+            math.scaleMat4v(scale, mat);
+
+            return mat;
+        },
+
+        decomposeMat4: function () {
+
+            var vec = new Float32Array(3);
+            var matrix = new Float32Array(16);
+
+            return function decompose(mat, position, quaternion, scale) {
+
+                vec[0] = mat[0];
+                vec[1] = mat[1];
+                vec[2] = mat[2];
+
+                var sx = math.lenVec3(vec);
+
+                vec[0] = mat[4];
+                vec[1] = mat[5];
+                vec[2] = mat[6];
+
+                var sy = math.lenVec3(vec);
+
+                vec[8] = mat[8];
+                vec[9] = mat[9];
+                vec[10] = mat[10];
+
+                var sz = math.lenVec3(vec);
+
+                // if determine is negative, we need to invert one scale
+                var det = math.determinantMat4(mat);
+
+                if (det < 0) {
+                    sx = -sx;
+                }
+
+                position[0] = mat[12];
+                position[1] = mat[13];
+                position[2] = mat[14];
+
+                // scale the rotation part
+                matrix.set(mat);
+
+                var invSX = 1 / sx;
+                var invSY = 1 / sy;
+                var invSZ = 1 / sz;
+
+                matrix[0] *= invSX;
+                matrix[1] *= invSX;
+                matrix[2] *= invSX;
+
+                matrix[4] *= invSY;
+                matrix[5] *= invSY;
+                matrix[6] *= invSY;
+
+                matrix[8] *= invSZ;
+                matrix[9] *= invSZ;
+                matrix[10] *= invSZ;
+
+                math.mat4ToQuaternion(matrix, quaternion);
+
+                scale[0] = sx;
+                scale[1] = sy;
+                scale[2] = sz;
+
+                return this;
+
+            };
+
+        }(),
 
         /**
          * Returns a 4x4 'lookat' viewing transform matrix.
@@ -3797,16 +3944,15 @@ xeogl.utils.Map = function (items, baseId) {
             return dest;
         },
 
-        quaternionToEuler: function (euler, order, dest) {
-            dest = dest || math.vec4();
-            var halfAngle = euler[3] / 2.0;
-            var fsin = Math.sin(halfAngle);
-            dest[0] = fsin * euler[0];
-            dest[1] = fsin * euler[1];
-            dest[2] = fsin * euler[2];
-            dest[3] = Math.cos(halfAngle);
-            return dest;
-        },
+        quaternionToEuler: (function () {
+            var mat = new Float32Array(16);
+            return function (q, order, dest) {
+                dest = dest || math.vec3();
+                math.quaternionToRotationMat4(q, mat);
+                math.mat4ToEuler(mat, order, dest);
+                return dest;
+            };
+        })(),
 
         mulQuaternions: function (p, q, dest) {
             dest = dest || math.vec4();
@@ -5647,11 +5793,11 @@ xeogl.utils.Map = function (items, baseId) {
     })();
 
     /**
-     Transforms a Canvas-space position to an Entity's Local-space coordinate system, in the context of a Camera.
+     Transforms a Canvas-space position to a Mesh's Local-space coordinate system, in the context of a Camera.
      @method canvasPosToLocalRay
      @static
      @param {Camera} camera The Camera.
-     @param {Entity} entity The Entity.
+     @param {Mesh} mesh The Mesh.
      @param {Float32Array} canvasPos The Canvas-space position.
      @param {Float32Array} localRayOrigin The Local-space ray origin.
      @param {Float32Array} localRayDir The Local-space ray direction.
@@ -5661,17 +5807,17 @@ xeogl.utils.Map = function (items, baseId) {
         var worldRayOrigin = math.vec3();
         var worldRayDir = math.vec3();
 
-        return function (camera, entity, canvasPos, localRayOrigin, localRayDir) {
+        return function (camera, mesh, canvasPos, localRayOrigin, localRayDir) {
             math.canvasPosToWorldRay(camera, canvasPos, worldRayOrigin, worldRayDir);
-            math.worldRayToLocalRay(entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir);
+            math.worldRayToLocalRay(mesh, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir);
         };
     })();
 
     /**
-     Transforms a ray from World-space to an Entity's Local-space coordinate system.
+     Transforms a ray from World-space to a Mesh's Local-space coordinate system.
      @method worldRayToLocalRay
      @static
-     @param {Entity} entity The Entity.
+     @param {Mesh} mesh The Mesh.
      @param {Float32Array} worldRayOrigin The World-space ray origin.
      @param {Float32Array} worldRayDir The World-space ray direction.
      @param {Float32Array} localRayOrigin The Local-space ray origin.
@@ -5683,9 +5829,9 @@ xeogl.utils.Map = function (items, baseId) {
         var tempVec4a = math.vec4();
         var tempVec4b = math.vec4();
 
-        return function (entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
+        return function (mesh, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
 
-            var modelMat = entity.transform.leafMatrix;
+            var modelMat = mesh.worldMatrix || mesh.transform.leafMatrix;
             var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
 
             tempVec4a[0] = worldRayOrigin[0];
@@ -5915,9 +6061,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         // imageDirty = true;
     };
 
-    this.createObject = function (entityId, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
+    this.createObject = function (meshId, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
         var objectId = ids.addItem({});
-        var object = new xeogl.renderer.Object(objectId, entityId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
+        var object = new xeogl.renderer.Object(objectId, meshId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
         if (object.errors) {
             object.destroy();
             ids.removeItem(objectId);
@@ -6259,6 +6405,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             opaqueGhostFillObjects[numOpaqueGhostFillObjects++] = object;
                         }
                     }
+
                 } else {
 
                     // Normal render
@@ -6659,7 +6806,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             }
 
             var hit = {
-                entity: object.entityId
+                mesh: object.meshId
             };
 
             if (params.pickSurface) {
@@ -6860,10 +7007,10 @@ xeogl.renderer.webgl = {
  * @author xeolabs / https://github.com/xeolabs
  */
 
-xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
+xeogl.renderer.Object = function (id, meshId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
 
     this.id = id;
-    this.entityId = entityId;
+    this.meshId = meshId;
     this.gl = gl;
     this.scene = scene;
 
@@ -8856,9 +9003,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var colorize = modes.colorize;
             var lastColorize = this._lastColorize;
             if (lastColorize[0] !== colorize[0] ||
-                lastColorize[1] !== colorize[0] ||
-                lastColorize[2] !== colorize[0] ||
-                lastColorize[3] !== colorize[0]) {
+                lastColorize[1] !== colorize[1] ||
+                lastColorize[2] !== colorize[2] ||
+                lastColorize[3] !== colorize[3]) {
                 gl.uniform4fv(this._uColorize, colorize);
                 lastColorize[0] = colorize[0];
                 lastColorize[1] = colorize[1];
@@ -11238,7 +11385,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         }
 
-        // Entity state
+        // Mesh state
 
         if (this._uClippable) {
             gl.uniform1i(this._uClippable, object.modes.clippable);
@@ -11270,7 +11417,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             this._lastGeometryId = geometry.id;
         }
 
-        // Entity-indexed color
+        // Mesh-indexed color
 
         var a = frame.pickObjectIndex >> 24 & 0xFF;
         var b = frame.pickObjectIndex >> 16 & 0xFF;
@@ -11764,7 +11911,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     };
 
     xeogl.renderer.ShadowRenderer.prototype.destroy = function () {
-        if (--this._useCount === 0) {
+        if (--this._useCount) {
             this._program.destroy();
             delete renderers[this._hash];
         }
@@ -13583,7 +13730,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
  scene comprised of {{#crossLink "Scene"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}}, {{#crossLink "Geometry"}}{{/crossLink}} and
- {{#crossLink "Entity"}}{{/crossLink}} components, while letting xeogl generate its own ID for
+ {{#crossLink "Mesh"}}{{/crossLink}} components, while letting xeogl generate its own ID for
  the {{#crossLink "Geometry"}}{{/crossLink}}:
 
  ````javascript
@@ -13600,8 +13747,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     id: "myGeometry"
  });
 
- // Let xeogl automatically generate the ID for our Entity
- var entity = new xeogl.Entity(scene, {
+ // Let xeogl automatically generate the ID for our Mesh
+ var mesh = new xeogl.Mesh(scene, {
     material: material,
     geometry: geometry
  });
@@ -13737,7 +13884,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
      _init: function (cfg) { // Constructor
 
-         this._torus = new xeogl.Entity({
+         this._torus = new xeogl.Mesh({
              geometry: new xeogl.TorusGeometry({radius: 2, tube: .6}),
              material: new xeogl.MetallicMaterial({
                  baseColor: [1.0, 0.5, 0.5],
@@ -13808,6 +13955,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @final
              */
             this.scene = null;
+
+            this._model = null;
 
             var adopter = null;
 
@@ -13947,6 +14096,33 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          */
         superTypes: [],
 
+        _addedToModel: function (model) { // Called by xeogl.Model.add()
+            this._model = model;
+        },
+
+        _removedFromModel: function (model) { // Called by xeogl.Model.remove()
+            this._model = null;
+        },
+        
+        _props: {
+
+            /**
+             The {{#crossLink "Model"}}{{/crossLink}} which contains this Component, if any.
+
+             Will be null if this Component is not in a Model.
+
+             @property model
+             @final
+             @type Model
+             */
+            model: {
+
+                get: function () {
+                    return this._model;
+                }
+            }
+        },
+
         /**
          Tests if this component is of the given type, or is a subclass of the given type.
 
@@ -13966,7 +14142,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          myRotate.isType(xeogl.Rotate); // Returns true
          myRotate.isType(xeogl.Transform); // Returns true
          myRotate.isType("xeogl.Transform"); // Returns true
-         myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
+         myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Mesh
          ````
 
          @method isType
@@ -14441,7 +14617,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
 
             if (recompiles) {
-                this.fire("dirty", this); // FIXME: May trigger spurous entity recompilations unless able to limit with param?
+                this.fire("dirty", this); // FIXME: May trigger spurous mesh recompilations unless able to limit with param?
             }
 
             this.fire(name, component); // Component can be null
@@ -14606,6 +14782,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 for (id in this._adoptees) {
                     if (this._adoptees.hasOwnProperty(id)) {
                         component = this._adoptees[id];
+                        component.destroy();
                         delete this._adoptees[id];
                     }
                 }
@@ -14640,7 +14817,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  ## Usage
 
  * [Creating a Scene](#creating-a-scene)
- * [Creating entities](#creating-entities)
+ * [Creating meshes](#creating-meshes)
  * [Loading models](#loading-models)
  * [Accessing content](#accessing-content)
  * [Controlling the camera](#controlling-the-camera)
@@ -14675,14 +14852,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  });
  ````
 
- ### Creating entities
+ ### Creating meshes
 
- Creating an {{#crossLink "Entity"}}{{/crossLink}} within a Scene:
+ Creating an {{#crossLink "Mesh"}}{{/crossLink}} within a Scene:
 
  <a href="../../examples/#geometry_primitives_teapot"><img src="../../assets/images/screenshots/Scene/teapot.png"></img></a>
 
  ````javascript
- var entity = new xeogl.Entity(scene, {
+ var mesh = new xeogl.Mesh(scene, {
     geometry: new xeogl.TeapotGeometry(scene),
     material: new xeogl.PhongMaterial(scene, {
         diffuse: [0.2, 0.2, 1.0]
@@ -14690,22 +14867,22 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  });
  ````
 
- Creating an entity within the default Scene (which will be automatically created if not yet existing):
+ Creating an mesh within the default Scene (which will be automatically created if not yet existing):
  ````javascript
- entity = new xeogl.Entity({
+ mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry(),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     })
  });
 
- entity.scene.camera.eye = [45, 45, 45];
+ mesh.scene.camera.eye = [45, 45, 45];
  ````
 
- The default Scene can be got from either the Entity or the xeogl namespace:
+ The default Scene can be got from either the Mesh or the xeogl namespace:
 
  ````javascript
- scene = entity.scene;
+ scene = mesh.scene;
  scene = xeogl.scene;
  ````
 
@@ -14733,8 +14910,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  A Scene also has a map of component instances for each {{#crossLink "Component"}}{{/crossLink}} subtype:
 
  ````javascript
- var entities = scene.types["xeogl.Entity"];
- var gear = entities["gearbox#gear99"];
+ var meshes = scene.types["xeogl.Mesh"];
+ var gear = meshes["gearbox#gear99"];
  gear.ghost = true;
  //...
 
@@ -14749,10 +14926,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  gearbox = scene.models["gearbox"];
  ````
 
- and a map containing just the {{#crossLink "Entity"}}{{/crossLink}} instances:
+ and a map containing just the {{#crossLink "Mesh"}}{{/crossLink}} instances:
 
  ````javascript
- gear = scene.entities["gearbox#gear99"];
+ gear = scene.meshes["gearbox#gear99"];
  ````
 
  ### Controlling the camera
@@ -14850,11 +15027,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  outlineMaterial.edgeWidth = 6;
  ````
 
- ### Picking entities
+ ### Picking
 
- Use the Scene's {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method to pick and raycast entities.
+ Use the Scene's {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method to pick and raycast meshes.
 
- For example, to pick a point on the surface of the closest entity at the given canvas coordinates:
+ For example, to pick a point on the surface of the closest mesh at the given canvas coordinates:
 
  ````javascript
  var hit = scene.pick({
@@ -14862,12 +15039,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
      canvasPos: [23, 131]
  });
 
- if (hit) { // Picked an Entity
+ if (hit) { // Picked a Mesh
 
-      var entity = hit.entity;
+      var mesh = hit.mesh;
 
       var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
-      var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+      var primIndex = hit.primIndex; // Position of triangle's first index in the picked Mesh's Geometry's indices array
       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
       var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
@@ -14881,41 +15058,41 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  ### Pick masking
 
  We can use the {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method's ````include```` and ````exclude````
- options to mask which Entities we attempt to pick.
+ options to mask which Meshes we attempt to pick.
 
- This is useful for picking <em>through</em> things, to pick only the Entities of interest.
+ This is useful for picking <em>through</em> things, to pick only the Meshes of interest.
 
- #### Including entities
+ #### Including meshes
 
- To pick only Entities ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through any other Entities that are
+ To pick only Meshes ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through any other Meshes that are
  in the way, as if they weren't there:
 
  ````javascript
  var hit = scene.pick({
      canvasPos: [23, 131],
-     include: ["gearbox#77.0", "gearbox#79.0"]
+     includeMeshes: ["gearbox#77.0", "gearbox#79.0"]
  });
 
  if (hit) {
-      // Entity will always be either "gearbox#77.0" or "gearbox#79.0"
-      var entity = hit.entity;
+      // Mesh will always be either "gearbox#77.0" or "gearbox#79.0"
+      var mesh = hit.mesh;
  }
  ````
 
- #### Excluding entities
+ #### Excluding meshes
 
- To pick any pickable Entity, except for ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through those
- Entities if they happen to be in the way:
+ To pick any pickable Mesh, except for ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through those
+ Meshes if they happen to be in the way:
 
  ````javascript
  var hit = scene.pick({
      canvasPos: [23, 131],
-     exclude: ["gearbox#77.0", "gearbox#79.0"]
+     excludeMeshes: ["gearbox#77.0", "gearbox#79.0"]
  });
 
  if (hit) {
-      // Entity will never be "gearbox#77.0" or "gearbox#79.0"
-      var entity = hit.entity;
+      // Mesh will never be "gearbox#77.0" or "gearbox#79.0"
+      var mesh = hit.mesh;
  }
  ````
 
@@ -14929,7 +15106,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  var aabb = scene.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
  ````
 
- Subscribing to updates to the World-space boundary, which occur whenever Entities are Transformed, or their Geometries have been updated.
+ Subscribing to updates to the World-space boundary, which occur whenever Meshes are Transformed, or their Geometries have been updated.
 
  ````javascript
  scene.on("boundary", function() {
@@ -14938,15 +15115,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  });
  ````
 
- Getting the collective World-space axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
+ Getting the collective World-space axis-aligned boundary of the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
  and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
 
  ````JavaScript
- scene.getAABB(); // Gets collective boundary of all entities in the scene
- scene.getAABB("saw"); // Gets collective boundary of all entities in saw model
- scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all entities in saw and gearbox models
- scene.getAABB("saw#0.1"); // Get boundary of an entity in the saw model
- scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two entities in saw model
+ scene.getAABB(); // Gets collective boundary of all meshes in the scene
+ scene.getAABB("saw"); // Gets collective boundary of all meshes in saw model
+ scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all meshes in saw and gearbox models
+ scene.getAABB("saw#0.1"); // Get boundary of an mesh in the saw model
+ scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two meshes in saw model
  ````
 
  ### Managing the viewport
@@ -15094,6 +15271,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              * The number of models currently loading.
              *
              * @property loading
+             * @final
              * @type {Number}
              */
             this.loading = 0;
@@ -15102,54 +15280,79 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
              *
              * @property timeCreated
+             * @final
              * @type {Number}
              */
             this.startTime = (new Date()).getTime();
 
             /**
-             * The {{#crossLink "Component"}}Component{{/crossLink}}s within
-             * this Scene, mapped to their IDs.
+             * The {{#crossLink "Model"}}{{/crossLink}}s in this Scene, mapped to their IDs.
              *
-             * Will also contain the {{#crossLink "Entity"}}{{/crossLink}}s
-             * contained in {{#crossLink "Entity/components:property"}}{{/crossLink}}.
-             *
-             * @property components
-             * @type {String:xeogl.Component}
+             * @property meshes
+             * @final
+             * @type {String:xeogl.Model}
              */
-            this.components = {};
+            this.models = {};
 
             /**
-             * For each {{#crossLink "Component"}}Component{{/crossLink}} type, a map of
-             * IDs to instances.
+             * For each IFC type, a map of IDs to {{#crossLink "Object"}}Objects{{/crossLink}} of that IFC type.
+             *
+             * @property ifcTypes
+             * @final
+             * @type {String:{String:xeogl.Component}}
+             */
+            this.ifcTypes = {};
+
+            /**
+             * The {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene, mapped to their IDs.
+             *
+             * @property objects
+             * @final
+             * @type {{String:Object}}
+             */
+            this.objects = {};
+
+            /**
+             * The {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene, mapped to their IDs.
+             **
+             * @property meshes
+             * @final
+             * @type {String:xeogl.Mesh}
+             */
+            this.meshes = {};
+
+            /**
+             * For each {{#crossLink "Component"}}{{/crossLink}} type, a map of
+             * IDs to {{#crossLink "Component"}}Components{{/crossLink}} of that type.
              *
              * @property types
+             * @final
              * @type {String:{String:xeogl.Component}}
              */
             this.types = {};
 
             /**
-             * The {{#crossLink "Entity"}}{{/crossLink}}s within
+             * The {{#crossLink "Component"}}Component{{/crossLink}}s in
              * this Scene, mapped to their IDs.
              *
-             * The {{#crossLink "Entity"}}{{/crossLink}}s in this map
-             * will also be contained in {{#crossLink "Entity/components:property"}}{{/crossLink}}.
-             *
-             * @property entities
-             * @type {String:xeogl.Entity}
+             * @property components
+             * @final
+             * @type {String:xeogl.Component}
              */
-            this.entities = {};
+            this.components = {};
+
 
             /**
-             * The {{#crossLink "Model"}}{{/crossLink}}s within
-             * this Scene, mapped to their IDs.
+             * The root {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene, mapped to their IDs.
              *
-             * @property entities
-             * @type {String:xeogl.Model}
+             * @property rootObjects
+             * @final
+             * @type {{String:Object}}
              */
-            this.models = {};
+            this.rootObjects = {};
 
-            // Contains xeogl.Entities that need to be recompiled back into this._renderer
-            this._dirtyEntities = {};
+            // Contains xeogl.Meshes that need to be recompiled back into this._renderer
+            this._dirtyMeshes = {};
 
             /**
              * Manages the HTML5 canvas for this Scene.
@@ -15283,9 +15486,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             clips.on("dirty", function () { // TODO: Buffer so we're not doing for every light
                 renderer.clips = clips._getState();
-                for (var entityId in self.entities) {
-                    if (self.entities.hasOwnProperty(entityId)) {
-                        self._entityDirty(self.entities[entityId]);
+                for (var meshId in self.meshes) {
+                    if (self.meshes.hasOwnProperty(meshId)) {
+                        self._meshDirty(self.meshes[meshId]);
                     }
                 }
             });
@@ -15293,9 +15496,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             lights.on("dirty", function () {
                 renderer.lights = lights._getState();
                 var updated = false;
-                for (var entityId in self.entities) {
-                    if (self.entities.hasOwnProperty(entityId)) {
-                        self._entityDirty(self.entities[entityId]);
+                for (var meshId in self.meshes) {
+                    if (self.meshes.hasOwnProperty(meshId)) {
+                        self._meshDirty(self.meshes[meshId]);
                         updated = true;
                     }
                 }
@@ -15322,11 +15525,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             dummy = this.material;
             dummy = this.ghostMaterial;
             dummy = this.outlineMaterial;
-            dummy = this.transform;
         },
 
         // Called by each component that is created with this Scene as parent.
-        // Registers the component within this scene.
+        // Registers the component in this scene.
 
         _addComponent: function (c) {
 
@@ -15372,30 +15574,23 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this._componentDestroyed(c);
             }, this);
 
-            if (c.isType("xeogl.Entity")) {
-
-                // Component is a xeogl.Entity or subtype
-
-                c.on("dirty", this._entityDirty, this);
-
-                this.entities[c.id] = c;
-
-                // If we currently have a World-space Scene boundary, then invalidate
-                // it whenever Entity's World-space boundary updates
-
+            if (c.isType("xeogl.Mesh")) {
+                c.on("dirty", this._meshDirty, this);
+                this.meshes[c.id] = c;
                 c.on("boundary", this._setBoundaryDirty, this);
+                xeogl.stats.components.meshes++;
+            }
 
-                // Update scene statistics
-
-                xeogl.stats.components.entities++;
+            if (c.isType("xeogl.Object")) {
+                this.objects[c.id] = c;
+                if (!c.parent) {
+                    this.rootObjects[c.id] = c; // TODO: What about when a root Object is added as child to another?
+                }
+                xeogl.stats.components.objects++;
             }
 
             if (c.isType("xeogl.Model")) {
-
                 this.models[c.id] = c;
-
-                // Update scene statistics
-
                 xeogl.stats.components.models++;
             }
 
@@ -15409,28 +15604,26 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             delete this.components[c.id];
 
             var types = this.types[c.type];
-
             if (types) {
-
                 delete types[c.id];
-
                 if (xeogl._isEmptyObject(types)) {
                     delete this.types[c.type];
                 }
             }
 
-            if (c.isType("xeogl.Entity")) {
+            if (c.isType("xeogl.Mesh")) {
+                xeogl.stats.components.meshes--;
+                delete this.meshes[c.id];
+                delete this._dirtyMeshes[c.id]; // Unschedule any pending recompilation
+                xeogl.stats.components.meshes--;
+            }
 
-                // Component is a xeogl.Entity or subtype
-
-                // Update scene statistics,
-                // Unschedule any pending recompilation of
-                // the Entity into the renderer
-
-                xeogl.stats.components.entities--;
-                delete this.entities[c.id];
-                delete this._dirtyEntities[c.id];
-                xeogl.stats.components.entities--;
+            if (c.isType("xeogl.Object")) {
+                delete this.objects[c.id];
+                if (!c.parent) {
+                    delete this.rootObjects[c.id];
+                }
+                xeogl.stats.components.objects--;
             }
 
             if (c.isType("xeogl.Model")) {
@@ -15441,8 +15634,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             //this.log("Destroyed " + c.type + " " + xeogl._inQuotes(c.id));
         },
 
-        _entityDirty: function (entity) {
-            this._dirtyEntities[entity.id] = entity;
+        _meshDirty: function (mesh) {
+            this._dirtyMeshes[mesh.id] = mesh;
         },
 
         /**
@@ -15474,16 +15667,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 var imageForceDirty = this._renderer.imageForceDirty;
 
                 if (this.loading > 0 && !forceRender && !imageForceDirty) {
-                    this._compileDirtyEntities(100);
+                    this._compileDirtyMeshes(100);
                     return;
                 }
 
                 if (this.canvas.spinner.processes > 0 && !imageForceDirty) {
-                    this._compileDirtyEntities(100);
+                    this._compileDirtyMeshes(100);
                     return;
                 }
 
-                this._compileDirtyEntities(15);
+                this._compileDirtyMeshes(15);
 
                 renderEvent.sceneId = this.id;
 
@@ -15523,15 +15716,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         })(),
 
-        _compileDirtyEntities: function (timeBudget) {
+        _compileDirtyMeshes: function (timeBudget) {
             var time1 = (new Date()).getTime();
-            var entity;
-            for (var id in this._dirtyEntities) {
-                if (this._dirtyEntities.hasOwnProperty(id)) {
-                    entity = this._dirtyEntities[id];
-                    if (entity._valid()) {
-                        entity._compile();
-                        delete this._dirtyEntities[id];
+            var mesh;
+            for (var id in this._dirtyMeshes) {
+                if (this._dirtyMeshes.hasOwnProperty(id)) {
+                    mesh = this._dirtyMeshes[id];
+                    if (mesh._valid()) {
+                        mesh._compile();
+                        delete this._dirtyMeshes[id];
                     }
                     var time2 = (new Date()).getTime();
                     if (time2 - time1 > timeBudget) {
@@ -15680,9 +15873,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                     this._renderer.gammaInput = value;
 
-                    for (var entityId in this.entities) { // Needs all shaders recompiled
-                        if (this.entities.hasOwnProperty(entityId)) {
-                            this._entityDirty(this.entities[entityId]);
+                    for (var meshId in this.meshes) { // Needs all shaders recompiled
+                        if (this.meshes.hasOwnProperty(meshId)) {
+                            this._meshDirty(this.meshes[meshId]);
                         }
                     }
                 },
@@ -15711,9 +15904,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                     this._renderer.gammaOutput = value;
 
-                    for (var entityId in this.entities) { // Needs all shaders recompiled
-                        if (this.entities.hasOwnProperty(entityId)) {
-                            this._entityDirty(this.entities[entityId]);
+                    for (var meshId in this.meshes) { // Needs all shaders recompiled
+                        if (this.meshes.hasOwnProperty(meshId)) {
+                            this._meshDirty(this.meshes[meshId]);
                         }
                     }
                 },
@@ -15751,34 +15944,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The default modelling {{#crossLink "Transform"}}{{/crossLink}} for this Scene.
-             *
-             * This {{#crossLink "Transform"}}{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
-             * with all other properties initialised to their default values (ie. an identity matrix).
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to
-             * this {{#crossLink "Transform"}}{{/crossLink}} by default.
-             *
-             * @property transform
-             * @final
-             * @type Transform
-             */
-            transform: {
-                get: function () {
-                    return this.components["default.transform"] ||
-                        new xeogl.Transform(this, {
-                            id: "default.transform",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default geometry for this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
              *
              * This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
              *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
              * {{#crossLink "Geometry"}}Geometry{{/crossLink}} by default.
              * @property geometry
              * @final
@@ -15801,7 +15971,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
              * other properties initialised to their default values.
              *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
              * {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} by default.
              * @property material
              * @final
@@ -15819,13 +15989,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are ghosted.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are ghosted.
              *
              * This {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
              * other properties initialised to their default values.
              *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
              * {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} by default.
              * @property ghostMaterial
              * @final
@@ -15843,13 +16013,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are highlighted.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are highlighted.
              *
              * This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
              * other properties initialised to their default values.
              *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
              * {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} by default.
              * @property highlightMaterial
              * @final
@@ -15867,13 +16037,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are selected.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are selected.
              *
              * This {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.selectedMaterial", with all
              * other properties initialised to their default values.
              *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
              * {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} by default.
              * @property selectedMaterial
              * @final
@@ -15891,13 +16061,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are outlined.
+             * The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are outlined.
              *
              * This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outlineMaterial", with all
              * other properties initialised to their default values.
              *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
              * {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} by default.
              * @property outlineMaterial
              * @final
@@ -15976,10 +16146,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                 get: function () {
 
-                    if (this._aabbDirty) {
+                    if (this._aabbDirty || !this._center) {
 
-                        if (!this._center) {
-                            this._center = xeogl.math.AABB3();
+                        if (!this._center || !this._center) {
+                            this._center = xeogl.math.vec3();
                         }
 
                         var aabb = this.aabb;
@@ -16022,22 +16192,22 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                         var aabb;
 
-                        var entities = this.entities;
-                        var entity;
+                        var meshes = this.meshes;
+                        var mesh;
 
-                        for (var entityId in entities) {
-                            if (entities.hasOwnProperty(entityId)) {
+                        for (var meshId in meshes) {
+                            if (meshes.hasOwnProperty(meshId)) {
 
-                                entity = entities[entityId];
+                                mesh = meshes[meshId];
 
-                                if (!entity.collidable) {
+                                if (!mesh.collidable) {
                                     continue;
                                 }
 
-                                aabb = entity.aabb;
+                                aabb = mesh.aabb;
 
                                 if (!aabb) {
-                                    this.error("internal error: entity without aabb: " + entityId);
+                                    this.error("internal error: mesh without aabb: " + meshId);
                                     continue;
                                 }
 
@@ -16085,26 +16255,26 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         },
 
         /**
-         * Attempts to pick an {{#crossLink "Entity"}}Entity{{/crossLink}} in this Scene.
+         * Attempts to pick an {{#crossLink "Mesh"}}Mesh{{/crossLink}} in this Scene.
          *
-         * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/pickable:property"}}pickable{{/crossLink}}
+         * Ignores {{#crossLink "Mesh"}}Meshes{{/crossLink}} with {{#crossLink "Mesh/pickable:property"}}pickable{{/crossLink}}
          * set *false*.
          *
-         * Picking the {{#crossLink "Entity"}}{{/crossLink}} at the given canvas coordinates:
+         * Picking the {{#crossLink "Mesh"}}{{/crossLink}} at the given canvas coordinates:
          *
          * ````javascript
          * var hit = scene.pick({
          *     canvasPos: [23, 131]
          *  });
          *
-         * if (hit) { // Picked an Entity
-         *     var entity = hit.entity;
+         * if (hit) { // Picked a Mesh
+         *     var mesh = hit.mesh;
          * }
          * ````
          *
          * **Usage:**
          *
-         * Picking the {{#crossLink "Entity"}}{{/crossLink}} that intersects a ray cast through the canvas:
+         * Picking the {{#crossLink "Mesh"}}{{/crossLink}} that intersects a ray cast through the canvas:
          *
          * ````javascript
          * var hit = scene.pick({
@@ -16112,14 +16282,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          *     canvasPos: [23, 131]
          *  });
          *
-         * if (hit) { // Picked an Entity
+         * if (hit) { // Picked a Mesh
          *
-         *     var entity = hit.entity;
+         *     var mesh = hit.mesh;
          *
          *     // These properties are only on the hit result when we do a ray-pick:
          *
          *     var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
-         *     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+         *     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Mesh's Geometry's indices array
          *     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
          *     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
          *     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
@@ -16130,7 +16300,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          * }
          * ````
          *
-         * Picking the {{#crossLink "Entity"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:
+         * Picking the {{#crossLink "Mesh"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:
          *
          * ````javascript
          * var hit = scene.pick({
@@ -16139,12 +16309,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          *     direction: [0,0,1]   // Ray direction
          * });
          *
-         * if (hit) { // Picked an Entity with the ray
+         * if (hit) { // Picked a Mesh with the ray
          *
-         *     var entity = hit.entity;
+         *     var mesh = hit.mesh;
          *
          *     var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
-         *     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+         *     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Mesh's Geometry's indices array
          *     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
          *     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
          *     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
@@ -16159,15 +16329,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          * @method pick
          *
          * @param {*} params Picking parameters.
-         * @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Entity.
+         * @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Mesh.
          * @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
          * **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
          * directly along the negative View-space Z-axis.
          * @param {Float32Array} [params.origin] World-space ray origin when ray-picking. Ignored when canvasPos given.
          * @param {Float32Array} [params.direction] World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.
-         * @param {Array} [params.include] IDs of {{#crossLink "Entity"}}Entities{{/crossLink}} to pick from amongst. When given, ignores {{#crossLink "Entity"}}Entities{{/crossLink}} whose IDs are not in this list.
-         * @param {Array} [params.exclude] IDs of {{#crossLink "Entity"}}Entities{{/crossLink}} to ignore. When given, will pick *through* these {{#crossLink "Entity"}}Entities{{/crossLink}}, as if they were not there.
-         * @returns {*} Hit record, returned when an {{#crossLink "Entity"}}{{/crossLink}} is picked, else null. See
+         * @param {Array} [params.includeMeshes] IDs of {{#crossLink "Mesh"}}Meshes{{/crossLink}} to restrict picking to. When given, ignores {{#crossLink "Mesh"}}Meshes{{/crossLink}} whose IDs are not in this list.
+         * @param {Array} [params.excludeMeshes] IDs of {{#crossLink "Mesh"}}Meshes{{/crossLink}} to ignore. When given, will pick *through* these {{#crossLink "Mesh"}}Meshes{{/crossLink}}, as if they were not there.
+         * @returns {*} Hit record, returned when an {{#crossLink "Mesh"}}{{/crossLink}} is picked, else null. See
          * method comments for description.
          */
         pick: (function () {
@@ -16213,18 +16383,18 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var tempVec3j = math.vec3();
             var tempVec3k = math.vec3();
 
-            function entityIDsToObjectIDs(scene, entityIds) {
+            function getRendererObjectIDs(scene, meshIds) {
                 var objectIds = {};
-                var entityId;
-                var entity;
-                for (var i = 0, len = entityIds.length; i < len; i++) {
-                    entityId = entityIds[i];
-                    entity = scene.entities[entityId];
-                    if (!entity) {
-                        scene.warn("pick(): Entity not found: " + entityId);
+                var meshId;
+                var mesh;
+                for (var i = 0, len = meshIds.length; i < len; i++) {
+                    meshId = meshIds[i];
+                    mesh = scene.meshes[meshId];
+                    if (!mesh) {
+                        scene.warn("pick(): Mesh not found: " + meshId);
                         continue;
                     }
-                    objectIds[entity._objectId] = true;
+                    objectIds[mesh._objectId] = true;
                 }
                 return objectIds;
             }
@@ -16244,32 +16414,35 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     this.warn("picking without canvasPos or ray origin and direction");
                 }
 
-                if (params.include) {
-                    params.includeObjects = entityIDsToObjectIDs(this, params.include)
+                var includeMeshes = params.includeMeshes || params.include; // Backwards compat
+                if (includeMeshes) {
+                    params.includeObjects = getRendererObjectIDs(this, includeMeshes);
                 }
 
-                if (params.exclude) {
-                    params.excludeObjects = entityIDsToObjectIDs(this, params.exclude)
+                var excludeMeshes = params.excludeMeshes || params.exclude; // Backwards compat
+                if (excludeMeshes) {
+                    params.excludeObjects = getRendererObjectIDs(this, excludeMeshes);
                 }
 
                 var hit = this._renderer.pick(params);
 
                 if (hit) {
 
-                    var entity = this.entities[hit.entity];
+                    var mesh = this.meshes[hit.mesh];
 
-                    hit.entity = entity; // Swap string ID for xeogl.Entity
+                    hit.mesh = mesh; // Swap string ID for xeogl.Mesh
+                    hit.object = hit.mesh;
 
                     if (params.pickSurface) {
 
                         if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
-                            var geometry = entity.geometry._state;
+                            var geometry = mesh.geometry._state;
 
                             if (geometry.primitiveName === "triangles") {
 
                                 // Triangle picked; this only happens when the
-                                // Entity has a Geometry that has primitives of type "triangle"
+                                // Mesh has a Geometry that has primitives of type "triangle"
 
                                 hit.primitive = "triangle";
 
@@ -16338,10 +16511,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                 if (params.canvasPos) {
                                     canvasPos = params.canvasPos;
                                     hit.canvasPos = params.canvasPos;
-                                    math.canvasPosToLocalRay(this.camera, entity, canvasPos, localRayOrigin, localRayDir);
+                                    math.canvasPosToLocalRay(this.camera, mesh, canvasPos, localRayOrigin, localRayDir);
 
                                 } else if (params.origin && params.direction) {
-                                    math.worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
+                                    math.worldRayToLocalRay(mesh, params.origin, params.direction, localRayOrigin, localRayDir);
                                 }
 
                                 math.normalizeVec3(localRayDir);
@@ -16363,7 +16536,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                 // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(entity.transform.leafMatrix, tempVec4a, tempVec4b);
+                                math.transformVec4(mesh.worldMatrix || mesh.worldMatrix, tempVec4a, tempVec4b);
 
                                 worldPos[0] = tempVec4b[0];
                                 worldPos[1] = tempVec4b[1];
@@ -16373,7 +16546,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                 // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(entity.scene.camera.matrix, tempVec4b, tempVec4c);
+                                math.transformVec4(mesh.scene.camera.matrix, tempVec4b, tempVec4c);
 
                                 viewPos[0] = tempVec4c[0];
                                 viewPos[1] = tempVec4c[1];
@@ -16425,7 +16598,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                         math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
-                                    hit.normal = math.transformVec3(entity.transform.leafNormalMatrix, normal, tempVec3f);
+                                    hit.normal = math.transformVec3(mesh.worldNormalMatrix, normal, tempVec3f);
                                 }
 
                                 // Get interpolated UV coordinates
@@ -16471,16 +16644,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         })(),
 
         /**
-         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
+         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
          and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs.
 
          When no arguments are given, returns the total boundary of all objects in the scene.
 
-         Only {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/collidable:property"}}collidable{{/crossLink}}
+         Only {{#crossLink "Mesh"}}Meshes{{/crossLink}} with {{#crossLink "Mesh/collidable:property"}}collidable{{/crossLink}}
          set ````true```` are included in the boundary.
-         
+
          ## Usage
-         
+
          ````JavaScript
          scene.getAABB(); // Gets collective boundary of all objects in the scene
          scene.getAABB("saw"); // Gets collective boundary of all objects in saw model
@@ -16593,7 +16766,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             this._initDefaults();
 
-            this._dirtyEntities = {};
+            this._dirtyMeshes = {};
         },
 
         _destroy: function () {
@@ -16601,6 +16774,3325 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     });
 
+})();
+;/**
+ An **Object** is a 3D element within a xeogl {{#crossLink "Scene"}}Scene{{/crossLink}}.
+
+ ## Overview
+
+ Object is an abstract base class that's subclassed by:
+
+ * {{#crossLink "Mesh"}}{{/crossLink}}, which represents a drawable 3D primitive.
+ * {{#crossLink "Group"}}{{/crossLink}}, which is a composite Object that represents a group of child Objects.
+ * {{#crossLink "Model"}}{{/crossLink}}, which is a Group and is subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}},
+ {{#crossLink "STLModel"}}{{/crossLink}}, {{#crossLink "OBJModel"}}{{/crossLink}} etc. A Model can contain child Groups
+ and Meshes that represent its component parts.
+
+ As shown in the examples below, these component types can be connected into flexible scene hierarchies that contain
+ content loaded from multiple sources and file formats. Since a Group implements the *[Composite](https://en.wikipedia.org/wiki/Composite_pattern)* pattern,
+ property updates on a Group will apply recursively to all the Objects within it.
+
+ ## Usage
+
+ * [Creating an Object hierarchy](#creating-an-object-hierarchy)
+   * [Accessing Objects](#accessing-objects)
+   * [Updating Objects](#updating-objects)
+   * [Adding and removing Objects](#updating-objects)
+ * [Models within Groups](#models-within-groups)
+ * [Objects within Models](#objects-within-models)
+ * [Destroying Objects](#destroying-objects)
+
+ ### Creating an Object hierarchy
+
+ Let's create a Group that represents a table, with five child {{#crossLink "Mesh"}}{{/crossLink}}es for its top and legs:
+
+ <a href="../../examples/#objects_hierarchy"><img src="../../assets/images/screenshots/objectHierarchy.png"></img></a>
+
+ ````javascript
+ var boxGeometry = new xeogl.BoxGeometry(); // We'll reuse the same geometry for all our Meshes
+
+ var table = new xeogl.Group({
+
+     id: "table",
+     rotation: [0, 50, 0],
+     position: [0, 0, 0],
+     scale: [1, 1, 1],
+
+     objects: [
+
+         new xeogl.Mesh({ // Red table leg
+             id: "redLeg",
+             position: [-4, -6, -4],
+             scale: [1, 3, 1],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [1, 0.3, 0.3]
+             })
+         }),
+
+         new xeogl.Mesh({ // Green table leg
+             id: "greenLeg",
+             position: [4, -6, -4],
+             scale: [1, 3, 1],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [0.3, 1.0, 0.3]
+             })
+         }),
+
+         new xeogl.Mesh({// Blue table leg
+             id: "blueLeg",
+             position: [4, -6, 4],
+             scale: [1, 3, 1],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [0.3, 0.3, 1.0]
+             })
+         }),
+
+         new xeogl.Mesh({  // Yellow table leg
+             id: "yellowLeg",
+             position: [-4, -6, 4],
+             scale: [1, 3, 1],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [1.0, 1.0, 0.0]
+             })
+         })
+
+         new xeogl.Mesh({ // Purple table top
+             id: "tableTop",
+             position: [0, -3, 0],
+             scale: [6, 0.5, 6],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [1.0, 0.3, 1.0]
+             })
+         })
+     ]
+ });
+ ````
+
+ ### Accessing Objects
+
+ We can then get those Mesh Objects by index from the Group's children property:
+
+ ````javascript
+ var blueLeg = table.children[2];
+ blueLeg.highlighted = true;
+ ````
+
+ We can also get them by ID from the Group's childMap property:
+
+ ````javascript
+ var blueLeg = table.childMap["blueLeg"];
+ blueLeg.highlighted = true;
+ ````
+
+ or by ID from the Scene's components map:
+
+ ````javascript
+ var blueLeg = table.scene.components["blueLeg"];
+ blueLeg.highlighted = true;
+ ````
+
+ or from the Scene's objects map (only Objects are in this map, and Meshes are Objects):
+
+ ````javascript
+ var blueLeg = table.scene.objects["blueLeg"];
+ blueLeg.highlighted = true;
+ ````
+
+ or from the Scene's meshes map (only Meshes are in that map):
+
+ ````javascript
+ var blueLeg = table.scene.meshes["blueLeg"];
+ blueLeg.highlighted = true;
+ ````
+
+ For convenience, the Scene's objects map explicitly registers what Objects exist within the Scene, while its meshes map
+ explicitly registers what Meshes exist.
+
+ ### Updating Objects
+
+ As mentioned earlier, property updates on a Group will apply recursively to all the Objects within it. Let's highlight
+ the whole table in one shot:
+
+ ````javascript
+ table.highlighted = true;
+ ````
+
+ and just for fun, let's rotate the table, then lift the table top up a bit:
+
+ ````javascript
+ table.rotation = [0, 45, 0]; // (X,Y,Z)
+ table.childMap["tableTop"].position = [0, -10, 0]; // (X,Y,Z)
+ ````
+
+ We can also query the World-space axis-aligned boundary of the whole table:
+
+ ````javascript
+ var aabb = table.aabb;
+
+ var cameraFlight = new xeogl.CameraFlightAnimation(); // Fit the boundary in view
+ cameraFlight.flyTo(aabb);
+ ````
+
+ and we can also query its World-space object-aligned boundary:
+
+ ````javascript
+ var obb = table.obb;
+ ````
+
+ Those boundaries will automatically update whenever we add or remove child Meshes, or update the Meshes' Geometries
+ or transforms.
+
+ We can subscribe to boundary updates on our Group, like this:
+
+ ````javascript
+ table.on("boundary", function() {
+     var aabb = table.aabb;
+     var obb = table.obb;
+ });
+ ````
+
+ ### Adding and removing Objects
+
+ Let's add another Mesh to our table Group, a sort of spherical ornament sitting on the table top:
+
+ ````javascript
+ table.addChild(new xeogl.Mesh({
+     id: "myExtraObject",
+     geometry: new xeogl.SphereGeometry({ radius: 1.0 }),
+     position: [2, -3, 0],
+     geometry: boxGeometry,
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.3, 0.3, 1.0]
+     })
+ });
+ ````
+
+ That's going to update the Group's boundary, as mentioned earlier.
+
+ To remove it, we just destroy it:
+
+ ````javascript
+ table.childMap["myExtraObject"].destroy();
+ ````
+
+ ### Models within Groups
+
+ Now let's create a Group that contains three Models. Recall that Models are Groups, which are Objects.
+
+ <a href="../../examples/#objects_hierarchy_models"><img src="../../assets/images/screenshots/modelHierarchy.png"></img></a>
+
+ ````javascript
+ var myModels = new xeogl.Group({
+
+     rotation: [0, 0, 0],
+     position: [0, 0, 0],
+     scale: [1, 1, 1],
+
+     children: [
+
+         new xeogl.GLTFModel({
+             id: "engine",
+             src: "models/gltf/2CylinderEngine/glTF/2CylinderEngine.gltf",
+             scale: [.2, .2, .2],
+             position: [-110, 0, 0],
+             rotation: [0, 90, 0],
+             objectTree: true // <<----------------- Loads Object tree from glTF scene node graph
+         }),
+
+         new xeogl.GLTFModel({
+             id: "hoverBike",
+             src: "models/gltf/hover_bike/scene.gltf",
+             scale: [.5, .5, .5],
+             position: [0, -40, 0]
+         }),
+
+         new xeogl.STLModel({
+             id: "f1Car",
+             src: "models/stl/binary/F1Concept.stl",
+             smoothNormals: true,
+             scale: [3, 3, 3],
+             position: [110, -20, 60],
+             rotation: [0, 90, 0]
+         })
+     ]
+ });
+ ````
+
+ Like with the {{#crossLink "Mesh"}}{{/crossLink}} Objects in the previous example, we can then get those Models by index from the Group's children property:
+
+ ````javascript
+ var hoverBike = myModels.children[1];
+ hoverBike.scale = [0.5, 0.5, 0.5];
+ ````
+
+ or by ID from the Group's childMap property:
+
+ ````javascript
+ var hoverBike = myModels.childMap["hoverBike"];
+ hoverBike.scale = [0.5, 0.5, 0.5];
+ ````
+
+ or by ID from the Scene's components map:
+
+ ````javascript
+ var hoverBike = myModels.scene.components["hoverBike"];
+ hoverBike.scale = [0.75, 0.75, 0.75];
+ ````
+
+ or from the Scene's objects map (only Objects are in this map, and Models are Objects):
+
+ ````javascript
+ var hoverBike = myModels.scene.objects["hoverBike"];
+ hoverBike.scale = [0.75, 0.75, 0.75];
+ ````
+
+ or from the Scene's models map (which only contains Models):
+
+ ````javascript
+ var hoverBike = myModels.scene.models["hoverBike"];
+ hoverBike.scale = [0.5, 0.5, 0.5];
+ ````
+
+ For convenience, the Scene's objects map explicitly registers what Objects exist within the Scene, while its models map
+ explicitly registers what Models exist.
+
+ As mentioned earlier, property updates on a Group will apply recursively to all the Objects within it. Let's highlight
+ all the Models in the Group, in one shot:
+
+ ````javascript
+ myModels.highlighted = true;
+ ````
+
+ and just for fun, let's scale the Group down, then rotate one of the Models, relative to the Group:
+
+ ````javascript
+ myModels.scale = [0.5, 0.5, 0.5]; // (X,Y,Z)
+ myModels.childMap["engine"].rotation = [0, 45, 0]; // (X,Y,Z)
+ ````
+
+ ### Objects within Models
+
+ Notice the ````objectTree```` configuration on the first child {{#crossLink "GLTFModel"}}{{/crossLink}} in the previous
+ example. That's going to cause the GLTFModel (which is a Group) to create one or more subtrees of child Objects from the
+ glTF scene node graph. The root Objects of the subtrees will be available in the GLTFModel's {{#crossLink "GLTFModel/children:property"}}{{/crossLink}} and {{#crossLink "GLTFModel/childMap:property"}}{{/crossLink}}
+ properties, while all the Objects in the subtrees will be available in the GLTFModel's objects property, and all the {{#crossLink "Mesh"}}{{/crossLink}}es at the
+ leaves of the subtrees will be available in the GLTFModel's objects property.
+
+
+ {{#crossLink "Component/id:property"}}{{/crossLink}}
+
+ TODO:
+
+ ````javascript
+ models.childMap["engine"].childMap["engine#0"].highlighted = true;
+ ````
+
+ ````javascript
+ models.childMap["engine"].objects["engine#3.0"].highlighted=true;
+ ````
+
+ ````javascript
+ models.childMap["engine"].meshes["engine#3.0"].highlighted=true;
+ ````
+
+ ### Destroying Objects
+
+ Call an Object's {{#crossLink "Component/destroy:method"}}destroy(){{/crossLink}} method to destroy it:
+
+ ````JavaScript
+ myObject.destroy();
+ ````
+
+ That will also destroy all Objects in its subtree.
+
+ @class Object
+ @module xeogl
+ @submodule objects
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this xeogl.Object.
+ @param [cfg.objects] {Array(Object)} Child Objects to attach to this Object.
+ @param [cfg.parent] The parent Object.
+ @param [cfg.visible=true] {Boolean}  Indicates if this Object is visible.
+ @param [cfg.culled=true] {Boolean}  Indicates if this Object is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Object is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Object is clippable.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this Object.
+ @param [cfg.ghosted=false] {Boolean} Whether this Object is rendered as ghosted.
+ @param [cfg.highlighted=false] {Boolean} Whether this Object is rendered as highlighted.
+ @param [cfg.selected=false] {Boolean} Whether this Object is rendered as selected.
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
+ @param [cfg.aabbVisible=false] {Boolean} Whether this Object's axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean} Whether this Object's oriented World-space bounding box is visible.
+ @param [cfg.position=[0,0,0]] {Float32Array} The Object's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The Object's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The Object's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Object's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+
+ @extends Component
+ */
+xeogl.Object = xeogl.Component.extend({
+
+    /**
+     JavaScript class name for this xeogl.Object.
+
+     @property type
+     @type String
+     @final
+     */
+    type: "xeogl.Object",
+
+    _init: function (cfg) {
+
+        // Object base class responsibilities
+        //  - connects to parent
+        //  - builds Local matrix
+        //  - builds World matrix
+
+        this._parent = null;
+
+        var math = xeogl.math;
+
+        this._scale = math.vec3();
+        this._quaternion = math.identityQuaternion();
+        this._rotation = math.vec3();
+        this._position = math.vec3();
+
+        this._localMatrix = math.identityMat4();
+        this._worldMatrix = math.identityMat4();
+        this._worldNormalMatrix = math.identityMat4();
+
+        this._localMatrixDirty = true;
+        this._worldMatrixDirty = true;
+        this._worldNormalMatrixDirty = true;
+
+        if (cfg.matrix) {
+            this.matrix = cfg.matrix;
+        } else {
+            this.scale = cfg.scale;
+            this.position = cfg.position;
+            if (cfg.quaternion) {
+            } else {
+                this.rotation = cfg.rotation;
+            }
+        }
+
+        this.ifcType = cfg.ifcType;
+        this.aabbVisible = cfg.aabbVisible;
+        this.obbVisible = cfg.obbVisible;
+
+        if (cfg.parent) {
+            cfg.parent.addChild(this);
+        }
+    },
+
+    _setLocalMatrixDirty: function () { // Redefined by xeogl.Group to include child Objects
+        this._localMatrixDirty = true;
+        this._setWorldMatrixDirty();
+    },
+
+    _setWorldMatrixDirty: function () {
+        this._worldMatrixDirty = true;
+        this._worldNormalMatrixDirty = true;
+    },
+
+    _buildLocalMatrix: function () {
+        xeogl.math.composeMat4(this._position, this._quaternion, this._scale, this._localMatrix);
+        this._localMatrixDirty = false;
+    },
+
+    _buildWorldMatrix: function () {
+        if (this._localMatrixDirty) {
+            this._buildLocalMatrix();
+        }
+        if (!this._parent) {
+            for (var i = 0, len = this._localMatrix.length; i < len; i++) {
+                this._worldMatrix[i] = this._localMatrix[i];
+            }
+        } else {
+          //  xeogl.math.mulMat4(this._parent.worldMatrix, this._localMatrix, this._worldMatrix);
+            xeogl.math.mulMat4(this._localMatrix, this._parent.worldMatrix, this._worldMatrix);
+        }
+        this._worldMatrixDirty = false;
+    },
+
+    _buildWorldNormalMatrix: function () {
+        if (this._worldMatrixDirty) {
+            this._buildWorldMatrix();
+        }
+        if (!this._worldNormalMatrix) {
+            this._worldNormalMatrix = xeogl.math.mat4();
+        }
+        xeogl.math.inverseMat4(this._worldMatrix, this._worldNormalMatrix);
+        xeogl.math.transposeMat4(this._worldNormalMatrix);
+        this._worldNormalMatrixDirty = false;
+    },
+
+    _props: {
+
+        /**
+         The IFC type of this Object, if applicable.
+
+         @property ifcType
+         @default null
+         @type String
+         */
+        ifcType: {
+            set: function (ifcType) {
+                ifcType = ifcType || "DEFAULT";
+                if (this._ifcType !== ifcType) {
+                    var ifcTypeObjects = this.scene.ifcTypes;
+                    if (this._ifcType) {
+                        var objectsOfType = ifcTypeObjects[this._ifcType];
+                        if (objectsOfType) {
+                            delete objectsOfType[this.id];
+                            // TODO remove submap if now empty
+                        }
+                    }
+                    this._ifcType = ifcType;
+                    objectsOfType = ifcTypeObjects[this._ifcType];
+                    if (!objectsOfType) {
+                        objectsOfType = {};
+                        ifcTypeObjects[this._ifcType] = objectsOfType;
+                    }
+                    objectsOfType[this.id] = this;
+                }
+            },
+            get: function () {
+                return this._ifcType;
+            }
+        },
+
+        /**
+         The parent Group/Model.
+
+         The parent Group may also be set by passing this Object to the
+         Group's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
+
+         @property parent
+         @type Group
+         */
+        parent: {
+            set: function (object) {
+                if (xeogl._isNumeric(object) || xeogl._isString(object)) {
+                    var objectId = object;
+                    object = this.scene.objects[objectId];
+                    if (!object) {
+                        this.warn("Group not found: " + xeogl._inQuotes(objectId));
+                        return;
+                    }
+                }
+                if (object.scene.id !== this.scene.id) {
+                    this.error("Group not in same Scene: " + object.id);
+                    return;
+                }
+                if (this._parent && this._parent.id === object.id) {
+                    this.warn("Already a child of Group: " + object.id);
+                    return;
+                }
+                object.addChild(this);
+            },
+            get: function () {
+                return this._parent;
+            }
+        },
+
+        /**
+         The Local-space position of this Object.
+
+         @property position
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+        position: {
+            set: function (value) {
+                this._position.set(value || [0, 0, 0]);
+                this._setLocalMatrixDirty();
+                this._renderer.imageDirty();
+            },
+            get: function () {
+                return this._position;
+            }
+        },
+
+        /**
+         The Object's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+         @property rotation
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+        rotation: {
+            set: function (value) {
+                this._rotation.set(value || [0, 0, 0]);
+                xeogl.math.eulerToQuaternion(this._rotation, "XYZ", this._quaternion);
+                this._setLocalMatrixDirty();
+                this._renderer.imageDirty();
+            },
+            get: function () {
+                return this._rotation;
+            }
+        },
+
+        /**
+         The Local-space rotation quaternion for this Object.
+
+         @property quaternion
+         @default [0,0,0, 1]
+         @type {Float32Array}
+         */
+        quaternion: {
+            set: function (value) {
+                this._quaternion.set(value || [0, 0, 0, 1]);
+                xeogl.math.quaternionToEuler(this._quaternion, "XYZ", this._rotation);
+                this._setLocalMatrixDirty();
+                this._renderer.imageDirty();
+            },
+            get: function () {
+                return this._quaternion;
+            }
+        },
+
+        /**
+         The Local-space scale of this Object.
+
+         @property scale
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+        scale: {
+            set: function (value) {
+                this._scale.set(value || [1, 1, 1]);
+                this._setLocalMatrixDirty();
+                this._renderer.imageDirty();
+            },
+            get: function () {
+                return this._scale;
+            }
+        },
+
+        /**
+         * This Object's local matrix.
+         *
+         * @property matrix
+         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         * @type {Float32Array}
+         */
+        matrix: {
+            set: (function () {
+                var identityMat = xeogl.math.identityMat4();
+                return function (value) {
+                    this._localMatrix.set(value || identityMat);
+                    xeogl.math.decomposeMat4(this._localMatrix, this._position, this._quaternion, this._scale);
+                    this._localMatrixDirty = false;
+                    this._setWorldMatrixDirty();
+                    this._renderer.imageDirty();
+                };
+            })(),
+            get: function () {
+                if (this._localMatrixDirty) {
+                    this._buildLocalMatrix();
+                }
+                return this._localMatrix;
+            }
+        },
+
+        /**
+         * This Object's World matrix.
+         *
+         * @property worldMatrix
+         * @type {Float32Array}
+         */
+        worldMatrix: {
+            get: function () {
+                if (this._worldMatrixDirty) {
+                    this._buildWorldMatrix();
+                }
+                return this._worldMatrix;
+            }
+        },
+
+        /**
+         * This Object's World normal matrix.
+         *
+         * @property worldNormalMatrix
+         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         * @type {Float32Array}
+         */
+        worldNormalMatrix: {
+            get: function () {
+                if (this._worldNormalMatrixDirty) {
+                    this._buildWorldNormalMatrix();
+                }
+                return this._worldNormalMatrix;
+            }
+        },
+
+        // worldPosition: {
+        //     get: function (optionalTarget) {
+        //         var result = optionalTarget || new Vector3();
+        //         this.updateMatrixWorld(true);
+        //         return result.setFromMatrixPosition(this.matrixWorld);
+        //     }
+        // },
+        //
+        // worldQuaternion: {
+        //     get: function () {
+        //         var position = new Vector3();
+        //         var scale = new Vector3();
+        //         return function getWorldQuaternion(optionalTarget) {
+        //             var result = optionalTarget || new Quaternion();
+        //             this.updateMatrixWorld(true);
+        //             this.matrixWorld.decompose(position, result, scale);
+        //             return result;
+        //         };
+        //     }()
+        // },
+        //
+        // worldRotation: {
+        //     get: function () {
+        //         var quaternion = new Quaternion();
+        //         return function getWorldRotation(optionalTarget) {
+        //             var result = optionalTarget || new Euler();
+        //             this.getWorldQuaternion(quaternion);
+        //             return result.setFromQuaternion(quaternion, this.rotation.order, false)
+        //         };
+        //     }
+        // }(),
+        //
+        // worldScale: {
+        //     get: (function () {
+        //         var position = new Float32Array(3);
+        //         var quaternion = new Float32Array(4);
+        //         return function getWorldScale(optionalTarget) {
+        //             var result = optionalTarget || new Float32Array(3);
+        //             xeogl.math.decomposeMat4(this.worldMatrix, position, quaternion, result);
+        //             return result;
+        //         };
+        //     })()
+        // },
+        //
+        // worldDirection: {
+        //     get: (function () {
+        //         var quaternion = new Quaternion();
+        //         return function getWorldDirection(optionalTarget) {
+        //             var result = optionalTarget || new Vector3();
+        //             this.getWorldQuaternion(quaternion);
+        //             return result.set(0, 0, 1).applyQuaternion(quaternion);
+        //         };
+        //     })()
+        // },
+
+        /**
+         Whether this Object's axis-aligned bounding box (AABB) is visible.
+
+         @property aabbVisible
+         @default false
+         @type {Boolean}
+         */
+        aabbVisible: {
+            set: function (show) {
+                if (!show && !this._aabbHelper) {
+                    return;
+                }
+                if (!this._aabbHelper) {
+                    this._aabbHelper = new xeogl.Mesh(this, {
+                        geometry: new xeogl.AABBGeometry(this, {
+                            target: this
+                        }),
+                        material: new xeogl.PhongMaterial(this, {
+                            diffuse: [0.5, 1.0, 0.5],
+                            emissive: [0.5, 1.0, 0.5],
+                            lineWidth: 2
+                        })
+                    });
+                }
+                this._aabbHelper.visible = show;
+            },
+            get: function () {
+                return this._aabbHelper ? this._aabbHelper.visible : false;
+            }
+        },
+
+        /**
+         Whether this Object's object-aligned bounding box (OBB) is visible.
+
+         @property obbVisible
+         @default false
+         @type {Boolean}
+         */
+        obbVisible: {
+            set: function (show) {
+                if (!show && !this._obbHelper) {
+                    return;
+                }
+                if (!this._obbHelper) {
+                    this._obbHelper = new xeogl.Mesh(this, {
+                        geometry: new xeogl.OBBGeometry(this, {
+                            target: this
+                        }),
+                        material: new xeogl.PhongMaterial(this, {
+                            diffuse: [0.5, 1.0, 0.5],
+                            emissive: [0.5, 1.0, 0.5],
+                            lineWidth: 2
+                        })
+                    });
+                }
+                this._obbHelper.visible = show;
+            },
+            get: function () {
+                return this._obbHelper ? this._obbHelper.visible : false;
+            }
+        }
+
+        /**
+         Set true to show the axis-aligned bounding box (AABB) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         @property aabbHierarchyVisible
+         @type {Boolean}
+         */
+
+        /**
+         Set true to show the object-aligned bounding box (obb) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         @property obbHierarchyVisible
+         @type {Boolean}
+         */
+    },
+
+    /**
+     Rotates this Object about the given Local-space axis by the given increment.
+
+     @method rotate
+     @paream {Float32Array} axis The Local-space axis about which to rotate.
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotate: (function () {
+        // rotate object on axis in world space
+        // axis is assumed to be normalized
+        // method assumes no rotated parent
+        var angleAxis = new Float32Array(4);
+        var q1 = new Float32Array(4);
+        var q2 = new Float32Array(4);
+        return function rotateOnWorldAxis(axis, angle) {
+            angleAxis[0] = axis[0];
+            angleAxis[1] = axis[1];
+            angleAxis[2] = axis[2];
+            angleAxis[3] = angle * xeogl.math.DEGTORAD;
+            xeogl.math.angleAxisToQuaternion(angleAxis, q1);
+            xeogl.math.mulQuaternions(this.quaternion, q1, q2);
+            this.quaternion = q2;
+            this._setWorldMatrixDirty();
+            this._renderer.imageDirty();
+            return this;
+        };
+    })(),
+
+    /**
+     Rotates this Object about the given World-space axis by the given increment.
+
+     @method rotate
+     @paream {Float32Array} axis The local axis about which to rotate.
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotateOnWorldAxis: (function () {
+        // rotate object on axis in world space
+        // axis is assumed to be normalized
+        // method assumes no rotated parent
+        var angleAxis = new Float32Array(4);
+        var q1 = new Float32Array(4);
+        return function rotateOnWorldAxis(axis, angle) {
+            angleAxis[0] = axis[0];
+            angleAxis[1] = axis[1];
+            angleAxis[2] = axis[2];
+            angleAxis[3] = angle * xeogl.math.DEGTORAD;
+            xeogl.math.angleAxisToQuaternion(angleAxis, q1);
+            xeogl.math.mulQuaternions(q1, this.quaternion, q1);
+            //this.quaternion.premultiply(q1);
+            return this;
+        };
+    })(),
+
+    /**
+     Rotates this Object about the Local-space X-axis by the given increment.
+     
+     @method rotateX
+     @param {Number} angle Angle increment in degrees. 
+     */
+    rotateX: (function () {
+        var axis = new Float32Array([1, 0, 0]);
+        return function rotateX(angle) {
+            return this.rotate(axis, angle);
+        };
+    })(),
+
+    /**
+     Rotates this Object about the Local-space Y-axis by the given increment.
+
+     @method rotateY
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotateY: (function () {
+        var axis = new Float32Array([0, 1, 0]);
+        return function rotateY(angle) {
+            return this.rotate(axis, angle);
+        };
+    })(),
+
+    /**
+     Rotates this Object about the Local-space Z-axis by the given increment.
+
+     @method rotateZ
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotateZ: (function () {
+        var axis = new Float32Array([0, 0, 1]);
+        return function rotateZ(angle) {
+            return this.rotate(axis, angle);
+        };
+    })(),
+
+    /**
+     * Translates this Object in Local-space by the given increment.
+     *
+     * @method translate
+     * @param {Float32Array} axis Normalized local space 3D vector along which to translate.
+     * @param {Number} distance Distance to translate along  the vector.
+     */
+    translate: (function () {
+        var veca = new Float32Array(3);
+        var vecb = new Float32Array(3);
+        return function (axis, distance) {
+            xeogl.math.vec3ApplyQuaternion(this.quaternion, axis, veca);
+            xeogl.math.mulVec3Scalar(veca, distance, vecb);
+            xeogl.math.addVec3(this.position, vecb, this.position);
+            this._setWorldMatrixDirty();
+            this._renderer.imageDirty();
+            return this;
+        };
+    })(),
+
+    /**
+     * Translates this Object along the Local-space X-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the X-axis.
+     */
+    translateX: (function () {
+        var v1 = new Float32Array([1, 0, 0]);
+        return function translateX(distance) {
+            return this.translate(v1, distance);
+        };
+    })(),
+
+    /**
+     * Translates this Object along the Local-space Y-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the Y-axis.
+     */
+    translateY: (function () {
+        var v1 = new Float32Array([0, 1, 0]);
+        return function translateY(distance) {
+            return this.translate(v1, distance);
+        };
+    })(),
+
+    /**
+     * Translates this Object along the Local-space Z-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the Z-axis.
+     */
+    translateZ: (function () {
+        var v1 = new Float32Array([0, 0, 1]);
+        return function translateZ(distance) {
+            return this.translate(v1, distance);
+        };
+    })(),
+
+    _destroy: function () {
+        if (this._parent) {
+            this._parent.removeChild(this);
+        }
+        var objectsOfType = this.scene.ifcTypes[this._ifcType];
+        if (objectsOfType) {
+            delete objectsOfType[this.id];
+            // TODO remove submap if now empty
+        }
+    }
+
+    /**
+     The axis-aligned World-space boundary of this Object.
+
+     This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     The AABB is represented by a six-element Float32Array containing the min/max extents of the
+     axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+
+     @property aabb
+     @final
+     @type {Float32Array}
+     */
+
+    /**
+     Whether this Object's axis-aligned bounding box (AABB) is visible.
+
+     @property aabbVisible
+     @default false
+     @type {Boolean}
+     */
+
+    /**
+     World-space oriented 3D bounding box (OBB) of this object.
+
+     This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+     where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+
+     The OBB will only be properly object-aligned if the Object has exactly one Mesh within its subtree. When
+     there are multiple Meshes, then the OBB will be set to the extents of the World-space axis-aligned boundary, equivalent
+     to {{#crossLink "Object/aabb:property"}}{{/crossLink}}.
+
+     @property obb
+     @final
+     @type {Float32Array}
+     */
+
+    /**
+     Whether this Object's object-aligned bounding box (OBB) is visible.
+
+     @property obbVisible
+     @default false
+     @type {Boolean}
+     */
+
+    /**
+     The World-space center of this Object.
+
+     This is the collective center of all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     @final
+     @returns {Float32Array}
+     */
+
+    /**
+     Indicates whether this Object is visible or not.
+
+     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+     {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+     @property visible
+     @default true
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Object is highlighted.
+
+     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     The highlight effect is configured via the
+     {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+     within this Object's subtree.
+
+     @property highlighted
+     @default false
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Object appears selected.
+
+     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     The selected effect is configured via the
+     {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+     within this Object's subtree.
+
+     @property selected
+     @default false
+     @type Boolean
+     */
+
+    /**
+     Indicates whether or not this Object is currently culled from view.
+
+     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+     {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+     @property culled
+     @default false
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Object is clippable.
+
+     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     Meshes are clipped by {{#crossLink "Clips"}}{{/crossLink}} components that are attached to them.
+
+     @property clippable
+     @default true
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Object is pickable or not.
+
+     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+     @property pickable
+     @default true
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Object appears outlined.
+
+     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     The outlined effect is configured via the
+     {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+     within this Object's subtree.
+
+     @property outlined
+     @default false
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Object appears ghosted.
+
+     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
+
+     The ghosted effect is configured via the
+     {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+     within this Object's subtree.
+
+     @property outlined
+     @default false
+     @type Boolean
+     */
+
+    /**
+     RGB colorize color, multiplies by the rendered fragment colors.
+
+     This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}}  in the subtree.
+
+     @property colorize
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+
+    /**
+     Opacity factor, multiplies by the rendered fragment alpha.
+
+     This is a factor in range ````[0..1]````.
+
+     @property opacity
+     @default 1.0
+     @type Number
+     */
+
+});;/**
+ A **Group** is an {{#crossLink "Object"}}{{/crossLink}} that groups other Objects.
+
+ Group is subclassed by (at least) {{#crossLink "Model"}}{{/crossLink}}, which is the abstract base class for {{#crossLink "GLTFModel"}}{{/crossLink}}, {{#crossLink "STLModel"}}{{/crossLink}} etc.
+
+ See {{#crossLink "Object"}}{{/crossLink}} for overall usage info.
+
+ @class Group
+ @module xeogl
+ @submodule objects
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Group.
+ @param [cfg.parent] The parent Object.
+ @param [cfg.children] {Array(Object)} Child Objects to attach to this Group.
+ @param [cfg.visible=true] {Boolean}  Indicates if this Group is visible.
+ @param [cfg.culled=true] {Boolean}  Indicates if this Group is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Group is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Group is clippable.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this Group.
+ @param [cfg.ghosted=false] {Boolean} Whether this Group is rendered as ghosted.
+ @param [cfg.highlighted=false] {Boolean} Whether this Group is rendered as highlighted.
+ @param [cfg.selected=false] {Boolean} Whether this Group is rendered as selected.
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
+ @param [cfg.collidable=true] {Boolean} Whether this Group contributes to boundary calculations.
+ @param [cfg.aabbVisible=false] {Boolean} Whether this Group's axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean} Whether this Group's oriented World-space bounding box is visible.
+ @param [cfg.position=[0,0,0]] {Float32Array} The Group's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The Group's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The Group's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Group's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+ @extends Object
+ */
+xeogl.Group = xeogl.Object.extend({
+
+    /**
+     JavaScript class name for this xeogl.Group.
+
+     @property type
+     @type String
+     @final
+     */
+    type: "xeogl.Group",
+
+    // Constructor
+
+    _init: function (cfg) {
+
+        // Group class responsibilities:
+        //  - connects to child objects
+        //  - propagates state changes down to child objects
+        //  - provides AABB & OBB of self and children
+
+        this._super(cfg);
+
+        this._childList = [];
+        this._childMap = {};
+
+        this._aabb = null;
+        this._aabbDirty = true;
+        this._obb = null;
+        this._obbDirty = true;
+
+        this.visible = cfg.visible;
+        this.culled = cfg.culled;
+        this.ghosted = cfg.ghosted;
+        this.highlighted = cfg.highlighted;
+        this.selected = cfg.selected;
+        this.outlined = cfg.outlined;
+        this.clippable = cfg.clippable;
+        this.pickable = cfg.pickable;
+        this.collidable = cfg.collidable;
+
+        if (cfg.children) {
+            var children = cfg.children;
+            for (var i = 0, len = children.length; i < len; i++) {
+                this.addChild(children[i]);
+            }
+        }
+    },
+
+    _setWorldMatrixDirty: function () {
+        this._worldMatrixDirty = true;
+        this._worldNormalMatrixDirty = true;
+        if (this._childList) {
+            for (var i = 0, len = this._childList.length; i < len; i++) {
+                this._childList[i]._setWorldMatrixDirty();
+            }
+        }
+        this.fire("boundary");
+    },
+
+    _setBoundaryDirty: function () {
+        for (var object = this; object; object = object._parent) {
+            object._aabbDirty = true;
+            object._obbDirty = true;
+        }
+    },
+
+    _updateAABB: function () {
+        if (!this._aabb) {
+            this._aabb = xeogl.math.AABB3();
+            this._aabbDirty = true;
+        }
+        if (this._aabbDirty) {
+            xeogl.math.collapseAABB3(this._aabb);
+            for (var i = 0, len = this._childList.length; i < len; i++) {
+                xeogl.math.expandAABB3(this._aabb, this._childList[i].aabb);
+            }
+            if (!this._aabbCenter) {
+                this._aabbCenter = new Float32Array(3);
+            }
+            xeogl.math.getAABB3Center(this._aabb, this._aabbCenter);
+            this._aabbDirty = false;
+        }
+    },
+
+    _updateOBB: function () {
+        if (!this._obb) {
+            this._obb = xeogl.math.OBB3();
+            this._obbDirty = true;
+        }
+        if (this._obbDirty) {
+            if (this._childList.length === 1) {
+                this._obb.set(this._childList[0].obb);
+            } else {
+                xeogl.math.AABB3ToOBB3(this.aabb, this._obb);
+            }
+            this._obbDirty = false;
+        }
+    },
+
+    /**
+     Adds a child {{#crossLink "Object"}}{{/crossLink}}.
+
+     The child Object may be specified by ID, instance or JSON definition.
+
+     The child Object must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Group, and may not be a parent of this Group.
+
+     @method addChild
+     @param {Number|String|*|Component} object ID, definition or instance of an Object type or subtype.
+     */
+    addChild: function (object) {
+        if (xeogl._isNumeric(object) || xeogl._isString(object)) {
+            var objectId = object;
+            object = this.scene.objects[objectId];
+            if (!object) {
+                this.warn("Object not found: " + xeogl._inQuotes(objectId));
+                return;
+            }
+        } else if (xeogl._isObject(object)) {
+            var cfg = object;
+            // object = new xeogl.Group(this.scene, cfg);
+            if (!object) {
+                return;
+            }
+        } else {
+            if (!object.isType("xeogl.Object")) {
+                this.error("Not a xeogl.Object: " + object.id);
+                return;
+            }
+            if (object._parent) {
+                if (object._parent.id === this.id) {
+                    this.warn("Already a child object: " + object.id);
+                    return;
+                }
+                object._parent.removeChild(object);
+            }
+        }
+        var id = object.id;
+        if (object.scene.id !== this.scene.id) {
+            this.error("Object not in same Scene: " + id);
+            return;
+        }
+        delete this.scene.rootObjects[id];
+        this._childList.push(object);
+        this._childMap[id] = object;
+        object._parent = this;
+        object.visible = this._visible;
+        object.culled = this._culled;
+        object.ghosted = this._ghosted;
+        object.highlited = this._highlighted;
+        object.selected = this._selected;
+        object.outlined = this._outlined;
+        object.clippable = this._clippable;
+        object.pickable = this._pickable;
+        object.collidable = this._collidable;
+        object._setWorldMatrixDirty();
+        this._setBoundaryDirty();
+    },
+
+    /**
+     Removes a child {{#crossLink "Object"}}{{/crossLink}}.
+
+     @method removeChild
+     @param {Object} object An Object instance.
+     */
+    removeChild: function (object) {
+        var id = object.id;
+        for (var i = 0, len = this._childList.length; i < len; i++) {
+            if (this._childList[i].id === id) {
+                object._parent = null;
+                this._childList = this._childList.splice(i, 1);
+                delete this._childMap[id];
+                this.scene.rootObjects[object.id] = object;
+                object._setWorldMatrixDirty();
+                this._setBoundaryDirty();
+                return;
+            }
+        }
+    },
+
+    /**
+     Removes all child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+     @method removeChildren
+     */
+    removeChildren: function () {
+        var object;
+        for (var i = 0, len = this._childList.length; i < len; i++) {
+            object = this._childList[i];
+            object._parent = null;
+            this.scene.rootObjects[object.id] = object;
+            object._setWorldMatrixDirty();
+        }
+        this._childList = [];
+        this._childMap = {};
+        this._setBoundaryDirty();
+    },
+
+    _props: {
+
+
+        /**
+         * Convenience property containing the number of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+         *
+         * @property numChildren
+         * @final
+         * @type Number
+         */
+        numChildren: {
+            get: function () {
+                return this._childList.length;
+            }
+        },
+
+        /**
+         Array of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+         @property children
+         @final
+         @type Array
+         */
+        children: {
+            get: function () {
+                return this._childList;
+            }
+        },
+
+        /**
+         Child {{#crossLink "Object"}}Objects{{/crossLink}} mapped to their IDs.
+
+         @property childMap
+         @final
+         @type {*}
+         */
+        childMap: {
+            get: function () {
+                return this._childMap;
+            }
+        },
+
+        /**
+         The axis-aligned World-space boundary of this Group.
+
+         This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+
+         The AABB is represented by a six-element Float32Array containing the min/max extents of the
+         axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+
+         @property aabb
+         @final
+         @type {Float32Array}
+         */
+        aabb: {
+            get: function () {
+                if (this._aabbDirty) {
+                    this._updateAABB();
+                }
+                return this._aabb;
+            }
+        },
+
+        /**
+         World-space oriented 3D bounding box (OBB) of this Group.
+
+         This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+
+         The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+         where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+
+         The OBB will only be properly object-aligned if the Object has exactly one Mesh within its subtree. When
+         there are multiple Meshes, then the OBB will be set to the extents of the World-space axis-aligned boundary, equivalent
+         to {{#crossLink "Object/aabb:property"}}{{/crossLink}}.
+
+         @property obb
+         @final
+         @type {Float32Array}
+         */
+        obb: {
+            get: function () {
+                if (this._obbDirty) {
+                    this._updateOBB();
+                }
+                return this._obb;
+            }
+        },
+
+        /**
+         The World-space center of this Group.
+
+         This is the collective center of all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+
+         @property center
+         @final
+         @returns {Float32Array}
+         */
+        center: function () {
+            if (this._aabbDirty) {
+                this._updateAABB();
+            }
+            return this._aabbCenter;
+        },
+
+        /**
+         Indicates whether this Group is visible or not.
+
+         This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+         {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+         @property visible
+         @default true
+         @type Boolean
+         */
+        visible: {
+            set: function (visible) {
+                visible = visible !== false;
+                this._visible = visible;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].visible = visible;
+                }
+            },
+            get: function () {
+                return this._visible;
+            }
+        },
+
+        /**
+         Set true to show the axis-aligned bounding box (AABB) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         @property aabbHierarchyVisible
+         @default false
+         @type {Boolean}
+         */
+        aabbHierarchyVisible: {
+            set: function (visible) {
+                var child;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    child = this._childList[i];
+                    if (child.children) {
+                        child.aabbHierarchyVisible = visible;
+                    } else {
+                        child.aabbVisible = visible;
+                    }
+                }
+            }
+        },
+
+        /**
+         Set true to show the object-aligned bounding box (obb) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         @property obbHierarchyVisible
+         @default false
+         @type {Boolean}
+         */
+        obbHierarchyVisible: {
+            set: function (visible) {
+                var child;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    child = this._childList[i];
+                    if (child.children) {
+                        child.obbHierarchyVisible = visible;
+                    } else {
+                        child.obbVisible = visible;
+                    }
+                }
+            }
+        },
+
+        /**
+         Indicates whether this Group is highlighted.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         The highlight effect is configured via the
+         {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+         within this Group's subtree.
+
+         @property highlighted
+         @default false
+         @type Boolean
+         */
+        highlighted: {
+            set: function (highlighted) {
+                highlighted = !!highlighted;
+                this._highlighted = highlighted;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].highlighted = highlighted;
+                }
+            },
+            get: function () {
+                return this._highlighted;
+            }
+        },
+
+        /**
+         Indicates whether this Group appears selected.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         The selected effect is configured via the
+         {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+         within this Group's subtree.
+
+         @property selected
+         @default false
+         @type Boolean
+         */
+        selected: {
+            set: function (selected) {
+                selected = !!selected;
+                this._selected = selected;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].selected = selected;
+                }
+            },
+            get: function () {
+                return this._selected;
+            }
+        },
+
+        /**
+         Indicates whether or not this Group is currently culled from view.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+         {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+         @property culled
+         @default false
+         @type Boolean
+         */
+        culled: {
+            set: function (culled) {
+                culled = !!culled;
+                this._culled = culled;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].culled = culled;
+                }
+            },
+            get: function () {
+                return this._culled;
+            }
+        },
+
+        /**
+         Indicates whether this Group is clippable.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         {{#crossLink "Mesh"}}Mesh{{/crossLink}}  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree are clipped by {{#crossLink "Clips"}}{{/crossLink}} components that are attached to them.
+
+         @property clippable
+         @default true
+         @type Boolean
+         */
+        clippable: {
+            set: function (clippable) {
+                clippable = clippable !== false;
+                this._clippable = clippable;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].clippable = clippable;
+                }
+            },
+            get: function () {
+                return this._clippable;
+            }
+        },
+
+        /**
+         Indicates whether this Group is included in boundary calculations.
+
+         This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         @property collidable
+         @default true
+         @type Boolean
+         */
+        collidable: {
+            set: function (collidable) {
+                collidable = collidable !== false;
+                this._collidable = collidable;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].collidable = collidable;
+                }
+            },
+            get: function () {
+                return this._collidable;
+            }
+        },
+
+        /**
+         Indicates whether this Group is pickable or not.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+         @property pickable
+         @default true
+         @type Boolean
+         */
+        pickable: {
+            set: function (pickable) {
+                pickable = pickable !== false;
+                this._pickable = pickable;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].pickable = pickable;
+                }
+            },
+            get: function () {
+                return this._pickable;
+            }
+        },
+
+        /**
+         RGB colorize color, multiplies by the rendered fragment color.
+
+         This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}}  in the subtree.
+
+         @property colorize
+         @default [1.0, 1.0, 1.0]
+         @type Float32Array
+         */
+        colorize: {
+            set: function (rgb) {
+                var colorize = this._colorize;
+                if (!colorize) {
+                    colorize = this._colorize = new Float32Array(4);
+                    colorize[3] = 1.0;
+                }
+                if (rgb) {
+                    colorize[0] = rgb[0];
+                    colorize[1] = rgb[1];
+                    colorize[2] = rgb[2];
+                } else {
+                    colorize[0] = 1;
+                    colorize[1] = 1;
+                    colorize[2] = 1;
+                }
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].colorize = colorize;
+                }
+            },
+            get: function () {
+                return this._colorize.slice(0, 3);
+            }
+        },
+
+        /**
+         Opacity factor, multiplies by the rendered fragment alpha.
+
+         This is a factor in range ````[0..1]````.
+
+         @property opacity
+         @default 1.0
+         @type Number
+         */
+        opacity: {
+            set: function (opacity) {
+                var colorize = this._colorize;
+                if (!colorize) {
+                    colorize = this._colorize = new Float32Array(4);
+                    colorize[0] = 1;
+                    colorize[1] = 1;
+                    colorize[2] = 1;
+                }
+                colorize[3] = opacity !== null && opacity !== undefined ? opacity : 1.0;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].opacity = opacity;
+                }
+            },
+            get: function () {
+                return this._colorize[3];
+            }
+        },
+
+        /**
+         Indicates whether this Group appears outlined.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         The outlined effect is configured via the
+         {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+         within this Group's subtree.
+
+         @property outlined
+         @default false
+         @type Boolean
+         */
+        outlined: {
+            set: function (outlined) {
+                outlined = !!outlined;
+                this._outlined = outlined;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].outlined = outlined;
+                }
+            },
+            get: function () {
+                return this._outlined;
+            }
+        },
+
+        /**
+         Indicates whether this Group appears ghosted.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         The ghosted effect is configured via the
+         {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+         within this Group's subtree.
+
+         @property outlined
+         @default false
+         @type Boolean
+         */
+        ghosted: {
+            set: function (ghosted) {
+                ghosted = !!ghosted;
+                this._ghosted = ghosted;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].ghosted = ghosted;
+                }
+            },
+            get: function () {
+                return this._ghosted;
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        // Redefining comments for base class properties to help with documentation navigation
+        //--------------------------------------------------------------------------------------------------------------
+
+        /**
+         The parent Group/Model.
+
+         The parent Group may also be set by passing this Object to the
+         Group's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
+
+         @property parent
+         @type Group
+         */
+
+        /**
+         The IFC type of this Group, if applicable.
+
+         @property ifcType
+         @default null
+         @type String
+         */
+
+        /**
+         The Local-space position of this Group.
+
+         @property position
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+
+        /**
+         The Group's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+         @property rotation
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+
+        /**
+         The Local-space rotation quaternion for this Group.
+
+         @property quaternion
+         @default [0,0,0, 1]
+         @type {Float32Array}
+         */
+
+        /**
+         The Local-space scale of this Group.
+
+         @property scale
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+
+        /**
+         * This Group's local matrix.
+         *
+         * @property matrix
+         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         * @type {Float32Array}
+         */
+
+        /**
+         * This Group's World matrix.
+         *
+         * @property worldMatrix
+         * @type {Float32Array}
+         */
+
+        /**
+         * This Group's World normal matrix.
+         *
+         * @property worldNormalMatrix
+         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         * @type {Float32Array}
+         */
+
+        /**
+         Rotates this Group about the given Local-space axis by the given increment.
+
+         @method rotate
+         @paream {Float32Array} axis The Local-space axis about which to rotate.
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         Rotates this Group about the given World-space axis by the given increment.
+
+         @method rotate
+         @paream {Float32Array} axis The local axis about which to rotate.
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         Rotates this Group about the Local-space X-axis by the given increment.
+
+         @method rotateX
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         Rotates this Group about the Local-space Y-axis by the given increment.
+
+         @method rotateY
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         Rotates this Group about the Local-space Z-axis by the given increment.
+
+         @method rotateZ
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         * Translates this Group in Local-space by the given increment.
+         *
+         * @method translate
+         * @param {Float32Array} axis Normalized local space 3D vector along which to translate.
+         * @param {Number} distance Distance to translate along  the vector.
+         */
+
+        /**
+         * Translates this Group along the Local-space X-axis by the given increment.
+         *
+         * @method translateX
+         * @param {Number} distance Distance to translate along  the X-axis.
+         */
+
+        /**
+         * Translates this Group along the Local-space Y-axis by the given increment.
+         *
+         * @method translateX
+         * @param {Number} distance Distance to translate along  the Y-axis.
+         */
+
+        /**
+         * Translates this Group along the Local-space Z-axis by the given increment.
+         *
+         * @method translateX
+         * @param {Number} distance Distance to translate along  the Z-axis.
+         */
+
+        /**
+         Whether this Group's axis-aligned bounding box (AABB) is visible.
+
+         @property aabbVisible
+         @default false
+         @type {Boolean}
+         */
+
+        /**
+         Whether this Group's object-aligned bounding box (OBB) is visible.
+
+         @property obbVisible
+         @default false
+         @type {Boolean}
+         */
+    },
+
+    _destroy: function () {
+        this._super();
+        this.removeChildren();
+    }
+});;/**
+ A **Mesh** is an {{#crossLink "Object"}}{{/crossLink}} that represents a drawable 3D primitive.
+
+ ## Overview
+
+ * A Mesh represents a WebGL draw call.
+ * Each Mesh has five components: {{#crossLink "Geometry"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}},
+ {{#crossLink "EmphasisMaterial"}}{{/crossLink}} for ghosting, an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} for highlighting,
+ and an {{#crossLink "OutlineMaterial"}}{{/crossLink}} for outlining.
+ * By default, Meshes in the same Scene share the same "global" flyweight instances of those components among themselves. The default
+ component instances are provided by the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
+ {{#crossLink "Scene/material:property"}}{{/crossLink}}, {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}, {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}},
+ {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} properties, respectively.
+ * A Mesh with all defaults is a white unit-sized box centered at the World-space origin.
+ * Customize your Meshes by attaching your own instances of those component types, to override the defaults as needed.
+ * For best performance, reuse as many of the same component instances among your Meshes as possible.
+ * Use {{#crossLink "Object"}}Objects{{/crossLink}} to organize Meshes into hierarchies, if required.
+
+ ## Usage
+
+ * [Creating a Mesh](#creating-a-mesh)
+ * [Creating hierarchies](#creating-hierarchies)
+ * [Controlling visibility](#controlling-visibility)
+ * [Controlling clipping](#controlling-clipping)
+ * [Controlling rendering order](#controlling-rendering-order)
+ * [Geometry](#geometry)
+ * [Material](#material)
+ * [Transforming](#transforming)
+ * [Ghosting](#ghosting)
+ * [Highlighting](#highlighting)
+ * [Outlining](#outlining)
+ * [Local-space boundary](#local-space-boundary)
+ * [World-space boundary](#world-space-boundary)
+ * [Skyboxing](#skyboxing)
+ * [Billboarding](#billboarding)
+ * [Shadows](#shadows) TODO
+
+ ### Creating a Mesh
+
+ Creating a minimal Mesh that has all the default components:
+
+ <img src="../../assets/images/screenshots/Scene/defaultMesh.png"></img>
+
+ ````javascript
+ var mesh = new xeogl.Mesh(); // A white unit-sized box centered at the World-space origin
+ ````
+
+ Since our Mesh has all the default components, we can get those off either the Mesh or its Scene:
+
+ ````javascript
+ mesh.material.diffuse = [1.0, 0.0, 0.0];  // This is the same Material component...
+
+ var scene = mesh.scene;
+ scene.material.diffuse  = [1.0, 0.0, 0.0];  // ...as this one.
+ ````
+
+ In practice, we would provide (at least) our own Geometry and Material for the Mesh:
+
+ <a href="../../examples/#geometry_primitives_teapot"><img src="../../assets/images/screenshots/Scene/teapot.png"></img></a>
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+     geometry: new xeogl.TeapotGeometry(),
+     material: new xeogl.MetallicMaterial({
+         baseColor: [1.0, 1.0, 1.0]
+     })
+ });
+ ````
+
+ ### Creating hierarchies
+
+ In xeogl we represent an object hierarchy as a tree of {{#crossLink "Object"}}Objects{{/crossLink}} in which
+ the leaf Objects have links to Meshes. In an Object tree, an operation on an
+ Object is collectively applied to the Meshes within its subtree.
+
+ For more info on organizing Meshes hierarchically, see the {{#crossLink "Object"}}{{/crossLink}} and {{#crossLink "GLTFModel"}}{{/crossLink}} components.
+
+ ### Controlling visibility
+
+ Show or hide a Mesh by setting its {{#crossLink "Mesh/visible:property"}}{{/crossLink}} property:
+
+ ````javascript
+ mesh.visible = false; // Hide
+ mesh.visible = true; // Show (default)
+ ````
+
+ ### Controlling clipping
+
+ By default, a Mesh will be clipped by the
+ Scene's {{#crossLink "Scene/clips:property"}}clipping planes{{/crossLink}} (if you've created some).
+
+ Make a Mesh unclippable by setting its {{#crossLink "Mesh/clippable:property"}}{{/crossLink}} property false:
+
+ ````javascript
+ mesh.clippable = false; // Default is true
+ ````
+
+ ### Controlling rendering order
+
+ Control the order in which a Mesh is rendered relative to others by setting its {{#crossLink "Mesh/layer:property"}}{{/crossLink}}
+ property. You would normally do this when you need to ensure that transparent Meshes are rendered in back-to-front order for correct alpha blending.
+
+ Assign mesh to layer 0 (all Meshes are in layer 0 by default):
+
+ ````javascript
+ mesh.layer = 0;
+ ````
+
+ Create another Mesh in a higher layer, that will get rendered after layer 0:
+
+ ````javascript
+ var mesh2 = new xeogl.Mesh({
+     geometry: new xeogl.Sphere(),
+     layer: 1
+ });
+ ````
+
+ ### Geometry
+
+ A Mesh has a {{#crossLink "Geometry"}}{{/crossLink}} which describes its shape. When we don't provide it with a
+ Geometry, it will have the Scene's {{#crossLink "Scene/geometry:property"}}{{/crossLink}} by default.
+
+ Creating a Mesh with its own Geometry:
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+     geometry: new xeogl.TeapotGeometry()
+ });
+ ````
+
+ Dynamically replacing the Geometry:
+
+ ````javascript
+ mesh.geometry = new xeogl.CylinderGeometry();
+ ````
+
+ Getting geometry arrays:
+
+ ````javascript
+ ver geometry = mesh.geometry;
+
+ var primitive = geometry,primitive;        // Default is "triangles"
+ var positions = geometry.positions;        // Local-space vertex positions
+ var normals = geometry.normals;            // Local-space vertex Normals
+ var uv = geometry.uv;                      // UV coordinates
+ var indices = mesh.geometry.indices;     // Vertex indices for pimitives
+ ````
+
+ The Mesh also has a convenience property which provides the vertex positions in World-space, ie. after they have been
+ transformed by the Mesh's Transform:
+
+ ````javascript
+ // These are internally generated on-demand and cached. To free the cached
+ // vertex World positions when you're done with them, set this property to null or undefined
+ var worldPositions = mesh.worldPositions;
+ ````
+
+ ### Material
+
+ A Mesh has a {{#crossLink "Material"}}{{/crossLink}}, which describes its appearance. When we don't provide it with
+ a Material, it will have the Scene's {{#crossLink "Scene/material:property"}}{{/crossLink}} by default.
+
+ Creating a Mesh with its own custom Geometry and Material:
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+     geometry: new xeogl.TeapotGeometry(),
+     material: new xeogl.MetallicMaterial({
+         baseColor: [0.0, 0.0, 1.0],
+         metallic: 1.0,
+         roughness: 1.0,
+         emissive: [0.0, 0.0, 0.0],
+         alpha: 1.0
+     })
+ });
+ ````
+
+ Dynamically replacing the Material:
+
+ ````javascript
+ mesh.material = new xeogl.SpecularMaterial({
+     diffuse: [1.0, 1.0, 1.0],
+     specular: [1.0, 1.0, 1.0],
+     glossiness: 1.0,
+     emissive: [0.0, 0.0, 0.0]
+     alpha: 1.0
+ })
+ ````
+
+ Animating the Material's diffuse color - making the Mesh rapidly pulse red:
+
+ ````javascript
+ mesh.scene.on("tick", function(e) {
+    var t = e.time - e.startTime; // Millisecs
+    mesh.material.diffuse = [0.5 + Math.sin(t * 0.01), 0.0, 0.0]; // RGB
+ });
+ ````
+
+ ### Transforming
+
+ A Mesh can be positioned within the World-space coordinate system.
+
+ TODO
+
+ ### Ghosting
+
+ Ghost a Mesh by setting its {{#crossLink "Mesh/ghosted:property"}}{{/crossLink}} property true. The Mesh's
+ {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while ghosted.
+
+ When we don't provide it with a EmphasisMaterial, it will have the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
+ by default.
+
+ In the example below, we'll create a ghosted Mesh with its own EmphasisMaterial.
+
+ <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/EmphasisMaterial/teapot.png"></img></a>
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+    geometry: new xeogl.TeapotGeometry(),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    }),
+    ghostMaterial: new xeogl.EmphasisMaterial({
+        edges: true,
+        edgeColor: [0.2, 1.0, 0.2],
+        edgeAlpha: 1.0,
+        edgeWidth: 2,
+        vertices: true,
+        vertexColor: [0.6, 1.0, 0.6],
+        vertexAlpha: 1.0,
+        vertexSize: 8,
+        fill: true,
+        fillColor: [0, 0, 0],
+        fillAlpha: 0.7
+    }),
+    ghosted: true
+ });
+ ````
+
+ #### Examples
+
+ * [Ghosted teapot](../../examples/#effects_ghost)
+
+ ### Highlighting
+
+ Highlight a Mesh by setting its {{#crossLink "Mesh/highlighted:property"}}{{/crossLink}} property true. The Mesh's
+ highlighting {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
+
+ When we don't provide it with a EmphasisMaterial for highlighting, it will have the Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
+ by default.
+
+ In the example below, we'll create a highlighted Mesh with its own EmphasisMaterial.
+
+ <a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/EmphasisMaterial/teapotHighlighted.png"></img></a>
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+    geometry: new xeogl.TeapotGeometry(),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    }),
+    highlightMaterial: new xeogl.EmphasisMaterial({
+        color: [1.0, 1.0, 0.0],
+        alpha: 0.6
+    }),
+    highlighted: true
+ });
+ ````
+
+ #### Examples
+
+ * [Ghost and highlight effects](../../examples/#effects_demo_gearbox)
+
+ ### Outlining
+
+ Outline a Mesh by setting its {{#crossLink "Mesh/outlined:property"}}{{/crossLink}} property true. The Mesh's
+ {{#crossLink "OutlineMaterial"}}{{/crossLink}} then controls its appearance while outlined.
+
+ When we don't provide it with an OutlineMaterial, it will have the Scene's {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}}
+ by default.
+
+ In the example below, we'll create a outlined Mesh with its own OutlineMaterial.
+
+ <a href="../../examples/#effects_outline"><img src="../../assets/images/screenshots/OutlineMaterial/teapot.png"></img></a>
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+    geometry: new xeogl.TeapotGeometry(),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    }),
+    outlineMaterial: new xeogl.OutlineMaterial({
+        color: [1.0, 1.0, 0.0],
+        alpha: 0.6,
+        width: 5
+    }),
+    outlined: true
+ });
+ ````
+
+ ### Local-space boundary
+
+ We can get a Mesh's Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and
+ an object-aligned bounding box (OBB).
+
+ The Local-space boundary is the boundary of the Mesh's Geometry, without any transforms applied.
+
+ Getting the Local-space boundary as an AABB:
+
+ ````
+ var aabb = mesh.geometry.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
+ ````
+
+ Getting the Local-space boundary as an OBB:
+
+ ```` javascript
+ var obb = mesh.geometry.obb; // Flat array containing eight 3D corner vertices of a box
+ ````
+
+ #### Examples
+
+ * [Local-space Geometry AABB](../../examples/#boundaries_geometry_aabb)
+ * [Local-space Geometry OBB](../../examples/#boundaries_geometry_obb)
+
+ ### World-space boundary
+
+ We can get a Mesh's World-space boundary at any time, as both an axis-aligned bounding box (AABB) and
+ an object-aligned bounding box (OBB).
+
+ The World-space boundary is the boundary of the Mesh's Geometry after the Mesh's Transform has been applied to it.
+
+ Getting the World-space boundary as an AABB:
+
+ ````javascript
+ var aabb = mesh.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
+ ````
+
+ Getting the World-space boundary as an OBB:
+
+ ```` javascript
+ var obb = mesh.obb; // Flat array containing eight 3D corner vertices of a box
+ ````
+
+ Subscribing to updates of the World-space boundary, which occur whenever the Mesh's Transform or Geometry have been updated.
+
+ ````javascript
+ mesh.on("boundary", function() {
+     var aabb = mesh.aabb;
+     var obb = mesh.obb;
+ });
+ ````
+
+ A Mesh's {{#crossLink "Scene"}}{{/crossLink}} also has a {{#crossLink "Scene/getAABB:method"}}{{/crossLink}}, which returns
+ the collective World-space axis-aligned boundary of the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+ and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
+
+ ````JavaScript
+ var scene = mesh.scene;
+
+ scene.getAABB(); // Gets collective boundary of all meshes in the viewer
+ scene.getAABB("saw"); // Gets collective boundary of all meshes in a model
+ scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all meshes in two models
+ scene.getAABB("saw#0.1"); // Get boundary of a mesh
+ scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two meshes
+ ````
+
+ #### Excluding from boundary calculations
+
+ The {{#crossLink "Scene/aabb:property"}}Scene aabb{{/crossLink}}
+ and {{#crossLink "Object/aabb:property"}}Object aabb{{/crossLink}} properties provide AABBs that include the boundaries of all
+ contained Meshes, except those Meshes that have their {{#crossLink "Mesh/collidable:property"}}collidable{{/crossLink}} properties set ````false````.
+
+ Toggle that inclusion like so:
+
+ ````javascript
+ mesh.collidable = false; // Exclude mesh from calculation of its Scene/Model boundary
+ mesh.collidable = true; // Include mesh in calculation of its Scene/Model boundary
+ ````
+ Setting this false is useful when a Mesh represents some object, such as a control gizmo, that you don't want to consider as
+ being a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated
+ whenever the Mesh's boundary changes after a Transform or Geometry update.
+
+ #### Examples
+
+ * [World-space Mesh AABB](../../examples/#boundaries_mesh_aabb)
+ * [World-space Mesh OBB](../../examples/#boundaries_mesh_obb)
+
+ ### Skyboxing
+
+ A Mesh has a {{#crossLink "Mesh/stationary:property"}}{{/crossLink}} property
+ that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.
+
+ This is useful for using Meshes as skyboxes, like this:
+
+ ````javascript
+ new xeogl.Mesh({
+
+     geometry: new xeogl.BoxGeometry({
+         xSize: 1000,
+         ySize: 1000,
+         zSize: 1000
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+         })
+     }),
+
+     stationary: true // Locks position with respect to viewpoint
+ });
+ ````
+
+ #### Examples
+
+ * [Skybox component](../../examples/#skyboxes_skybox)
+ * [Custom skybox](../../examples/#skyboxes_skybox_custom)
+
+ ### Billboarding
+
+ A Mesh has a {{#crossLink "Mesh/billboard:property"}}{{/crossLink}} property
+ that can make it behave as a billboard.
+
+ Two billboard types are supported:
+
+ * **Spherical** billboards are free to rotate their Meshes in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.
+ * **Cylindrical** billboards rotate their Meshes towards the {{#crossLink "Camera"}}{{/crossLink}}, but only about the Y-axis.
+
+ Note that {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on billboarded Meshes.
+
+ The example below shows a box that remains rotated directly towards the viewpoint, using spherical billboarding:
+
+ ````javascript
+ new xeogl.Mesh({
+
+     geometry: new xeogl.BoxGeometry(),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+         })
+     }),
+
+     billboard: "spherical" // Or "cylindrical"
+ });
+ ````
+
+ #### Examples
+
+ * [Spherical billboards](../../examples/#billboards_spherical)
+ * [Cylindrical billboards](../../examples/#billboards_cylindrical)
+ * [Clouds using billboards](../../examples/#billboards_spherical_clouds)
+
+
+ ### Shadows
+
+ [Work-in-progress]
+
+ @class Mesh
+ @module xeogl
+ @submodule objects
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Mesh within xeogl's default {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} by default.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Mesh.
+
+ @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
+
+ @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
+
+ @param [cfg.visible=true] {Boolean}  Indicates if this Mesh is visible.
+ @param [cfg.culled=true] {Boolean}  Indicates if this Mesh is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Mesh is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
+ @param [cfg.collidable=true] {Boolean} Whether this Mesh is included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean} Whether this Mesh casts shadows.
+ @param [cfg.receiveShadow=true] {Boolean} Whether this Mesh receives shadows.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this mesh, as configured by the Mesh's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
+ @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
+ @param [cfg.ghosted=false] {Boolean} Whether this mesh is rendered as ghosted, as configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+ @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+ @param [cfg.highlighted=false] {Boolean} Whether this mesh is rendered as highlighted, as configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+ @param [cfg.highlightMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+ @param [cfg.selected=false] {Boolean} Whether this mesh is rendered as selected, as configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+ @param [cfg.selectedMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define selected appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
+ @param [cfg.layer=0] {Number} Indicates this Mesh's rendering priority, typically used for transparency sorting,
+ @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Mesh. This is useful for skybox Meshes.
+ @param [cfg.billboard="none"] {String} Specifies the billboarding behaviour for this Mesh. Options are "none", "spherical" and "cylindrical".
+ @param [cfg.aabbVisible=false] {Boolean} Whether this Mesh's axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean} Whether this Mesh's oriented World-space bounding box is visible.
+ @param [cfg.position=[0,0,0]] {Float32Array} The Mesh's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The Mesh's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The Mesh's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Mesh's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+ @param [cfg.loading=false] {Boolean} Flag which indicates that this Mesh is freshly loaded.
+ @extends Object
+ */
+
+/**
+ * Fired when this Mesh is *picked* via a call to the {{#crossLink "Canvas/pick:method"}}{{/crossLink}} method
+ * on the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas {{/crossLink}}.
+ * @event picked
+ * @param {String} meshId The ID of this Mesh.
+ * @param {Number} canvasX The X-axis Canvas coordinate that was picked.
+ * @param {Number} canvasY The Y-axis Canvas coordinate that was picked.
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.Mesh = xeogl.Object.extend({
+
+        type: "xeogl.Mesh",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._state = new xeogl.renderer.Modes({
+                visible: true,
+                culled: false,
+                pickable: null,
+                clippable: null,
+                colorize: null,
+                collidable: null,
+                castShadow: null,
+                receiveShadow: null,
+                outlined: null,
+                ghosted: false,
+                highlighted: false,
+                selected: false,
+                layer: null,
+                billboard: null,
+                hash: ""
+            });
+
+            var self = this;
+
+            this._modelTransformState = new xeogl.renderer.Transform({
+                getMatrix: function () {
+                    return self.worldMatrix;
+                },
+                getNormalMatrix: function () {
+                    return self.worldNormalMatrix;
+                }
+            });
+
+            this._objectId = null; // Renderer object
+            this._loading = cfg.loading !== false;
+
+            this._aabbDirty = true;
+            this._obbDirty = true;
+
+            this._worldPositions = null;
+            this._worldPositionsDirty = true;
+
+            // Components
+
+            this.geometry = cfg.geometry;
+            this.material = cfg.material;
+            this.transform = cfg.transform;
+            this.ghostMaterial = cfg.ghostMaterial;
+            this.outlineMaterial = cfg.outlineMaterial;
+            this.highlightMaterial = cfg.highlightMaterial;
+            this.selectedMaterial = cfg.selectedMaterial;
+
+            // Properties
+
+            this.visible = cfg.visible;
+            this.culled = cfg.culled;
+            this.pickable = cfg.pickable;
+            this.clippable = cfg.clippable;
+            this.collidable = cfg.collidable;
+            this.castShadow = cfg.castShadow;
+            this.receiveShadow = cfg.receiveShadow;
+            this.outlined = cfg.outlined;
+            this.layer = cfg.layer;
+            this.stationary = cfg.stationary;
+            this.billboard = cfg.billboard;
+            this.solid = cfg.solid;
+            this.ghosted = cfg.ghosted;
+            this.highlighted = cfg.highlighted;
+            this.selected = cfg.selected;
+            this.colorize = cfg.colorize;
+            this.opacity = cfg.opacity;
+        },
+
+        _setWorldMatrixDirty: function () {
+            this._worldMatrixDirty = true;
+            this._worldNormalMatrixDirty = true;
+            this._setBoundaryDirty();
+        },
+
+        _setBoundaryDirty: function () {
+            this._worldPositionsDirty = true;
+            for (var object = this; object; object = object._parent) {
+                object._aabbDirty = true;
+                object._obbDirty = true;
+            }
+            //var lights = this._attached.lights;
+            //if (lights) {
+            //    lights._shadowsDirty(); // Need to re-render shadow maps
+            //}
+            /**
+             Fired whenever this Mesh's World-space boundary changes.
+
+             Get the latest boundary from the Mesh's {{#crossLink "Mesh/aabb:property"}}{{/crossLink}}
+             and {{#crossLink "Mesh/obb:property"}}{{/crossLink}} properties.
+
+             @event boundary
+             */
+            this.fire("boundary");
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Mesh.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}
+             * (a simple box) when set to a null or undefined value.
+             *
+             * Updates {{#crossLink "Mesh/boundary"}}{{/crossLink}},
+             * {{#crossLink "Mesh/worldObb"}}{{/crossLink}} and
+             * {{#crossLink "Mesh/center"}}{{/crossLink}}
+             *
+             * @property geometry
+             * @type Geometry
+             */
+            geometry: {
+                set: function (value) {
+                    this._attach({
+                        name: "geometry",
+                        type: "xeogl.Component",  // HACK
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            "boundary": {
+                                callback: this._setBoundaryDirty,
+                                scope: this
+                            },
+                            "destroyed": {
+                                callback: this._setBoundaryDirty,
+                                scope: this
+                            }
+                        }
+                    });
+                    this._setBoundaryDirty();
+                },
+                get: function () {
+                    return this._attached.geometry;
+                }
+            },
+
+            /**
+             * The {{#crossLink "Material"}}Material{{/crossLink}} attached to this Mesh.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/material:property"}}material{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * @property material
+             * @type Material
+             */
+            material: {
+                set: function (value) {
+                    this._attach({
+                        name: "material",
+                        type: "xeogl.Material",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+                get: function () {
+                    return this._attached.material;
+                }
+            },
+
+            /**
+             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Mesh.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * @property ghostMaterial
+             * @type EmphasisMaterial
+             */
+            ghostMaterial: {
+                set: function (value) {
+                    this._attach({
+                        name: "ghostMaterial",
+                        type: "xeogl.EmphasisMaterial",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+                get: function () {
+                    return this._attached.ghostMaterial;
+                }
+            },
+
+            /**
+             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Mesh.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * @property highlightMaterial
+             * @type EmphasisMaterial
+             */
+            highlightMaterial: {
+                set: function (value) {
+                    this._attach({
+                        name: "highlightMaterial",
+                        type: "xeogl.EmphasisMaterial",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+                get: function () {
+                    return this._attached.highlightMaterial;
+                }
+            },
+
+            /**
+             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Mesh.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * @property selectedMaterial
+             * @type EmphasisMaterial
+             */
+            selectedMaterial: {
+                set: function (value) {
+                    this._attach({
+                        name: "selectedMaterial",
+                        type: "xeogl.EmphasisMaterial",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+                get: function () {
+                    return this._attached.selectedMaterial;
+                }
+            },
+
+            /**
+             * The {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} attached to this Mesh.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * @property outlineMaterial
+             * @type OutlineMaterial
+             */
+            outlineMaterial: {
+                set: function (value) {
+                    this._attach({
+                        name: "outlineMaterial",
+                        type: "xeogl.OutlineMaterial",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+                get: function () {
+                    return this._attached.outlineMaterial;
+                }
+            },
+
+            /**
+             Indicates whether this Mesh is visible or not.
+
+             The Mesh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
+             {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
+
+             @property visible
+             @default true
+             @type Boolean
+             */
+            visible: {
+                set: function (value) {
+                    this._state.visible = value !== false;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.visible;
+                }
+            },
+
+            /**
+             Indicates whether or not this Mesh is currently culled from view.
+
+             The Mesh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
+             {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
+
+             @property culled
+             @default false
+             @type Boolean
+             */
+            culled: {
+                set: function (value) {
+                    this._state.culled = !!value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.culled;
+                }
+            },
+
+            /**
+             Indicates whether this Mesh is pickable or not.
+
+             Picking is done via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
+
+             @property pickable
+             @default true
+             @type Boolean
+             */
+            pickable: {
+                set: function (value) {
+                    value = value !== false;
+                    if (this._state.pickable === value) {
+                        return;
+                    }
+                    this._state.pickable = value;
+                    // No need to trigger a render;
+                    // state is only used when picking
+                },
+                get: function () {
+                    return this._state.pickable;
+                }
+            },
+
+            /**
+             Indicates whether this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}} components.
+
+             @property clippable
+             @default true
+             @type Boolean
+             */
+            clippable: {
+                set: function (value) {
+                    value = value !== false;
+                    if (this._state.clippable === value) {
+                        return;
+                    }
+                    this._state.clippable = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.clippable;
+                }
+            },
+
+            /**
+             Indicates whether this Mesh is included in boundary calculations.
+
+             @property collidable
+             @default true
+             @type Boolean
+             */
+            collidable: {
+                set: function (value) {
+                    value = value !== false;
+                    if (value === this._state.collidable) {
+                        return;
+                    }
+                    this._state.collidable = value;
+                },
+                get: function () {
+                    return this._state.collidable;
+                }
+            },
+
+
+            /**
+             Indicates whether this Mesh casts shadows.
+
+             @property castShadow
+             @default true
+             @type Boolean
+             */
+            castShadow: {
+                set: function (value) {
+                    value = value !== false;
+                    if (value === this._state.castShadow) {
+                        return;
+                    }
+                    this._state.castShadow = value;
+                    this._renderer.imageDirty(); // Re-render in next shadow map generation pass
+                },
+                get: function () {
+                    return this._state.castShadow;
+                }
+            },
+
+            /**
+             Indicates whether this Mesh receives shadows.
+
+             @property receiveShadow
+             @default true
+             @type Boolean
+             */
+            receiveShadow: {
+                set: function (value) {
+                    value = value !== false;
+                    if (value === this._state.receiveShadow) {
+                        return;
+                    }
+                    this._state.receiveShadow = value;
+                    this._state.hash = value ? "/mod/rs;" : "/mod;";
+                    this.fire("dirty", this); // Now need to (re)compile objectRenderers to include/exclude shadow mapping
+                },
+                get: function () {
+                    return this._state.receiveShadow;
+                }
+            },
+
+            /**
+             Indicates whether this Mesh is rendered with an outline.
+
+             The outline effect is configured via the Mesh's {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}} component.
+
+             @property outlined
+             @default false
+             @type Boolean
+             */
+            "outlined,outline": {
+                set: function (value) {
+                    value = !!value;
+                    if (value === this._state.outlined) {
+                        return;
+                    }
+                    this._state.outlined = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.outlined;
+                }
+            },
+
+            /**
+             Indicates whether this Mesh is highlighted.
+
+             The highlight effect is configured via the Mesh's {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+
+             @property highlighted
+             @default false
+             @type Boolean
+             */
+            "highlight,highlighted": {
+                set: function (value) {
+                    value = !!value;
+                    if (value === this._state.highlighted) {
+                        return;
+                    }
+                    this._state.highlighted = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.highlighted;
+                }
+            },
+
+            /**
+             Indicates whether this Mesh is selected.
+
+             The selected effect is configured via the Mesh's {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+
+             @property selected
+             @default false
+             @type Boolean
+             */
+            selected: {
+                set: function (value) {
+                    value = !!value;
+                    if (value === this._state.selected) {
+                        return;
+                    }
+                    this._state.selected = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.selected;
+                }
+            },
+
+            /**
+             RGB colorize color, multiplies by the rendered fragment colors.
+
+             @property colorize
+             @default [1.0, 1.0, 1.0, 1.0]
+             @type Float32Array
+             */
+            colorize: {
+                set: function (value) {
+                    var colorize = this._state.colorize;
+                    if (!colorize) {
+                        colorize = this._state.colorize = new Float32Array(4);
+                        colorize[3] = 1;
+                    }
+                    if (value) {
+                        colorize[0] = value[0];
+                        colorize[1] = value[1];
+                        colorize[2] = value[2];
+                    } else {
+                        colorize[0] = 1;
+                        colorize[1] = 1;
+                        colorize[2] = 1;
+                    }
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.colorize;
+                }
+            },
+
+            /**
+             Opacity factor, multiplies by the rendered fragment alpha.
+
+             This is a factor in range ````[0..1]````.
+
+             @property opacity
+             @default 1.0
+             @type Number
+             */
+            opacity: {
+                set: function (opacity) {
+                    var colorize = this._state.colorize;
+                    if (!colorize) {
+                        colorize = this._state.colorize = new Float32Array(4);
+                        colorize[0] = 1;
+                        colorize[1] = 1;
+                        colorize[2] = 1;
+                    }
+                    colorize[3] = opacity !== null && opacity !== undefined ? opacity : 1.0;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.colorize[3];
+                }
+            },
+
+            /**
+             * Indicates this Mesh's rendering order.
+             *
+             * This can be set on multiple transparent Meshes, to make them render in a specific order
+             * for correct alpha blending.
+             *
+             * @property layer
+             * @default 0
+             * @type Number
+             */
+            layer: {
+                set: function (value) {
+                    // TODO: Only accept rendering layer in range [0...MAX_layer]
+                    value = value || 0;
+                    value = Math.round(value);
+                    if (value === this._state.layer) {
+                        return;
+                    }
+                    this._state.layer = value;
+                    this._renderer.needStateSort();
+                },
+                get: function () {
+                    return this._state.layer;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this Mesh is stationary or not.
+             *
+             * Setting this true will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
+             * translations for this Mesh, while still alowing it to rotate. This is useful for skybox Meshes.
+             *
+             * @property stationary
+             * @default false
+             * @type Boolean
+             */
+            stationary: {
+                set: function (value) {
+                    value = !!value;
+                    if (this._state.stationary === value) {
+                        return;
+                    }
+                    this._state.stationary = value;
+                    this.fire("dirty", this);
+                },
+                get: function () {
+                    return this._state.stationary;
+                }
+            },
+
+            /**
+             Specifies the billboarding behaviour for this Mesh.
+
+             Options are:
+
+             * **"none"** -  **(default)** - No billboarding.
+             * **"spherical"** - Mesh is billboarded to face the viewpoint, rotating both vertically and horizontally.
+             * **"cylindrical"** - Mesh is billboarded to face the viewpoint, rotating only about its vertically
+             axis. Use this mode for things like trees on a landscape.
+
+             @property billboard
+             @default "none"
+             @type String
+             */
+            billboard: {
+                set: function (value) {
+                    value = value || "none";
+                    if (value !== "spherical" && value !== "cylindrical" && value !== "none") {
+                        this.error("Unsupported value for 'billboard': " + value + " - accepted values are " +
+                            "'spherical', 'cylindrical' and 'none' - defaulting to 'none'.");
+                        value = "none";
+                    }
+                    if (this._state.billboard === value) {
+                        return;
+                    }
+                    this._state.billboard = value;
+                    this.fire("dirty", this);
+                },
+                get: function () {
+                    return this._state.billboard;
+                }
+            },
+
+            /**
+             * Flag which indicates if this Mesh is rendered with ghost effect.
+             *
+             * The ghost effect is configured via the Mesh's {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+             *
+             * @property ghosted
+             * @default false
+             * @type Boolean
+             */
+            "ghosted,ghost": {
+                set: function (value) {
+                    value = !!value;
+                    if (this._state.ghosted === value) {
+                        return;
+                    }
+                    this._state.ghosted = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.ghosted;
+                }
+            },
+
+
+            /**
+             * World-space 3D center of this Mesh.
+             *
+             * @property center
+             * @final
+             * @type {Float32Array}
+             */
+            center: {
+                get: function () {
+                    if (this._aabbDirty) {
+                        if (!this._center || !this._center) {
+                            this._center = xeogl.math.vec3();
+                        }
+                        var aabb = this.aabb;
+                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
+                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
+                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
+                    }
+                    return this._center;
+                }
+            },
+
+            /**
+             * World-space axis-aligned 3D boundary (AABB) of this Mesh.
+             *
+             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+             *
+             * @property aabb
+             * @final
+             * @type {Float32Array}
+             */
+            aabb: {
+                get: function () {
+                    if (this._aabbDirty) {
+                        this._aabbDirty = false;
+                        var math = xeogl.math;
+                        var geometry = this._attached.geometry;
+                        if (!this._aabb) {
+                            this._aabb = math.AABB3();
+                        }
+                        if (!this._obb) {
+                            this._obb = math.OBB3();
+                        }
+                        math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
+                        math.OBB3ToAABB3(this._obb, this._aabb);
+                    }
+                    return this._aabb;
+                }
+            },
+
+            /**
+             * World-space oriented 3D boundary (OBB) of this Mesh.
+             *
+             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+             *
+             * @property obb
+             * @final
+             * @type {Float32Array}
+             */
+            obb: {
+                get: function () {
+                    if (this._obbDirty) {
+                        this._obbDirty = false;
+                        var geometry = this._attached.geometry;
+                        if (!this._obb) {
+                            this._obb = xeogl.math.OBB3();
+                        }
+                        xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
+                    }
+                    return this._obb;
+                }
+            },
+
+            /**
+             * World-space vertex positions of this Mesh.
+             *
+             * These are internally generated on-demand and cached. To free the cached
+             * vertex World positions when you're done with them, set this property to null or undefined.
+             *
+             * @property worpdPositions
+             * @type Float32Array
+             * @final
+             */
+            worldPositions: {
+                get: function () {
+                    if (this._worldPositionsDirty) {
+                        var positions = this.geometry.positions;
+                        if (!this._worldPositions) {
+                            this._worldPositions = new Float32Array(positions.length);
+                        }
+                        xeogl.math.transformPositions3(this.worldMatrix, positions, this._worldPositions);
+                        this._worldPositionsDirty = false;
+                    }
+                    return this._worldPositions;
+                },
+                set: function (value) {
+                    if (value = undefined || value === null) {
+                        this._worldPositions = null; // Release memory
+                        this._worldPositionsDirty = true;
+                    }
+                }
+            }
+        },
+
+        _valid: function () { // Returns true if there is enough on this Mesh to render something.
+            if (this.destroyed) {
+                return false;
+            }
+            var geometry = this._attached.geometry;
+            if (!geometry) {
+                return false;
+            }
+            if (!geometry.created) {
+                return false;
+            }
+            return true;
+        },
+
+        _compile: function () {
+            if (this._objectId) {
+                this._renderer.destroyObject(this._objectId);
+                this._objectId = null;
+            }
+            var material = this.material._getState();
+            var ghostMaterial = this.ghostMaterial._state;
+            var outlineMaterial = this.outlineMaterial._state;
+            var highlightMaterial = this.highlightMaterial._state;
+            var selectedMaterial = this.selectedMaterial._state;
+            var vertexBufs = this.geometry._getVertexBufs();
+            var geometry = this.geometry._state;
+            //var modelTransform = this.transform._state;
+            var modelTransform = this._modelTransformState;
+            var modes = this._getState();
+            var result = this._renderer.createObject(this.id, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
+            if (this._loading) {
+                this._loading = false;
+                this.fire("loaded", true);
+            }
+            if (result.objectId) {
+                this._objectId = result.objectId;
+            } else if (result.errors) {
+                var errors = result.errors.join("\n");
+                this.error(errors);
+                this.fire("error", errors);
+            }
+        },
+
+        _getState: function () {
+            this._makeHash();
+            return this._state;
+        },
+
+        _makeHash: function () {
+            var hash = [];
+            var state = this._state;
+            if (state.stationary) {
+                hash.push("/s");
+            }
+            if (state.billboard === "none") {
+                hash.push("/n");
+            } else if (state.billboard === "spherical") {
+                hash.push("/s");
+            } else if (state.billboard === "cylindrical") {
+                hash.push("/c");
+            }
+            if (state.receiveShadow) {
+                hash.push("/rs");
+            }
+            hash.push(";");
+            this._state.hash = hash.join("");
+        },
+
+        _destroy: function () {
+            this._super();
+            if (this._objectId) {
+                this._renderer.destroyObject(this._objectId);
+                this._objectId = null;
+            }
+        }
+    });
 })();
 ;/**
  * Components for animating state within Scenes.
@@ -16632,11 +20124,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ## Examples
 
- * [Flying to random Entities](../../examples/#animation_camera_flight)
+ * [Flying to random meshes](../../examples/#animation_camera_flight)
 
- ## Flying to an Entity
+ ## Flying to a Mesh
 
- Flying to an {{#crossLink "Entity"}}{{/crossLink}}:
+ Flying to a {{#crossLink "Mesh"}}{{/crossLink}}:
 
  ````Javascript
  // Create a CameraFlightAnimation that takes one second to fly
@@ -16649,11 +20141,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
            // Arrived
        });
 
- // Create a Entity, which gets all the default components
- var entity = new Entity();
+ // Create a Mesh, which gets all the default components
+ var mesh = new Mesh();
 
- // Fly to the Entity's World-space AABB
- cameraFlight.flyTo(entity);
+ // Fly to the Mesh's World-space AABB
+ cameraFlight.flyTo(mesh);
  ````
  ## Flying to a position
 
@@ -16676,7 +20168,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  axis-aligned bounding box:
 
  ````Javascript
- cameraFlight.flyTo(entity.aabb);
+ cameraFlight.flyTo(mesh.aabb);
  ````
 
  @class CameraFlightAnimation
@@ -16716,7 +20208,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             // Shows a wireframe box for target AABBs
             this._aabbHelper = this.create({
-                type: "xeogl.Entity",
+                type: "xeogl.Mesh",
                 geometry: this.create({
                     type: "xeogl.AABBGeometry"
                 }),
@@ -16734,7 +20226,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             // Shows a wireframe box for target AABBs
             this._obbHelper = this.create({
-                type: "xeogl.Entity",
+                type: "xeogl.Mesh",
                 geometry: this.create({
                     type: "xeogl.OBBGeometry",
                     material: this.create({
@@ -16801,7 +20293,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          * @param [params.look] {Float32Array} Position to fly the look position to.
          * @param [params.up] {Float32Array} Position to fly the up vector to.
          * @param [params.fit=true] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
-         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Object"}}{{/crossLink}} or its AABB should
          * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
          * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink "CameraFlightAnimation/duration:property"}}{{/crossLink}}.
          * @param [params.orthoScale] {Number} TODO: document this
@@ -16914,7 +20406,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                     if (params.showAABB !== false) {
                         this._aabbHelper.geometry.targetAABB = aabb;
-                        this._aabbHelper.visible = true;
+                        //this._aabbHelper.visible = true;
                     }
 
                     var aabbCenter = math.getAABB3Center(aabb);
@@ -16999,7 +20491,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          * @param [params.eye] {Float32Array} Position to fly the eye position to.
          * @param [params.look] {Float32Array} Position to fly the look position to.
          * @param [params.up] {Float32Array} Position to fly the up vector to.
-         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Object"}}{{/crossLink}} or its AABB should
          * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
          * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          */
@@ -17314,7 +20806,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
 
             /**
-             * How much of the perspective field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+             * How much of the perspective field-of-view, in degrees, that a target {{#crossLink "Object"}}{{/crossLink}} or its AABB should
              * fill the canvas when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlightAnimation/jumpTo:method"}}{{/crossLink}}.
              *
              * @property fitFOV
@@ -17375,8 +20867,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.
  * The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
  the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.
-
- <img src="../../../assets/images/Canvas.png"></img>
 
  A Canvas also has
 
@@ -17528,7 +21018,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             this.contextAttr.alpha = this.transparent;
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
-                this.contextAttr.preserveDrawingBuffer = false;
+                this.contextAttr.preserveDrawingBuffer = true;
             }
 
             this.contextAttr.stencil = false;
@@ -17845,7 +21335,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             if (this.gl) {
                 if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping
                     this.gl.getExtension("OES_standard_derivatives");
-                    this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
+                  //  this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
                 }
             }
         },
@@ -18211,6 +21701,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         return;
                     }
 
+                    var prevValue = this._processes;
+
                     this._processes = value;
 
                     this._element.style["visibility"] = (this._processes > 0) ? "visible" : "hidden";
@@ -18222,6 +21714,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                      @param value The property's new value
                      */
                     this.fire("processes", this._processes);
+
+                    if (this._processes === 0 && this._processes !== prevValue) {
+
+                        /**
+                         Fired whenever this Spinner's {{#crossLink "Spinner/visible:property"}}{{/crossLink}} property becomes zero.
+
+                         @event zeroProcesses
+                         */
+                        this.fire("zeroProcesses", this._processes);
+                    }
                 },
 
                 get: function () {
@@ -18389,7 +21891,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     });
 })();
 ;/**
- * Components for cross-section views of Entities.
+ * Components for cross-section views of meshes.
  *
  * @module xeogl
  * @submodule clipping
@@ -18408,9 +21910,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ## Usage
 
- In the example below, we have an {{#crossLink "Entity"}}{{/crossLink}} that's attached by a {{#crossLink "Clips"}}{{/crossLink}}
+ In the example below, we have an {{#crossLink "Mesh"}}{{/crossLink}} that's attached by a {{#crossLink "Clips"}}{{/crossLink}}
  that contains two {{#crossLink "Clip"}}{{/crossLink}} components.  The first {{#crossLink "Clip"}}{{/crossLink}} is on the
- positive diagonal, while the second is on the negative diagonal. The {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
+ positive diagonal, while the second is on the negative diagonal. The {{#crossLink "Mesh"}}Mesh's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
  is a box, which will get two of its corners clipped off.
 
  ````javascript
@@ -18432,26 +21934,26 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
      })
  ];
 
- // Create an Entity in the default Scene, that will be clipped by our Clip planes
- var entity = new xeogl.Entity({
+ // Create a Mesh in the default Scene, that will be clipped by our Clip planes
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.SphereGeometry(),
      clippable: true // Enable clipping (default)
  });
  ````
 
- ### Switching clipping on and off for an Entity
+ ### Switching clipping on and off for a Mesh
 
- An {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/clippable:property"}}{{/crossLink}} property indicates
+ An {{#crossLink "Mesh"}}{{/crossLink}}'s {{#crossLink "Mesh/clippable:property"}}{{/crossLink}} property indicates
  whether or not it is affected by Clip components.
 
  You can switch it at any time, like this:
 
  ```` javascript
- // Disable clipping for the Entity
- entity.clippable = false;
+ // Disable clipping for the Mesh
+ mesh.clippable = false;
 
- // Enable clipping for the Entity
- entity.clippable = true;
+ // Enable clipping for the Mesh
+ mesh.clippable = true;
  ````
 
  @class Clip
@@ -18590,7 +22092,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 })();
 ;/**
  A **Clips** applies a set of {{#crossLink "Clip"}}{{/crossLink}} planes to the
- clippable {{#crossLink "Entity"}}Entities{{/crossLink}} within its {{#crossLink "Scene"}}{{/crossLink}}.
+ clippable {{#crossLink "Mesh"}}meshes{{/crossLink}} within its {{#crossLink "Scene"}}{{/crossLink}}.
 
  See {{#crossLink "Clip"}}{{/crossLink}} for more info.
 
@@ -18784,7 +22286,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  * @module xeogl
  * @submodule controls
  */;/**
- * Rotates, pans and zooms the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} with keyboard, mouse and touch input.
+ Rotates, pans and zooms the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} with keyboard, mouse and touch input.
 
  CameraControl fires these events:
 
@@ -18809,6 +22311,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ## Rotating
 
+ ## Pivoting
+
  ## Zooming
 
  ## Events
@@ -18818,6 +22322,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  ## Inertia
 
  ## First person
+
+ ## Zoom to pointer
+
+ TODO: describe only works for first-person
+ TODO: make configurable?
 
  ## Keyboard layout
 
@@ -18835,9 +22344,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  @param [cfg.firstPerson=false] {Boolean} Whether or not this CameraControl is in "first person" mode.
  @param [cfg.walking=false] {Boolean} Whether or not this CameraControl is in "walking" mode.
  @param [cfg.keyboardLayout="qwerty"] {String} Keyboard layout.
- @param [cfg.doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Entity"}}{{/crossLink}} that's double-clicked.
+ @param [cfg.doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Mesh"}}{{/crossLink}} that's double-clicked.
  @param [cfg.active=true] {Boolean} Indicates whether or not this CameraControl is active.
+ @param [cfg.pivoting=false] {Boolean} When true, clicking on a {{#crossLink "Mesh"}}{{/crossLink}} and dragging will pivot
+ the {{#crossLink "Camera"}}{{/crossLink}} about the picked point on the Mesh's surface.
  @param [cfg.inertia=0.5] {Number} A factor in range [0..1] indicating how much the camera keeps moving after you finish panning or rotating it.
+ @author xeolabs / http://xeolabs.com
+ @author DerSchmale / http://www.derschmale.com
  @extends Component
  */
 (function () {
@@ -18858,7 +22371,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         _init: function (cfg) {
 
-            this._boundaryHelper = new xeogl.Entity(this, {
+            var self = this;
+
+            this._boundaryHelper = new xeogl.Mesh(this, {
                 geometry: new xeogl.AABBGeometry(this),
                 material: new xeogl.PhongMaterial(this, {
                     diffuse: [0, 0, 0],
@@ -18871,6 +22386,96 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 collidable: false
             });
 
+            this._pivoter = new (function () { // Pivots the Camera around an arbitrary World-space position
+
+                // Pivot math by: http://www.derschmale.com/
+
+                var math = xeogl.math;
+                var camera = self.scene.camera;
+                var pivotPoint = new Float32Array(3);
+                var cameraOffset;
+                var azimuth = 0;
+                var polar = 0;
+                var radius = 0;
+                var pivotHelper = new xeogl.Mesh(self, { // Shows the pivot position
+                    geometry: new xeogl.SphereGeometry(self, {radius: 1}),
+                    material: new xeogl.PhongMaterial(self, {emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+                    position: [0, 0, 0],
+                    pickable: false,
+                    visible: false,
+                    highlighted: true,
+                    highlightMaterial: new xeogl.EmphasisMaterial(self, {
+                        edges: false
+                    })
+                });
+
+                this.pivoting = false; // True while pivoting
+
+                this.startPivot = function (worldPos) {
+                    pivotHelper.visible = true;
+                    pivotHelper.position = worldPos;
+                    pivotPoint.set(worldPos);
+                    var lookat = math.lookAtMat4v(camera.eye, camera.look, camera.worldUp);
+                    cameraOffset = math.transformPoint3(lookat, pivotPoint);
+                    cameraOffset[2] += math.distVec3(camera.eye, pivotPoint);
+                    lookat = math.inverseMat4(lookat);
+                    var offset = math.transformVec3(lookat, cameraOffset);
+                    var diff = math.vec3();
+                    math.subVec3(camera.eye, pivotPoint, diff);
+                    math.addVec3(diff, offset);
+                    if (camera.worldUp[2] === 1) {
+                        var t = diff[1];
+                        diff[1] = diff[2];
+                        diff[2] = t;
+                    }
+                    radius = math.lenVec3(diff);
+                    polar = Math.acos(diff[1] / radius);
+                    azimuth = Math.atan2(diff[0], diff[2]);
+                    this.pivoting = true;
+                };
+
+                this.continuePivot = function (yawInc, pitchInc) {
+                    if (!this.pivoting) {
+                        return;
+                    }
+                    if (camera.worldUp[2] === 1) {
+                        dx = -dx;
+                    }
+                    var dx = -yawInc;
+                    var dy = -pitchInc;
+                    azimuth += -dx * .01;
+                    polar += dy * .01;
+                    polar = math.clamp(polar, .001, Math.PI - .001);
+                    var pos = [
+                        radius * Math.sin(polar) * Math.sin(azimuth),
+                        radius * Math.cos(polar),
+                        radius * Math.sin(polar) * Math.cos(azimuth)
+                    ];
+                    if (camera.worldUp[2] === 1) {
+                        var t = pos[1];
+                        pos[1] = pos[2];
+                        pos[2] = t;
+                    }
+                    math.addVec3(pos, pivotPoint);
+                    var lookat = math.lookAtMat4v(pos, pivotPoint, camera.worldUp);
+                    lookat = math.inverseMat4(lookat);
+                    var offset = math.transformVec3(lookat, cameraOffset);
+                    lookat[12] -= offset[0];
+                    lookat[13] -= offset[1];
+                    lookat[14] -= offset[2];
+                    var zAxis = [lookat[8], lookat[9], lookat[10]];
+                    camera.eye = [lookat[12], lookat[13], lookat[14]];
+                    math.subVec3(camera.eye, zAxis, camera.look);
+                    camera.up = [lookat[4], lookat[5], lookat[6]];
+                };
+
+                this.endPivot = function () {
+                    pivotHelper.visible = false;
+                    this.pivoting = false;
+                };
+
+            })();
+
             this._cameraFlight = new xeogl.CameraFlightAnimation(this, {
                 duration: 0.5
             });
@@ -18880,6 +22485,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             this.keyboardLayout = cfg.keyboardLayout;
             this.doublePickFlyTo = cfg.doublePickFlyTo;
             this.active = cfg.active;
+            this.pivoting = cfg.pivoting;
             this.inertia = cfg.inertia;
 
             this._initEvents(); // Set up all the mouse/touch/kb handlers
@@ -18913,6 +22519,32 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                 get: function () {
                     return this._active;
+                }
+            },
+
+            /**
+             When true, clicking on a {{#crossLink "Mesh"}}{{/crossLink}} and dragging will pivot
+             the {{#crossLink "Camera"}}{{/crossLink}} about the picked point on the Mesh's surface.
+
+             @property pivoting
+             @default false
+             @type Boolean
+             */
+            pivoting: {
+
+                set: function (value) {
+                    this._pivoting = !!value;
+
+                    /**
+                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/pivoting:property"}}{{/crossLink}} property changes.
+                     * @event pivoting
+                     * @param value The property's new value
+                     */
+                    this.fire('pivoting', this._pivoting);
+                },
+
+                get: function () {
+                    return this._pivoting;
                 }
             },
 
@@ -19222,7 +22854,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     var worldPos = math.vec4();
                     var eyeCursorVec = math.vec3();
 
-                    var unproject = function (inverseProjMat, inverseViewMat, mousePos, z,  viewPos, worldPos) {
+                    var unproject = function (inverseProjMat, inverseViewMat, mousePos, z, viewPos, worldPos) {
                         var canvas = scene.canvas.canvas;
                         var halfCanvasWidth = canvas.offsetWidth / 2.0;
                         var halfCanvasHeight = canvas.offsetHeight / 2.0;
@@ -19238,8 +22870,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     };
 
                     return function (mousePos, factor) {
-
-                        console.log(mousePos);
 
                         var lastHoverDistance = 0;
                         var inverseProjMat = getInverseProjectMat();
@@ -19281,24 +22911,37 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         rotateVy = 0;
                     }
 
-                    if (rotateVx !== 0) {
-                        if (self._firstPerson) {
-                            camera.pitch(-rotateVx);
-                        } else {
-                            camera.orbitPitch(rotateVx);
-                        }
-                    }
+                    if (rotateVy !== 0 || rotateVx !== 0) {
 
-                    if (rotateVy !== 0) {
-                        if (self._firstPerson) {
-                            camera.yaw(rotateVy);
-                        } else {
-                            camera.orbitYaw(rotateVy);
-                        }
-                    }
+                        if (self._pivoter.pivoting) {
+                            self._pivoter.continuePivot(rotateVy, rotateVx);
 
-                    rotateVx *= cameraInertia;
-                    rotateVy *= cameraInertia;
+                        } else {
+
+                            if (rotateVx !== 0) {
+
+                                if (self._firstPerson) {
+                                    camera.pitch(-rotateVx);
+
+                                } else {
+                                    camera.orbitPitch(rotateVx);
+                                }
+                            }
+
+                            if (rotateVy !== 0) {
+
+                                if (self._firstPerson) {
+                                    camera.yaw(rotateVy);
+
+                                } else {
+                                    camera.orbitYaw(rotateVy);
+                                }
+                            }
+                        }
+
+                        rotateVx *= cameraInertia;
+                        rotateVy *= cameraInertia;
+                    }
 
                     if (Math.abs(panVx) < EPSILON) {
                         panVx = 0;
@@ -19820,15 +23463,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             (function () {
 
                 var pickCursorPos = [0, 0];
-                var needPickEntity = false;
+                var needPickMesh = false;
                 var needPickSurface = false;
-                var lastPickedEntityId;
+                var lastPickedMeshId;
                 var hit;
                 var picked = false;
                 var pickedSurface = false;
 
                 function updatePick() {
-                    if (!needPickEntity && !needPickSurface) {
+                    if (!needPickMesh && !needPickSurface) {
                         return;
                     }
                     picked = false;
@@ -19838,67 +23481,67 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             pickSurface: true,
                             canvasPos: pickCursorPos
                         });
-                    } else { // needPickEntity == true
+                    } else { // needPickMesh == true
                         hit = scene.pick({
                             canvasPos: pickCursorPos
                         });
                     }
                     if (hit) {
                         picked = true;
-                        var pickedEntityId = hit.entity.id;
-                        if (lastPickedEntityId !== pickedEntityId) {
-                            if (lastPickedEntityId !== undefined) {
+                        var pickedMeshId = hit.mesh.id;
+                        if (lastPickedMeshId !== pickedMeshId) {
+                            if (lastPickedMeshId !== undefined) {
 
                                 /**
-                                 * Fired whenever the pointer no longer hovers over an {{#crossLink "Entity"}}{{/crossLink}}.
+                                 * Fired whenever the pointer no longer hovers over an {{#crossLink "Mesh"}}{{/crossLink}}.
                                  * @event hoverOut
-                                 * @param entity The Entity
+                                 * @param mesh The Mesh
                                  */
                                 self.fire("hoverOut", {
-                                    entity: scene.entities[lastPickedEntityId]
+                                    mesh: scene.meshes[lastPickedMeshId]
                                 });
                             }
 
                             /**
-                             * Fired when the pointer is over a new {{#crossLink "Entity"}}{{/crossLink}}.
+                             * Fired when the pointer is over a new {{#crossLink "Mesh"}}{{/crossLink}}.
                              * @event hoverEnter
-                             * @param hit A pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                             * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                              */
                             self.fire("hoverEnter", hit);
-                            lastPickedEntityId = pickedEntityId;
+                            lastPickedMeshId = pickedMeshId;
                         }
                         /**
-                         * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Entity"}}{{/crossLink}}.
+                         * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Mesh"}}{{/crossLink}}.
                          * @event hover
-                         * @param hit A pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                         * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                          */
                         self.fire("hover", hit);
                         if (hit.worldPos) {
                             pickedSurface = true;
 
                             /**
-                             * Fired while the pointer hovers over the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
+                             * Fired while the pointer hovers over the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
                              *
                              * This event provides 3D information about the point on the surface that the pointer is
                              * hovering over.
                              *
                              * @event hoverSurface
-                             * @param hit A surface pick hit result, containing the ID of the Entity and 3D info on the
+                             * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
                              * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                              */
                             self.fire("hoverSurface", hit);
                         }
                     } else {
-                        if (lastPickedEntityId !== undefined) {
+                        if (lastPickedMeshId !== undefined) {
                             /**
-                             * Fired whenever the pointer no longer hovers over an {{#crossLink "Entity"}}{{/crossLink}}.
+                             * Fired whenever the pointer no longer hovers over an {{#crossLink "Mesh"}}{{/crossLink}}.
                              * @event hoverOut
-                             * @param entity The Entity
+                             * @param mesh The Mesh
                              */
                             self.fire("hoverOut", {
-                                entity: scene.entities[lastPickedEntityId]
+                                mesh: scene.meshes[lastPickedMeshId]
                             });
-                            lastPickedEntityId = undefined;
+                            lastPickedMeshId = undefined;
                         }
                         /**
                          * Fired continuously while the pointer is moving but not hovering over anything.
@@ -19909,7 +23552,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             canvasPos: pickCursorPos
                         });
                     }
-                    needPickEntity = false;
+                    needPickMesh = false;
                     needPickSurface = false;
                 }
 
@@ -19925,14 +23568,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             return;
                         }
 
-                        //if (down) {
-                        //    return;
-                        //}
-
                         getCanvasPosFromEvent(e, pickCursorPos);
 
                         if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
-                            needPickEntity = true;
+                            needPickMesh = true;
                         }
                     });
 
@@ -19949,15 +23588,27 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         downY = e.clientY;
                         downCursorX = pickCursorPos[0];
                         downCursorY = pickCursorPos[1];
+
+                        needPickSurface = self._pivoting;
+                        updatePick();
+                        if (hit && self._pivoting) {
+                            self._pivoter.startPivot(hit.worldPos);
+                        }
                     });
 
                     canvas.addEventListener('mouseup', (function (e) {
+
                         var clicks = 0;
                         var timeout;
+
                         return function (e) {
+
                             if (!self._active) {
                                 return;
                             }
+
+                            self._pivoter.endPivot();
+
                             if (Math.abs(e.clientX - downX) > 3 || Math.abs(e.clientY - downY) > 3) {
                                 return;
                             }
@@ -19973,21 +23624,21 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                 if (hit) {
 
                                     /**
-                                     * Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink "Entity"}}{{/crossLink}}.
+                                     * Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink "Mesh"}}{{/crossLink}}.
                                      *
                                      * @event picked
-                                     * @param hit A surface pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                                     * @param hit A surface pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                                      */
                                     self.fire("picked", hit);
                                     if (pickedSurface) {
 
                                         /**
-                                         * Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
+                                         * Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
                                          *
                                          * This event provides 3D information about the point on the surface that the pointer has picked.
                                          *
                                          * @event pickedSurface
-                                         * @param hit A surface pick hit result, containing the ID of the Entity and 3D info on the
+                                         * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
                                          * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                                          */
                                         self.fire("pickedSurface", hit);
@@ -20010,8 +23661,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             if (clicks == 1) {
                                 timeout = setTimeout(function () {
 
-                                    needPickEntity = self._doublePickFlyTo;
-                                    needPickSurface = needPickEntity || !!self.hasSubs("pickedSurface");
+                                    needPickMesh = self._doublePickFlyTo;
+                                    needPickSurface = needPickMesh || !!self.hasSubs("pickedSurface");
                                     pickCursorPos[0] = downCursorX;
                                     pickCursorPos[1] = downCursorY;
 
@@ -20033,27 +23684,27 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                 clearTimeout(timeout);
 
-                                needPickEntity = self._doublePickFlyTo;
-                                needPickSurface = needPickEntity && !!self.hasSubs("doublePickedSurface");
+                                needPickMesh = self._doublePickFlyTo;
+                                needPickSurface = needPickMesh && !!self.hasSubs("doublePickedSurface");
 
                                 updatePick();
 
                                 if (hit) {
                                     /**
-                                     * Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink "Entity"}}{{/crossLink}}.
+                                     * Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink "Mesh"}}{{/crossLink}}.
                                      *
                                      * @event picked
-                                     * @param hit A surface pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                                     * @param hit A surface pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                                      */
                                     self.fire("doublePicked", hit);
                                     if (pickedSurface) {
                                         /**
-                                         * Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
+                                         * Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
                                          *
                                          * This event provides 3D information about the point on the surface that the pointer has picked.
                                          *
                                          * @event doublePickedSurface
-                                         * @param hit A surface pick hit result, containing the ID of the Entity and 3D info on the
+                                         * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
                                          * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                                          */
                                         self.fire("doublePickedSurface", hit);
@@ -20154,7 +23805,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                     pickCursorPos[0] = Math.round(changedTouches[0].clientX);
                                     pickCursorPos[1] = Math.round(changedTouches[0].clientY);
-                                    needPickEntity = true;
+                                    needPickMesh = true;
                                     needPickSurface = !!self.hasSubs("pickedSurface");
 
                                     updatePick();
@@ -20182,7 +23833,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                     pickCursorPos[0] = Math.round(changedTouches[0].clientX);
                                     pickCursorPos[1] = Math.round(changedTouches[0].clientY);
-                                    needPickEntity = true;
+                                    needPickMesh = true;
                                     needPickSurface = !!self.hasSubs("pickedSurface");
 
                                     updatePick();
@@ -20339,7 +23990,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 pos = hit.worldPos
             }
 
-            var aabb = hit ? hit.entity.aabb : this.scene.aabb;
+            var aabb = hit ? hit.mesh.aabb : this.scene.aabb;
 
             this._boundaryHelper.geometry.targetAABB = aabb;
             //    this._boundaryHelper.visible = true;
@@ -20384,7 +24035,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  * @module xeogl
  * @submodule geometry
  */;/**
- A **Geometry** defines a mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Geometry** defines a mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  ## Usage
 
@@ -20412,7 +24063,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 });
 
  // Disable compression when creating a Geometry
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         quantized: false // Default is true
     }),
@@ -20426,7 +24077,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  Geometries are automatically combined into the same vertex buffer objects (VBOs) so that we reduce the number of VBO
  binds done by WebGL on each frame. VBO binds are expensive, so this really makes a difference when we have large numbers
- of Entities that share similar Materials (as is often the case in CAD rendering).
+ of Meshes that share similar Materials (as is often the case in CAD rendering).
 
  #### Disabling
 
@@ -20441,7 +24092,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 });
 
  // Disable VBO combination for an individual Geometry
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         combined: false // Default is true
     }),
@@ -20473,7 +24124,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  for reduced memory footprint and GPU bus usage.
  @param [cfg.combined=false] {Boolean} Combines positions, colors, normals and UVs into the same WebGL vertex buffers
  with other Geometries, in order to reduce the number of buffer binds performed per frame.
- @param [cfg.ghostEdgeThreshold=2] {Number} When a {{#crossLink "Entity"}}{{/crossLink}} renders this Geometry as wireframe,
+ @param [cfg.ghostEdgeThreshold=2] {Number} When a {{#crossLink "Mesh"}}{{/crossLink}} renders this Geometry as wireframe,
  this indicates the threshold angle (in degrees) between the face normals of adjacent triangles below which the edge is discarded.
  @extends Component
  */
@@ -21854,7 +25505,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     })();
 })();;/**
- A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_box"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
@@ -21870,11 +25521,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a BoxGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a BoxGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.BoxGeometry({
         center: [0,0,0],
@@ -22117,7 +25768,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
 })();
 ;/**
- A **TorusGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **TorusGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a torus-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_torus"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
 
@@ -22137,11 +25788,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a TorusGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a TorusGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.TorusGeometry({
          center: [0,0,0],
@@ -22311,7 +25962,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
 })();
 ;/**
- A **SphereGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **SphereGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a sphere-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_sphere"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
 
@@ -22321,11 +25972,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a SphereGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a SphereGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.SphereGeometry({
          center: [0,0,0],
@@ -22502,18 +26153,18 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  ## Usage
 
  ````javascript
- // First Entity with a TorusGeometry
- var entity = new xeogl.Entity({
+ // First Mesh with a TorusGeometry
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.TorusGeometry()
  });
 
- // Second Entity with an OBBGeometry that shows a wireframe box
- // for the World-space boundary of the first Entity
+ // Second Mesh with an OBBGeometry that shows a wireframe box
+ // for the World-space boundary of the first Mesh
 
- var boundaryHelper = new xeogl.Entity({
+ var boundaryHelper = new xeogl.Mesh({
 
      geometry: new xeogl.OBBGeometry({
-         target: entity
+         target: mesh
      }),
 
      material: new xeogl.PhongMaterial({
@@ -22524,16 +26175,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  });
  ````
 
- Now whenever our entity {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our OBBGeometry will automatically
+ Now whenever our mesh {{#crossLink "Mesh"}}{{/crossLink}} changes shape or position, our OBBGeometry will automatically
  update to stay fitted to it.
 
- We could also directly configure the OBBGeometry with the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/obb:property"}}OBB{{/crossLink}}:
+ We could also directly configure the OBBGeometry with the {{#crossLink "Mesh"}}{{/crossLink}}'s {{#crossLink "Mesh/obb:property"}}OBB{{/crossLink}}:
 
  ````javascript
- var boundaryHelper2 = new xeogl.Entity({
+ var boundaryHelper2 = new xeogl.Mesh({
 
      geometry: new xeogl.OBBGeometry({
-         targetOBB: entity.obb
+         targetOBB: mesh.obb
      }),
 
      material: new xeogl.PhongMaterial({
@@ -22555,7 +26206,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBBGeometry.
  @param [cfg.target] {Component} ID or instance of a {{#crossLink "Component"}}{{/crossLink}} whose OBB we'll show.
- @param [cfg.targetOBB] {Float32Array} An entity-oriented box (OBB) in a 32-element Float32Array
+ @param [cfg.targetOBB] {Float32Array} An mesh-oriented box (OBB) in a 32-element Float32Array
  containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
  @extends Component
  */
@@ -22630,7 +26281,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             Sets this OBBGeometry to an entity-oriented bounding box (OBB), given as a 32-element Float32Array
+             Sets this OBBGeometry to an mesh-oriented bounding box (OBB), given as a 32-element Float32Array
              containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
 
              This property effectively replaces the {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
@@ -22646,8 +26297,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         return;
                     }
 
-                    if (this._attached.boundary) {
-                        this.boundary = null;
+                    if (this._attached.target) {
+                        this.target = null;
                     }
 
                     this._setPositionsFromOBB(value);
@@ -22688,17 +26339,17 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  ## Usage
 
  ````javascript
- // First Entity with a TorusGeometry
- var entity = new xeogl.Entity({
+ // First Mesh with a TorusGeometry
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.TorusGeometry()
  });
 
- // Second Entity with an AABBGeometry that shows a wireframe box
- // for the World-space axis-aligned boundary of the first Entity
- var boundaryHelper = new xeogl.Entity({
+ // Second Mesh with an AABBGeometry that shows a wireframe box
+ // for the World-space axis-aligned boundary of the first Mesh
+ var boundaryHelper = new xeogl.Mesh({
 
      geometry: new xeogl.AABBGeometry({
-         targetAABB: entity.aabb
+         targetAABB: mesh.aabb
      }),
 
      material: new xeogl.PhongMaterial({
@@ -22709,16 +26360,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  });
  ````
 
- Now whenever our entity {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our AABBGeometry will automatically
+ Now whenever our mesh {{#crossLink "Mesh"}}{{/crossLink}} changes shape or position, our AABBGeometry will automatically
  update to stay fitted to it.
 
- We could also directly configure the AABBGeometry with the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/aabb:property"}}AABB{{/crossLink}}:
+ We could also directly configure the AABBGeometry with the {{#crossLink "Mesh"}}{{/crossLink}}'s {{#crossLink "Mesh/aabb:property"}}AABB{{/crossLink}}:
 
  ````javascript
- var boundaryHelper2 = new xeogl.Entity({
+ var boundaryHelper2 = new xeogl.Mesh({
 
      geometry: new xeogl.AABBGeometry({
-         targetAABB: entity.aabb
+         targetAABB: mesh.aabb
      }),
 
      material: new xeogl.PhongMaterial({
@@ -22872,11 +26523,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a PathGeometry, a {{#crossLink "Path"}}{{/crossLink}} and
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a PathGeometry, a {{#crossLink "Path"}}{{/crossLink}} and
  a {{#crossLink "PhongMaterial"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.PathGeometry({
 
@@ -23035,7 +26686,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         }
     }
 });;/**
- A **CylinderGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a cylinder-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **CylinderGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a cylinder-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_cylinder"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
 
@@ -23045,11 +26696,11 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a CylinderGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a CylinderGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.CylinderGeometry({
          center: [0,0,0],
@@ -23317,7 +26968,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_plane"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
 
@@ -23335,11 +26986,11 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a PlaneGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a PlaneGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.PlaneGeometry({
          primitive: "triangles",
@@ -23514,8 +27165,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  Publishes keyboard and mouse events that occur on the parent {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Canvas"}}{{/crossLink}}.
 
  * Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.
-
- <img src="../../../assets/images/Input.png"></img>
 
  ## Usage
 
@@ -24936,11 +28585,11 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  A Lights may contain a virtually unlimited number of three types of light source:
 
  * {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
- affect all the Scene's {{#crossLink "Entity"}}Entities{{/crossLink}} equally,
+ affect all the Scene's {{#crossLink "Mesh"}}Meshes{{/crossLink}} equally,
  * {{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
  originates from a single point and spreads outward in all directions,
  * {{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
- Entities equally from a given direction and may cast shadows, and
+ Meshes equally from a given direction and may cast shadows, and
  * {{#crossLink "SpotLight"}}SpotLight{{/crossLink}}s, which eminate from a position in a given direction and may also cast shadows.
 
  A Lights can also have two other components that define environmental reflection and irradiance:
@@ -24959,7 +28608,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  ## Usage
 
- In the example below we'll customize the default Scene's light sources, then create a metallic sphere entity.
+ In the example below we'll customize the default Scene's light sources, then create a metallic sphere mesh.
 
  ````javascript
 
@@ -25010,8 +28659,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
     ]
  });
 
- // Create a metallic sphere entity
- new xeogl.Entity({
+ // Create a metallic sphere mesh
+ new xeogl.Mesh({
     material: new xeogl.MetallicMaterial({
         roughness: 1.0,
         metallic: 1.0,
@@ -25035,7 +28684,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
- @param [cfg.lights] {Array of String|Entity} Array of light source IDs or instances.
+ @param [cfg.lights] {Array of String|Mesh} Array of light source IDs or instances.
  @param [cfg.lightMap=undefined] {CubeTexture} A light map {{#crossLink "CubeTexture"}}{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Lights.
  @param [cfg.reflectionMap=undefined] {CubeTexture} A reflection map {{#crossLink "CubeTexture"}}{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Lights.
  @extends Component
@@ -25186,7 +28835,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this.fire("dirty", true);
 
-                    this._renderer.setImageForceDirty(); // Triggers a re-render (to clear) even if there are no entities
+                    this._renderer.setImageForceDirty(); // Triggers a re-render (to clear) even if there are no meshes
 
                     /**
                      Fired whenever this Lights's {{#crossLink "Lights/lights:property"}}{{/crossLink}} property changes.
@@ -25204,7 +28853,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             /**
              A {{#crossLink "CubeTexture"}}{{/crossLink}} that defines the brightness of the
-             surfaces of attached {{#crossLink "Entities"}}{{/crossLink}}.
+             surfaces of attached {{#crossLink "Meshes"}}{{/crossLink}}.
 
              Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Lights.
 
@@ -25234,7 +28883,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             /**
              A {{#crossLink "CubeTexture"}}{{/crossLink}} that defines a background image that is reflected in the
-             surfaces of attached {{#crossLink "Entities"}}{{/crossLink}}.
+             surfaces of attached {{#crossLink "Meshes"}}{{/crossLink}}.
 
              Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Lights.
 
@@ -25355,7 +29004,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
     });
 })();
 ;/**
- An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all {{#crossLink "Entity"}}Entities{{/crossLink}}
+ An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all {{#crossLink "Mesh"}}Meshes{{/crossLink}}
  equally.
 
  <a href="../../examples/#lights_ambient"><img src="http://i.giphy.com/l0HlGTxXQWMRVOPwk.gif"></img></a>
@@ -25364,10 +29013,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  * AmbientLights are grouped, along with other light source types, within a {{#crossLink "Lights"}}Lights{{/crossLink}} component,
  which belongs to a {{#crossLink "Scene"}}{{/crossLink}}.
- * When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ * When the {{#crossLink "Mesh"}}Meshes{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  PhongMaterial {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} at each rendered fragment of the {{#crossLink "Geometry"}}{{/crossLink}} surface.
- * When the Entities have {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}},
+ * When the Meshes have {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  LambertMaterial {{#crossLink "LambertMaterial/ambient:property"}}{{/crossLink}} for each rendered triangle of the Geometry surface (ie. flat shaded).
 
@@ -25378,7 +29027,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  ## Usage
 
  In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
- DirLights, then create a Phong-shaded box entity.
+ DirLights, then create a Phong-shaded box mesh.
 
  ````javascript
 
@@ -25406,8 +29055,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
     })
  ];
 
- // Create box entity
- new xeogl.Entity({
+ // Create box mesh
+ new xeogl.Mesh({
     material: new xeogl.PhongMaterial({
         ambient: [0.5, 0.5, 0.5],
         diffuse: [1,0.3,0.3]
@@ -25516,7 +29165,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- A **DirLight** is a directional light source that illuminates all {{#crossLink "Entity"}}Entities{{/crossLink}} equally
+ A **DirLight** is a directional light source that illuminates all {{#crossLink "Mesh"}}Meshes{{/crossLink}} equally
  from a given direction.
 
  ## Overview
@@ -25539,7 +29188,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  ## Usage
 
  In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
- DirLights, then create a Phong-shaded box entity.
+ DirLights, then create a Phong-shaded box mesh.
 
  ````javascript
 
@@ -25569,8 +29218,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
      })
  ];
 
- // Create box entity
- new xeogl.Entity({
+ // Create box mesh
+ new xeogl.Mesh({
     material: new xeogl.PhongMaterial({
         ambient: [0.5, 0.5, 0.5],
         diffuse: [1,0.3,0.3]
@@ -25850,7 +29499,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 })();
 ;/**
  A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions,
- to illuminate {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ to illuminate {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#lights_point_world_normalMap"><img src="http://i.giphy.com/3o6ZsZoFGIOJ2nlmN2.gif"></img></a>
 
@@ -25875,7 +29524,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  ## Usage
 
  In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
- PointLights, then create a Phong-shaded box entity.
+ PointLights, then create a Phong-shaded box mesh.
 
  ````javascript
 
@@ -25909,8 +29558,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
     })
  ];
 
- // Create box entity
- new xeogl.Entity({
+ // Create box mesh
+ new xeogl.Mesh({
     material: new xeogl.PhongMaterial({
         ambient: [0.5, 0.5, 0.5],
         diffuse: [1,0.3,0.3]
@@ -26293,7 +29942,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 })();
 ;/**
  A **SpotLight** defines a positional light source that originates from a single point and eminates in a given direction,
- to illuminate {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ to illuminate {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  ## Overview
 
@@ -26315,7 +29964,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  ## Usage
 
  In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
- SpotLights, then create a Phong-shaded box entity.
+ SpotLights, then create a Phong-shaded box mesh.
 
  ````javascript
 
@@ -26351,8 +30000,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
      })
  ];
 
- // Create box entity
- new xeogl.Entity({
+ // Create box mesh
+ new xeogl.Mesh({
     material: new xeogl.PhongMaterial({
         ambient: [0.5, 0.5, 0.5],
         diffuse: [1,0.3,0.3]
@@ -27024,7 +30673,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._state.encoding = value;
 
-                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of entities using this CubeTexture in their materials
+                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of meshes using this CubeTexture in their materials
                 },
 
                 get: function () {
@@ -27064,7 +30713,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  ## Usage
 
  ```` javascript
- var entity = new xeogl.Entity(scene, {
+ var mesh = new xeogl.Mesh(scene, {
 
         lights: new xeogl.Lights({
             lights: [
@@ -27203,258 +30852,15 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  * @module xeogl
  * @submodule models
  */;/**
- A **Model** is a collection of {{#crossLink "Component"}}Components{{/crossLink}}.
+ A **Model** is a {{#crossLink "Group"}}{{/crossLink}} of {{#crossLink "Component"}}Components{{/crossLink}}.
 
- ## Overview
-
- * A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.
- * Can be attached to a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.
- * Provides the collective axis-aligned World-space boundary of its components.
-
- A Model is subclassed by (at least):
+ Model is an abstract base class that's subclassed by (at least):
 
  * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
  * {{#crossLink "OBJModel"}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.
  * {{#crossLink "STLModel"}}{{/crossLink}}, which loads its components from .STL files.
  * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
  * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
-
- ## Usage
-
- * [Adding Components](#adding-components)
- * [Removing Components](#removing-components)
- * [Finding Models in Scenes](#finding-models-in-scenes)
- * [Finding Components in Models](#finding-components-in-models)
- * [Transforming a Model](#transforming-a-model)
- * [Getting the World-space boundary of a Model](#getting-the-world-space-boundary-of-a-model)
- * [Clearing a Model](#clearing-a-model)
- * [Destroying a Model](#destroying-a-model)
-
- ### Adding Components
-
- When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
- internally instantiate them, as shown below.
-
- As mentioned, a Model owns all the components added to it, destroying them when we destroy
- the Model or call the Model's {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
-
- ````javascript
- var model = new xeogl.Model({ // Create Model in xeogl's default Scene
-     id: "myModel"
- });
-
- var geometry = model.add({
-    type: "xeogl.TorusGeometry"
- });
-
- var material = model.add({
-    type: "xeogl.PhongMaterial"
-    diffuse: [0.4, 0.4, 9.0]
- });
-
- model.add({
-    type: "xeogl.Entity",
-    geometry: geometry,
-    material: material
- });
- ````
-
- As shown below, we can also add our own component instances, supplying them either by reference or ID.
-
- Note that the components must be in the same {{#crossLink "Scene"}}{{/crossLink}} as the model.
-
- ````javascript
- // Add by instance
- var myEntity = new xeogl.Entity({
-    geometry: geometry,
-    material: material
- });
- model.add(myEntity);
-
- // Add by ID
- new xeogl.Entity({
-    id: "myEntity",
-    geometry: geometry,
-    material: material
- })
- model.add("myEntity");
- ````
-
- We can also add components all in one shot,  via the Model's constructor:
-
- ````javascript
- model = new xeogl.Model({
-    id: "myModel",
-    components: [
-        {
-            type: "xeogl.TorusGeometry",
-            id: "myGeometry"
-        },
-        {
-            type: "xeogl.PhongMaterial",
-            id: "myMaterial",
-            diffuse: [0.4, 0.4, 0.9]
-        },
-        {
-            type: "xeogl.Entity",
-            id: "myEntity",
-            geometry: "myGeometry",
-            material: "myMaterial"
-        }
-    ]
- });
- ````
-
- ### Removing Components
-
- To remove a component instance from a Model:
-
- ````JavaScript
- model.remove(myEntity);
- ````
-
- We can also remove components by ID:
-
- ````JavaScript
- model.remove("myEntity");
- ````
- Note that if the Component is owned by the Model, where it was created like this:
-
- ````javascript
- var myComponent = new xeogl.Rotate(myModel, {... });
- ````
-
- then even after removing it, calling {{#crossLink "Model/destroyAll:method"}}destroyAll{{/crossLink}} on the
- Model will still destroy the component.
-
- ### Finding Models in Scenes
-
- Our Model will now be registered by ID on its Scene, so we can now find it like this:
-
- ````javascript
- model = xeogl.scene.models["myModel"];
- ````
-
- That's assuming that we've created the Model in the default xeogl Scene, which we did for these examples.
-
- ### Finding Components in Models
-
- Our Model now has various components within itself, which we can find by their IDs.
-
- To find the components grouped by their types, drop this expression into the browser's JavaScript
- debug console (we're using Chrome here):
-
- ````
- model.types;
- ````
-
- The result is the value of the Model's {{#crossLink "Model/types:property"}}types{{/crossLink}} map, which
- contains its components, mapped to their types:
-
- <img src="../../../assets/images/screenshots/Model_findingComponents.png"></img>
-
- Here we've expanded the {{#crossLink "PhongMaterial"}}{{/crossLink}} components, and we can see
- our {{#crossLink "PhongMaterial"}}{{/crossLink}}.
-
- Let's get that {{#crossLink "PhongMaterial"}}{{/crossLink}} from our Model's
- {{#crossLink "Model/components:property"}}{{/crossLink}} map and change its diffuse color:
-
- ```` JavaScript
- var material = model.components["myMaterial"];
- material.diffuse = [0.9, 0.4, 0.4];
- ````
-
- The Model also has an {{#crossLink "Model/entities:property"}}{{/crossLink}} map, in which we can find our {{#crossLink "Entity"}}{{/crossLink}}:
-
- <img src="../../../assets/images/screenshots/Model.entities.png"></img>
-
- ### Transforming a Model
-
- A Model lets us transform its Entities as a group.
-
- We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}} to our Model, as a either a
- configuration object or a component instance:
-
- ```` Javascript
- // Attach transforms as a configuration object:
- model.transform = {
-        type: "xeogl.Translate",
-        xyz: [-35, 0, 0],
-        parent: {
-            type: "xeogl.Rotate",
-            xyz: [0, 1, 0],
-            angle: 45
-        }
-     };
-
- // Attach our own transform instances:
- model.transform = new xeogl.Translate({
-        xyz: [-35, 0, 0],
-        parent: new xeogl.Rotate({
-            xyz: [0, 1, 0],
-            angle: 45
-        })
-     });
- ````
-
- We can also provide the {{#crossLink "Transform"}}{{/crossLink}} to the Model constructor, as either configuration
- objects or instances.
-
- Here we'll provide them as configuration objects:
-
- ```` Javascript
- // Model internally instantiates our transform components:
- var model3 = new xeogl.Model({
-        transform: {
-            type: "xeogl.Translate",
-            xyz: [-35, 0, 0],
-            parent: {
-                type: "xeogl.Rotate",
-                xyz: [0, 1, 0],
-                angle: 45
-            }
-        }
-     });
-
- ````
-
- Note that, as with the components we added before, the Model will manage the lifecycles of our {{#crossLink "Transform"}}{{/crossLink}} components,
- destroying them when we destroy the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method. Also, when we call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on a Model component, the component will remove itself from the Model first.
-
- ### Getting the World-space boundary of a Model
-
- Get the World-space axis-aligned boundary of a MOdel like this:
-
- ```` Javascript
- model.on("boundary", function() {
-    var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]
-    //...
- });
- ````
-
- We can also subscribe to changes to that boundary, which will happen whenever
-
- * the Model's {{#crossLink "Transform"}}{{/crossLink}} is updated,
- * components are added or removed from the Model, or
- * the {{#crossLink "Geometry"}}Geometries{{/crossLink}} or {{#crossLink "Transform"}}Transforms{{/crossLink}} of its Entities are switched or modified.
-
- ````javascript
- model.on("boundary", function() {
-    var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]
- });
- ````
-
- ### Clearing a Model
-
- ```` Javascript
- model.clear();
- ````
-
- ### Destroying a Model
-
- ```` Javascript
- model.destroy();
- ````
 
 
  @class Model
@@ -27467,22 +30873,44 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
- @param [cfg.flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
- @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted.
- @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted.
- @param [cfg.outlined=false] {Boolean} When true, sets all the Model's Entities initially outlined.
- @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
- Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
- {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
- that the Model attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
- @param [cfg.components] {Array} Array of {{#crossLink "Components"}}{{/crossLink}} to add initially, given as IDs, configuration objects or instances.
- @extends Component
+ @param [cfg.parent] The parent Object.
+ @param [cfg.visible=true] {Boolean}  Indicates if this Model is visible.
+ @param [cfg.culled=true] {Boolean}  Indicates if this Model is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Model is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Model is clippable.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this Model.
+ @param [cfg.ghosted=false] {Boolean} Whether this Model is rendered as ghosted.
+ @param [cfg.highlighted=false] {Boolean} Whether this Model is rendered as highlighted.
+ @param [cfg.selected=false] {Boolean} Whether this Model is rendered as selected.
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
+ @param [cfg.position=[0,0,0]] {Float32Array} The Model's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The Model's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The Model's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Model's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+ @extends Group
  */
 (function () {
 
     "use strict";
 
-    xeogl.Model = xeogl.Component.extend({
+    /**
+     Child {{#crossLink "Object"}}Objects{{/crossLink}} mapped to their IDs.
+
+     @property childMap
+     @final
+     @type {*}
+     */
+
+    /**
+     Array of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+     @property childList
+     @final
+     @type Array
+     */
+
+    xeogl.Model = xeogl.Group.extend({
 
         /**
          JavaScript class name for this Component.
@@ -27495,10 +30923,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
         _init: function (cfg) {
 
+            this._super(cfg);
+
             /**
              * The {{#crossLink "Components"}}{{/crossLink}} within this Model, mapped to their IDs.
-             *
-             * Fires an {{#crossLink "Model/updated:event"}}{{/crossLink}} event on change.
              *
              * @property components
              * @type {{String:Component}}
@@ -27536,678 +30964,447 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this.types = {};
 
             /**
-             * The {{#crossLink "Entity"}}Entity{{/crossLink}} component instances within this Model, mapped to their IDs.
+             * The {{#crossLink "Object"}}Objects{{/crossLink}} in this Model, mapped to their IDs.
              *
-             * @property entities
-             * @type {{String:Entity}}
+             * @property objects
+             * @final
+             * @type {{String:Object}}
              */
-            this.entities = {};
+            this.objects = {};
 
-            // Subscriptions to "destroyed" events from components
-            this._onDestroyed = {};
-
-            // Subscriptions to "boundary" events from Entities
-            this._onBoundary = {};
-
-            this._aabb = xeogl.math.AABB3();
-
-            this._aabbDirty = false;
-
-            // Dummy transform to make it easy to graft user-supplied transforms above added entities
-            this._dummyRootTransform = this.create({
-                type: "xeogl.Transform",
-                meta: "dummy"
-            });
-
-            this.transform = cfg.transform;
-
-            this.ghosted = cfg.ghosted || cfg.ghost; // Backwards compat
-            this.highlighted = cfg.highlighted;
-            this.visible = cfg.visible;
-            this.culled = cfg.culled;
-            this.outlined = cfg.outlined;
-            this.selected = cfg.selected;
-
-            if (cfg.components) {
-                var components = cfg.components;
-                for (var i = 0, len = components.length; i < len; i++) {
-                    this.add(components[i]);
-                }
-            }
+            /**
+             * The {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Model, mapped to their IDs.
+             **
+             * @property meshes
+             * @final
+             * @type {String:xeogl.Mesh}
+             */
+            this.meshes = {};
         },
 
-        /**
-         * Adds a {{#crossLink "Component"}}Component{{/crossLink}} or subtype to this Model.
-         *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.
-         *
-         * See class comment for usage examples.
-         *
-         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Model.
-         *
-         * Fires an {{#crossLink "Model/added:event"}}{{/crossLink}} event.
-         *
-         * @method add
-         * @param {Number|String|*|Component} component ID, definition or instance of a {{#crossLink "Component"}}Component{{/crossLink}} type or subtype.
-         */
-        add: function (component) {
-
+        _addComponent: function (component) {
             var componentId;
             var types;
-
-            if (xeogl._isNumeric(component) || xeogl._isString(component)) {
-
-                if (this.scene.types[component]) {
-
-                    // Component type
-
-                    var type = component;
-
-                    types = this.scene.types[type];
-
-                    if (!types) {
-                        this.warn("Component type not found: '" + type + "'");
-                        return;
-                    }
-
-                    for (componentId in types) {
-                        if (types.hasOwnProperty(componentId)) {
-                            this.add(types[componentId]);
-                        }
-                    }
-
+            if (xeogl._isNumeric(component) || xeogl._isString(component)) { // Component ID
+                component = this.scene.components[component];
+                if (!component) {
+                    this.warn("Component not found: " + xeogl._inQuotes(component));
                     return;
-
-                } else {
-
-                    // Component ID
-
-                    component = this.scene.components[component];
-
-                    if (!component) {
-                        this.warn("Component not found: " + xeogl._inQuotes(component));
-                        return;
-                    }
                 }
-
-            } else if (xeogl._isObject(component)) {
-
-                // Component config given
-
+            } else if (xeogl._isObject(component)) { // Component config
                 var type = component.type || "xeogl.Component";
-
                 if (!xeogl._isComponentType(type)) {
                     this.error("Not a xeogl component type: " + type);
                     return;
                 }
-
                 component = new window[type](this.scene, component);
             }
-
-            if (component.scene !== this.scene) {
-
-                // Component in wrong Scene
-
-                this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
+            if (component.scene !== this.scene) { // Component in wrong Scene
+                this.error("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
                 return;
             }
-
-            // Add component to this map
-
-            if (this.components[component.id]) {
-
-                // Component already in this Model
+            if (this.components[component.id]) { // Component already in this Model
                 return;
             }
-
+            if (component.model && component.model.id !== this.id) { // Component in other Model
+                component.model.remove(component); // Transferring to this Model
+            }
             this.components[component.id] = component;
-
-            // Register component for its type
-
             types = this.types[component.type];
-
             if (!types) {
                 types = this.types[component.type] = {};
             }
-
             types[component.id] = component;
-
+            if (component.isType("xeogl.Mesh")) {
+                this.meshes[component.id] = component;
+            }
+            if (component.isType("xeogl.Object")) {
+                this.objects[component.id] = component;
+            }
             this.numComponents++;
+            component._addedToModel(this);
+        },
+        //
+        // _addComponentOLD: function (component) {
+        //     var types;
+        //     if (component.scene !== this.scene) { // Component in wrong Scene
+        //         this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
+        //         return;
+        //     }
+        //     if (this.components[component.id]) {
+        //         return;
+        //     }
+        //     if (component.model && component.model.id !== this.id) {
+        //         component.model.remove(component);
+        //     }
+        //     this.components[component.id] = component;
+        //     types = this.types[component.type];
+        //     if (!types) {
+        //         types = this.types[component.type] = {};
+        //     }
+        //     types[component.id] = component;
+        //     if (component.isType("xeogl.Mesh")) {
+        //         this.meshes[component.id] = component;
+        //     }
+        //     if (component.isType("xeogl.Object")) {
+        //         this.objects[component.id] = component;
+        //     }
+        //     this.numComponents++;
+        //     component._addedToModel(this);
+        // },
 
-            // Remove component when it's destroyed
-
-            var self = this;
-
-            this._onDestroyed[component.id] = component.on("destroyed", function () {
-                self.remove(component);
-            });
-
-            if (component.isType("xeogl.Entity")) {
-
-                // Insert the dummy transform above
-                // each entity we just loaded
-
-                var rootTransform = component.transform;
-
-                if (!rootTransform || rootTransform.id === "default.transform") {
-
-                    component.transform = self._dummyRootTransform;
-
-                } else {
-
-                    while (rootTransform.parent) {
-
-                        if (rootTransform.id === self._dummyRootTransform.id) {
-
-                            // Since transform hierarchies may contain
-                            // transforms that share the same parents, there is potential to find
-                            // our dummy root transform while walking up an entity's transform
-                            // path, when that path is joins a path that belongs to an Entity that
-                            // we processed earlier
-
-                            break;
-                        }
-
-                        rootTransform = rootTransform.parent;
-                    }
-
-                    if (rootTransform.id !== self._dummyRootTransform.id) {
-                        rootTransform.parent = self._dummyRootTransform;
-                    }
+        /**
+         Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Model.
+         @method clear
+         */
+        clear: function () {
+            // For efficiency, destroy Meshes first to avoid
+            // xeogl's automatic default component substitutions
+            // for (var id in this.meshes) {
+            //     if (this.meshes.hasOwnProperty(id)) {
+            //         this.meshes[id].off(this._onDestroyed[id]);
+            //         this.meshes[id].off(this._onBoundary[id]);
+            //         this.meshes[id].destroy();
+            //     }
+            // }
+            for (var id in this.components) {
+                if (this.components.hasOwnProperty(id)) {
+                    this.components[id].destroy(); // Groups in this Model will remove themselves when they're destroyed
                 }
-
-                this.entities[component.id] = component;
-
-                component.ghosted = this.ghosted;
-                component.highlighted = this.highlighted;
-                component.visible = this.visible;
-                component.culled = this.culled;
-                component.selected = this.selected;
-
-                this._onBoundary[component.id] = component.on("boundary", this._setAABBDirty, this);
-
-                this._setAABBDirty();
             }
-
-            /**
-             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is added to this {{#crossLink "Model"}}{{/crossLink}}.
-             * @event added
-             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was added.
-             */
-            this.fire("added", component);
-
-            if (!this._dirty) {
-                this._needUpdate();
-            }
-
-            return component;
-        },
-
-        _needUpdate: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                xeogl.scheduleTask(this._notifyUpdated, this);
-            }
-        },
-
-        _notifyUpdated: function () {
-
-            /* Fired on the next {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} whenever
-             * {{#crossLink "Component"}}Components{{/crossLink}} were added or removed since the
-             * last {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} event, to provide a batched change event
-             * for subscribers who don't want to react to every individual addition or removal on this Model.
-             *
-             * @event updated
-             */
-            this.fire("updated");
-
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
-
-            this._dirty = false;
+            this.components = {};
+            this.numComponents = 0;
+            this.types = {};
+            this.objects = {};
+            this.meshes = {};
         },
 
         /**
-         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Model.
-         *
-         * @method destroyAll
+         * @deprecated
          */
         destroyAll: function () {
-
-            // For efficiency, destroy Entities first to avoid
-            // xeogl's automatic default component substitutions
-
-            var type;
-            var list = [];
-            var components;
-            var component;
-            var id;
-
-            for (type in this.types) {
-                if (this.types.hasOwnProperty(type)) {
-                    components = this.types[type];
-                    for (id in components) {
-                        if (components.hasOwnProperty(id)) {
-                            component = components[id];
-                            if (component.isType("xeogl.Entity")) {
-                                list.push(component);
-                            } else {
-                                list.unshift(component);
-                            }
-                        }
-                    }
-                }
-            }
-
-            while (list.length > 0) {
-                list.pop().destroy();
-            }
-        },
-        /**
-         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Model.
-         *
-         * @method removeAll
-         */
-        removeAll: function () {
-
-            this.iterate(function (component) {
-                component.destroy();
-            });
-        },
-
-        /**
-         * Removes a {{#crossLink "Component"}}{{/crossLink}} from this model, without destroying it.
-         *
-         * Note that if the Component is owned by the Model, where it was created like this:
-         *
-         * ````javascript
-         * var myComponent = new xeogl.Rotate(myModel, {... });
-         * ````
-         *
-         * then even after removing it, calling {{#crossLink "Model/destroyAll:method"}}destroyAll{{/crossLink}} on the
-         * Model will still destroy the component.
-         *
-         * @param component
-         */
-        remove: function (component) {
-
-            if (xeogl._isNumeric(component) || xeogl._isString(component)) {
-
-                var id = component;
-
-                // Component ID
-
-                component = this.scene.components[id];
-
-                if (!component) {
-                    this.warn("Component not found in Scene: " + id);
-                    return;
-                }
-
-                component = this.components[id];
-
-                if (!component) {
-                    this.warn("Component " + id + " is not in this Model");
-                    return;
-                }
-            } else {
-
-                if (component.scene !== this.scene) {
-                    this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + component.id + "'");
-                    return;
-                }
-            }
-
-            this._remove(component);
-        },
-
-        _remove: function (component) {
-
-            var componentId = component.id;
-
-            delete this.components[componentId];
-            delete this.entities[componentId];
-
-            // Unsubscribe from component destruction
-
-            component.off(this._onDestroyed[componentId]);
-            delete this._onDestroyed[componentId];
-
-            // Unregister component for its type
-
-            var types = this.types[component.type];
-
-            if (types) {
-                delete types[component.id];
-            }
-
-            this.numComponents--;
-
-            //
-
-            if (component.isType("xeogl.Entity")) {
-                component.off(this._onBoundary[component.id]);
-                delete this._onBoundary[component.id];
-            }
-
-            /**
-             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is removed from this {{#crossLink "Model"}}{{/crossLink}}.
-             * @event removed
-             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was removed.
-             */
-            this.fire("removed", component);
-
-            if (!this._dirty) {
-                this._needUpdate();
-            }
-        },
-
-        /**
-         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Model.
-         *
-         * @method iterate
-         * @param {Function} callback Callback called for each {{#crossLink "Component"}}{{/crossLink}}.
-         * @param {Object} [scope=this] Optional scope for the callback, defaults to this Model.
-         */
-        iterate: function (callback, scope) {
-            scope = scope || this;
-            var components = this.components;
-            for (var componentId in components) {
-                if (components.hasOwnProperty(componentId)) {
-                    callback.call(scope, components[componentId]);
-                }
-            }
-        },
-
-        _props: {
-
-            /**
-             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Model.
-             *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model.
-             *
-             * Internally, the given {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most
-             * {{#crossLink "Transform"}}Transform{{/crossLink}} that the Model attaches to
-             * its {{#crossLink "Entity"}}Entities{{/crossLink}}.
-             *
-             * Fires an {{#crossLink "Model/transform:event"}}{{/crossLink}} event on change.
-             *
-             * @property transform
-             * @type Transform
-             */
-            transform: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Model's {{#crossLink "Model/transform:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event transform
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "transform",
-                        type: "xeogl.Transform",
-                        component: value,
-                        sceneDefault: false,
-                        onAttached: {
-                            callback: this._transformUpdated,
-                            scope: this
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.transform;
-                }
-            },
-
-            /**
-             * World-space axis-aligned 3D boundary (AABB) of this Model.
-             *
-             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
-             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-             *
-             * @property aabb
-             * @final
-             * @type {Float32Array}
-             */
-            aabb: {
-
-                get: function () {
-
-                    if (this._aabbDirty) {
-
-                        var xmin = xeogl.math.MAX_DOUBLE;
-                        var ymin = xeogl.math.MAX_DOUBLE;
-                        var zmin = xeogl.math.MAX_DOUBLE;
-                        var xmax = -xeogl.math.MAX_DOUBLE;
-                        var ymax = -xeogl.math.MAX_DOUBLE;
-                        var zmax = -xeogl.math.MAX_DOUBLE;
-
-                        var aabb;
-
-                        var entities = this.entities;
-
-                        for (var entityId in entities) {
-                            if (entities.hasOwnProperty(entityId)) {
-
-                                aabb = entities[entityId].aabb;
-
-                                if (aabb[0] < xmin) {
-                                    xmin = aabb[0];
-                                }
-                                if (aabb[1] < ymin) {
-                                    ymin = aabb[1];
-                                }
-                                if (aabb[2] < zmin) {
-                                    zmin = aabb[2];
-                                }
-                                if (aabb[3] > xmax) {
-                                    xmax = aabb[3];
-                                }
-                                if (aabb[4] > ymax) {
-                                    ymax = aabb[4];
-                                }
-                                if (aabb[5] > zmax) {
-                                    zmax = aabb[5];
-                                }
-                            }
-                        }
-
-                        this._aabb[0] = xmin;
-                        this._aabb[1] = ymin;
-                        this._aabb[2] = zmin;
-                        this._aabb[3] = xmax;
-                        this._aabb[4] = ymax;
-                        this._aabb[5] = zmax;
-
-                        this._aabbDirty = false;
-                    }
-
-                    return this._aabb;
-                }
-            },
-
-            /**
-             Indicates whether this Model's Entities are visible or not.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-
-                set: function (value) {
-                    value = value !== false;
-                    this._visible = value;
-                    for (var id in this.entities) {
-                        if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].visible = value;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._visible;
-                }
-            },
-
-            /**
-             Indicates whether this Model's Entities are culled or not.
-
-             @property culled
-             @default false
-             @type Boolean
-             */
-            culled: {
-
-                set: function (value) {
-                    value = !!value;
-                    this._culled = value;
-                    for (var id in this.entities) {
-                        if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].culled = value;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._culled;
-                }
-            },
-
-            /**
-             * Flag which indicates if this Model's Entities are rendered with ghosted effect.
-             *
-             * @property ghosted
-             * @default false
-             * @type Boolean
-             */
-            "ghosted,ghost": {
-
-                set: function (value) {
-                    value = !!value;
-                    this._ghosted = value;
-                    for (var id in this.entities) {
-                        if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].ghosted = value;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._ghosted;
-                }
-            },
-
-            /**
-             * Flag which indicates if this Model's Entities are rendered with highlighted effect.
-             *
-             * @property highlighted
-             * @default false
-             * @type Boolean
-             */
-            "highlight,highlighted": {
-
-                set: function (value) {
-                    value = !!value;
-                    this._highlighted = value;
-                    for (var id in this.entities) {
-                        if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].highlighted = value;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._highlighted;
-                }
-            },
-
-            /**
-             * Flag which indicates if this Model's Entities are rendered as selected.
-             *
-             * @property selected
-             * @default false
-             * @type Boolean
-             */
-            selected: {
-
-                set: function (value) {
-                    value = !!value;
-                    this._selected = value;
-                    for (var id in this.entities) {
-                        if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].selected = value;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._selected;
-                }
-            },
-
-            /**
-             * Flag which indicates if this Model's Entities are rendered with outlined effect.
-             *
-             * @property outlined
-             * @default false
-             * @type Boolean
-             */
-            "outlined,outline": {
-
-                set: function (value) {
-                    value = !!value;
-                    this._outlined = value;
-                    for (var id in this.entities) {
-                        if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].outlined = value;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._outlined;
-                }
-            }
-        },
-
-        _transformUpdated: function (transform) {
-            this._dummyRootTransform.parent = transform;
-            this._setAABBDirty();
-        },
-
-        _setAABBDirty: function () {
-            if (this._aabbDirty) {
-                return;
-            }
-            this._aabbDirty = true;
-
-            /**
-             Fired whenever this Model's World-space boundary changes.
-
-             Get the latest boundary from the Model's {{#crossLink "Model/aabb:property"}}{{/crossLink}} property.
-
-             @event boundary
-             */
-            this.fire("boundary");
+            this.clear();
         },
 
         _destroy: function () {
-            this.removeAll();
+            this._super();
+            this.clear();
         }
+
+        //--------------------------------------------------------------------------------------------------------------
+        // Redefining comments for base class properties to help with documentation navigation
+        //--------------------------------------------------------------------------------------------------------------
+
+        /**
+         The parent Group.
+
+         The parent Group may also be set by passing this Model to the
+         Group's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
+
+         @property parent
+         @type Group
+         */
+        
+        /**
+         Array of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+         @property children
+         @final
+         @type Array
+         */
+
+        /**
+         Child {{#crossLink "Object"}}Objects{{/crossLink}} mapped to their IDs.
+
+         @property childMap
+         @final
+         @type {*}
+         */
+
+        /**
+         The axis-aligned World-space boundary of this Model.
+
+         The AABB is represented by a six-element Float32Array containing the min/max extents of the
+         axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+
+         @property aabb
+         @final
+         @type {Float32Array}
+         */
+
+        /**
+         World-space oriented 3D bounding box (OBB) of this Model.
+
+         The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+         where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+         
+         @property obb
+         @final
+         @type {Float32Array}
+         */
+
+        /**
+         The World-space center of this Model.
+
+         @final
+         @returns {Float32Array}
+         */
+
+        /**
+         Indicates whether this Model is visible or not.
+         
+         @property visible
+         @default true
+         @type Boolean
+         */
+
+        /**
+         Indicates whether this Model appears selected.
+         
+         @property selected
+         @default false
+         @type Boolean
+         */
+
+        /**
+         Indicates whether this Model is highlighted.
+         
+         @property highlighted
+         @default false
+         @type Boolean
+         */
+
+        /**
+         Indicates whether or not this Model is currently culled from view.
+
+         @property culled
+         @default false
+         @type Boolean
+         */
+
+        /**
+         Indicates whether this Model is clippable.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         {{#crossLink "Mesh"}}Mesh{{/crossLink}}  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree are clipped by {{#crossLink "Clips"}}{{/crossLink}} components that are attached to them.
+
+         @property clippable
+         @default true
+         @type Boolean
+         */
+
+        /**
+         Indicates whether this Model is pickable or not.
+
+         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+         @property pickable
+         @default true
+         @type Boolean
+         */
+
+        /**
+         Indicates whether this Model is included in boundary calculations.
+
+         This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         @property collidable
+         @default true
+         @type Boolean
+         */
+        
+        /**
+         The IFC type of this Model, if applicable.
+
+         @property ifcType
+         @default null
+         @type String
+         */
+
+        /**
+         The Local-space position of this Model.
+
+         @property position
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+
+        /**
+         The Model's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+         @property rotation
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+
+        /**
+         The Local-space rotation quaternion for this Model.
+
+         @property quaternion
+         @default [0,0,0, 1]
+         @type {Float32Array}
+         */
+
+        /**
+         The Local-space scale of this Model.
+
+         @property scale
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+
+        /**
+         * This Model's local matrix.
+         *
+         * @property matrix
+         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         * @type {Float32Array}
+         */
+
+        /**
+         * This Model's World matrix.
+         *
+         * @property worldMatrix
+         * @type {Float32Array}
+         */
+
+        /**
+         * This Model's World normal matrix.
+         *
+         * @property worldNormalMatrix
+         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         * @type {Float32Array}
+         */
+
+        /**
+         Rotates this Model about the given Local-space axis by the given increment.
+
+         @method rotate
+         @paream {Float32Array} axis The Local-space axis about which to rotate.
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         Rotates this Model about the given World-space axis by the given increment.
+
+         @method rotate
+         @paream {Float32Array} axis The local axis about which to rotate.
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         Rotates this Model about the Local-space X-axis by the given increment.
+
+         @method rotateX
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         Rotates this Model about the Local-space Y-axis by the given increment.
+
+         @method rotateY
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         Rotates this Model about the Local-space Z-axis by the given increment.
+
+         @method rotateZ
+         @param {Number} angle Angle increment in degrees.
+         */
+
+        /**
+         * Translates this Model in Local-space by the given increment.
+         *
+         * @method translate
+         * @param {Float32Array} axis Normalized local space 3D vector along which to translate.
+         * @param {Number} distance Distance to translate along  the vector.
+         */
+
+        /**
+         * Translates this Model along the Local-space X-axis by the given increment.
+         *
+         * @method translateX
+         * @param {Number} distance Distance to translate along  the X-axis.
+         */
+
+        /**
+         * Translates this Model along the Local-space Y-axis by the given increment.
+         *
+         * @method translateX
+         * @param {Number} distance Distance to translate along  the Y-axis.
+         */
+
+        /**
+         * Translates this Model along the Local-space Z-axis by the given increment.
+         *
+         * @method translateX
+         * @param {Number} distance Distance to translate along  the Z-axis.
+         */
+
+        /**
+         Whether this Model's axis-aligned bounding box (AABB) is visible.
+
+         @property aabbVisible
+         @default false
+         @type {Boolean}
+         */
+
+        /**
+         Whether this Model's object-aligned bounding box (OBB) is visible.
+
+         @property obbVisible
+         @default false
+         @type {Boolean}
+         */
+
+        /**
+         RGB colorize color, multiplies by the rendered fragment color.
+
+         This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}}  in the subtree.
+
+         @property colorize
+         @default [1.0, 1.0, 1.0]
+         @type Float32Array
+         */
+
+        /**
+         Opacity factor, multiplies by the rendered fragment alpha.
+
+         This is a factor in range ````[0..1]````.
+
+         @property opacity
+         @default 1.0
+         @type Number
+         */
+
+        /**
+         Indicates whether this Model appears outlined.
+
+         @property outlined
+         @default false
+         @type Boolean
+         */
+
+        /**
+         Indicates whether this Model appears ghosted.
+
+         @property outlined
+         @default false
+         @type Boolean
+         */
     });
 
 })();;/**
- * Components to define the surface appearance of Entities.
+ * Components to define the surface appearance of Meshes.
  *
  * @module xeogl
  * @submodule materials
  */;/**
- A **Material** defines the surface appearance of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Material** defines the surface appearance of attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  Material is the base class for:
 
@@ -28217,8 +31414,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  * {{#crossLink "PhongMaterial"}}{{/crossLink}} - material for classic Blinn-Phong shading. This is less demanding of graphics hardware than the physically-based materials.
  * {{#crossLink "LambertMaterial"}}{{/crossLink}} - material for fast, flat-shaded CAD rendering without textures. Use
  this for navigating huge CAD or BIM models interactively. This material gives the best rendering performance and uses the least memory.
- * {{#crossLink "EmphasisMaterial"}}{{/crossLink}} - defines the appearance of Entities when "ghosted" or "highlighted".
- * {{#crossLink "OutlineMaterial"}}{{/crossLink}} - defines the appearance of outlines drawn around Entities.
+ * {{#crossLink "EmphasisMaterial"}}{{/crossLink}} - defines the appearance of Meshes when "ghosted" or "highlighted".
+ * {{#crossLink "OutlineMaterial"}}{{/crossLink}} - defines the appearance of outlines drawn around Meshes.
 
  A {{#crossLink "Scene"}}Scene{{/crossLink}} is allowed to contain a mixture of these material types.
 
@@ -28248,7 +31445,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 })();
 ;/**
  A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
+ attached {{#crossLink "Mesh"}}Meshes{{/crossLink}} using
  the classic <a href="https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model">Blinn-Phong</a> lighting model.
 
  ## Examples
@@ -28261,8 +31458,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  * Used for rendering non-realistic objects such as "helpers", wireframe objects, labels etc.
  * Use the physically-based {{#crossLink "MetallicMaterial"}}{{/crossLink}} or {{#crossLink "SpecularMaterial"}}{{/crossLink}} when more realism is required.
-
- <img src="../../../assets/images/PhongMaterial.png"></img>
 
  The following table summarizes PhongMaterial properties:
 
@@ -28295,14 +31490,14 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  ## Usage
 
- In this example we have an Entity with
+ In this example we have a Mesh with
 
  * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
  * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  ```` javascript
- var torus = new xeogl.Entity({
+ var torus = new xeogl.Mesh({
 
     lights: new xeogl.Lights({
         lights: [
@@ -29265,10 +32460,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             },
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
@@ -29295,10 +32490,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"
@@ -29451,7 +32646,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();;/**
  A **LambertMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
+ attached {{#crossLink "Mesh"}}Meshes{{/crossLink}} using
  the non-physically based <a href="https://en.wikipedia.org/wiki/Lambertian_reflectance">Lambertian</a> model for calculating reflectance.
 
  ## Examples
@@ -29485,7 +32680,7 @@ TODO
  ## Usage
 
  ```` javascript
- var torus = new xeogl.Entity({
+ var torus = new xeogl.Mesh({
     material: new xeogl.LambertMaterial({
         ambient: [0.3, 0.3, 0.3],
         color: [0.5, 0.5, 0.0],
@@ -29751,10 +32946,10 @@ TODO
             },
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
@@ -29781,10 +32976,10 @@ TODO
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"
@@ -29824,7 +33019,7 @@ TODO
 
 })();;/**
  A **SpecularMaterial** is a physically-based {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- {{#crossLink "Entity"}}Entities{{/crossLink}} using the *specular-glossiness* workflow.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}} using the *specular-glossiness* workflow.
 
  ## Examples
 
@@ -29837,8 +33032,6 @@ TODO
  * SpecularMaterial is usually used for insulators, such as ceramic, wood and plastic.
  * {{#crossLink "MetallicMaterial"}}{{/crossLink}} is usually used for conductive materials, such as metal.
  * {{#crossLink "PhongMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
-
- <img src="../../../assets/images/SpecularMaterial.png"></img>
 
  For an introduction to PBR concepts, try these articles:
 
@@ -29877,7 +33070,7 @@ TODO
 
  <a href="../../examples/#materials_specular_samples"><img src="../../assets/images/screenshots/SpecularMaterial/plaster.png"></img></a>
 
- Our plastered sphere {{#crossLink "Entity"}}{{/crossLink}} has:
+ Our plastered sphere {{#crossLink "Mesh"}}{{/crossLink}} has:
 
  * a {{#crossLink "SphereGeometry"}}{{/crossLink}},
  * a SpecularMaterial with {{#crossLink "Texture"}}Textures{{/crossLink}} providing diffuse, glossiness, specular and normal maps.
@@ -29891,7 +33084,7 @@ TODO
  within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
- var plasteredSphere = new xeogl.Entity({
+ var plasteredSphere = new xeogl.Mesh({
 
     geometry: new xeogl.SphereGeometry({
         center: [0,0,0],
@@ -30722,10 +33915,10 @@ TODO
 
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
@@ -30752,10 +33945,10 @@ TODO
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"
@@ -30928,7 +34121,7 @@ TODO
 
 })();;/**
  A **MetallicMaterial** is a physically-based {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- {{#crossLink "Entity"}}Entities{{/crossLink}} using the *metallic-roughness* workflow.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}} using the *metallic-roughness* workflow.
 
  ## Examples
 
@@ -30941,8 +34134,6 @@ TODO
  * MetallicMaterial is usually used for conductive materials, such as metal.
  * {{#crossLink "SpecularMaterial"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.
  * {{#crossLink "PhongMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
-
- <img src="../../../assets/images/MetallicMaterial.png"></img>
 
  For an introduction to PBR concepts, try these articles:
 
@@ -30975,7 +34166,7 @@ TODO
 
  ## Usage
 
- In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Entity"}}{{/crossLink}} has:
+ In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Mesh"}}{{/crossLink}} has:
 
  * a {{#crossLink "OBJGeometry"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,
  * a MetallicMaterial with {{#crossLink "Texture"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.
@@ -30989,7 +34180,7 @@ TODO
  within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
- var hydrant = new xeogl.Entity({
+ var hydrant = new xeogl.Mesh({
 
     geometry: new xeogl.OBJGeometry({
         src: "models/obj/FireHydrantMesh.obj"
@@ -31812,10 +35003,10 @@ TODO
             },
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
@@ -31842,10 +35033,10 @@ TODO
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"
@@ -32018,7 +35209,7 @@ TODO
 
 })();;/**
  An **EmphasisMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of attached
- {{#crossLink "Entity"}}Entities{{/crossLink}} when they are highlighted, selected or ghosted.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}} when they are highlighted, selected or ghosted.
 
  ## Examples
 
@@ -32028,11 +35219,11 @@ TODO
 
  ## Overview
 
- * Ghost an {{#crossLink "Entity"}}{{/crossLink}} by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property ````true````.
- * When ghosted, an Entity's appearance is controlled by its EmphasisMaterial.
+ * Ghost an {{#crossLink "Mesh"}}{{/crossLink}} by setting its {{#crossLink "Mesh/ghost:property"}}{{/crossLink}} property ````true````.
+ * When ghosted, a Mesh's appearance is controlled by its EmphasisMaterial.
  * An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink "EmphasisMaterial/preset:property"}}{{/crossLink}} to the preset's ID. A map of available presets is provided in {{#crossLink "EmphasisMaterial/presets:property"}}xeogl.EmphasisMaterial.presets{{/crossLink}}.
- * By default, an Entity uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.
- * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global EmphasisMaterial by default.
+ * By default, a Mesh uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Mesh its own EmphasisMaterial when you want to customize the effect per-Mesh.
+ * Ghost all Meshes in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Meshes in a Model have the Scene's global EmphasisMaterial by default.
  * Modify the Scene's global EmphasisMaterial to customize it.
 
  ## Usage
@@ -32042,13 +35233,13 @@ TODO
 
  ### Ghosting
 
- In the usage example below, we'll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
- has its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
+ In the usage example below, we'll create a Mesh with a ghost effect applied to it. The Mesh gets its own EmphasisMaterial for ghosting, and
+ has its {{#crossLink "Mesh/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
 
  <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a>
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         ghostEdgeThreshold: 1
     }),
@@ -32073,7 +35264,7 @@ TODO
  ````
 
  Note the **ghostEdgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
- Entity. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
+ Mesh. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
  adjacent co-planar triangles) removed for visual clarity. The ````ghostEdgeThreshold```` configuration indicates
  that, for this particular Geometry, an inner edge is one where the angle between the surface normals of adjacent triangles is not
  greater than ````5```` degrees. That's set to ````2```` by default, but we can override it to tweak the effect as needed for particular Geometries.
@@ -32082,7 +35273,7 @@ TODO
  to customize the effect.
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         ghostEdgeThreshold: 5
     }),
@@ -32092,7 +35283,7 @@ TODO
     ghost: true
  });
 
- var ghostMaterial = entity.scene.ghostMaterial;
+ var ghostMaterial = mesh.scene.ghostMaterial;
 
  ghostMaterial.edges = true;
  ghostMaterial.edgeColor = [0.2, 1.0, 0.2];
@@ -32110,8 +35301,8 @@ TODO
  ### Highlighting
 
  In the next example, we'll use a ghosting in conjunction with highlighting, to emphasise a couple of objects within
- a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Entities except for two gears, which we'll highlight instead. The ghosted
- Entities have the Scene's global ghosting EmphasisMaterial, which we'll modify. The  highlighted Entities also have the Scene's global highlighting EmphasisMaterial, which we'll modify as well.
+ a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Meshes except for two gears, which we'll highlight instead. The ghosted
+ Meshes have the Scene's global ghosting EmphasisMaterial, which we'll modify. The  highlighted Meshes also have the Scene's global highlighting EmphasisMaterial, which we'll modify as well.
 
  <a href="../../examples/#effects_demo_gearbox"><img src="../../assets/images/screenshots/HighlightMaterial/gearbox.png"></img></a>
 
@@ -32125,11 +35316,11 @@ TODO
 
     model.ghost = true;
 
-    model.entities["gearbox#77.0"].ghost = false;
-    model.entities["gearbox#79.0"].ghost = false;
+    model.meshes["gearbox#77.0"].ghost = false;
+    model.meshes["gearbox#79.0"].ghost = false;
 
-    model.entities["gearbox#77.0"].highlight = true;
-    model.entities["gearbox#79.0"].highlight = true;
+    model.meshes["gearbox#77.0"].highlight = true;
+    model.meshes["gearbox#79.0"].highlight = true;
 
     var ghostMaterial = model.scene.ghostMaterial;
 
@@ -32206,7 +35397,7 @@ TODO
  You can also just create an EmphasisMaterial from a preset:
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         ghostEdgeThreshold: 5
     }),
@@ -32857,7 +36048,7 @@ TODO
     xeogl.GhostMaterial = xeogl.EmphasisMaterial; // Backward compatibility
 
 })();;/**
- An **OutlineMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that's applied to {{#crossLink "Entity"}}Entities{{/crossLink}}
+ An **OutlineMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that's applied to {{#crossLink "Mesh"}}Meshes{{/crossLink}}
  to render an outline around them.
 
  WIP
@@ -33010,7 +36201,7 @@ TODO
  ## Overview
 
  * Textures are grouped within {{#crossLink "Material"}}Materials{{/crossLink}}, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
  * To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
  property to the image file path.
  * To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
@@ -33025,7 +36216,7 @@ TODO
 
  ## Usage
 
- In this example we have an Entity with
+ In this example we have a Mesh with
 
  * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
@@ -33036,7 +36227,7 @@ TODO
  colors directly provide the diffuse and specular components for each fragment across the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  ```` javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
 
     material: new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
@@ -33682,7 +36873,7 @@ TODO
 
                     this._state.encoding = value;
 
-                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of entities using this texture in their materials
+                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of meshes using this texture in their materials
                 },
 
                 get: function () {
@@ -33712,18 +36903,16 @@ TODO
  ## Overview
 
  * Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  ## Examples
 
  * [PhongMaterials with Fresnels](../../examples/#materials_phong_fresnel)
 
- <img src="../../../assets/images/Fresnel.png"></img>
-
  ## Usage
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
 
      material: new xeogl.PhongMaterial({
          ambient: [0.3, 0.3, 0.3],
@@ -33904,1472 +37093,7 @@ TODO
 
 })();
 ;/**
- * Entities.
- *
- * @module xeogl
- * @submodule entities
- */;/**
- An **Entity** is a 3D object within a {{#crossLink "Scene"}}Scene{{/crossLink}}.
-
- ## Overview
-
- * An Entity represents a WebGL draw call.
- * Each Entity has six components: {{#crossLink "Geometry"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}},
- {{#crossLink "Transform"}}{{/crossLink}}, an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} for ghosting, an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} for highlighting,
- and an {{#crossLink "OutlineMaterial"}}{{/crossLink}} for outlining.
- * By default, Entities in the same Scene share the same "global" flyweight instances of those components amongst themselves. The default
- component instances are provided by the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
- {{#crossLink "Scene/material:property"}}{{/crossLink}}, {{#crossLink "Scene/transform:property"}}{{/crossLink}},
- {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}, {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}},
- {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} properties, respectively.
- * An Entity with all defaults is a white unit-sized box centered at the World-space origin.
- * Customize your Entities by attaching your own instances of those component types, to override the defaults as needed.
- * For best performance, reuse as many of the same component instances among your Entities as possible.
-
- ## Usage
-
- * [Creating an Entity](#creating-an-entity)
- * [Controlling visibility](#controlling-visibility)
- * [Controlling clipping](#controlling-clipping)
- * [Controlling rendering order](#controlling-rendering-order)
- * [Geometry](#geometry)
- * [Material](#material)
- * [Transforming](#transforming)
- * [Ghosting](#ghosting)
- * [Highlighting](#highlighting)
- * [Outlining](#outlining)
- * [Local-space boundary](#local-space-boundary)
- * [World-space boundary](#world-space-boundary)
- * [Skyboxing](#skyboxing)
- * [Billboarding](#billboarding)
- * [Shadows](#shadows) TODO
-
- ### Creating an Entity
-
- Creating a minimal Entity that has all the default components:
-
- <img src="../../assets/images/screenshots/Scene/defaultEntity.png"></img>
-
- ````javascript
- var entity = new xeogl.Entity(); // A white unit-sized box centered at the World-space origin
- ````
-
- Since our Entity has all the default components, we can get those off either the Entity or its Scene:
-
- ````javascript
- entity.material.diffuse = [1.0, 0.0, 0.0];  // This is the same Material component...
-
- var scene = entity.scene;
- scene.material.diffuse  = [1.0, 0.0, 0.0];  // ...as this one.
- ````
-
- In practice, we would provide (at least) our own Geometry and Material for the Entity:
-
- <a href="../../examples/#geometry_primitives_teapot"><img src="../../assets/images/screenshots/Scene/teapot.png"></img></a>
-
- ````javascript
- var entity = new xeogl.Entity({
-     geometry: new xeogl.TeapotGeometry(),
-     material: new xeogl.MetallicMaterial({
-         baseColor: [1.0, 1.0, 1.0]
-     })
- });
- ````
-
- ### Controlling visibility
-
- Show or hide an Entity by setting its {{#crossLink "Entity/visible:property"}}{{/crossLink}} property:
-
- ````javascript
- entity.visible = false; // Hide
- entity.visible = true; // Show (default)
- ````
-
- ### Controlling clipping
-
- By default, an Entity will be clipped by the
- Scene's {{#crossLink "Scene/clips:property"}}clipping planes{{/crossLink}} (if you've created some).
-
- Make an Entity unclippable by setting its {{#crossLink "Entity/clippable:property"}}{{/crossLink}} property false:
-
- ````javascript
- entity.clippable = false; // Default is true
- ````
-
- ### Controlling rendering order
-
- Control the order in which an Entity is rendered relative to others by setting its {{#crossLink "Entity/layer:property"}}{{/crossLink}}
- property. You would normally do this when you need to ensure that transparent Entities are rendered in back-to-front order for correct alpha blending.
-
- Assign entity to layer 0 (all Entities are in layer 0 by default):
-
- ````javascript
- entity.layer = 0;
- ````
-
- Create another Entity in a higher layer, that will get rendered after layer 0:
-
- ````javascript
- var entity2 = new xeogl.Entity({
-     geometry: new xeogl.Sphere(),
-     layer: 1
- });
- ````
-
- ### Geometry
-
- An Entity has a {{#crossLink "Geometry"}}{{/crossLink}} which describes its shape. When we don't provide it with a
- Geometry, it will have the Scene's {{#crossLink "Scene/geometry:property"}}{{/crossLink}} by default.
-
- Creating an Entity with its own Geometry:
-
- ````javascript
- var entity = new xeogl.Entity({
-     geometry: new xeogl.TeapotGeometry()
- });
- ````
-
- Dynamically replacing the Geometry:
-
- ````javascript
- entity.geometry = new xeogl.CylinderGeometry();
- ````
-
- Getting geometry arrays:
-
- ````javascript
- ver geometry = entity.geometry;
-
- var primitive = geometry,primitive;        // Default is "triangles"
- var positions = geometry.positions;        // Local-space vertex positions
- var normals = geometry.normals;            // Local-space vertex Normals
- var uv = geometry.uv;                      // UV coordinates
- var indices = entity.geometry.indices;     // Vertex indices for pimitives
- ````
-
- The Entity also has a convenience property which provides the vertex positions in World-space, ie. after they have been
- transformed by the Entity's Transform:
-
- ````javascript
- // These are internally generated on-demand and cached. To free the cached
- // vertex World positions when you're done with them, set this property to null or undefined
- var worldPositions = entity.worldPositions;
- ````
-
- ### Material
-
- An Entity has a {{#crossLink "Material"}}{{/crossLink}}, which describes its appearance. When we don't provide it with
- a Material, it will have the Scene's {{#crossLink "Scene/material:property"}}{{/crossLink}} by default.
-
- Creating an Entity with its own custom Geometry and Material:
-
- ````javascript
- var entity = new xeogl.Entity({
-     geometry: new xeogl.TeapotGeometry(),
-     material: new xeogl.MetallicMaterial({
-         baseColor: [0.0, 0.0, 1.0],
-         metallic: 1.0,
-         roughness: 1.0,
-         emissive: [0.0, 0.0, 0.0],
-         alpha: 1.0
-     })
- });
- ````
-
- Dynamically replacing the Material:
-
- ````javascript
- entity.material = new xeogl.SpecularMaterial({
-     diffuse: [1.0, 1.0, 1.0],
-     specular: [1.0, 1.0, 1.0],
-     glossiness: 1.0,
-     emissive: [0.0, 0.0, 0.0]
-     alpha: 1.0
- })
- ````
-
- Animating the Material's diffuse color - making the Entity rapidly pulse red:
-
- ````javascript
- entity.scene.on("tick", function(e) {
-    var t = e.time - e.startTime; // Millisecs
-    entity.material.diffuse = [0.5 + Math.sin(t * 0.01), 0.0, 0.0]; // RGB
- });
- ````
-
- ### Transforming
-
- An Entity has a {{#crossLink "Transform"}}{{/crossLink}}, which positions, sizes and orients it within the World-space
- coordinate system. When we don't provide it with a Transform, it will have the Scene's {{#crossLink "Scene/transform:property"}}{{/crossLink}}
- by default (which is the identity transform unless modified).
-
- Transforms can also be connected into hierarchies.
-
- Creating an Entity with its own Geometry and Transform hierarchy:
-
- ````javascript
- var entity = new xeogl.Entity({
-
-     geometry: new xeogl.TeapotGeometry(),
-
-     transform: new xeogl.Translate({eapot
-        xyz: [-5, 0, 0],
-        parent: new xeogl.Rotate({
-            xyz: [0,1,0],
-            angle: 45
-        })
-     })
- });
- ````
-
- Dynamically replacing the Entity's Transform hierarchy:
-
- ````javascript
- entity.transform = new xeogl.Rotate({
-     xyz: [0,1,0],
-     angle: 45
-     parent: new xeogl.Rotate({
-         xyz: [1,0,0],
-         angle: 180
-     })
- });
- ````
-
- Animating the Transform hierarchy:
-
- ````javascript
- entity.scene.on("tick", function() {
-    entity.transform.angle += 0.5;
-    entity.transform.parent.angle += 0.5;
- });
- ````
-
- ### Ghosting
-
- Ghost an Entity by setting its {{#crossLink "Entity/ghosted:property"}}{{/crossLink}} property true. The Entity's
- {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while ghosted.
-
- When we don't provide it with a EmphasisMaterial, it will have the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
- by default.
-
- In the example below, we'll create a ghosted Entity with its own EmphasisMaterial.
-
- <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/EmphasisMaterial/teapot.png"></img></a>
-
- ````javascript
- var entity = new xeogl.Entity({
-    geometry: new xeogl.TeapotGeometry(),
-    material: new xeogl.PhongMaterial({
-        diffuse: [0.2, 0.2, 1.0]
-    }),
-    ghostMaterial: new xeogl.EmphasisMaterial({
-        edges: true,
-        edgeColor: [0.2, 1.0, 0.2],
-        edgeAlpha: 1.0,
-        edgeWidth: 2,
-        vertices: true,
-        vertexColor: [0.6, 1.0, 0.6],
-        vertexAlpha: 1.0,
-        vertexSize: 8,
-        fill: true,
-        fillColor: [0, 0, 0],
-        fillAlpha: 0.7
-    }),
-    ghosted: true
- });
- ````
-
- #### Examples
-
- * [Ghosted teapot](../../examples/#effects_ghost)
-
- ### Highlighting
-
- Highlight an Entity by setting its {{#crossLink "Entity/highlighted:property"}}{{/crossLink}} property true. The Entity's
- highlighting {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
-
- When we don't provide it with a EmphasisMaterial for highlighting, it will have the Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
- by default.
-
- In the example below, we'll create a highlighted Entity with its own EmphasisMaterial.
-
- <a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/EmphasisMaterial/teapotHighlighted.png"></img></a>
-
- ````javascript
- var entity = new xeogl.Entity({
-    geometry: new xeogl.TeapotGeometry(),
-    material: new xeogl.PhongMaterial({
-        diffuse: [0.2, 0.2, 1.0]
-    }),
-    highlightMaterial: new xeogl.EmphasisMaterial({
-        color: [1.0, 1.0, 0.0],
-        alpha: 0.6
-    }),
-    highlighted: true
- });
- ````
-
- #### Examples
-
- * [Ghost and highlight effects](../../examples/#effects_demo_gearbox)
-
- ### Outlining
-
- Outline an Entity by setting its {{#crossLink "Entity/outlined:property"}}{{/crossLink}} property true. The Entity's
- {{#crossLink "OutlineMaterial"}}{{/crossLink}} then controls its appearance while outlined.
-
- When we don't provide it with an OutlineMaterial, it will have the Scene's {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}}
- by default.
-
- In the example below, we'll create a outlined Entity with its own OutlineMaterial.
-
- <a href="../../examples/#effects_outline"><img src="../../assets/images/screenshots/OutlineMaterial/teapot.png"></img></a>
-
- ````javascript
- var entity = new xeogl.Entity({
-    geometry: new xeogl.TeapotGeometry(),
-    material: new xeogl.PhongMaterial({
-        diffuse: [0.2, 0.2, 1.0]
-    }),
-    outlineMaterial: new xeogl.OutlineMaterial({
-        color: [1.0, 1.0, 0.0],
-        alpha: 0.6,
-        width: 5
-    }),
-    outlined: true
- });
- ````
-
- ### Local-space boundary
-
- We can get an Entity's Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and
- an object-aligned bounding box (OBB).
-
- The Local-space boundary is the boundary of the Entity's Geometry, without any transforms applied.
-
- Getting the Local-space boundary as an AABB:
-
- ````
- var aabb = entity.geometry.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
- ````
-
- Getting the Local-space boundary as an OBB:
-
- ```` javascript
- var obb = entity.geometry.obb; // Flat array containing eight 3D corner vertices of a box
- ````
-
- #### Examples
-
- * [Local-space Geometry AABB](../../examples/#boundaries_geometry_aabb)
- * [Local-space Geometry OBB](../../examples/#boundaries_geometry_obb)
-
- ### World-space boundary
-
- We can get an Entity's World-space boundary at any time, as both an axis-aligned bounding box (AABB) and
- an object-aligned bounding box (OBB).
-
- The World-space boundary is the boundary of the Entity's Geometry after the Entity's Transform has been applied to it.
-
- Getting the World-space boundary as an AABB:
-
- ````javascript
- var aabb = entity.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
- ````
-
- Getting the World-space boundary as an OBB:
-
- ```` javascript
- var obb = entity.obb; // Flat array containing eight 3D corner vertices of a box
- ````
-
- Subscribing to updates of the World-space boundary, which occur whenever the Entity's Transform or Geometry have been updated.
-
- ````javascript
- entity.on("boundary", function() {
-     var aabb = entity.aabb;
-     var obb = entity.obb;
- });
- ````
-
- An Entity's {{#crossLink "Scene"}}{{/crossLink}} also has an {{#crossLink "Scene/getAABB:method"}}{{/crossLink}}, which returns
- the collective World-space axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
- and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
-
- ````JavaScript
- var scene = entity.scene;
-
- scene.getAABB(); // Gets collective boundary of all entities in the viewer
- scene.getAABB("saw"); // Gets collective boundary of all entities in a model
- scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all entities in two models
- scene.getAABB("saw#0.1"); // Get boundary of an entity
- scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two entities
- ````
-
- #### Excluding from boundary calculations
-
- The {{#crossLink "Scene/aabb:property"}}Scene aabb{{/crossLink}}
- and {{#crossLink "Model/aabb:property"}}Model aabb{{/crossLink}} properties provide AABBs that include the boundaries of all
- contained Entities, except those Entities that have their {{#crossLink "Entity/collidable:property"}}collidable{{/crossLink}} properties set ````false````.
-
- Toggle that inclusion like so:
-
- ````javascript
- entity.collidable = false; // Exclude entity from calculation of its Scene/Model boundary
- entity.collidable = true; // Include entity in calculation of its Scene/Model boundary
- ````
- Setting this false is useful when an Entity represents some object, such as a control gizmo, that you don't want to consider as
- being a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated
- whenever the Entity's boundary changes after a Transform or Geometry update.
-
- #### Examples
-
- * [World-space Entity AABB](../../examples/#boundaries_entity_aabb)
- * [World-space Entity OBB](../../examples/#boundaries_entity_obb)
-
- ### Skyboxing
-
- An Entity has a {{#crossLink "Entity/stationary:property"}}{{/crossLink}} property
- that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.
-
- This is useful for using Entities as skyboxes, like this:
-
- ````javascript
- new xeogl.Entity({
-
-     geometry: new xeogl.BoxGeometry({
-         xSize: 1000,
-         ySize: 1000,
-         zSize: 1000
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuseMap: new xeogl.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
-         })
-     }),
-
-     stationary: true // Locks position with respect to viewpoint
- });
- ````
-
- #### Examples
-
- * [Skybox component](../../examples/#skyboxes_skybox)
- * [Custom skybox](../../examples/#skyboxes_skybox_custom)
-
- ### Billboarding
-
- An Entity has a {{#crossLink "Entity/billboard:property"}}{{/crossLink}} property
- that can make it behave as a billboard.
-
- Two billboard types are supported:
-
- * **Spherical** billboards are free to rotate their Entities in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.
- * **Cylindrical** billboards rotate their Entities towards the {{#crossLink "Camera"}}{{/crossLink}}, but only about the Y-axis.
-
- Note that {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on billboarded Entities.
-
- The example below shows a box that remains rotated directly towards the viewpoint, using spherical billboarding:
-
- ````javascript
- new xeogl.Entity({
-
-     geometry: new xeogl.BoxGeometry(),
-
-     material: new xeogl.PhongMaterial({
-         diffuseMap: new xeogl.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
-         })
-     }),
-
-     billboard: "spherical" // Or "cylindrical"
- });
- ````
-
- #### Examples
-
- * [Spherical billboards](../../examples/#billboards_spherical)
- * [Cylindrical billboards](../../examples/#billboards_cylindrical)
- * [Clouds using billboards](../../examples/#billboards_spherical_clouds)
-
-
- ### Shadows
-
- [Work-in-progress]
-
-
- @class Entity
- @module xeogl
- @submodule entities
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Entity within xeogl's default {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} by default.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Entity.
- @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
- @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
- @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
- @param [cfg.visible=true] {Boolean}  Indicates if this Entity is visible.
- @param [cfg.culled=true] {Boolean}  Indicates if this Entity is culled from view.
- @param [cfg.pickable=true] {Boolean}  Indicates if this Entity is pickable.
- @param [cfg.clippable=true] {Boolean} Indicates if this Entity is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
- @param [cfg.collidable=true] {Boolean} Whether this Entity is included in boundary calculations.
- @param [cfg.castShadow=true] {Boolean} Whether this Entity casts shadows.
- @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
- @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
- @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghosted=false] {Boolean} Whether this entity is rendered ghosted, as configured by {{#crossLink "Entity/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by {{#crossLink "Entity/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
- @param [cfg.highlightMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Entity to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
- @param [cfg.selected=false] {Boolean} Whether this entity is rendered selected, as configured by {{#crossLink "Entity/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
- @param [cfg.selectedMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Entity to define selected appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
- @param [cfg.layer=0] {Number} Indicates this Entity's rendering priority, typically used for transparency sorting,
- @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Entity. This is useful for skybox Entities.
- @param [cfg.billboard="none"] {String} Specifies the billboarding behaviour for this Entity. Options are "none", "spherical" and "cylindrical".
- @param [cfg.loading=false] {Boolean} Flag which indicates that this Entity is freshly loaded.
- @extends Component
- */
-
-/**
- * Fired when this Entity is *picked* via a call to the {{#crossLink "Canvas/pick:method"}}{{/crossLink}} method
- * on the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas {{/crossLink}}.
- * @event picked
- * @param {String} entityId The ID of this Entity.
- * @param {Number} canvasX The X-axis Canvas coordinate that was picked.
- * @param {Number} canvasY The Y-axis Canvas coordinate that was picked.
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Entity = xeogl.Component.extend({
-
-        type: "xeogl.Entity",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.Modes({
-                translate: null,
-                visible: true,
-                culled: false,
-                pickable: null,
-                clippable: null,
-                colorize: null,
-                collidable: null,
-                castShadow: null,
-                receiveShadow: null,
-                outlined: null,
-                ghosted: false,
-                highlighted: false,
-                selected: false,
-                layer: null,
-                billboard: null,
-                hash: ""
-            });
-
-            this._objectId = null; // Renderer object
-            this._loading = cfg.loading !== false;
-
-            this._aabbDirty = true;
-            this._obbDirty = true;
-
-            this._worldPositions = null;
-            this._worldPositionsDirty = true;
-
-            // Components
-
-            this.geometry = cfg.geometry;
-            this.material = cfg.material;
-            this.transform = cfg.transform;
-            this.ghostMaterial = cfg.ghostMaterial;
-            this.outlineMaterial = cfg.outlineMaterial;
-            this.highlightMaterial = cfg.highlightMaterial;
-            this.selectedMaterial = cfg.selectedMaterial;
-
-            // Properties
-
-            this.translate = cfg.translate;
-            this.visible = cfg.visible;
-            this.culled = cfg.culled;
-            this.pickable = cfg.pickable;
-            this.clippable = cfg.clippable;
-            this.collidable = cfg.collidable;
-            this.castShadow = cfg.castShadow;
-            this.receiveShadow = cfg.receiveShadow;
-            this.outlined = cfg.outlined;
-            this.layer = cfg.layer;
-            this.stationary = cfg.stationary;
-            this.billboard = cfg.billboard;
-            this.solid = cfg.solid;
-            this.ghosted = cfg.ghosted;
-            this.highlighted = cfg.highlighted;
-            this.selected = cfg.selected;
-            this.colorize = cfg.colorize;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}
-             * (a simple box) when set to a null or undefined value.
-             *
-             * Updates {{#crossLink "Entity/boundary"}}{{/crossLink}},
-             * {{#crossLink "Entity/worldObb"}}{{/crossLink}} and
-             * {{#crossLink "Entity/center"}}{{/crossLink}}
-             *
-             * @property geometry
-             * @type Geometry
-             */
-            geometry: {
-
-                set: function (value) {
-
-                    this._attach({
-                        name: "geometry",
-                        type: "xeogl.Component",  // HACK
-                        component: value,
-                        sceneDefault: true,
-                        on: {
-                            "boundary": {
-                                callback: this._setBoundaryDirty,
-                                scope: this
-                            },
-                            "destroyed": {
-                                callback: this._setBoundaryDirty,
-                                scope: this
-                            }
-                        }
-                    });
-
-                    this._setBoundaryDirty();
-                },
-
-                get: function () {
-                    return this._attached.geometry;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Material"}}Material{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/material:property"}}material{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property material
-             * @type Material
-             */
-            material: {
-
-                set: function (value) {
-
-                    this._attach({
-                        name: "material",
-                        type: "xeogl.Material",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.material;
-                }
-            },
-
-            /**
-             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property ghostMaterial
-             * @type EmphasisMaterial
-             */
-            ghostMaterial: {
-
-                set: function (value) {
-
-                    this._attach({
-                        name: "ghostMaterial",
-                        type: "xeogl.EmphasisMaterial",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.ghostMaterial;
-                }
-            },
-
-            /**
-             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property highlightMaterial
-             * @type EmphasisMaterial
-             */
-            highlightMaterial: {
-
-                set: function (value) {
-
-                    this._attach({
-                        name: "highlightMaterial",
-                        type: "xeogl.EmphasisMaterial",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.highlightMaterial;
-                }
-            },
-
-            /**
-             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property selectedMaterial
-             * @type EmphasisMaterial
-             */
-            selectedMaterial: {
-
-                set: function (value) {
-
-                    this._attach({
-                        name: "selectedMaterial",
-                        type: "xeogl.EmphasisMaterial",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.selectedMaterial;
-                }
-            },
-
-            /**
-             * The {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property outlineMaterial
-             * @type OutlineMaterial
-             */
-            outlineMaterial: {
-
-                set: function (value) {
-
-                    this._attach({
-                        name: "outlineMaterial",
-                        type: "xeogl.OutlineMaterial",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.outlineMaterial;
-                }
-            },
-
-            /**
-             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/transform:property"}}transform{{/crossLink}}
-             * (an identity matrix) when set to a null or undefined value.
-             *
-             * Updates {{#crossLink "Entity/boundary"}}{{/crossLink}},
-             * {{#crossLink "Entity/worldObb"}}{{/crossLink}} and
-             * {{#crossLink "Entity/center"}}{{/crossLink}}
-             *
-             * @property transform
-             * @type Transform
-             */
-            transform: {
-
-                set: function (value) {
-
-                    this._setBoundaryDirty();
-
-                    this._attach({
-                        name: "transform",
-                        type: "xeogl.Transform",
-                        component: value,
-                        sceneDefault: true,
-                        on: {
-                            updated: {
-                                callback: function () {
-                                    if (this._transformDirty) {
-                                        return;
-                                    }
-                                    this._transformDirty = true;
-                                    // Assumes worst case: many repeated "updated" events within the transform hierarchy per frame
-                                    xeogl.scheduleTask(this._transformUpdated, this);
-                                },
-                                scope: this
-                            },
-
-                            destroyed: {
-                                callback: this._setBoundaryDirty,
-                                scope: this
-                            }
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.transform;
-                }
-            },
-
-            /**
-             Indicates whether this Entity is visible or not.
-
-             The Entity is only rendered when {{#crossLink "Entity/visible:property"}}{{/crossLink}} is true and
-             {{#crossLink "Entity/culled:property"}}{{/crossLink}} is false.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-
-                set: function (value) {
-                    this._state.visible = value !== false;
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.visible;
-                }
-            },
-
-            /**
-             Indicates whether or not this Entity is currently culled from view.
-
-             The Entity is only rendered when {{#crossLink "Entity/visible:property"}}{{/crossLink}} is true and
-             {{#crossLink "Entity/culled:property"}}{{/crossLink}} is false.
-
-             @property culled
-             @default false
-             @type Boolean
-             */
-            culled: {
-
-                set: function (value) {
-                    this._state.culled = !!value;
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.culled;
-                }
-            },
-
-            /**
-             Indicates whether this entity is pickable or not.
-
-             Picking is done via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
-
-             @property pickable
-             @default true
-             @type Boolean
-             */
-            pickable: {
-
-                set: function (value) {
-                    value = value !== false;
-                    if (this._state.pickable === value) {
-                        return;
-                    }
-                    this._state.pickable = value;
-
-                    // No need to trigger a render;
-                    // state is only used when picking
-                },
-
-                get: function () {
-                    return this._state.pickable;
-                }
-            },
-
-            /**
-             Indicates whether this Entity is clippable by {{#crossLink "Clips"}}{{/crossLink}} components.
-
-             @property clippable
-             @default true
-             @type Boolean
-             */
-            clippable: {
-
-                set: function (value) {
-                    value = value !== false;
-                    if (this._state.clippable === value) {
-                        return;
-                    }
-                    this._state.clippable = value;
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.clippable;
-                }
-            },
-
-            /**
-             Indicates whether this Entity is included in boundary calculations.
-
-             @property collidable
-             @default true
-             @type Boolean
-             */
-            collidable: {
-
-                set: function (value) {
-                    value = value !== false;
-                    if (value === this._state.collidable) {
-                        return;
-                    }
-                    this._state.collidable = value;
-                },
-
-                get: function () {
-                    return this._state.collidable;
-                }
-            },
-
-
-            /**
-             Indicates whether this Entity casts shadows.
-
-             @property castShadow
-             @default true
-             @type Boolean
-             */
-            castShadow: {
-
-                set: function (value) {
-                    value = value !== false;
-                    if (value === this._state.castShadow) {
-                        return;
-                    }
-                    this._state.castShadow = value;
-                    this._renderer.imageDirty(); // Re-render in next shadow map generation pass
-                },
-
-                get: function () {
-                    return this._state.castShadow;
-                }
-            },
-
-            /**
-             Indicates whether this Entity receives shadows.
-
-             @property receiveShadow
-             @default true
-             @type Boolean
-             */
-            receiveShadow: {
-
-                set: function (value) {
-                    value = value !== false;
-                    if (value === this._state.receiveShadow) {
-                        return;
-                    }
-                    this._state.receiveShadow = value;
-                    this._state.hash = value ? "/mod/rs;" : "/mod;";
-                    this.fire("dirty", this); // Now need to (re)compile objectRenderers to include/exclude shadow mapping
-                },
-
-                get: function () {
-                    return this._state.receiveShadow;
-                }
-            },
-
-            /**
-             Indicates whether this Entity is rendered with an outline.
-
-             The outline effect is configured via the Entity's {{#crossLink "Entity/outlineMaterial:property"}}outlineMaterial{{/crossLink}} component.
-
-             @property outlined
-             @default false
-             @type Boolean
-             */
-            "outlined,outline": {
-
-                set: function (value) {
-                    value = !!value;
-                    if (value === this._state.outlined) {
-                        return;
-                    }
-                    this._state.outlined = value;
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.outlined;
-                }
-            },
-
-            /**
-             Indicates whether this Entity is highlighted.
-
-             The highlight effect is configured via the Entity's {{#crossLink "Entity/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
-
-             @property highlighted
-             @default false
-             @type Boolean
-             */
-            "highlight,highlighted": {
-
-                set: function (value) {
-                    value = !!value;
-                    if (value === this._state.highlighted) {
-                        return;
-                    }
-                    this._state.highlighted = value;
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.highlighted;
-                }
-            },
-
-            /**
-             Indicates whether this Entity is selected.
-
-             The selected effect is configured via the Entity's {{#crossLink "Entity/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
-
-             @property selected
-             @default false
-             @type Boolean
-             */
-            selected: {
-
-                set: function (value) {
-                    value = !!value;
-                    if (value === this._state.selected) {
-                        return;
-                    }
-                    this._state.selected = value;
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.selected;
-                }
-            },
-
-            /**
-             RGBA colorize color, multiplies by the outgoing fragment color and transparency.
-
-             @property colorize
-             @default [1.0, 1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            colorize: {
-
-                set: function (value) {
-                    var colorize = this._state.colorize;
-                    if (!colorize) {
-                        colorize = this._state.colorize = new Float32Array(4);
-                    }
-                    if (value) {
-                        colorize[0] = value[0];
-                        colorize[1] = value[1];
-                        colorize[2] = value[2];
-                        colorize[3] = value[3];
-                    } else {
-                        colorize[0] = 1;
-                        colorize[1] = 1;
-                        colorize[2] = 1;
-                        colorize[3] = 1;
-                    }
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.colorize;
-                }
-            },
-
-            /**
-             * Indicates this Entity's rendering order.
-             *
-             * This can be set on multiple transparent Entities, to make them render in a specific order
-             * for correct alpha blending.
-             *
-             * @property layer
-             * @default 0
-             * @type Number
-             */
-            layer: {
-
-                set: function (value) {
-                    // TODO: Only accept rendering layer in range [0...MAX_layer]
-                    value = value || 0;
-                    value = Math.round(value);
-                    if (value === this._state.layer) {
-                        return;
-                    }
-                    this._state.layer = value;
-                    this._renderer.needStateSort();
-                },
-
-                get: function () {
-                    return this._state.layer;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this Entity is stationary or not.
-             *
-             * Setting this true will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
-             * translations for this Entity, while still alowing it to rotate. This is useful for skybox Entities.
-             *
-             * @property stationary
-             * @default false
-             * @type Boolean
-             */
-            stationary: {
-
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.stationary === value) {
-                        return;
-                    }
-                    this._state.stationary = value;
-                    this.fire("dirty", this);
-                },
-
-                get: function () {
-                    return this._state.stationary;
-                }
-            },
-
-            /**
-             Specifies the billboarding behaviour for this Entity.
-
-             Options are:
-
-             * **"none"** -  **(default)** - No billboarding.
-             * **"spherical"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
-             * **"cylindrical"** - Entity is billboarded to face the viewpoint, rotating only about its vertically
-             axis. Use this mode for things like trees on a landscape.
-
-             @property billboard
-             @default "none"
-             @type String
-             */
-            billboard: {
-
-                set: function (value) {
-                    value = value || "none";
-                    if (value !== "spherical" && value !== "cylindrical" && value !== "none") {
-                        this.error("Unsupported value for 'billboard': " + value + " - accepted values are " +
-                            "'spherical', 'cylindrical' and 'none' - defaulting to 'none'.");
-                        value = "none";
-                    }
-                    if (this._state.billboard === value) {
-                        return;
-                    }
-                    this._state.billboard = value;
-                    this.fire("dirty", this);
-                },
-
-                get: function () {
-                    return this._state.billboard;
-                }
-            },
-
-            /**
-             * Flag which indicates if this Entity is rendered with ghost effect.
-             *
-             * The ghost effect is configured via the Entity's {{#crossLink "Entity/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
-             *
-             * @property ghosted
-             * @default false
-             * @type Boolean
-             */
-            "ghosted,ghost": {
-
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.ghosted === value) {
-                        return;
-                    }
-                    this._state.ghosted = value;
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.ghosted;
-                }
-            },
-
-
-            /**
-             * World-space 3D center of this Entity.
-             *
-             * @property center
-             * @final
-             * @type {Float32Array}
-             */
-            center: {
-                get: function () {
-                    if (this._aabbDirty) {
-                        if (!this._center) {
-                            this._center = xeogl.math.AABB3();
-                        }
-                        var aabb = this.aabb;
-                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
-                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
-                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
-                    }
-                    return this._center;
-                }
-            },
-
-            /**
-             * World-space axis-aligned 3D boundary (AABB) of this Entity.
-             *
-             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
-             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-             *
-             * @property aabb
-             * @final
-             * @type {Float32Array}
-             */
-            aabb: {
-                get: function () {
-                    if (this._aabbDirty) {
-                        this._aabbDirty = false;
-                        var math = xeogl.math;
-                        var transform = this._attached.transform;
-                        var geometry = this._attached.geometry;
-                        if (!transform) {
-                            return geometry.aabb;
-                        }
-                        if (!this._aabb) {
-                            this._aabb = math.AABB3();
-                        }
-                        if (!this._obb) {
-                            this._obb = math.OBB3();
-                        }
-                        math.transformOBB3(transform.leafMatrix, geometry.obb, this._obb);
-                        math.OBB3ToAABB3(this._obb, this._aabb);
-                    }
-                    return this._aabb;
-                }
-            },
-
-            /**
-             * World-space oriented 3D boundary (OBB) of this Entity.
-             *
-             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
-             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
-             *
-             * @property obb
-             * @final
-             * @type {Float32Array}
-             */
-            obb: {
-                get: function () {
-                    if (this._obbDirty) {
-                        this._obbDirty = false;
-                        var transform = this._attached.transform;
-                        var geometry = this._attached.geometry;
-                        if (!transform) {
-                            return geometry.obb;
-                        }
-                        if (!this._obb) {
-                            this._obb = xeogl.math.OBB3();
-                        }
-                        xeogl.math.transformOBB3(transform.leafMatrix, geometry.obb, this._obb);
-                    }
-                    return this._obb;
-                }
-            },
-
-            /**
-             * World-space vertex positions of this Entity.
-             *
-             * These are internally generated on-demand and cached. To free the cached
-             * vertex World positions when you're done with them, set this property to null or undefined.
-             *
-             * @property worpdPositions
-             * @type Float32Array
-             * @final
-             */
-            worldPositions: {
-
-                get: function () {
-                    if (this._worldPositionsDirty) {
-                        var positions = this.geometry.positions;
-                        if (!this._worldPositions) {
-                            this._worldPositions = new Float32Array(positions.length);
-                        }
-                        if (!this._attached.transform) {
-                            this._worldPositions.set(positions);
-                        } else {
-                            xeogl.math.transformPositions3(this._attached.transform.leafMatrix, positions, this._worldPositions);
-                        }
-                        this._worldPositionsDirty = false;
-                    }
-                    return this._worldPositions;
-                },
-
-                set: function (value) {
-                    if (value = undefined || value === null) {
-                        this._worldPositions = null; // Release memory
-                        this._worldPositionsDirty = true;
-                    }
-                }
-            }
-        },
-
-        // Callbacks as members, to avoid GC churn
-
-        _transformUpdated: function () {
-            if (!this._transformDirty) {
-                return;
-            }
-            this._attached.transform._buildLeafMatrix();
-            this._setBoundaryDirty();
-            this._transformDirty = false;
-        },
-
-        _setBoundaryDirty: function () {
-            this._aabbDirty = true;
-            this._obbDirty = true;
-            this._worldPositionsDirty = true;
-
-            //var lights = this._attached.lights;
-            //if (lights) {
-            //    lights._shadowsDirty(); // Need to re-render shadow maps
-            //}
-
-            /**
-             Fired whenever this Entity's World-space boundary changes.
-
-             Get the latest boundary from the Entity's {{#crossLink "Entity/aabb:property"}}{{/crossLink}}
-             and {{#crossLink "Entity/obb:property"}}{{/crossLink}} properties.
-
-             @event boundary
-             */
-            this.fire("boundary");
-        },
-
-        // Returns true if there is enough on this Entity to render something.
-        _valid: function () {
-            if (this.destroyed) {
-                return false;
-            }
-            var geometry = this._attached.geometry;
-            if (!geometry) {
-                return false;
-            }
-            if (!geometry.created) {
-                return false;
-            }
-            return true;
-        },
-
-        _compile: function () {
-
-            if (this._objectId) {
-                this._renderer.destroyObject(this._objectId);
-                this._objectId = null;
-            }
-
-            var material = this.material._getState();
-            var ghostMaterial = this.ghostMaterial._state;
-            var outlineMaterial = this.outlineMaterial._state;
-            var highlightMaterial = this.highlightMaterial._state;
-            var selectedMaterial = this.selectedMaterial._state;
-            var vertexBufs = this.geometry._getVertexBufs();
-            var geometry = this.geometry._state;
-            var modelTransform = this.transform._state;
-            var modes = this._getState();
-
-            var result = this._renderer.createObject(this.id, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial,  vertexBufs, geometry, modelTransform, modes);
-
-            if (this._loading) {
-                this._loading = false;
-                this.fire("loaded", true);
-            }
-
-            if (result.objectId) {
-                this._objectId = result.objectId;
-
-            } else if (result.errors) {
-                var errors = result.errors.join("\n");
-                this.error(errors);
-                this.fire("error", errors);
-            }
-        },
-
-        _getState: function () {
-            this._makeHash();
-            return this._state;
-        },
-
-        _makeHash: function () {
-            var hash = [];
-            var state = this._state;
-            if (state.stationary) {
-                hash.push("/s");
-            }
-            if (state.billboard === "none") {
-                hash.push("/n");
-            } else if (state.billboard === "spherical") {
-                hash.push("/s");
-            } else if (state.billboard === "cylindrical") {
-                hash.push("/c");
-            }
-            if (state.receiveShadow) {
-                hash.push("/rs");
-            }
-            hash.push(";");
-            this._state.hash = hash.join("");
-        },
-
-        _destroy: function () {
-            if (this._objectId) {
-                this._renderer.destroyObject(this._objectId);
-                this._objectId = null;
-            }
-        }
-    });
-})();
-;/**
- * Components that influence the way entities are rendered with WebGL.
+ * Components that influence the way meshes are rendered with WebGL.
  *
  * @module xeogl
  * @submodule rendering
@@ -35586,1034 +37310,6 @@ TODO
 
 })();
 ;/**
- * Modelling transform components.
- *
- * @module xeogl
- * @submodule transforms
- */;/**
- A **Transform** is a modelling, viewing or projection transformation.
-
- ## Overview
-
- * Sub-classes of Transform include: {{#crossLink "Translate"}}{{/crossLink}},
- {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Quaternion"}}{{/crossLink}},
- {{#crossLink "Lookat"}}{{/crossLink}}, {{#crossLink "Perspective"}}{{/crossLink}}, {{#crossLink "Frustum"}}{{/crossLink}}
- and {{#crossLink "Ortho"}}{{/crossLink}}.
- * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
-
- * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
- within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.
-
- <img src="../../../assets/images/Transform.png"></img>
-
- ## Examples
-
- * [Modelling transform hierarchy](../../examples/#transforms_entity_hierarchy)
- * [Attaching transforms to Models, via constructor](../../examples/#transforms_model_configureTransform)
- * [Attaching transforms to Models, via property](../../examples/#transforms_model_attachTransform)
-
- ## Usage
-
- In this example we'll create the table shown below, which consists of five {{#crossLink "Entity"}}Entities{{/crossLink}}
- that share a {{#crossLink "BoxGeometry"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of
- {{#crossLink "Translate"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}}
- components. Each {{#crossLink "Entity"}}{{/crossLink}} also has its own {{#crossLink "PhongMaterial"}}{{/crossLink}} to
- give it a distinct color.
-
- <img src="../../../assets/images/transformHierarchy.png"></img>
-
- ````javascript
- // Shared Geometry
- var boxGeometry = new xeogl.BoxGeometry();
-
- // Position of entire table
- var tablePos = new xeogl.Translate({
-    xyz: [0, 6, 0]
- });
-
- // Orientation of entire table
- var tableRotate = new xeogl.Rotate({
-    xyz: [1, 1, 1],
-    angle: 0,
-    parent: tablePos
- });
-
- // Red table leg
- var tableLeg1 = new xeogl.Entity({
-    geometry: boxGeometry,
-    transform: new xeogl.Scale({
-        xyz: [1, 3, 1],
-        parent: new xeogl.Translate({
-            xyz: [-4, -6, -4],
-            parent: tableRotate
-        })
-    }),
-    material: new xeogl.PhongMaterial({
-        diffuse: [1, 0.3, 0.3]
-    })
- });
-
- // Green table leg
- var tableLeg2 = new xeogl.Entity({
-    geometry: boxGeometry,
-    transform: new xeogl.Scale({
-        xyz: [1, 3, 1],
-        parent: new xeogl.Translate({
-            xyz: [4, -6, -4],
-            parent: tableRotate
-        })
-    }),
-    material: new xeogl.PhongMaterial({
-        diffuse: [0.3, 1.0, 0.3]
-    })
- });
-
- // Blue table leg
- var tableLeg3 = new xeogl.Entity({
-    geometry: boxGeometry,
-    transform: new xeogl.Scale({
-        xyz: [1, 3, 1],
-        parent: new xeogl.Translate({
-            xyz: [4, -6, 4],
-            parent: tableRotate
-        })
-    }),
-    material: new xeogl.PhongMaterial({
-        diffuse: [0.3, 0.3, 1.0]
-    })
- });
-
- // Yellow table leg
- var tableLeg4 = new xeogl.Entity({
-    geometry: boxGeometry,
-    transform: new xeogl.Scale({
-        xyz: [1, 3, 1],
-        parent: new xeogl.Translate({
-            xyz: [-4, -6, 4],
-            parent: tableRotate
-        })
-    }),
-    material: new xeogl.PhongMaterial({
-        diffuse: [1.0, 1.0, 0.0]
-    })
- });
-
- // Purple table top
- var tableTop = new xeogl.Entity({
-    geometry: boxGeometry,
-    transform: new xeogl.Scale({
-        xyz: [6, 0.5, 6],
-        parent: new xeogl.Translate({
-            xyz: [0, -3, 0],
-            parent: tableRotate
-        })
-    }),
-    material: new xeogl.PhongMaterial({
-        diffuse: [1.0, 0.3, 1.0]
-    })
- });
-
- // Zoom camera out a bit
- // Get the Camera from one of the Entities
- tableTop.camera.view.zoom(10);
-
- // Spin the entire table
-
- var angle = 0;
-
- scene.on("tick", function () {
-    angle += 0.5;
-    tableRotate.angle = angle;
- });
- ````
-
- @class Transform
- @module xeogl
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Transform in the
- default {{#crossLink "Scene"}}Scene{{/crossLink}}  when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- You only need to supply an ID if you need to be able to find the Transform by ID within the {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Transform.
- @param [cfg.parent] {String|Transform} ID or instance of a parent Transform within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.postMultiply=true] {Boolean} Flag that indicates whether this Transform is post-multiplied (default) or
- pre-multiplied by its {{#crossLink "Transform/parent:property"}}{{/crossLink}} Transform.
- @param [cfg.matrix=[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]] {Float32Array} One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Transform = xeogl.Component.extend({
-
-        type: "xeogl.Transform",
-
-        _init: function (cfg) {
-
-            this._onParentUpdated = null;
-            this._onParentDestroyed = null;
-
-            this._matrix = xeogl.math.identityMat4(xeogl.math.mat4());
-            this._leafMatrix = null;
-            this._leafNormalMatrix = null;
-
-            this._leafMatrixDirty = true;
-            this._leafNormalMatrixDirty = true;
-
-            var self = this;
-
-            this._state = new xeogl.renderer.Transform({
-
-                // Lazy-generate leaf matrices as we render because it's only
-                // at this point that we actually know that we need them.
-
-                getMatrix: function () {
-                    if (self._leafMatrixDirty) { // TODO: Or schedule matrix rebuild to task queue if not urgent?
-                        self._buildLeafMatrix();
-                    }
-                    return self._leafMatrix;
-                },
-
-                getNormalMatrix: function () {
-                    if (self._leafNormalMatrixDirty) {
-                        self._buildLeafNormalMatrix();
-                    }
-                    return self._leafNormalMatrix;
-                }
-            });
-
-            this.parent = cfg.parent;
-            this.matrix = cfg.matrix;
-            this.postMultiply = cfg.postMultiply;
-
-            xeogl.stats.memory.transforms++;
-        },
-
-        _parentUpdated: function () {
-
-            this._leafMatrixDirty = true;
-
-            /**
-             * Fired whenever this Transform's {{#crossLink "Transform/leafMatrix:property"}}{{/crossLink}} property changes.
-             *
-             * This event does not carry the updated property value. Instead, subscribers will need to read
-             * that property again to get its updated value (which may be lazy-computed then).
-             *
-             * @event updated
-             */
-            this.fire("updated", true);
-        },
-
-        // This is called if necessary when reading "leafMatrix", to update that property.
-        // It's also called by Entity when the Transform is the leaf to which the
-        // Entity is attached, in response to an "updated" event from the Transform.
-
-        _buildLeafMatrix: function () {
-
-            if (!this._leafMatrixDirty) {
-                return;
-            }
-
-            if (!this._leafMatrix) {
-                this._leafMatrix = xeogl.math.mat4();
-            }
-
-            if (this._build && this._buildScheduled) {
-                this._build();
-                this._buildScheduled = false;
-            }
-
-            if (!this._parent) {
-
-                // No parent Transform
-
-                for (var i = 0, len = this._matrix.length; i < len; i++) {
-                    this._leafMatrix[i] = this._matrix[i];
-                }
-
-            } else {
-
-                // Multiply parent's leaf matrix by this matrix,
-                // store result in this leaf matrix
-
-                if (this._postMultiply) {
-                    xeogl.math.mulMat4(this._parent.leafMatrix, this._matrix, this._leafMatrix);
-                } else {
-                    xeogl.math.mulMat4(this._matrix, this._parent.leafMatrix, this._leafMatrix);
-                }
-            }
-
-            this._renderer.imageDirty();
-
-            this._leafMatrixDirty = false;
-            this._leafNormalMatrixDirty = true;
-        },
-
-        _buildLeafNormalMatrix: function () {
-
-            if (this._leafMatrixDirty) {
-                this._buildLeafMatrix();
-            }
-
-            if (!this._leafNormalMatrix) {
-                this._leafNormalMatrix = xeogl.math.mat4();
-            }
-
-            xeogl.math.inverseMat4(this._leafMatrix, this._leafNormalMatrix);
-            xeogl.math.transposeMat4(this._leafNormalMatrix);
-
-            // this._renderer.imageDirty();
-
-            this._leafNormalMatrixDirty = false;
-        },
-
-        _props: {
-
-            /**
-             * The parent Transform.
-             *
-             * @property parent
-             * @type Transform
-             */
-            parent: {
-
-                set: function (value) {
-
-                    // Disallow cycle
-
-                    if (value) {
-
-                        var id = this.id;
-
-                        for (var value2 = value; value2; value2 = value2._parent) {
-
-                            if (id === value2.id) {
-                                this.error("Not allowed to attach Transform as parent of itself - ignoring");
-                                return;
-                            }
-                        }
-                    }
-
-                    // Unsubscribe from old parent's events
-
-                    if (this._parent && (!value || value.id !== this._parent.id)) {
-                        this._parent.off(this._onParentUpdated);
-                        this._parent.off(this._onParentDestroyed);
-                    }
-
-                    this._parent = value;
-
-                    if (this._parent) {
-                        this._onParentUpdated = this._parent.on("updated", this._parentUpdated, this);
-                        this._onParentDestroyed = this._parent.on("destroyed", this._parentUpdated, this);
-                    }
-
-                    this._parentUpdated();
-                },
-
-                get: function () {
-                    return this._parent;
-                }
-            },
-
-            /**
-             * Flag that indicates whether this Transform is post-multiplied (default) or pre-multiplied by
-             * its {{#crossLink "Transform/parent:property"}}{{/crossLink}} Transform.
-             *
-             * @property postMultiply
-             * @default true
-             * @type Boolean
-             */
-            postMultiply: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (this._postMultiply === value) {
-                        return;
-                    }
-
-                    this._postMultiply = value;
-
-                    this._leafMatrixDirty = true;
-
-                    this._renderer.imageDirty();
-
-                    this.fire("updated", true);
-                },
-
-                get: function () {
-                    return this._postMultiply;
-                }
-            },
-
-            /**
-             * The Transform's local matrix.
-             *
-             * Fires a {{#crossLink "Transform/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
-             */
-            matrix: {
-
-                set: function (value) {
-
-                    this._matrix.set(value || xeogl.math.identityMat4());
-
-                    this._leafMatrixDirty = true;
-
-                    this._renderer.imageDirty();
-
-                    /**
-                     * Fired whenever this Transform's {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property changes.
-                     * @event matrix
-                     * @param value The property's new value
-                     */
-                    this.fire("matrix", this._matrix);
-
-                    this.fire("updated", true);
-                },
-
-                get: function () {
-
-                    if (this._updateScheduled) {
-                        this._doUpdate();
-                    }
-
-                    return this._matrix;
-                }
-            },
-
-            /**
-             * Returns the product of all {{#crossLink "Transform/matrix:property"}}{{/crossLink}}'s on Transforms
-             * on the path via {{#crossLink "Transform/parent:property"}}{{/crossLink}} up to the root.
-             *
-             * The value of this property will have a fresh value after each
-             * {{#crossLink "Transform/updated:property"}}{{/crossLink}} event, which is fired whenever any Transform
-             * on the path receives an update for its {{#crossLink "Transform/matrix:property"}}{{/crossLink}} or
-             * {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property.
-             *
-             * @property leafMatrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
-             */
-            leafMatrix: {
-
-                get: function () {
-
-                    if (this._leafMatrixDirty) {
-                        this._buildLeafMatrix();
-                    }
-
-                    return this._leafMatrix;
-                }
-            },
-
-            /**
-             * Returns the product of all {{#crossLink "Transform/normalMatrix:property"}}{{/crossLink}}'s on Transforms
-             * on the path via {{#crossLink "Transform/parent:property"}}{{/crossLink}} up to the root.
-             *
-             * The value of this property will have a fresh value after each
-             * {{#crossLink "Transform/updated:property"}}{{/crossLink}} event, which is fired whenever any Transform
-             * on the path receives an update for its {{#crossLink "Transform/matrix:property"}}{{/crossLink}} or
-             * {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property.
-             *
-             * @property leafNormalMatrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
-             */
-            leafNormalMatrix: {
-
-                get: function () {
-
-                    if (this._leafMatrixDirty) {
-                        this._buildLeafNormalMatrix();
-                    }
-
-                    return this._leafNormalMatrix;
-                }
-            }
-        },
-
-        _destroy: function () {
-            if (this._parent) {
-                this._parent.off(this._onParentUpdated);
-                this._parent.off(this._onParentDestroyed);
-            }
-            xeogl.stats.memory.transforms--;
-        }
-    });
-
-})();
-;/**
- A **Rotate** is a {{#crossLink "Transform"}}{{/crossLink}} that rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}} about an axis vector.
-
- ## Overview
-
- * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
- * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
- within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.
-
-
- <img src="../../../assets/images/Rotate.png"></img>
-
- ## Examples
-
- * [Modeling transform hierarchy](../../examples/#transforms_entity_hierarchy)
-
- ## Usage
-
- In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
- Rotate, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
- The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
-
- ````javascript
- var rotate = new xeogl.Rotate({
-    xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
-    angle: 30
- });
-
- var translate1 = new xeogl.Translate({
-    parent: rotate,
-    xyz: [-5, 0, 0] // Translate along -X axis
- });
-
- var translate2 = new xeogl.Translate({
-    parent: rotate,
-    xyz: [5, 0, 0] // Translate along +X axis
- });
-
- var scale = new xeogl.Scale({
-    parent: translate2,
-    xyz: [1, 2, 1] // Scale x2 on Y axis
- });
-
- var geometry = new xeogl.Geometry(scene); // Defaults to a 2x2x2 box
-
- var Entity1 = new xeogl.Entity({
-    transform: translate1,
-    geometry: geometry
- });
-
- var Entity2 = new xeogl.Entity({
-    transform: scale,
-    geometry: geometry
- });
- ````
-
- Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
-
- Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
- var scale2 = new xeogl.Scale({
-    parent: translate1,
-    xyz: [1, 1, 2] // Scale x2 on Z axis
- });
-
- Entity2.transform = scale2;
- ````
-
- Let's start spinning the {{#crossLink "Rotate"}}{{/crossLink}}:
-
- ````javascript
- // Rotate 0.2 degrees on each frame
- scene.on("tick", function(e) {
-    rotate.angle += 0.2;
- });
- ````
- @class Rotate
- @module xeogl
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Rotate in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Rotate.
- @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.xyz=[0,1,0]] {Float32Array} Axis of rotation.
- @param [cfg.angle=0] {Number} Angle of rotation in degrees.
- @extends Transform
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Rotate = xeogl.Transform.extend({
-
-        type: "xeogl.Rotate",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.xyz = cfg.xyz;
-            this.angle = cfg.angle;
-        },
-
-        _update: function () {
-            if (this._xyz[0] === 0 && this._xyz[1] === 0 && this._xyz[2] === 0) {
-                this.warn("Rotation axis is [0,0,0] - won't build matrix.");
-                return;
-            }
-            this.matrix = xeogl.math.rotationMat4v(this._angle * xeogl.math.DEGTORAD, this._xyz, this._matrix);
-        },
-
-        _props: {
-
-            /**
-             * Vector indicating the axis of rotation.
-             *
-             * @property xyz
-             * @default [0,1,0]
-             * @type {Float32Array}
-             */
-            xyz: {
-
-                set: function (value) {
-                    (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 1, 0]);
-                    this._needUpdate(0);
-                },
-
-                get: function () {
-                    return this._xyz;
-                }
-            },
-
-            /**
-             * Angle of rotation in degrees.
-             *
-             * @property angle
-             * @default 0
-             * @type {Number}
-             */
-            angle: {
-
-                set: function (value) {
-                    this._angle = value || 0;
-                    this._needUpdate(0);
-                },
-
-                get: function () {
-                    return this._angle;
-                }
-            }
-        }
-    });
-
-})();
-;/**
- A **Quaternion** is a {{#crossLink "Transform"}}{{/crossLink}} that rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
-
- ## Overview
-
- * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
- * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a
- leaf {{#crossLink "Transform"}}{{/crossLink}} within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be
- transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the root, in that order.
-
- <img src="../../../assets/images/Quaternion.png"></img>
-
- ## Usage
-
- In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
- Quaternion, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
- The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
-
- ````javascript
- var quaternion = new xeogl.Quaternion({
-    xyzw: [0, 0, 0, 1], // Unit quaternion
- });
-
- var translate1 = new xeogl.Translate({
-   parent: quaternion,
-   xyz: [-5, 0, 0] // Translate along -X axis
- });
-
- var translate2 = new xeogl.Translate({
-   parent: quaternion,
-   xyz: [5, 0, 0] // Translate along +X axis
- });
-
- var scale = new xeogl.Scale({
-   parent: translate2,
-   xyz: [1, 2, 1] // Scale x2 on Y axis
- });
-
- var geometry = new xeogl.BoxGeometry();
-
- var entity1 = new xeogl.Entity(scene, {
-   transform: translate1,
-   geometry: geometry
- });
-
- var entity2 = new xeogl.Entity({
-   transform: scale,
-   geometry: geometry
- });
- ````
-
- Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
-
- Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
- var scale2 = new xeogl.Scale({
-   parent: translate1,
-   xyz: [1, 1, 2] // Scale x2 on Z axis
- });
-
- Entity2.transform = scale2;
- ````
-
- Let's spin the Quaternion:
-
- ````javascript
- // Rotate 0.2 degrees about Y-axis on each frame
- scene.on("tick", function(e) {
-        quaternion.rotate([0, 1, 0, 0.2]);
-    });
- ````
- @class Quaternion
- @module xeogl
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Quaternion in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Quaternion.
- @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.xyzw=[0,0,0,1]] {Array(Number)} The initial Quaternion elements.
- @extends Transform
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Quaternion = xeogl.Transform.extend({
-
-        type: "xeogl.Quaternion",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.xyzw = cfg.xyzw;
-        },
-
-        _props: {
-
-            /**
-
-             The quaternion elements.
-
-             @property xyzw
-             @default [0,0,0,1]
-             @type {Float32Array}
-             */
-            xyzw: {
-
-                set: function (value) {
-                    var math = xeogl.math;
-                    (this._xyzw = this._xyzw || new math.vec4()).set(value || math.identityQuaternion());
-                    this.matrix = math.quaternionToMat4(this._xyzw, this._matrix || (this._matrix = xeogl.math.identityMat4()));
-                },
-
-                get: function () {
-                    return this._xyzw;
-                }
-            }
-        },
-
-        /**
-         Rotates this Quaternion.
-         @method rotate
-         @param {Float32Array} angleAxis Rotation in angle-axis form.
-         */
-        rotate: (function () {
-            var math = xeogl.math;
-            var tempAngleAxis = math.vec4();
-            var tempQuat = math.vec4();
-            return function (angleAxis) {
-                // TODO: Make API work in radians so we don't have to do this?:
-                tempAngleAxis[0] = angleAxis[0];
-                tempAngleAxis[1] = angleAxis[1];
-                tempAngleAxis[2] = angleAxis[2];
-                tempAngleAxis[3] = angleAxis[3] * math.DEGTORAD;
-                math.angleAxisToQuaternion(tempAngleAxis, tempQuat);
-                this.xyzw = math.mulQuaternions(this._xyzw, tempQuat, this._xyzw);
-            };
-        })()
-    });
-})();;/**
- A **Scale** is a {{#crossLink "Transform"}}{{/crossLink}} that scales associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
-
- ## Overview
-
- * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
- * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
- within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.
-
- <img src="../../../assets/images/Scale.png"></img>
-
- ## Examples
-
- * [Modeling transform hierarchy](../../examples/#transforms_entity_hierarchy)
-
- ## Usage
-
- In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
- {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Translate"}}{{/crossLink}} and Scale transforms.
- The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
-
- ````javascript
- var rotate = new xeogl.Rotate({
-    xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
-    angle: 30
- });
-
- var translate1 = new xeogl.Translate({
-    parent: rotate,
-    xyz: [-5, 0, 0] // Translate along -X axis
- });
-
- var translate2 = new xeogl.Translate({
-    parent: rotate,
-    xyz: [5, 0, 0] // Translate along +X axis
- });
-
- var scale = new xeogl.Scale({
-    parent: translate2,
-    xyz: [1, 2, 1] // Scale x2 on Y axis
- });
-
- var geometry = new xeogl.BoxGeometry();
-
- var entity1 = new xeogl.Entity({
-    transform: translate1,
-    geometry: geometry
- });
-
- var entity2 = new xeogl.Entity({
-    transform: scale,
-    geometry: geometry
- });
- ````
-
- Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
-
- Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
- var scale2 = new xeogl.Scale({
-    parent: translate1,
-    xyz: [1, 1, 2] // Scale x2 on Z axis
- });
-
- entity2.transform = scale2;
- ````
-
- And just for fun, we'll start spinning the {{#crossLink "Rotate"}}{{/crossLink}}:
-
- ````javascript
- // Rotate 0.2 degrees on each frame
- scene.on("tick", function(e) {
-    rotate.angle += 0.2;
- });
- ````
-
- @class Scale
- @module xeogl
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Scale in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scale.
- @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.xyz=[1,1,1]] {Float32Array} Scale factors.
- @extends Transform
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Scale = xeogl.Transform.extend({
-
-        type: "xeogl.Scale",
-
-        _init: function (cfg) {
-            this._super(cfg);
-            this.xyz = cfg.xyz;
-        },
-
-        _props: {
-
-            /**
-             * Vector indicating a scale factor for each axis.
-             * @property xyz
-             * @default [1,1,1]
-             * @type {Float32Array}
-             */
-            xyz: {
-
-                set: function (value) {
-                    (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [1, 1, 1]);
-                    this.matrix = xeogl.math.scalingMat4v(this._xyz, this._matrix);
-                },
-
-                get: function () {
-                    return this._xyz;
-                }
-            }
-        }
-    });
-
-})();
-;/**
- A **Translate** is a {{#crossLink "Transform"}}{{/crossLink}} that translates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
-
- ## Overview
-
- * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
- * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
- within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.
-
- <img src="../../../assets/images/Translate.png"></img>
-
- ## Examples
-
- * [Modeling transform hierarchy](../../examples/#transforms_entity_hierarchy)
-
- ## Usage
-
- This example has two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
- {{#crossLink "Rotate"}}{{/crossLink}}, Translate and {{#crossLink "Scale"}}{{/crossLink}} transforms.
- The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
-
- ````javascript
- var rotate = new xeogl.Rotate({
-    xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
-    angle: 30
- });
-
- var translate1 = new xeogl.Translate({
-    parent: rotate,
-    xyz: [-5, 0, 0] // Translate along -X axis
- });
-
- var translate2 = new xeogl.Translate({
-    parent: rotate,
-    xyz: [5, 0, 0] // Translate along +X axis
- });
-
- var scale = new xeogl.Scale({
-    parent: translate2,
-    xyz: [1, 2, 1] // Scale x2 on Y axis
- });
-
- var geometry = new xeogl.BoxGeometry();
-
- var entity1 = new xeogl.Entity({
-    transform: translate1,
-    geometry: geometry
- });
-
- var entity2 = new xeogl.Entity({
-    transform: scale,
-    geometry: geometry
- });
- ````
-
- Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
-
- Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
- var scale2 = new xeogl.Scale({
-    parent: translate1,
-    xyz: [1, 1, 2] // Scale x2 on Z axis
- });
-
- entity2.transform = scale2;
- ````
-
- And just for fun, we'll start updating the second {{#crossLink "Translate"}}{{/crossLink}}:
-
- ````javascript
- // Rotate 0.2 degrees on each frame
- scene.on("tick", function(e) {
-    var xyz = translate2.xyz;
-    xyz[0] += 0.2;
-    translate2.xyz = xyz;
- });
- ````
-
- @class Translate
- @module xeogl
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Translate in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Translate.
- @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.xyz=[0,0,0]] {Float32Array} The translation vector
- @extends Transform
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Translate = xeogl.Transform.extend({
-
-        type: "xeogl.Translate",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.xyz = cfg.xyz;
-        },
-
-        _props: {
-
-            /**
-             * Vector indicating a translation amount for each axis.
-             *
-             * @property xyz
-             * @default [0,0,0]
-             * @type {Float32Array}
-             */
-            xyz: {
-
-                set: function (value) {
-                    (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-                    this.matrix = xeogl.math.translationMat4v(this._xyz, this._matrix);
-                },
-
-                get: function () {
-                    return this._xyz;
-                }
-            }
-        }
-    });
-})();
-;/**
  A **Camera** defines viewing and projection transforms for its {{#crossLink "Scene"}}{{/crossLink}}.
 
  ## Overview
@@ -36635,17 +37331,18 @@ TODO
  * [Frustum projection](../../examples/#camera_frustum)
  * [Camera with world Z-axis as "up"](../../examples/#camera_zAxisUp)
  * [Camera with world Y-axis as "up"](../../examples/#camera_yAxisUp)
- * [Automatically following an Entity with a Camera](../../examples/#camera_follow)
+ * [Automatically following a Mesh with a Camera](../../examples/#camera_follow)
  * [Animating a Camera along a path](../../examples/#camera_path_interpolation)
  * [Architectural fly-through](../../examples/#importing_gltf_ModernOffice)
 
  ## Usage
 
- * [Getting the Camera](#getting)
+ * [Getting the Camera](#getting-the-camera)
  * [Moving around](#moving-around)
  * [Projection](#projection)
  * [Configuring World up direction](#configuring-world-up-direction)
  * [Gimbal locking](#gimbal-locking)
+ * [Stereo rendering](#stereo-rendering)
 
  ### Getting the Camera
 
@@ -36731,9 +37428,12 @@ TODO
  camera.frustum.far = 1000.0;
  //...
 
+ camera.customProjection.matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
  camera.projection = "perspective"; // Switch to perspective
  camera.projection = "frustum"; // Switch to frustum
  camera.projection = "ortho"; // Switch to ortho
+ camera.projection = "customProjection"; // Switch to custom
  ````
 
  Get the projection matrix:
@@ -36792,6 +37492,10 @@ TODO
 
  See: <a href="https://en.wikipedia.org/wiki/Gimbal_lock">https://en.wikipedia.org/wiki/Gimbal_lock</a>
 
+ ### Stereo rendering
+
+ TODO: Describe stereo techniques and the deviceMatrix property
+
  @class Camera
  @module xeogl
  @submodule camera
@@ -36824,6 +37528,8 @@ TODO
         _init: function (cfg) {
 
             this._state = new xeogl.renderer.ViewTransform({
+                deviceMatrix: math.mat4(),
+                hasDeviceMatrix: false, // True when deviceMatrix set to other than identity
                 matrix: math.mat4(),
                 normalMatrix: math.mat4()
             });
@@ -36831,6 +37537,7 @@ TODO
             this._perspective = new xeogl.Perspective(this);
             this._ortho = new xeogl.Ortho(this);
             this._frustum = new xeogl.Frustum(this);
+            this._customProjection = new xeogl.CustomProjection(this);
             this._project = this._perspective;
 
             var self = this;
@@ -36843,6 +37550,7 @@ TODO
             this._worldRight = math.vec3([1, 0, 0]);
             this._worldForward = math.vec3([0, 0, -1]);
 
+            this.deviceMatrix = cfg.deviceMatrix;
             this.eye = cfg.eye;
             this.look = cfg.look;
             this.up = cfg.up;
@@ -36868,6 +37576,12 @@ TODO
                     self.fire("projMatrix", self._frustum.matrix);
                 }
             });
+
+            this._customProjection.on("matrix", function () {
+                if (self._projectionType === "customProjection") {
+                    self.fire("projMatrix", self._customProjection.matrix);
+                }
+            });
         },
 
         _update: (function () {
@@ -36876,8 +37590,11 @@ TODO
             var eyeLookVecNorm = math.vec3();
             var eyeLookOffset = math.vec3();
             var offsetEye = math.vec3();
+            var tempMat = math.mat4();
 
             return function () {
+
+                var state = this._state;
 
                 // In ortho mode, build the view matrix with an eye position that's translated
                 // well back from look, so that the front clip plane doesn't unexpectedly cut
@@ -36895,7 +37612,14 @@ TODO
                     eye = this._eye;
                 }
 
-                math.lookAtMat4v(eye, this._look, this._up, this._state.matrix);
+                if (state.hasDeviceMatrix) {
+                    math.lookAtMat4v(eye, this._look, this._up, tempMat);
+                    math.mulMat4(state.deviceMatrix, tempMat, state.matrix);
+                    //state.matrix.set(state.deviceMatrix);
+                } else {
+                    math.lookAtMat4v(eye, this._look, this._up, state.matrix);
+                }
+
                 math.inverseMat4(this._state.matrix, this._state.normalMatrix);
                 math.transposeMat4(this._state.normalMatrix);
 
@@ -37140,6 +37864,35 @@ TODO
             },
 
             /**
+             Sets an optional matrix to premultiply into this Camera's {{#crossLink "Camera/matrix:property"}}{{/crossLink}} matrix.
+
+             This is intended to be used for stereo rendering with WebVR etc.
+
+             * @property deviceMatrix
+             * @type {Float32Array}
+             */
+            deviceMatrix: {
+
+                set: function (matrix) {
+                    this._state.deviceMatrix.set(matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                    this._state.hasDeviceMatrix = !!matrix;
+                    this._needUpdate(0);
+
+                    /**
+                     * Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event deviceMatrix
+                     * @param value The property's new value
+                     */
+                    this.fire("deviceMatrix", this._state.deviceMatrix);
+                },
+
+                get: function () {
+                    return this._state.deviceMatrix;
+                }
+            },
+
+            /**
              * Indicates the up, right and forward axis of the World coordinate system.
              *
              * Has format: ````[rightX, rightY, rightZ, upX, upY, upZ, forwardX, forwardY, forwardZ]````
@@ -37265,6 +38018,7 @@ TODO
              * Distance from "look" to "eye".
              * @property eyeLookDist
              * @type Number
+             * @final
              */
             eyeLookDist: {
 
@@ -37283,6 +38037,7 @@ TODO
              *
              * @property matrix
              * @type {Float32Array}
+             * @final
              * @deprecated
              */
             matrix: {
@@ -37303,6 +38058,7 @@ TODO
              * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
              *
              * @property viewMatrix
+             * @final
              * @type {Float32Array}
              */
             viewMatrix: {
@@ -37324,6 +38080,7 @@ TODO
              *
              * @property normalMatrix
              * @type {Float32Array}
+             * @final
              * @deprecated
              */
             normalMatrix: {
@@ -37344,6 +38101,7 @@ TODO
              * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
              *
              * @property viewNormalMatrix
+             * @final
              * @type {Float32Array}
              */
             viewNormalMatrix: {
@@ -37364,6 +38122,7 @@ TODO
              * Fires a {{#crossLink "Camera/projMatrix:event"}}{{/crossLink}} event on change.
              *
              * @property projMatrix
+             * @final
              * @type {Float32Array}
              */
             projMatrix: {
@@ -37423,9 +38182,25 @@ TODO
             },
 
             /**
+             * A custom projection transform, given as a 4x4 matrix.
+             *
+             * This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "customProjection".
+             *
+             * @property customProjection
+             * @type CustomProjection
+             * @final
+             */
+            customProjection: {
+
+                get: function () {
+                    return this._customProjection;
+                }
+            },
+
+            /**
              The active projection type.
 
-             Accepted values are "perspective", "ortho" and "frustum".
+             Accepted values are "perspective", "ortho", "frustum" and "customProjection".
 
              @property projection
              @default "perspective"
@@ -37449,6 +38224,9 @@ TODO
 
                     } else if (value === "frustum") {
                         this._project = this._frustum;
+
+                    } else if (value === "customProjection") {
+                        this._project = this._customProjection;
 
                     } else {
                         this.error("Unsupported value for 'projection': " + value + " defaulting to 'perspective'");
@@ -37814,6 +38592,8 @@ TODO
  @param [cfg.scale=1.0] {Number} Scale factor for this Ortho's extents on X and Y axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
+ @author xeolabs / http://xeolabs.com
+ @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
 (function () {
@@ -37839,20 +38619,24 @@ TODO
 
         _update: function () {
 
+            const WIDTH_INDEX = 2;
+            const HEIGHT_INDEX = 3;
+
             var scene = this.scene;
             var scale = this._scale;
-            var canvas = scene.canvas.canvas;
-            var canvasWidth = canvas.clientWidth;
-            var canvasHeight = canvas.clientHeight;
             var halfSize = 0.5 * scale;
-            var aspect = canvasWidth / canvasHeight;
+
+            var boundary = scene.viewport.boundary;
+            var boundaryWidth = boundary[WIDTH_INDEX];
+            var boundaryHeight = boundary[HEIGHT_INDEX];
+            var aspect = boundaryWidth / boundaryHeight;
 
             var left;
             var right;
             var top;
             var bottom;
 
-            if (canvasWidth > canvasHeight) {
+            if (boundaryWidth > boundaryHeight) {
                 left = -halfSize;
                 right = halfSize;
                 top = halfSize / aspect;
@@ -38005,8 +38789,7 @@ TODO
         }
     });
 
-})();
-;/**
+})();;/**
  A **Perspective** defines a perspective projection transform for a {{#crossLink "Camera"}}Camera{{/crossLink}}.
 
  ## Overview
@@ -38035,6 +38818,8 @@ TODO
  @param [cfg.fovAxis="min"] {String} The field-of-view axis: "x", "y", or "min" to use whichever is currently the minimum.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
+ @author xeolabs / http://xeolabs.com
+ @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
 (function () {
@@ -38050,7 +38835,7 @@ TODO
             this._state = new xeogl.renderer.ProjTransform({
                 matrix: xeogl.math.mat4()
             });
-            
+
             this._dirty = false;
             this._fov = 60.0;
             this._near = 0.1;
@@ -38067,8 +38852,11 @@ TODO
 
         _update: function () {
 
-            var canvas = this.scene.canvas.canvas;
-            var aspect = canvas.clientWidth / canvas.clientHeight;
+            const WIDTH_INDEX = 2;
+            const HEIGHT_INDEX = 3;
+
+            var boundary = this.scene.viewport.boundary;
+            var aspect = boundary[WIDTH_INDEX] / boundary[HEIGHT_INDEX];
 
             var fov = this._fov;
             var fovAxis = this._fovAxis;
@@ -38254,5 +39042,81 @@ TODO
         }
     });
 
+})();;/**
+ A **CustomProjection** defines a projection for a {{#crossLink "Camera"}}Camera{{/crossLink}} as a custom 4x4 matrix..
+
+ ## Overview
+
+ * A {{#crossLink "Camera"}}Camera{{/crossLink}} has a CustomProjection to configure its custom projection mode.
+ * A CustomProjection lets us explicitly set the elements of its 4x4 transformation matrix.
+
+ ## Examples
+
+ * [Camera with a CustomProjection](../../examples/#camera_customProjection)
+
+ ## Usage
+
+ * See {{#crossLink "Camera"}}{{/crossLink}}
+
+ @class CustomProjection
+ @module xeogl
+ @submodule camera
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this CustomProjection within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CustomProjection.
+ @param [cfg.matrix=] {Float32Array} 4x4 transform matrix.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.CustomProjection = xeogl.Component.extend({
+
+        type: "xeogl.CustomProjection",
+
+        _init: function (cfg) {
+
+            this._state = new xeogl.renderer.ProjTransform({
+                matrix: xeogl.math.mat4()
+            });
+
+            this.matrix = cfg.matrix;
+        },
+
+        _props: {
+
+            /**
+             * The CustomProjection's projection transform matrix.
+             *
+             * Fires a {{#crossLink "CustomProjection/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property matrix
+             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             * @type {Float32Array}
+             */
+            matrix: {
+
+                set: function(matrix) {
+                    this._state.matrix.set(matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+
+                    /**
+                     * Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event matrix
+                     * @param value The property's new value
+                     */
+                    this.fire("far", this._state.matrix);
+                },
+
+                get: function () {
+                    return this._state.matrix;
+                }
+            }
+        }
+    });
 })();
 xeogl.version="0.7.0";

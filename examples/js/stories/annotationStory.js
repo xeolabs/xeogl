@@ -64,7 +64,7 @@
 
      ````javascript
      // Load a Tron Tank model from SceneJS format. Give the model an ID - this
-     // gets prefixed to the IDs of it's Entities.
+     // gets prefixed to the IDs of it's Meshes.
 
      var model = new xeogl.SceneJSModel({
             id: "tank",
@@ -103,7 +103,7 @@
                     up: [-0.09, 0.99, 0.11],
                     pinShown: true,
                     labelShown: true,
-                    entity: "tank.entity2"
+                    mesh: "tank.entity2"
                 },
                 {
                     primIndex: 468,
@@ -117,7 +117,7 @@
                     up: [0.01, 0.97, 0.24],
                     pinShown: true,
                     labelShown: true,
-                    entity: "tank.entity9"
+                    mesh: "tank.entity9"
                 },
                 {
                     primIndex: 216,
@@ -131,7 +131,7 @@
                     up: [0.01, 0.97, 0.24],
                     pinShown: true,
                     labelShown: true,
-                    entity: "tank.entity6"
+                    mesh: "tank.entity6"
                 },
                 {
                     primIndex: 4464,
@@ -145,7 +145,7 @@
                     up: [0.08, 0.99, 0.07],
                     pinShown: true,
                     labelShown: true,
-                    entity: "tank.entity9"
+                    mesh: "tank.entity9"
                 }
             ]
         });
@@ -216,7 +216,7 @@
                     switch (keyCode) {
                         case this.KEY_SHIFT:
                             shiftDown = true;
-                            self._cameraControl.mousePickEntity.active = false;
+                            self._cameraControl.mousePickMesh.active = false;
                             break;
                         case this.KEY_ESCAPE:
                             self._clear();
@@ -231,7 +231,7 @@
                     switch (keyCode) {
                         case this.KEY_SHIFT:
                             shiftDown = false;
-                            self._cameraControl.mousePickEntity.active = true;
+                            self._cameraControl.mousePickMesh.active = true;
                             break;
                     }
                 });
@@ -251,8 +251,8 @@
 
                     if (hit) {
 
-                        var entity = hit.entity;
-                        var camera = entity.scene.camera;
+                        var mesh = hit.mesh;
+                        var camera = mesh.scene.camera;
 
                         var i = self._annotations.length;
                         var num = i + 1;
@@ -261,7 +261,7 @@
                         var dummyText = getDummyText();
 
                         var annotation = new xeogl.Annotation(self.scene, {
-                            entity: hit.entity.id,
+                            mesh: hit.mesh.id,
                             primIndex: hit.primIndex,
                             bary: hit.bary,
                             glyph: glyph,

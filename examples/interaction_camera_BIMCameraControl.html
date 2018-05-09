@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/controls/bimCameraControl.js"></script>
@@ -13,7 +13,7 @@
 
 <div id="info">
     <h1><a
-        href="js/controls/bimCameraControl.js" target="_parent">BIMCameraControl</a></h1>
+            href="js/controls/bimCameraControl.js" target="_parent">BIMCameraControl</a></h1>
     <br>
     controls:
     <ul>
@@ -23,8 +23,8 @@
         <li>A,D - pan left and right</li>
         <li>W,S - pan up and down</li>
         <li>1,2,3,4,5,6 - select axis-aligned view</li>
-        <li>click on entity to fly to it</li>
-        <li>shift-click entity to fly to its boundary</li>
+        <li>click on mesh to fly to it</li>
+        <li>shift-click mesh to fly to its boundary</li>
         <li>mouse wheel or '+' and '-' keys to zoom in and out from rotation point</li>
     </ul>
 </div>
@@ -46,13 +46,11 @@
         for (var y = -size; y <= size; y += inc) {
             for (var z = -size; z <= size; z += inc) {
 
-                new xeogl.Entity({
-                    id: "entity + " + x + "." + y + "." + z,
+                new xeogl.Mesh({
+                    id: "mesh + " + x + "." + y + "." + z,
                     geometry: geometry,
                     material: material,
-                    transform: new xeogl.Translate({
-                        xyz: [x, y, z]
-                    })
+                    position: [x, y, z]
                 });
 
             }
@@ -65,7 +63,7 @@
 
     bimCameraControl.on("pick", function (hit) {
         cameraFlightAnimation.flyTo({
-            aabb: hit.entity.aabb
+            aabb: hit.mesh.aabb
         });
     });
 

@@ -1,6 +1,6 @@
 /**
  A **SpecularMaterial** is a physically-based {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- {{#crossLink "Entity"}}Entities{{/crossLink}} using the *specular-glossiness* workflow.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}} using the *specular-glossiness* workflow.
 
  ## Examples
 
@@ -13,8 +13,6 @@
  * SpecularMaterial is usually used for insulators, such as ceramic, wood and plastic.
  * {{#crossLink "MetallicMaterial"}}{{/crossLink}} is usually used for conductive materials, such as metal.
  * {{#crossLink "PhongMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
-
- <img src="../../../assets/images/SpecularMaterial.png"></img>
 
  For an introduction to PBR concepts, try these articles:
 
@@ -53,7 +51,7 @@
 
  <a href="../../examples/#materials_specular_samples"><img src="../../assets/images/screenshots/SpecularMaterial/plaster.png"></img></a>
 
- Our plastered sphere {{#crossLink "Entity"}}{{/crossLink}} has:
+ Our plastered sphere {{#crossLink "Mesh"}}{{/crossLink}} has:
 
  * a {{#crossLink "SphereGeometry"}}{{/crossLink}},
  * a SpecularMaterial with {{#crossLink "Texture"}}Textures{{/crossLink}} providing diffuse, glossiness, specular and normal maps.
@@ -67,7 +65,7 @@
  within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
- var plasteredSphere = new xeogl.Entity({
+ var plasteredSphere = new xeogl.Mesh({
 
     geometry: new xeogl.SphereGeometry({
         center: [0,0,0],
@@ -898,10 +896,10 @@
 
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
@@ -928,10 +926,10 @@
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"

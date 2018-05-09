@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -13,13 +13,15 @@
 <body>
 
 <div id="info" class="light">
-    <h1>pick masking - using the "exclude" option to exclude entities from being picked</h1>
+    <h1>pick masking - using the "exclude" option to exclude meshes from being picked</h1>
     <br>
     <ul>
         <li>load a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
-        <li>apply ghost effect to <a href="../docs/classes/Entity.html" target="_parent">Entities</a> "gearbox#70.0" and "gearbox#90.0"</li>
+        <li>apply ghost effect to <a href="../docs/classes/Mesh.html" target="_parent">Entities</a> "gearbox#70.0" and
+            "gearbox#90.0"
+        </li>
         <li>pick and highlight Entities on mouse-over, except "gearbox#70.0" and "gearbox#90.0"</li>
-        <li>other entities are pickable <em>through</em> those two Entities</li>
+        <li>other meshes are pickable <em>through</em> those two Entities</li>
         <li>model by <a href="https://sketchfab.com/tflexcad" target="_parent">https://sketchfab.com/tflexcad</a></li>
     </ul>
 </div>
@@ -38,24 +40,22 @@
         src: "models/gltf/gearbox_conical/scene.gltf",
         lambertMaterials: true,
         ghostEdgeThreshold: 10,
-        transform: new xeogl.Scale({ // Tiny models get lost in front of near clipping plane, scale it up
-            xyz: [100, 100, 100]
-        })
+        scale: [100, 100, 100]
     });
 
     model.on("loaded", function () {
 
         scene.ghostMaterial.preset = "gamegrid";
 
-        model.entities["gearbox#70.0"].ghosted = true;
-        model.entities["gearbox#90.0"].ghosted = true;
+        model.meshes["gearbox#70.0"].ghosted = true;
+        model.meshes["gearbox#90.0"].ghosted = true;
     });
 
     // Position the camera
 
     camera.eye = [-13.78, -1.52, -13.00];
-    camera.look =[-2.53, -4.90, -0.10];
-    camera.up =  [0.11, 0.97, 0.14];
+    camera.look = [-2.53, -4.90, -0.10];
+    camera.up = [0.11, 0.97, 0.14];
 
     // Camera interaction
 
@@ -69,19 +69,19 @@
 
         var hit = scene.pick({
             canvasPos: coords,
-            exclude: ["gearbox#70.0", "gearbox#90.0"]
+            excludeMeshes: ["gearbox#70.0", "gearbox#90.0"]
         });
 
         if (hit) {
             if (lastEntity) {
-                if (lastEntity.id !== hit.entity.id) {
+                if (lastEntity.id !== hit.mesh.id) {
                     lastEntity.highlighted = false;
                 } else {
                     return;
                 }
             }
-            hit.entity.highlighted = true;
-            lastEntity = hit.entity;
+            hit.mesh.highlighted = true;
+            lastEntity = hit.mesh;
 
         } else if (lastEntity) {
 

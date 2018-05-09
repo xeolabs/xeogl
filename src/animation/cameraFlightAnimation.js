@@ -23,11 +23,11 @@
 
  ## Examples
 
- * [Flying to random Entities](../../examples/#animation_camera_flight)
+ * [Flying to random meshes](../../examples/#animation_camera_flight)
 
- ## Flying to an Entity
+ ## Flying to a Mesh
 
- Flying to an {{#crossLink "Entity"}}{{/crossLink}}:
+ Flying to a {{#crossLink "Mesh"}}{{/crossLink}}:
 
  ````Javascript
  // Create a CameraFlightAnimation that takes one second to fly
@@ -40,11 +40,11 @@
            // Arrived
        });
 
- // Create a Entity, which gets all the default components
- var entity = new Entity();
+ // Create a Mesh, which gets all the default components
+ var mesh = new Mesh();
 
- // Fly to the Entity's World-space AABB
- cameraFlight.flyTo(entity);
+ // Fly to the Mesh's World-space AABB
+ cameraFlight.flyTo(mesh);
  ````
  ## Flying to a position
 
@@ -67,7 +67,7 @@
  axis-aligned bounding box:
 
  ````Javascript
- cameraFlight.flyTo(entity.aabb);
+ cameraFlight.flyTo(mesh.aabb);
  ````
 
  @class CameraFlightAnimation
@@ -107,7 +107,7 @@
 
             // Shows a wireframe box for target AABBs
             this._aabbHelper = this.create({
-                type: "xeogl.Entity",
+                type: "xeogl.Mesh",
                 geometry: this.create({
                     type: "xeogl.AABBGeometry"
                 }),
@@ -125,7 +125,7 @@
 
             // Shows a wireframe box for target AABBs
             this._obbHelper = this.create({
-                type: "xeogl.Entity",
+                type: "xeogl.Mesh",
                 geometry: this.create({
                     type: "xeogl.OBBGeometry",
                     material: this.create({
@@ -192,7 +192,7 @@
          * @param [params.look] {Float32Array} Position to fly the look position to.
          * @param [params.up] {Float32Array} Position to fly the up vector to.
          * @param [params.fit=true] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
-         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Object"}}{{/crossLink}} or its AABB should
          * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
          * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink "CameraFlightAnimation/duration:property"}}{{/crossLink}}.
          * @param [params.orthoScale] {Number} TODO: document this
@@ -305,7 +305,7 @@
 
                     if (params.showAABB !== false) {
                         this._aabbHelper.geometry.targetAABB = aabb;
-                        this._aabbHelper.visible = true;
+                        //this._aabbHelper.visible = true;
                     }
 
                     var aabbCenter = math.getAABB3Center(aabb);
@@ -390,7 +390,7 @@
          * @param [params.eye] {Float32Array} Position to fly the eye position to.
          * @param [params.look] {Float32Array} Position to fly the look position to.
          * @param [params.up] {Float32Array} Position to fly the up vector to.
-         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Object"}}{{/crossLink}} or its AABB should
          * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
          * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          */
@@ -705,7 +705,7 @@
 
 
             /**
-             * How much of the perspective field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+             * How much of the perspective field-of-view, in degrees, that a target {{#crossLink "Object"}}{{/crossLink}} or its AABB should
              * fill the canvas when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlightAnimation/jumpTo:method"}}{{/crossLink}}.
              *
              * @property fitFOV

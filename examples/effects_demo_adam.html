@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -19,7 +19,7 @@
     <br>
     <ul>
         <li>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
-        <li>ghost effect disabled on face and neck <a href="../docs/classes/Entity.html" target="_parent">Entities</a></li>
+        <li>ghost effect disabled on face and neck <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a></li>
         <li>customized by modifying the default <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a>
             and <a href="../docs/classes/HighlightMaterial.html" target="_parent">HighlightMaterial</a></li>
         <li>model by <a href="https://www.assetstore.unity3d.com/en/#!/content/74842" target="_parent">Unity Technologies</a></li>
@@ -82,7 +82,7 @@
     var cameraControl = new xeogl.CameraControl();
 
     cameraControl.on("picked", function (e) {
-        console.log(e.entity.id)
+        console.log(e.mesh.id)
     });
 
     scene.on("tick", function () {
@@ -93,9 +93,9 @@
 
     model.on("loaded", function () {
 
-        // Entities of interest
+        // Meshes of interest
 
-        var selectedEntities = [
+        var selectedMeshes = [
             "adam#node_mesh_Adam_mask_-4108.0",
             "adam#node_Object001_-4112.5"
         ];
@@ -119,12 +119,12 @@
 
         model.ghosted = true;
 
-        // Unghost selected entities
+        // Unghost selected meshes
 
-        for (var i = 0; i < selectedEntities.length; i++) {
-            var id = selectedEntities[i];
-            var entity = model.entities[id];
-            entity.ghosted = false;
+        for (var i = 0; i < selectedMeshes.length; i++) {
+            var id = selectedMeshes[i];
+            var mesh = model.meshes[id];
+            mesh.ghosted = false;
         }
 
         model.ghosted = true;
@@ -235,11 +235,11 @@
 
                 var highlighted = !!self["highlighted"];
 
-                for (var i = 0; i < selectedEntities.length; i++) {
-                    var id = selectedEntities[i];
-                    var entity = model.entities[id];
-                    entity.highlighted = highlighted;
-                    entity.ghosted = false;
+                for (var i = 0; i < selectedMeshes.length; i++) {
+                    var id = selectedMeshes[i];
+                    var mesh = model.meshes[id];
+                    mesh.highlighted = highlighted;
+                    mesh.ghosted = false;
                 }
 
                 model.scene.gammaOutput = self["scene.gammaOutput"];

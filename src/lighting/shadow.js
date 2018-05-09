@@ -16,7 +16,7 @@
  ## Usage
 
  ```` javascript
- var entity = new xeogl.Entity(scene, {
+ var mesh = new xeogl.Mesh(scene, {
 
         lights: new xeogl.Lights({
             lights: [

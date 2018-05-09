@@ -95,7 +95,7 @@
                 helperLookat.up = up;
             });
 
-        // ----------------- Components that are shared among more than one entity ---------------
+        // ----------------- Components that are shared among more than one mesh ---------------
 
         var arrowHead = new xeogl.CylinderGeometry(scene, {
             radiusTop: 0.01,
@@ -180,13 +180,13 @@
         });
 
 
-        // ----------------- Entities ------------------------------
+        // ----------------- Meshes ------------------------------
 
-        var entities = [
+        var meshes = [
 
             // Sphere behind gnomon
 
-            new xeogl.Entity(scene, {
+            new xeogl.Mesh(scene, {
                 geometry: new xeogl.SphereGeometry(scene, {
                     radius: 9.0,
                     heightSegments: 60,
@@ -208,7 +208,7 @@
 
             // Ball at center of axis
 
-            new xeogl.Entity(scene, {  // Arrow
+            new xeogl.Mesh(scene, {  // Arrow
                 geometry: new xeogl.SphereGeometry(scene, {
                     radius: 1.0
                 }),
@@ -220,7 +220,7 @@
 
             // X-axis arrow, shaft and label
 
-            new xeogl.Entity(scene, {  // Arrow
+            new xeogl.Mesh(scene, {  // Arrow
                 geometry: arrowHead,
                 material: xAxisMaterial,
                 pickable: false,
@@ -235,7 +235,7 @@
                 })
             }),
 
-            new xeogl.Entity(scene, {  // Shaft
+            new xeogl.Mesh(scene, {  // Shaft
                 geometry: arrowShaft,
                 material: xAxisMaterial,
                 pickable: false,
@@ -250,7 +250,7 @@
                 })
             }),
 
-            new xeogl.Entity(scene, {  // Label
+            new xeogl.Mesh(scene, {  // Label
                 geometry: new xeogl.VectorTextGeometry(scene, {text: "X", size: 1.5}),
                 material: xAxisLabelMaterial,
                 pickable: false,
@@ -264,7 +264,7 @@
 
             // Y-axis arrow, shaft and label
 
-            new xeogl.Entity(scene, {  // Arrow
+            new xeogl.Mesh(scene, {  // Arrow
                 geometry: arrowHead,
                 material: yAxisMaterial,
                 pickable: false,
@@ -275,7 +275,7 @@
                 })
             }),
 
-            new xeogl.Entity(scene, {  // Shaft
+            new xeogl.Mesh(scene, {  // Shaft
                 geometry: arrowShaft,
                 material: yAxisMaterial,
                 pickable: false,
@@ -286,7 +286,7 @@
                 })
             }),
 
-            new xeogl.Entity(scene, {  // Label
+            new xeogl.Mesh(scene, {  // Label
                 geometry: new xeogl.VectorTextGeometry(scene, {text: "Y", size: 1.5}),
                 material: yAxisLabelMaterial,
                 pickable: false,
@@ -300,7 +300,7 @@
 
             // Z-axis arrow, shaft and label
 
-            new xeogl.Entity(scene, {  // Arrow
+            new xeogl.Mesh(scene, {  // Arrow
                 geometry: arrowHead,
                 material: zAxisMaterial,
                 pickable: false,
@@ -315,7 +315,7 @@
                 })
             }),
 
-            new xeogl.Entity(scene, {  // Shaft
+            new xeogl.Mesh(scene, {  // Shaft
                 geometry: arrowShaft,
                 material: zAxisMaterial,
                 pickable: false,
@@ -330,7 +330,7 @@
                 })
             }),
 
-            new xeogl.Entity(scene, {  // Label
+            new xeogl.Mesh(scene, {  // Label
                 geometry: new xeogl.VectorTextGeometry(scene, {text: "Z", size: 1.5}),
                 material: zAxisLabelMaterial,
                 pickable: false,
@@ -348,8 +348,8 @@
          * @param visible
          */
         this.setVisible = function (visible) {
-            for (var i = 0; i < entities.length; i++) {
-                entities[i].visible = visible;
+            for (var i = 0; i < meshes.length; i++) {
+                meshes[i].visible = visible;
             }
         };
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> with modelling transforms</h1>
+</div>
+
+<div id="logos">
+    <a href="https://www.khronos.org/gltf" target="_parent"><img src="../assets/images/logos/gltf.png"></a>
+</div>
+
+<script>
+
+    // Load a GLTFModel from a glTF file
+    // Attach a transform hierarchy via the constructor
+    // Shrink the model 50%, rotate it about Y
+
+    var buggy = new xeogl.GLTFModel({
+
+        src: "models/gltf/Buggy/glTF-pbrSpecularGlossiness/Buggy.gltf",
+
+        position: [-35, 0, 0],
+        rotation: [0, 0, 0],
+        scale: [0.5, 0.5, 0.5]
+    });
+
+    // Set initial camera position
+    var camera = buggy.scene.camera;
+    camera.eye = [0, 40, 100];
+
+    // Allow user camera control
+    new xeogl.CameraControl();
+
+    // Slowly rotate GLTFModel
+    var buggyRotation = buggy.scene.components["buggyRotation"];
+
+    buggy.scene.on("tick", function () {
+        var rotation = buggy.rotation;
+        rotation[1]++;
+        buggy.rotation = rotation;
+    });
+
+</script>
+</body>
+</html>

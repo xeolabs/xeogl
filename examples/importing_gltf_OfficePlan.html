@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -16,12 +16,12 @@
 
 <body>
 
-<!--<div id="info">-->
-    <!--<h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF and applying ghost and-->
-        <!--highlight effects</h1>-->
-    <!--<pre id="log">model: <a href="https://sketchfab.com/scann3d"-->
-                            <!--target="_parent">sketchfab.com/scann3d</a></pre>-->
-<!--</div>-->
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF and applying ghost and
+        highlight effects</h1>
+    <pre id="log">model: <a href="https://sketchfab.com/scann3d"
+                            target="_parent">sketchfab.com/scann3d</a></pre>
+</div>
 
 <div id="dat-gui-container">
 </div>
@@ -34,12 +34,8 @@
 
     var model = new xeogl.GLTFModel({
         id: "office",
-        // src: "models/gltf/shield_helicarrier_meeting_room/scene.gltf",
-        //src: "models/gltf/hover_bike/scene.gltf",
         src: "models/gltf/office/scene.gltf",
-        transform: new xeogl.Scale({
-            xyz: [.01, .01, .01]
-        }),
+        scale: [.01, .01, .01],
         ghostEdgeThreshold: 20,
         lambertMaterials: false
     });
@@ -64,6 +60,28 @@
     });
 
     var cameraControl = new xeogl.CameraControl();
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+
+    cameraControl.on("hoverEnter", function (hit) {
+        hit.mesh.highlighted = true;
+    });
+
+    cameraControl.on("hoverOut", function (hit) {
+        hit.mesh.highlighted = false;
+    });
+
+    cameraControl.on("picked", function (hit) {
+        if (input.keyDown[input.KEY_SHIFT]) {
+            hit.mesh.selected = !hit.mesh.selected;
+        } else {
+            cameraFlight.flyTo(hit.mesh);
+        }
+    });
+
+    cameraControl.on("pickedNothing", function (hit) {
+        cameraFlight.flyTo(model);
+    });
 
     //-----------------------------------------------------------------------------------------------------
     // Customize lighting
@@ -93,44 +111,13 @@
     ];
 
     cameraControl.on("picked", function (e) {
-        console.log(e.entity.id)
+        console.log(e.mesh.id)
     });
 
 
     model.on("loaded", function () {
 
-        var selectedEntities = [
-            "office#73.0",
-            "office#93.0",
-            "office#30.0",
-            "office#9.0",
-            "office#66.0",
-            "office#78.0",
-            "office#87.0",
-            "office#67.0",
-            "office#88.0",
-            "office#62.0",
-            "office#61.0",
-            "office#64.0",
-            "office#86.0",
-            "office#60.0",
-            "office#85.0",
-            "office#63.0",
-            "office#79.0",
-            "office#31.0",
-            "office#105.0",
-            "office#8.0",
-            "office#65.0"
-        ];
-
         model.ghosted = true;
-
-        for (var i = 0; i < selectedEntities.length; i++) {
-            var id = selectedEntities[i];
-            var entity = model.entities[id];
-            entity.ghosted = false;
-            entity.highlighted = true;
-        }
 
         var Menu = function () {
 
@@ -237,13 +224,6 @@
                 }
 
                 var highlighted = !!self["highlighted"];
-
-                for (var i = 0; i < selectedEntities.length; i++) {
-                    var id = selectedEntities[i];
-                    var entity = model.entities[id];
-                    entity.highlighted = highlighted;
-                    entity.ghosted = false;
-                }
 
                 model.scene.gammaOutput = self["scene.gammaOutput"];
                 model.scene.gammaFactor = self["scene.gammaFactor"];

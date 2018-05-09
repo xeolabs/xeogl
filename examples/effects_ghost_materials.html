@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -13,7 +13,7 @@
 <body>
 
 <div id="info" class="dark">
-    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, with two <a href="../docs/classes/Entity.html" target="_parent">Entities</a> having custom <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterials</a></h1>
+    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, with two <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a> having custom <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterials</a></h1>
     <pre id="log">model:  adam head - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/adamHead/README.md'
             target="_parent">model info</a>]</pre>
@@ -90,8 +90,8 @@
 
         // Customize ghost materials on a couple of objects
 
-        var maskObject = model.entities["adam#node_mesh_Adam_mask_-4108.0"];
-        var guardObject = model.entities["adam#node_Object001_-4112.5"];
+        var maskObject = model.meshes["adam#node_mesh_Adam_mask_-4108.0"];
+        var guardObject = model.meshes["adam#node_Object001_-4112.5"];
 
         maskObject.ghostMaterial = new xeogl.EmphasisMaterial({
             edgeColor: [0.5, 0.1, 0.1],
@@ -114,7 +114,7 @@
     var cameraControl = new xeogl.CameraControl();
 
     cameraControl.on("picked", function (e) {
-        console.log(e.entity.id)
+        console.log(e.mesh.id)
     });
 
 </script>

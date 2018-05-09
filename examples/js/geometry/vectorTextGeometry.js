@@ -1,5 +1,5 @@
 /**
- A **VectorTextGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define vector text geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **VectorTextGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define vector text geometry for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_vectorText"><img src="../../assets/images/screenshots/VectorTextGeometry.png"></img></a>
 
@@ -13,7 +13,7 @@
  ## Example
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
      geometry: new xeogl.VectorTextGeometry({
          text: "Attack ships on fire off the Shoulder of Orion",
          origin: [0,0,0],

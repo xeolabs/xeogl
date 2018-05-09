@@ -2,10 +2,10 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
+xeogl.renderer.Object = function (id, meshId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
 
     this.id = id;
-    this.entityId = entityId;
+    this.meshId = meshId;
     this.gl = gl;
     this.scene = scene;
 

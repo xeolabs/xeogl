@@ -1,6 +1,6 @@
 /**
  A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions,
- to illuminate {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ to illuminate {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#lights_point_world_normalMap"><img src="http://i.giphy.com/3o6ZsZoFGIOJ2nlmN2.gif"></img></a>
 
@@ -25,7 +25,7 @@
  ## Usage
 
  In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
- PointLights, then create a Phong-shaded box entity.
+ PointLights, then create a Phong-shaded box mesh.
 
  ````javascript
 
@@ -59,8 +59,8 @@
     })
  ];
 
- // Create box entity
- new xeogl.Entity({
+ // Create box mesh
+ new xeogl.Mesh({
     material: new xeogl.PhongMaterial({
         ambient: [0.5, 0.5, 0.5],
         diffuse: [1,0.3,0.3]

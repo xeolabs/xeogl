@@ -1,5 +1,5 @@
 /**
- A **Heightmap** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a height mapped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Heightmap** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a height mapped geometry for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_heightmap"><img src="../../assets/images/screenshots/HeightmapGeometry.png"></img></a>
 
@@ -21,7 +21,7 @@
  ## Usage
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
      geometry: new xeogl.HeightmapGeometry({
          primitive: "triangles",
          src: "textures/height/mountain.png",

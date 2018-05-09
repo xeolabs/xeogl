@@ -1,5 +1,5 @@
 /**
- An **Annotation** is a labeled {{#crossLink "Pin"}}{{/crossLink}} that's attached to the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
+ An **Annotation** is a labeled {{#crossLink "Pin"}}{{/crossLink}} that's attached to the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
 
  <a href="../../examples/#annotations_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a>
 
@@ -7,7 +7,7 @@
 
  #### Position
 
- An Annotation is positioned within one of the triangles of its {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangle goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:
+ An Annotation is positioned within one of the triangles of its {{#crossLink "Mesh"}}Mesh's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangle goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:
 
  * {{#crossLink "Pin/primIndex:property"}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, and
  * {{#crossLink "Pin/bary:property"}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.
@@ -19,7 +19,7 @@
  * {{#crossLink "Pin/viewPos:property"}}{{/crossLink}} - 3D View-space position, and
  * {{#crossLink "Pin/canvasPos:property"}}{{/crossLink}} - 2D Canvas-space position.
 
- An Annotation automatically recalculates these coordinates whenever its {{#crossLink "Entity"}}{{/crossLink}} is replaced or transformed, the {{#crossLink "Geometry"}}{{/crossLink}} is replaced or modified, or the {{#crossLink "Camera"}}{{/crossLink}} is moved.
+ An Annotation automatically recalculates these coordinates whenever its {{#crossLink "Mesh"}}{{/crossLink}} is replaced or transformed, the {{#crossLink "Geometry"}}{{/crossLink}} is replaced or modified, or the {{#crossLink "Camera"}}{{/crossLink}} is moved.
 
  #### Appearance
 
@@ -53,7 +53,7 @@
  ## Usage
 
  In the example below, we use a {{#crossLink "GLTFModel"}}{{/crossLink}} to load a glTF model of a
- reciprocating saw. Once the {{#crossLink "GLTFModel"}}{{/crossLink}} has loaded, we'll then create Annotations on three of its {{#crossLink "Entity"}}Entities{{/crossLink}}. Finally, we wire
+ reciprocating saw. Once the {{#crossLink "GLTFModel"}}{{/crossLink}} has loaded, we'll then create Annotations on three of its {{#crossLink "Mesh"}}Meshes{{/crossLink}}. Finally, we wire
  a callback to the {{#crossLink "Annotation/pinClicked:event"}}"pinClicked"{{/crossLink}} event from
  each Annotation, so that when you click its {{#crossLink "Pin"}}{{/crossLink}}, its label is shown and the {{#crossLink "Camera"}}{{/crossLink}} is positioned at its vantage point.
 
@@ -84,11 +84,11 @@
     camera.up = [0, 1, 0];
     camera.zoom(20);
 
-    // Create three annotations on entities
+    // Create three annotations on meshes
     // within the model
 
     var a1 = new xeogl.Annotation({
-        entity: model.entities[156], // Red handle
+        mesh: model.meshes[156], // Red handle
         primIndex: 125,
         bary: [0.3, 0.3, 0.3],
         occludable: true,
@@ -103,7 +103,7 @@
     });
 
     var a2 = new xeogl.Annotation({
-        entity: model.entities[156], // Red handle and cover
+        mesh: model.meshes[156], // Red handle and cover
         primIndex: 10260,
         bary: [0.333, 0.333, 0.333],
         occludable: true,
@@ -118,7 +118,7 @@
     });
 
     var a3 = new xeogl.Annotation({
-        entity: modelentities[796], // Barrel
+        mesh: modelentities[796], // Barrel
         primIndex: 3783,
         bary: [0.3, 0.3, 0.3],
         occludable: true,
@@ -175,9 +175,9 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to the Annotation.
- @param [cfg.entity] {Number|String|Entity} ID or instance of the {{#crossLink "Entity"}}{{/crossLink}} the Annotation is attached to.
+ @param [cfg.mesh] {Number|String|Mesh} ID or instance of the {{#crossLink "Mesh"}}{{/crossLink}} the Annotation is attached to.
  @param [cfg.bary=[0.3,0.3,0.3]] {Float32Array} Barycentric coordinates of the Annotation within its triangle.
- @param [cfg.primIndex=0] {Number} Index of the triangle containing the Annotation. Within the {{#crossLink "Entity"}}{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
+ @param [cfg.primIndex=0] {Number} Index of the triangle containing the Annotation. Within the {{#crossLink "Mesh"}}{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
  {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, this is the index of the first
  element for that triangle.
  @param [cfg.offset=0.2] {Number} How far the Annotation is lifted out of its triangle, along the surface normal vector. This is used when occlusion culling, to ensure that the Annotation is not lost inside the surface it's attached to.
@@ -571,8 +571,8 @@ xeogl.Annotation = xeogl.Pin.extend({
             pinShown: this._pinShown,
             labelShown: this._labelShown
         };
-        if (this._attached.entity) {
-            json.entity = this._attached.entity.id;
+        if (this._attached.mesh) {
+            json.mesh = this._attached.mesh.id;
         }
         return json;
     },

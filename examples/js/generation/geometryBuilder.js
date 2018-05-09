@@ -68,14 +68,14 @@
 
  geometryBuilder.build(geometry);
 
- var entity = new xeogl.Entity({                    // Create an Entity with our Geometry attached
+ var mesh = new xeogl.Mesh({                    // Create an Mesh with our Geometry attached
     geometry: geometry,
     material: new xeogl.PhongMaterial({
         diffuse: [0.6, 0.6, 0.7]
     })
  });
 
- entity.scene.camera.eye = [-200, 50, -200];   // Set initial Camera position
+ mesh.scene.camera.eye = [-200, 50, -200];   // Set initial Camera position
 
  new xeogl.CameraControl();                         // Allow camera interaction
  ````

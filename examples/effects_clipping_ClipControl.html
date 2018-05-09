@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -50,7 +50,7 @@
         visible: true
     });
 
-    var outerSphere = new xeogl.Entity({
+    var outerSphere = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 1.5,
             heightSegments: 60,
@@ -66,7 +66,7 @@
         clippable: true // (default value)
     });
 
-    var innerSphere = new xeogl.Entity({
+    var innerSphere = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 1.2,
             heightSegments: 60,
@@ -88,8 +88,8 @@
     cameraControl.active = false;
 
     cameraControl.on("picked", function(e) {
-        if (e.entity) {
-            console.log(e.entity.id);
+        if (e.mesh) {
+            console.log(e.mesh.id);
         }
     });
 

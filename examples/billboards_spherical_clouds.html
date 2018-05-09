@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -11,7 +11,8 @@
 <body>
 
 <div id="info">
-   <h1>spherically-billboarded cloud <a href="../docs/classes/Entity.html" target="_parent">Entities</a> (no depth sort)</h1>
+    <h1>spherically-billboarded cloud <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a> (no depth sort)
+    </h1>
 </div>
 
 <script>
@@ -49,22 +50,20 @@
         var r = (Math.random() + 0.1 ) * 200;
         var halfr = r / 2;
 
-        var entity = new xeogl.Entity({
+        var mesh = new xeogl.Mesh({
             geometry: geometry,
             material: material,
             billboard: "spherical",
-            transform: new xeogl.Translate({
-                xyz: [
-                    Math.random() * r - halfr,
-                    Math.random() * r - halfr ,
-                    Math.random() * r - halfr
-                ]
-            }),
+            position: [
+                Math.random() * r - halfr,
+                Math.random() * r - halfr,
+                Math.random() * r - halfr
+            ],
             pickable: false,
             layer: 0
         });
 
-        clouds.push(entity);
+        clouds.push(mesh);
     }
 
     var scene = xeogl.scene;

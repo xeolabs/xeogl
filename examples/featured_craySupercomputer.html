@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -383,7 +383,7 @@
 
             // Tower
 
-            var tower = new xeogl.Entity({
+            var tower = new xeogl.Mesh({
                 geometry: towerSectionGeometry,
                 material: oddSection ? material1 : material2,
                 transform: new xeogl.Rotate({
@@ -405,7 +405,7 @@
 
             // Seat
 
-            new xeogl.Entity({
+            new xeogl.Mesh({
                 geometry: seatGeometry,
                 material: seatMaterial,
                 transform: new xeogl.Rotate({
@@ -426,7 +426,7 @@
 
             // Seat cushion
 
-            new xeogl.Entity({
+            new xeogl.Mesh({
                 geometry: seatGeometry,
                 material: seatCushionMaterial,
                 transform: new xeogl.Rotate({
@@ -448,7 +448,7 @@
 
         // Divider
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: towerDividerGeometry,
             material: material3,
             transform: new xeogl.Scale({
@@ -467,7 +467,7 @@
 
     // End cap
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: towerSectionGeometry,
         material: oddSection ? material2 : material1,
         transform: new xeogl.Rotate({
@@ -489,7 +489,7 @@
 
     // End cap
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: towerSectionGeometry,
         material: oddSection ? material2 : material1,
         transform: new xeogl.Rotate({
@@ -510,7 +510,7 @@
 
     // End seat #1
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: seatGeometry,
         material: seatMaterial,
         transform: new xeogl.Rotate({
@@ -531,7 +531,7 @@
 
     // End seat cushion #1
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: seatGeometry,
         material: seatCushionMaterial,
         transform: new xeogl.Rotate({
@@ -552,7 +552,7 @@
 
     // End seat #2
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: seatGeometry,
         material: seatMaterial,
         transform: new xeogl.Rotate({
@@ -573,7 +573,7 @@
 
     // End seat cushion #2
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: seatGeometry,
         material: seatCushionMaterial,
         transform: new xeogl.Rotate({
@@ -594,7 +594,7 @@
 
     // Logo plate
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         id: "logo",
         geometry: new xeogl.BoxGeometry(),
         material: new xeogl.PhongMaterial({
@@ -639,7 +639,7 @@
     for (var x = -40; x <= 40; x += 2.5) {
         for (var z = -40; z <= 40; z += 2.5) {
 
-            new xeogl.Entity({
+            new xeogl.Mesh({
                 geometry: tileGeometry,
                 material: numTiles++ % 2 === 0 ? blueTile : whiteTile,
                 transform: new xeogl.Scale({
@@ -668,7 +668,7 @@
     for (var x = -20; x <= 20; x += 10) {
         for (var z = -20; z <= 20; z += 10) {
 
-            new xeogl.Entity({
+            new xeogl.Mesh({
                 geometry: lightGeometry,
                 material: lightMaterial,
                 transform: new xeogl.Scale({
@@ -699,7 +699,7 @@
 
     for (var i = 0; i < 30; i++) {
 
-        leds.push(new xeogl.Entity({
+        leds.push(new xeogl.Mesh({
             geometry: ledGeometry,
             material: ledMaterial,
             transform: new xeogl.Scale({
@@ -717,7 +717,7 @@
 
     for (var i = 0; i < 30; i++) {
 
-        leds.push(new xeogl.Entity({
+        leds.push(new xeogl.Mesh({
             geometry: ledGeometry,
             material: ledMaterial,
             transform: new xeogl.Rotate({
@@ -760,7 +760,7 @@
 
         // Box
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: boxGeometry,
             material: blueBox,
             transform: new xeogl.Scale({
@@ -775,7 +775,7 @@
 
         // Diskpac
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: boxGeometry,
             material: whiteBox,
             transform: new xeogl.Scale({
@@ -788,7 +788,7 @@
             pickable: false
         });
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: boxGeometry,
             material: blueBox,
             transform: new xeogl.Scale({
@@ -803,7 +803,7 @@
 
         // Diskpac
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: boxGeometry,
             material: whiteBox,
             transform: new xeogl.Scale({

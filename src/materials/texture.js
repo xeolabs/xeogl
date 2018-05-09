@@ -4,7 +4,7 @@
  ## Overview
 
  * Textures are grouped within {{#crossLink "Material"}}Materials{{/crossLink}}, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
  * To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
  property to the image file path.
  * To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
@@ -19,7 +19,7 @@
 
  ## Usage
 
- In this example we have an Entity with
+ In this example we have a Mesh with
 
  * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
@@ -30,7 +30,7 @@
  colors directly provide the diffuse and specular components for each fragment across the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  ```` javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
 
     material: new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
@@ -676,7 +676,7 @@
 
                     this._state.encoding = value;
 
-                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of entities using this texture in their materials
+                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of meshes using this texture in their materials
                 },
 
                 get: function () {

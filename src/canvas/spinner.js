@@ -157,6 +157,8 @@
                         return;
                     }
 
+                    var prevValue = this._processes;
+
                     this._processes = value;
 
                     this._element.style["visibility"] = (this._processes > 0) ? "visible" : "hidden";
@@ -168,6 +170,16 @@
                      @param value The property's new value
                      */
                     this.fire("processes", this._processes);
+
+                    if (this._processes === 0 && this._processes !== prevValue) {
+
+                        /**
+                         Fired whenever this Spinner's {{#crossLink "Spinner/visible:property"}}{{/crossLink}} property becomes zero.
+
+                         @event zeroProcesses
+                         */
+                        this.fire("zeroProcesses", this._processes);
+                    }
                 },
 
                 get: function () {

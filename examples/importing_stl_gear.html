@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -22,7 +22,7 @@
 
     // Load ASCII STL model
 
-    var f1Concept = new xeogl.STLModel({
+    var model = new xeogl.STLModel({
         src: "models/stl/binary/spurGear.stl",
         smoothNormals: true
     });
@@ -36,9 +36,9 @@
     var scene = xeogl.scene;
     var camera = scene.camera;
 
-    camera.eye = [37.248104095458984, 45.17610168457031, -15.022497177124023];
-    camera.look = [10.90522289276123, 10.90522289276123, 8];
-    camera.up = [-0.5888525247573853, 0.7260482311248779, 0.3551150858402252];
+    camera.eye = [37.24, 45.17, -15.02];
+    camera.look = [10.90, 10.90, 8];
+    camera.up = [-0.58, 0.72, 0.35];
 
     // Orbit camera
 
@@ -53,10 +53,6 @@
     var lights = scene.lights;
 
     lights.lights = [
-//        new xeogl.AmbientLight({
-//            color: [.8, 1, .8],
-//            intensity: 0.6
-//        }),
         new xeogl.DirLight({
             dir: [0.8, -0.6, -0.8],
             color: [1.0, 1.0, 1.0],

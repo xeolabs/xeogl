@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -61,7 +61,7 @@
     };
 
     //------------------------------------------------------------------
-    // Create some random entities
+    // Create some random meshes
     //------------------------------------------------------------------
 
     var geometry = new xeogl.TorusGeometry({
@@ -82,18 +82,12 @@
 
         var s = Math.random() * 5;
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: geometry,
             material: material,
-            transform: new xeogl.Scale({
-                xyz: [2, 1 + Math.random() * 3, 2],
-                parent: new xeogl.Rotate({
-                    xyz: [Math.random(), Math.random(), Math.random()], angle: Math.random() * 360,
-                    parent: new xeogl.Translate({
-                        xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
-                    })
-                })
-            })
+            scale: [2, 1 + Math.random() * 3, 2],
+            rotation: [Math.random() * 360, Math.random() * 360, Math.random() * 360],
+            position: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
         });
     }
 
@@ -119,13 +113,13 @@
 
     (function () {
 
-        var entities = xeogl.scene.entities;
-        var entityIds = Object.keys(entities);
+        var meshes = xeogl.scene.meshes;
+        var meshIds = Object.keys(meshes);
 
-        var entityIdx1 = 0;
+        var meshIdx1 = 0;
         var triangleIdx1 = 0;
 
-        var entityIdx2 = 1; // Start at next entity
+        var meshIdx2 = 1; // Start at next mesh
         var triangleIdx2 = 0;
 
         var a1 = new Float32Array(3);
@@ -144,7 +138,7 @@
             batchSize: 200,
             task: function () {
 
-                var entity1 = entities[entityIds[entityIdx1]];
+                var entity1 = meshes[meshIds[meshIdx1]];
                 var geometry1 = entity1.geometry;
                 var positions1 = entity1.worldPositions;
                 var indices1 = geometry1.indices;
@@ -152,7 +146,7 @@
                 var j1 = indices1[triangleIdx1 + 1] * 3;
                 var k1 = indices1[triangleIdx1 + 2] * 3;
 
-                var entity2 = entities[entityIds[entityIdx2]];
+                var entity2 = meshes[meshIds[meshIdx2]];
                 var geometry2 = entity2.geometry;
                 var positions2 = entity2.worldPositions;
                 var indices2 = geometry2.indices;
@@ -198,18 +192,18 @@
 
                     collisions.push([entity1.id, entity2.id]);
 
-                    entityIdx2++;
+                    meshIdx2++;
 
-                    if (entityIdx2 === entityIdx1) {
-                        entityIdx2++;
+                    if (meshIdx2 === meshIdx1) {
+                        meshIdx2++;
                     }
 
                     //   console.log("collision");
-                    // console.log("next target entity: " + entityIdx2);
+                    // console.log("next target mesh: " + meshIdx2);
 
-                    if (entityIdx2 >= entityIds.length) {
+                    if (meshIdx2 >= meshIds.length) {
 
-                        entityIdx2 = 0;
+                        meshIdx2 = 0;
                         triangleIdx2 = 0;
                         triangleIdx1 += 3;
 
@@ -217,12 +211,12 @@
 
                         if (triangleIdx1 >= (indices1.length / 3)) {
 
-                            entityIdx1++;
+                            meshIdx1++;
                             triangleIdx1 = 0;
 
-                            //    console.log("next source entity: " + triangleIdx1);
+                            //    console.log("next source mesh: " + triangleIdx1);
 
-                            if (entityIdx1 >= entityIds.length) { // Stop if done
+                            if (meshIdx1 >= meshIds.length) { // Stop if done
                                 console.log("Done. Triangles tested: " + numTrianglesTested);
                                 process.stop();
                             }
@@ -238,17 +232,17 @@
                     if (triangleIdx2 >= (indices2.length / 3)) {
 
                         triangleIdx2 = 0;
-                        entityIdx2++;
+                        meshIdx2++;
 
-                        if (entityIdx2 === entityIdx1) {
-                            entityIdx2++;
+                        if (meshIdx2 === meshIdx1) {
+                            meshIdx2++;
                         }
 
-                        //    console.log("next target entity: " + entityIdx2);
+                        //    console.log("next target mesh: " + meshIdx2);
 
-                        if (entityIdx2 >= entityIds.length) {
+                        if (meshIdx2 >= meshIds.length) {
 
-                            entityIdx2 = 0;
+                            meshIdx2 = 0;
                             triangleIdx2 = 0;
                             triangleIdx1 += 3;
 
@@ -256,12 +250,12 @@
 
                             if (triangleIdx1 >= (indices1.length / 3)) {
 
-                                entityIdx1++;
+                                meshIdx1++;
                                 triangleIdx1 = 0;
 
-                                //        console.log("next source entity: " + triangleIdx1);
+                                //        console.log("next source mesh: " + triangleIdx1);
 
-                                if (entityIdx1 >= entityIds.length) { // Stop if done
+                                if (meshIdx1 >= meshIds.length) { // Stop if done
                                     console.log("Done. Triangles tested: " + numTrianglesTested);
                                     process.stop();
                                 }

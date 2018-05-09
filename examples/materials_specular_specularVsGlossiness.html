@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -19,7 +19,7 @@
 
 <div id="info">
     <h1><a href="../docs/classes/SpecularMaterial.html"
-            target="_parent">SpecularMaterials</a> - specular VS glossiness</h1>
+           target="_parent">SpecularMaterials</a> - specular VS glossiness</h1>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -107,7 +107,7 @@
     var glossiness = 0;
     var glossinessInc = 1.0 / steps;
     var material;
-    var entities = [];
+    var meshes = [];
 
     var geometry = new xeogl.SphereGeometry({
         radius: 1.7,
@@ -121,7 +121,7 @@
 
         for (var y = max; y >= min; y -= inc) {
 
-            entities.push(new xeogl.Entity({
+            meshes.push(new xeogl.Mesh({
                 geometry: geometry,
                 material: new xeogl.SpecularMaterial({
                     diffuse: [0.6, 0.6, 0.6],
@@ -129,9 +129,7 @@
                     glossiness: glossiness,
                     alpha: 1
                 }),
-                transform: new xeogl.Translate({
-                    xyz: [x, y, 0]
-                }),
+                position: [x, y, 0],
                 lights: lights
             }));
 
@@ -153,31 +151,24 @@
 
     });
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.VectorTextGeometry({
             text: "0 ----------- Glossiness ----------> 1",
             size: .5
         }),
         material: labelMaterial,
-        transform: new xeogl.Translate({
-            xyz: [min, min - inc, 0]
-        }),
+        position: [min, min - inc, 0],
         collidable: false
     });
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.VectorTextGeometry({
             text: "[0,0,0] --------- Specular -------> [1,1,1]",
             size: .5
         }),
         material: labelMaterial,
-        transform: new xeogl.Rotate({
-            xyz: [0, 0, 1],
-            angle: 270,
-            parent: new xeogl.Translate({
-                xyz: [min - inc, max, 0]
-            })
-        }),
+        rotation: [0, 0, 270],
+        position: [min - inc, max, 0],
         collidable: false
     });
 
@@ -196,8 +187,8 @@
 
     (function () {
 
-        var entity = entities[0];
-        var material = entity.material;
+        var mesh = meshes[0];
+        var material = mesh.material;
 
         var Menu = function () {
 
@@ -216,10 +207,10 @@
 
             var update = function () {
 
-                for (var i = 0; i < entities.length; i++) {
+                for (var i = 0; i < meshes.length; i++) {
 
-                    entity = entities[i];
-                    var material = entity.material;
+                    mesh = meshes[i];
+                    var material = mesh.material;
 
                     material.diffuse = JSToTyped(self["diffuse"]);
                     material.emissive = JSToTyped(self["emissive"]);

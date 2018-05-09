@@ -93,20 +93,27 @@
             "billboards_spherical_clouds"
         ],
         "Boundaries": [
-            "boundaries_entity_aabb",
-            "boundaries_entity_obb",
+            "boundaries_mesh_aabb",
+            "boundaries_mesh_obb",
             "boundaries_geometry_aabb",
             "boundaries_geometry_obb",
-            "boundaries_model_aabb"
+            "boundaries_model_aabb",
+            "effects_demo_hoverToShowAABB",
+            "effects_demo_hoverToShowOBB"
         ],
         "Camera": [
+            "camera_CameraControl",
             "camera_perspective",
             "camera_frustum",
             "camera_orthographic",
+            "camera_customProjection",
+            "camera_deviceMatrix",
             "camera_zAxisUp",
             "camera_yAxisUp",
             "camera_flight",
             "camera_follow",
+            "camera_orbit_point_yUp",
+            "camera_orbit_point_zUp",
             "camera_path_frameMenu",
             "camera_path_interpolation",
             "camera_path_flyToFrame",
@@ -128,8 +135,14 @@
             "effects_highlight",
             "effects_stereo",
             "effects_stereo_custom",
+            "effects_zSpace_gearbox",
+            "effects_demo_hoverToColorize",
+            "effects_demo_hoverToSetOpacity",
             "effects_demo_hoverToHighlight",
+            "effects_demo_hoverToGhost",
             "effects_demo_hoverToUnghost",
+            "effects_demo_hoverToShowAABB",
+            "effects_demo_hoverToShowOBB",
             "effects_demo_housePlan",
             "effects_demo_gearbox",
             "effects_demo_adam",
@@ -148,7 +161,6 @@
             "importing_scenejs_tronTank",
             "importing_obj_CyberCity3D",
             "featured_AdamHead",
-            "featured_VianneyHouse",
             "featured_VianneyHouse2",
             "featured_VanGoghRoom"
         ],
@@ -191,6 +203,7 @@
             "importing_gltf_GearboxAssy",
             "importing_gltf_BananaTree",
             "importing_gltf_Schependomlaan",
+            "importing_gltf_WestRiverSideHospital",
             "importing_gltf_OfficePlan",
             "importing_gltf_BranchHouse",
             "importing_gltf_ModernOffice",
@@ -199,7 +212,6 @@
             "importing_gltf_parsing",
             "importing_gltf_parsing_embedded",
             "importing_gltf_options_ignoreMaterials",
-            "importing_gltf_options_flattenTransforms",
             "importing_gltf_options_lambertMaterials",
             "importing_gltf_options_maxPerformance",
             "importing_scenejs_pojo_textures",
@@ -249,12 +261,16 @@
             "models_generation_city",
             "models_generation_TestModel"
         ],
+        "Objects": [
+            "objects_hierarchy",
+            "objects_hierarchy_models"
+        ],
         "Picking": [
-            "picking_canvas_pickEntity",
+            "picking_canvas_pickMesh",
             "picking_canvas_pickSurface",
             "picking_canvas_pickSurfaceNormalAndUV",
             "picking_canvas_performanceTest",
-            "picking_raycast_pickEntity",
+            "picking_raycast_pickMesh",
             "picking_raycast_pickSurface",
             "picking_disabling",
             "picking_masking_include",
@@ -279,10 +295,8 @@
             "skyboxes_skybox_custom"
         ],
         "Transforms": [
-            "transforms_entity_scale",
-            "transforms_entity_hierarchy",
-            "transforms_model_configureTransform",
-            "transforms_model_attachTransform"
+            "transforms_object_hierarchy",
+            "transforms_model"
         ]
     };
 

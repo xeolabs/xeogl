@@ -14,7 +14,7 @@
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
  scene comprised of {{#crossLink "Scene"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}}, {{#crossLink "Geometry"}}{{/crossLink}} and
- {{#crossLink "Entity"}}{{/crossLink}} components, while letting xeogl generate its own ID for
+ {{#crossLink "Mesh"}}{{/crossLink}} components, while letting xeogl generate its own ID for
  the {{#crossLink "Geometry"}}{{/crossLink}}:
 
  ````javascript
@@ -31,8 +31,8 @@
     id: "myGeometry"
  });
 
- // Let xeogl automatically generate the ID for our Entity
- var entity = new xeogl.Entity(scene, {
+ // Let xeogl automatically generate the ID for our Mesh
+ var mesh = new xeogl.Mesh(scene, {
     material: material,
     geometry: geometry
  });
@@ -168,7 +168,7 @@
 
      _init: function (cfg) { // Constructor
 
-         this._torus = new xeogl.Entity({
+         this._torus = new xeogl.Mesh({
              geometry: new xeogl.TorusGeometry({radius: 2, tube: .6}),
              material: new xeogl.MetallicMaterial({
                  baseColor: [1.0, 0.5, 0.5],
@@ -239,6 +239,8 @@
              @final
              */
             this.scene = null;
+
+            this._model = null;
 
             var adopter = null;
 
@@ -378,6 +380,33 @@
          */
         superTypes: [],
 
+        _addedToModel: function (model) { // Called by xeogl.Model.add()
+            this._model = model;
+        },
+
+        _removedFromModel: function (model) { // Called by xeogl.Model.remove()
+            this._model = null;
+        },
+        
+        _props: {
+
+            /**
+             The {{#crossLink "Model"}}{{/crossLink}} which contains this Component, if any.
+
+             Will be null if this Component is not in a Model.
+
+             @property model
+             @final
+             @type Model
+             */
+            model: {
+
+                get: function () {
+                    return this._model;
+                }
+            }
+        },
+
         /**
          Tests if this component is of the given type, or is a subclass of the given type.
 
@@ -397,7 +426,7 @@
          myRotate.isType(xeogl.Rotate); // Returns true
          myRotate.isType(xeogl.Transform); // Returns true
          myRotate.isType("xeogl.Transform"); // Returns true
-         myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
+         myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Mesh
          ````
 
          @method isType
@@ -872,7 +901,7 @@
             }
 
             if (recompiles) {
-                this.fire("dirty", this); // FIXME: May trigger spurous entity recompilations unless able to limit with param?
+                this.fire("dirty", this); // FIXME: May trigger spurous mesh recompilations unless able to limit with param?
             }
 
             this.fire(name, component); // Component can be null
@@ -1037,6 +1066,7 @@
                 for (id in this._adoptees) {
                     if (this._adoptees.hasOwnProperty(id)) {
                         component = this._adoptees[id];
+                        component.destroy();
                         delete this._adoptees[id];
                     }
                 }

@@ -2,7 +2,7 @@ module.exports = function (grunt) {
 
     "use strict";
 
-    var devScripts = grunt.file.readJSON("dev-scripts.json");
+    var devScripts = grunt.file.readJSON("dev-scripts.new.json");
 
     grunt.initConfig({
 

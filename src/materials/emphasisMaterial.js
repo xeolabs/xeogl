@@ -1,6 +1,6 @@
 /**
  An **EmphasisMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of attached
- {{#crossLink "Entity"}}Entities{{/crossLink}} when they are highlighted, selected or ghosted.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}} when they are highlighted, selected or ghosted.
 
  ## Examples
 
@@ -10,11 +10,11 @@
 
  ## Overview
 
- * Ghost an {{#crossLink "Entity"}}{{/crossLink}} by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property ````true````.
- * When ghosted, an Entity's appearance is controlled by its EmphasisMaterial.
+ * Ghost an {{#crossLink "Mesh"}}{{/crossLink}} by setting its {{#crossLink "Mesh/ghost:property"}}{{/crossLink}} property ````true````.
+ * When ghosted, a Mesh's appearance is controlled by its EmphasisMaterial.
  * An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink "EmphasisMaterial/preset:property"}}{{/crossLink}} to the preset's ID. A map of available presets is provided in {{#crossLink "EmphasisMaterial/presets:property"}}xeogl.EmphasisMaterial.presets{{/crossLink}}.
- * By default, an Entity uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.
- * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global EmphasisMaterial by default.
+ * By default, a Mesh uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Mesh its own EmphasisMaterial when you want to customize the effect per-Mesh.
+ * Ghost all Meshes in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Meshes in a Model have the Scene's global EmphasisMaterial by default.
  * Modify the Scene's global EmphasisMaterial to customize it.
 
  ## Usage
@@ -24,13 +24,13 @@
 
  ### Ghosting
 
- In the usage example below, we'll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
- has its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
+ In the usage example below, we'll create a Mesh with a ghost effect applied to it. The Mesh gets its own EmphasisMaterial for ghosting, and
+ has its {{#crossLink "Mesh/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
 
  <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a>
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         ghostEdgeThreshold: 1
     }),
@@ -55,7 +55,7 @@
  ````
 
  Note the **ghostEdgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
- Entity. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
+ Mesh. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
  adjacent co-planar triangles) removed for visual clarity. The ````ghostEdgeThreshold```` configuration indicates
  that, for this particular Geometry, an inner edge is one where the angle between the surface normals of adjacent triangles is not
  greater than ````5```` degrees. That's set to ````2```` by default, but we can override it to tweak the effect as needed for particular Geometries.
@@ -64,7 +64,7 @@
  to customize the effect.
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         ghostEdgeThreshold: 5
     }),
@@ -74,7 +74,7 @@
     ghost: true
  });
 
- var ghostMaterial = entity.scene.ghostMaterial;
+ var ghostMaterial = mesh.scene.ghostMaterial;
 
  ghostMaterial.edges = true;
  ghostMaterial.edgeColor = [0.2, 1.0, 0.2];
@@ -92,8 +92,8 @@
  ### Highlighting
 
  In the next example, we'll use a ghosting in conjunction with highlighting, to emphasise a couple of objects within
- a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Entities except for two gears, which we'll highlight instead. The ghosted
- Entities have the Scene's global ghosting EmphasisMaterial, which we'll modify. The  highlighted Entities also have the Scene's global highlighting EmphasisMaterial, which we'll modify as well.
+ a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Meshes except for two gears, which we'll highlight instead. The ghosted
+ Meshes have the Scene's global ghosting EmphasisMaterial, which we'll modify. The  highlighted Meshes also have the Scene's global highlighting EmphasisMaterial, which we'll modify as well.
 
  <a href="../../examples/#effects_demo_gearbox"><img src="../../assets/images/screenshots/HighlightMaterial/gearbox.png"></img></a>
 
@@ -107,11 +107,11 @@
 
     model.ghost = true;
 
-    model.entities["gearbox#77.0"].ghost = false;
-    model.entities["gearbox#79.0"].ghost = false;
+    model.meshes["gearbox#77.0"].ghost = false;
+    model.meshes["gearbox#79.0"].ghost = false;
 
-    model.entities["gearbox#77.0"].highlight = true;
-    model.entities["gearbox#79.0"].highlight = true;
+    model.meshes["gearbox#77.0"].highlight = true;
+    model.meshes["gearbox#79.0"].highlight = true;
 
     var ghostMaterial = model.scene.ghostMaterial;
 
@@ -188,7 +188,7 @@
  You can also just create an EmphasisMaterial from a preset:
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         ghostEdgeThreshold: 5
     }),

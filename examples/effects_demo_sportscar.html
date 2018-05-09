@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -20,7 +20,7 @@
 <script id="source">
 
     // A simple animation system that supports animation of alpha and translation
-    // of Entities within a single interpolation frame
+    // of Meshes within a single interpolation frame
 
     var Animation = function () {
 
@@ -64,12 +64,12 @@
             for (var i = 0, len = ids.length; i < len; i++) {
                 var id = ids [i];
                 tasks.push((function () {
-                    var entity = model.entities[id];
-                    var startAlpha = entity.material.alpha;
+                    var object = model.objects[id];
+                    var startAlpha = object.material.alpha;
                     return function (t) {
                         var newAlpha = startAlpha + (t * (alpha - startAlpha));
-                        entity.material.alpha = newAlpha;
-                        entity.material.alphaMode = (newAlpha < 1.0) ? "blend" : "opaque"; // Note: breaks alpha maps
+                        object.material.alpha = newAlpha;
+                        object.material.alphaMode = (newAlpha < 1.0) ? "blend" : "opaque"; // Note: breaks alpha maps
                     };
                 })());
             }
@@ -80,12 +80,12 @@
             for (var i = 0, len = ids.length; i < len; i++) {
                 var id = ids [i];
                 tasks.push((function () {
-                    var entity = model.entities[id];
-                    entity.transform = new xeogl.Translate({
-                        parent: entity.transform
-                    });
+                    var object = model.objects[id];
+//                    object.transform = new xeogl.Translate({
+//                        parent: object.transform
+//                    });
                     return function (t) {
-                        entity.transform.xyz = [xyz[0] * t, xyz[1] * t, xyz[2] * t]
+                        object.position = [xyz[0] * t, xyz[1] * t, xyz[2] * t]
                     };
                 })());
             }
@@ -113,8 +113,8 @@
     function outline(ids) {
         for (var i = 0, len = ids.length; i < len; i++) {
             var id = ids [i];
-            var entity = model.entities[id];
-            entity.outlined = true;
+            var object = model.objects[id];
+            object.outlined = true;
         }
     }
 
@@ -167,8 +167,8 @@
             xeogl.math.collapseAABB3(aabb);
             for (var i = 0, len = ids.length; i < len; i++) {
                 var id = ids [i];
-                var entity = model.entities[id];
-                xeogl.math.expandAABB3(aabb, entity.aabb);
+                var object = model.objects[id];
+                xeogl.math.expandAABB3(aabb, object.aabb);
             }
             cameraFlight.flyTo(aabb);
         };
@@ -224,15 +224,15 @@
     // When model loaded, build the animation
     // and schedule it to start after a short delay
 
-//    model.on("loaded", function () {
-//        var entities = model.entities;
-//        for (var id in entities) {
-//            if (entities.hasOwnProperty(id)) {
-//                var entity = entities[id];
-//                entity.edges = true
-//            }
-//        }
-//    });
+    //    model.on("loaded", function () {
+    //        var objects = model.objects;
+    //        for (var id in objects) {
+    //            if (objects.hasOwnProperty(id)) {
+    //                var object = objects[id];
+    //                object.edges = true
+    //            }
+    //        }
+    //    });
 
 
     model.on("loaded", function () {
@@ -378,107 +378,25 @@
 
     // Ground plane
 
-        new xeogl.Entity({
-            geometry: new xeogl.PlaneGeometry({
-                xSize: 20,
-                zSize: 20
+    new xeogl.Mesh({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 20,
+            zSize: 20
+        }),
+        material: new xeogl.PhongMaterial({
+            shininess: 170,
+            specular: [0.1, 0.1, 0.3],
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                scale: [-5.0, 5.0]
             }),
-            material: new xeogl.PhongMaterial({
-                shininess: 170,
-                specular: [0.1, 0.1, 0.3],
-                diffuseMap: new xeogl.Texture({
-                    src: "textures/diffuse/UVCheckerMap11-1024.png",
-                    scale: [-5.0, 5.0]
-                }),
-                xalpha: 0.99,
-                backfaces: false
-            }),
-            transform: new xeogl.Translate({
-                xyz: [0, -1.1, 0]
-            }),
-            collidable: false,
-            pickable: false
-        });
-
-    // Source code vector text
-    //        (function () {
-    //
-    //            var size = 10;
-    //            var textHeight = size / 2.0;
-    //            var textSize = 0.35;
-    //
-    //            var code = document.getElementById("source").innerText;
-    //
-    //            var codeMaterial = new xeogl.PhongMaterial({
-    //                emissive: [0.5, 0.5, 0.8],
-    //                lineWidth: 2,
-    //                backfaces: false
-    //            });
-    //
-    //            new xeogl.Entity({
-    //                material: codeMaterial,
-    //                geometry: new xeogl.VectorTextGeometry({
-    //                    text: code.substring(0, 800),
-    //                    size: textSize
-    //                }),
-    //                transform: new xeogl.Translate({
-    //                    xyz: [-size, textHeight, -size]
-    //                }),
-    //                collidable: false,
-    //                pickable: false
-    //            });
-    //
-    //            new xeogl.Entity({
-    //                material: codeMaterial,
-    //                geometry: new xeogl.VectorTextGeometry({
-    //                    text: code.substring(800, 1600),
-    //                    size: textSize
-    //                }),
-    //                transform: new xeogl.Rotate({
-    //                    xyz: [0, 1, 0],
-    //                    angle: -90,
-    //                    parent: new xeogl.Translate({
-    //                        xyz: [size, textHeight, -size]
-    //                    })
-    //                }),
-    //                collidable: false,
-    //                pickable: false
-    //            });
-    //
-    //            new xeogl.Entity({
-    //                material: codeMaterial,
-    //                geometry: new xeogl.VectorTextGeometry({
-    //                    text: code.substring(1600, 2400),
-    //                    size: textSize
-    //                }),
-    //                transform: new xeogl.Rotate({
-    //                    xyz: [0, 1, 0],
-    //                    angle: -180,
-    //                    parent: new xeogl.Translate({
-    //                        xyz: [size, textHeight, size]
-    //                    })
-    //                }),
-    //                collidable: false,
-    //                pickable: false
-    //            });
-    //
-    //            new xeogl.Entity({
-    //                material: codeMaterial,
-    //                geometry: new xeogl.VectorTextGeometry({
-    //                    text: code.substring(2400, 3200),
-    //                    size: textSize
-    //                }),
-    //                transform: new xeogl.Rotate({
-    //                    xyz: [0, 1, 0],
-    //                    angle: 90,
-    //                    parent: new xeogl.Translate({
-    //                        xyz: [-size, textHeight, size]
-    //                    })
-    //                }),
-    //                collidable: false,
-    //                pickable: false
-    //            });
-    //        })();
+            xalpha: 0.99,
+            backfaces: false
+        }),
+        position: [0, -1.1, 0],
+        collidable: false,
+        pickable: false
+    });
 
 </script>
 </body>

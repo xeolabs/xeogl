@@ -38,7 +38,7 @@
                 })
             });
 
-            this._planeWire = new xeogl.Entity(this, {
+            this._planeWire = new xeogl.Mesh(this, {
                 geometry: new xeogl.Geometry(this, {
                     primitive: "lines",
                     positions: [
@@ -60,7 +60,7 @@
                 clippable: false
             });
 
-            this._planeSolid = new xeogl.Entity(this, {
+            this._planeSolid = new xeogl.Mesh(this, {
                 geometry: new xeogl.Geometry(this, {
                     primitive: "triangles",
                     positions: [
@@ -86,7 +86,7 @@
                 clippable: false
             });
 
-            this._arrow = new xeogl.Entity(this, {
+            this._arrow = new xeogl.Mesh(this, {
                 geometry: new xeogl.Geometry(this, {
                     primitive: "lines",
                     positions: [
@@ -104,7 +104,7 @@
                 clippable: false
             });
 
-            this._label = new xeogl.Entity(this, {
+            this._label = new xeogl.Mesh(this, {
                 geometry: new xeogl.VectorTextGeometry(this, {
                     text: this.id,
                     size: 0.07,

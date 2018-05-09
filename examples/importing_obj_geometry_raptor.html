@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -15,12 +15,13 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a> loaded from a Wavefront .OBJ file</h1>
+    <h1><a href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a> loaded from a Wavefront .OBJ file
+    </h1>
 </div>
 
 <script>
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
 
         geometry: new xeogl.OBJGeometry({
             src: "models/obj/raptor/raptor.obj"
@@ -54,14 +55,8 @@
             })
         }),
 
-        transform: new xeogl.Rotate({
-            xyz: [0, 1, 0],
-            angle: 120,
-
-            parent: new xeogl.Translate({
-                xyz: [10, 3, 10]
-            })
-        })
+        rotation: [0, 120, 0],
+        position: [10, 3, 10]
     });
 
     // Allow user camera control
@@ -69,12 +64,12 @@
 
     // Fit to view as soon as the OBJ is loaded
 
-    entity.geometry.on("loaded", function () {
+    mesh.geometry.on("loaded", function () {
 
         var cameraFlight = new xeogl.CameraFlightAnimation();
 
         cameraFlight.jumpTo({
-            aabb: entity.aabb,
+            aabb: mesh.aabb,
             fit: true,
             fitFOV: 45
         });

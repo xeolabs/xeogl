@@ -6,18 +6,16 @@
  ## Overview
 
  * Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  ## Examples
 
  * [PhongMaterials with Fresnels](../../examples/#materials_phong_fresnel)
 
- <img src="../../../assets/images/Fresnel.png"></img>
-
  ## Usage
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
 
      material: new xeogl.PhongMaterial({
          ambient: [0.3, 0.3, 0.3],

@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -17,7 +17,7 @@
 
 <script>
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
         geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,
@@ -34,9 +34,9 @@
         })
     });
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.AABBGeometry({
-            targetAABB: entity.aabb
+            targetAABB: mesh.aabb
         }),
         material: new xeogl.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
@@ -45,11 +45,11 @@
         })
     });
 
-    var camera = entity.scene.camera;
+    var camera = mesh.scene.camera;
 
     camera.eye = [0, 0, -9];
 
-    entity.scene.on("tick", function () {
+    mesh.scene.on("tick", function () {
         camera.orbitYaw(0.6);
         camera.orbitPitch(0.3);
     });

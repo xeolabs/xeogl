@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -71,7 +71,7 @@
         })
     ];
 
-    var entities = [];
+    var meshes = [];
     var entityGeometry = [];
     var entityMaterial = [];
 
@@ -83,7 +83,7 @@
     var inc = 1.0 / sqrtNum;
     var width = 150;
     var halfWidth = width / 2;
-    var entity;
+    var mesh;
 
     for (var y = 0; y <= 1.0; y += inc) {
 
@@ -94,15 +94,13 @@
 
             for (var z = 0; z <= 1.0; z += inc) {
 
-                entity = new xeogl.Entity({
+                mesh = new xeogl.Mesh({
                     geometry: geometries[gi < 3 ? ++gi : gi = 0],
                     material: materials[mi < 3 ? ++mi : mi = 0],
-                    transform: new xeogl.Translate({
-                        xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
-                    })
+                    position: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
                 });
 
-                entities.push(entity);
+                meshes.push(mesh);
                 entityGeometry.push(gi);
                 entityMaterial.push(mi);
             }
@@ -120,7 +118,7 @@
     // Spin camera
     // Log statistics
 
-    var numEntities = entities.length;
+    var numEntities = meshes.length;
     var count = 0;
     var lower = 0;
     var batchLen = Math.floor((numEntities) / 10);
@@ -135,15 +133,15 @@
 
             for (var i = lower; i < upper; i++) {
 
-                entity = entities[i];
+                mesh = meshes[i];
 
                 gi = entityGeometry[i];
                 entityGeometry[i] = gi = (gi < 3 ? gi + 1 : 0);
-                entity.geometry = geometries[gi];
+                mesh.geometry = geometries[gi];
 
                 mi = entityMaterial[i];
                 entityMaterial[i] = mi = (mi < 3 ? mi + 1 : 0);
-                entity.material = materials[mi];
+                mesh.material = materials[mi];
             }
 
             if (lower + (batchLen * 2) < numEntities) {

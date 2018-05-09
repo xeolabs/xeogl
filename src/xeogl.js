@@ -150,7 +150,8 @@
             components: {
                 scenes: 0,
                 models: 0,
-                entities: 0
+                meshes: 0,
+                objects: 0
             },
             memory: {
 
@@ -368,7 +369,7 @@
          {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
 
          xeogl creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
-         reference this property for the first time, or create your first {{#crossLink "Entity"}}Entity{{/crossLink}} without
+         reference this property for the first time, or create your first {{#crossLink "Mesh"}}Mesh{{/crossLink}} without
          a specified {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
          @property scene
@@ -527,8 +528,8 @@
          * Tests if the given object is an array
          * @private
          */
-        _isArray: function (testEntity) {
-            return testEntity && !(testEntity.propertyIsEnumerable('length')) && typeof testEntity === 'object' && typeof testEntity.length === 'number';
+        _isArray: function (testMesh) {
+            return testMesh && !(testMesh.propertyIsEnumerable('length')) && typeof testMesh === 'object' && typeof testMesh.length === 'number';
         },
 
         /**

@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -17,15 +17,15 @@
 
 <script>
 
-    var entity = new xeogl.Entity();
+    var mesh = new xeogl.Mesh();
 
-    entity.scene.camera.eye = [0, 0, -5];
+    mesh.scene.camera.eye = [0, 0, -5];
 
-    entity.scene.on("tick",
+    mesh.scene.on("tick",
             function (params) {
 
-                entity.scene.camera.orbitYaw(0.5);
-                entity.scene.camera.orbitPitch(0.3);
+                mesh.scene.camera.orbitYaw(0.5);
+                mesh.scene.camera.orbitPitch(0.3);
 
                 log("tick", params);
                 ;
@@ -33,8 +33,8 @@
 
 
     // Orbit the eye position about the look position.
-    entity.scene.on("tick", function () {
-        entity.scene.camera.orbitYaw(-0.1);
+    mesh.scene.on("tick", function () {
+        mesh.scene.camera.orbitYaw(-0.1);
     });
 
     var buf = [];

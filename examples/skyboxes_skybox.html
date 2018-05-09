@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/skyboxes/skybox.js"></script>
@@ -34,15 +34,13 @@
 
     for (var i = 0; i < 40; i++) {
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: boxGeometry,
-            transform: new xeogl.Translate({
-                xyz: [
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7
-                ]
-            }),
+            position: [
+                Math.random() * 15 - 7,
+                Math.random() * 15 - 7,
+                Math.random() * 15 - 7
+            ],
             material: new xeogl.PhongMaterial({
                 diffuse: [
                     Math.random(),

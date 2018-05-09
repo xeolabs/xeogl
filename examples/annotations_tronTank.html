@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -74,7 +74,7 @@
                 up: [0.01, 0.97, 0.24],
                 pinShown: true,
                 labelShown: true,
-                entity: "tank.entity9"
+                mesh: "tank.mesh9"
             }),
             new xeogl.Annotation({
                 type: "xeogl.Annotation",
@@ -89,7 +89,7 @@
                 up: [-0.09, 0.99, 0.11],
                 pinShown: true,
                 labelShown: false,
-                entity: "tank.entity2"
+                mesh: "tank.mesh2"
             }),
             new xeogl.Annotation({
                 type: "xeogl.Annotation",
@@ -104,7 +104,7 @@
                 up: [0.01, 0.97, 0.24],
                 pinShown: true,
                 labelShown: false,
-                entity: "tank.entity6"
+                mesh: "tank.mesh6"
             }), new xeogl.Annotation({
                 type: "xeogl.Annotation",
                 primIndex: 4464,
@@ -118,7 +118,7 @@
                 up: [0.08, 0.99, 0.07],
                 pinShown: true,
                 labelShown: false,
-                entity: "tank.entity9"
+                mesh: "tank.mesh9"
             })];
 
         var cameraFlight = new xeogl.CameraFlightAnimation({
@@ -130,7 +130,7 @@
         //----------------------------------
 
         model.add({
-            type: "xeogl.Entity",
+            type: "xeogl.Mesh",
             geometry: {
                 type: "xeogl.PlaneGeometry",
                 xSize: 16,
@@ -143,10 +143,7 @@
                 alpha: 0.3,
                 alphaMode: "blend"
             },
-            transform: {
-                type: "xeogl.Translate",
-                xyz: [-1, 0.1, -4]
-            }
+            position: [-1, 0.1, -4]
         });
 
         //---------------------------------------------------------------------------------
@@ -261,7 +258,7 @@
     // Ground plane
     //---------------------------------------------------------------------------------
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: {
             type: "xeogl.PlaneGeometry",
             xSize: 3000,

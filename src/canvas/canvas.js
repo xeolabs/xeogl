@@ -16,8 +16,6 @@
  * The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
  the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.
 
- <img src="../../../assets/images/Canvas.png"></img>
-
  A Canvas also has
 
  * a {{#crossLink "Progress"}}{{/crossLink}}, which shows a busy progress when a {{#crossLink "Model"}}{{/crossLink}}
@@ -168,7 +166,7 @@
             this.contextAttr.alpha = this.transparent;
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
-                this.contextAttr.preserveDrawingBuffer = false;
+                this.contextAttr.preserveDrawingBuffer = true;
             }
 
             this.contextAttr.stencil = false;
@@ -485,7 +483,7 @@
             if (this.gl) {
                 if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping
                     this.gl.getExtension("OES_standard_derivatives");
-                    this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
+                  //  this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
                 }
             }
         },

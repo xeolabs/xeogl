@@ -51,6 +51,12 @@
 
     "src/component.js",
     "src/scene.js",
+
+    "src/objects/object.js",
+    "src/objects/group.js",
+    "src/objects/mesh.js",
+
+
     "src/animation/_module.js",
     "src/animation/cameraFlightAnimation.js",
 
@@ -93,8 +99,6 @@
     "src/materials/outlineMaterial.js",
     "src/materials/texture.js",
     "src/materials/fresnel.js",
-    "src/entities/_module.js",
-    "src/entities/entity.js",
     "src/viewport/_module.js",
     "src/viewport/viewport.js",
     "src/transforms/_module.js",
@@ -108,6 +112,7 @@
     "src/camera/frustum.js",
     "src/camera/lookat.js",
     "src/camera/ortho.js",
-    "src/camera/perspective.js"
+    "src/camera/perspective.js",
+    "src/camera/customProjection.js"
   ]
 }

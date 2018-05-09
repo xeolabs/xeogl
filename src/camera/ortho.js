@@ -32,6 +32,8 @@
  @param [cfg.scale=1.0] {Number} Scale factor for this Ortho's extents on X and Y axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
+ @author xeolabs / http://xeolabs.com
+ @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
 (function () {

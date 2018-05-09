@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -32,34 +32,34 @@
         document.getElementById("log").innerText = buf.join("\n");
     }
 
-    // Create a Entity
-    var entity = new xeogl.Entity({
+    // Create a Mesh
+    var mesh = new xeogl.Mesh({
         id: "myObject"
     });
 
-    var scene = entity.scene;
+    var scene = mesh.scene;
 
     scene.on("log", log);
     scene.on("warn", log);
     scene.on("error", log);
 
-    // Log a message in context of this Entity
+    // Log a message in context of this Mesh
     // Message will appear in console as "[LOG] myObject: Everything is fine, situation normal."
-    entity.log("Everything is fine, situation normal.");
+    mesh.log("Everything is fine, situation normal.");
 
-    // Attach a new Material to the Entity.
-    entity.material = new xeogl.PhongMaterial({
+    // Attach a new Material to the Mesh.
+    mesh.material = new xeogl.PhongMaterial({
         id: "myMaterial",
         diffuse: [1.0, 1.0, 0.0]
     });
 
     // Log a warning message in context of the Material
     // Message will appear in console as "[WARN] myMaterial: Wait, what's that red light?."
-    entity.material.warn("Wait, what's that red light?");
+    mesh.material.warn("Wait, what's that red light?");
 
     // Log an error message in context of the Material
     // Message will appear in console as "[ERROR] myMaterial: Aw, snap!."
-    entity.material.error("Aw, snap!");
+    mesh.material.error("Aw, snap!");
 
 
 </script>

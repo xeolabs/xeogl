@@ -171,7 +171,7 @@
             }
         }
 
-        // Entity state
+        // Mesh state
 
         if (this._uClippable) {
             gl.uniform1i(this._uClippable, object.modes.clippable);
@@ -203,7 +203,7 @@
             this._lastGeometryId = geometry.id;
         }
 
-        // Entity-indexed color
+        // Mesh-indexed color
 
         var a = frame.pickObjectIndex >> 24 & 0xFF;
         var b = frame.pickObjectIndex >> 16 & 0xFF;

@@ -1,5 +1,5 @@
 /**
- A **Geometry** defines a mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Geometry** defines a mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  ## Usage
 
@@ -27,7 +27,7 @@
 });
 
  // Disable compression when creating a Geometry
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         quantized: false // Default is true
     }),
@@ -41,7 +41,7 @@
 
  Geometries are automatically combined into the same vertex buffer objects (VBOs) so that we reduce the number of VBO
  binds done by WebGL on each frame. VBO binds are expensive, so this really makes a difference when we have large numbers
- of Entities that share similar Materials (as is often the case in CAD rendering).
+ of Meshes that share similar Materials (as is often the case in CAD rendering).
 
  #### Disabling
 
@@ -56,7 +56,7 @@
 });
 
  // Disable VBO combination for an individual Geometry
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
         combined: false // Default is true
     }),
@@ -88,7 +88,7 @@
  for reduced memory footprint and GPU bus usage.
  @param [cfg.combined=false] {Boolean} Combines positions, colors, normals and UVs into the same WebGL vertex buffers
  with other Geometries, in order to reduce the number of buffer binds performed per frame.
- @param [cfg.ghostEdgeThreshold=2] {Number} When a {{#crossLink "Entity"}}{{/crossLink}} renders this Geometry as wireframe,
+ @param [cfg.ghostEdgeThreshold=2] {Number} When a {{#crossLink "Mesh"}}{{/crossLink}} renders this Geometry as wireframe,
  this indicates the threshold angle (in degrees) between the face normals of adjacent triangles below which the edge is discarded.
  @extends Component
  */

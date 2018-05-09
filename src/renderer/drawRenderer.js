@@ -879,9 +879,9 @@
             var colorize = modes.colorize;
             var lastColorize = this._lastColorize;
             if (lastColorize[0] !== colorize[0] ||
-                lastColorize[1] !== colorize[0] ||
-                lastColorize[2] !== colorize[0] ||
-                lastColorize[3] !== colorize[0]) {
+                lastColorize[1] !== colorize[1] ||
+                lastColorize[2] !== colorize[2] ||
+                lastColorize[3] !== colorize[3]) {
                 gl.uniform4fv(this._uColorize, colorize);
                 lastColorize[0] = colorize[0];
                 lastColorize[1] = colorize[1];

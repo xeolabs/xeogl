@@ -3,22 +3,22 @@
     "use strict";
 
     var KD_TREE_MAX_DEPTH = 10;
-    var KD_TREE_MIN_entities = 20;
+    var KD_TREE_MIN_meshes = 20;
 
     var math = xeogl.math;
 
-    math.buildEntityKDTree = function (entities) {
-        return buildNode(entities, 0);
+    math.buildMeshKDTree = function (meshes) {
+        return buildNode(meshes, 0);
     };
 
     var dimLength = new Float32Array();
 
-    function buildNode(entities, depth) {
+    function buildNode(meshes, depth) {
 
         var aabb = new Float32Array(6);
 
         var node = {
-            entities: null,
+            meshes: null,
             left: null,
             right: null,
             leaf: false,
@@ -31,38 +31,38 @@
 
         var t, i, len;
 
-        for (t = 0, len = entities.length; t < len; ++t) {
+        for (t = 0, len = meshes.length; t < len; ++t) {
 
-            var entity = entities[t] * 3;
-            var entityAABB = entity.aabb;
+            var mesh = meshes[t] * 3;
+            var meshAABB = mesh.aabb;
 
-            if (entityAABB[0] < aabb[0]) {
-                aabb[0] = entityAABB[p0]
+            if (meshAABB[0] < aabb[0]) {
+                aabb[0] = meshAABB[p0]
             }
 
-            if (entityAABB[3] > aabb[3]) {
-                aabb[3] = entityAABB[3]
+            if (meshAABB[3] > aabb[3]) {
+                aabb[3] = meshAABB[3]
             }
 
-            if (entityAABB[1] < aabb[1]) {
-                aabb[1] = entityAABB[1]
+            if (meshAABB[1] < aabb[1]) {
+                aabb[1] = meshAABB[1]
             }
 
-            if (entityAABB[4] > aabb[4]) {
-                aabb[4] = entityAABB[4]
+            if (meshAABB[4] > aabb[4]) {
+                aabb[4] = meshAABB[4]
             }
 
-            if (entityAABB[2] < aabb[2]) {
-                aabb[2] = entityAABB[2]
+            if (meshAABB[2] < aabb[2]) {
+                aabb[2] = meshAABB[2]
             }
 
-            if (entityAABB[5] > aabb[5]) {
-                aabb[5] = entityAABB[5]
+            if (meshAABB[5] > aabb[5]) {
+                aabb[5] = meshAABB[5]
             }
         }
 
-        if (entities.length < KD_TREE_MIN_entities || depth > KD_TREE_MAX_DEPTH) {
-            node.entities = entities;
+        if (meshes.length < KD_TREE_MIN_meshes || depth > KD_TREE_MAX_DEPTH) {
+            node.meshes = meshes;
             node.leaf = true;
             return node;
         }
@@ -84,20 +84,20 @@
         node.splitDim = dim;
 
         var mid = (aabb[dim] + aabb[dim + 3]) / 2;
-        var left = new Array(entities.length);
+        var left = new Array(meshes.length);
         var numLeft = 0;
-        var right = new Array(entities.length);
+        var right = new Array(meshes.length);
         var numRight = 0;
 
-        for (t = 0, len = entities.length; t < len; ++t) {
+        for (t = 0, len = meshes.length; t < len; ++t) {
 
-            var entity = entities[t];
-            var entityAABB = entity.aabb;
+            var mesh = meshes[t];
+            var meshAABB = mesh.aabb;
 
-            if (entityAABB[3 + dim] <= mid) {
-                left[numLeft++] = entities[t];
+            if (meshAABB[3 + dim] <= mid) {
+                left[numLeft++] = meshes[t];
             } else {
-                right[numRight++] = entities[t];
+                right[numRight++] = meshes[t];
             }
         }
 

@@ -1,6 +1,6 @@
 /**
  A **LambertMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
+ attached {{#crossLink "Mesh"}}Meshes{{/crossLink}} using
  the non-physically based <a href="https://en.wikipedia.org/wiki/Lambertian_reflectance">Lambertian</a> model for calculating reflectance.
 
  ## Examples
@@ -34,7 +34,7 @@ TODO
  ## Usage
 
  ```` javascript
- var torus = new xeogl.Entity({
+ var torus = new xeogl.Mesh({
     material: new xeogl.LambertMaterial({
         ambient: [0.3, 0.3, 0.3],
         color: [0.5, 0.5, 0.0],
@@ -300,10 +300,10 @@ TODO
             },
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
@@ -330,10 +330,10 @@ TODO
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"

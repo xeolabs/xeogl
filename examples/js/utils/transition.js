@@ -40,14 +40,14 @@ var Transition = function () {
         for (var i = 0, len = ids.length; i < len; i++) {
             var id = ids [i];
             tasks.push((function () {
-                var entity = model.entities[id];
-                var startAlpha = entity.material.alpha;
+                var mesh = model.meshes[id];
+                var startAlpha = mesh.material.alpha;
                 return function (t) {
                     var newAlpha = startAlpha + (t * (alpha - startAlpha));
-                    entity.material.alpha =newAlpha;
-                    entity.material.alphaMode = (newAlpha < 1.0) ? "blend" : "opaque"; // Note: breaks alpha maps
+                    mesh.material.alpha =newAlpha;
+                    mesh.material.alphaMode = (newAlpha < 1.0) ? "blend" : "opaque"; // Note: breaks alpha maps
 
-                    //  entity.material.alphaFresnel = alphaFresnel;
+                    //  mesh.material.alphaFresnel = alphaFresnel;
                 };
             })());
         }
@@ -58,12 +58,12 @@ var Transition = function () {
         for (var i = 0, len = ids.length; i < len; i++) {
             var id = ids [i];
             tasks.push((function () {
-                var entity = model.entities[id];
-                entity.transform = new xeogl.Translate({
-                    parent: entity.transform
+                var mesh = model.meshes[id];
+                mesh.transform = new xeogl.Translate({
+                    parent: mesh.transform
                 });
                 return function (t) {
-                    entity.transform.xyz = [xyz[0] * t, xyz[1] * t, xyz[2] * t]
+                    mesh.transform.xyz = [xyz[0] * t, xyz[1] * t, xyz[2] * t]
                 };
             })());
         }

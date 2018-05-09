@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -22,13 +22,7 @@
 
     var model = new xeogl.GLTFModel({
         src: "models/gltf/vianney_house_2/scene.gltf",
-
-        combineGeometry: true,
-
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90
-        })
+        rotation: [-90, 0, 0]
     });
 
     var camera = xeogl.scene.camera;
@@ -98,16 +92,16 @@
         ]
     });
 
-//    lights.lightMap = new xeogl.CubeTexture({
-//        src: [
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-//        ]
-//    });
+    //    lights.lightMap = new xeogl.CubeTexture({
+    //        src: [
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+    //        ]
+    //    });
 
 </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -102,7 +102,7 @@
     // Outer sphere attached to our Clips, with clipping enabled,
     // causing eight portions to get clipped off the sphere
 
-    var outerSphere = new xeogl.Entity({
+    var outerSphere = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 1.5,
             heightSegments: 60,
@@ -122,7 +122,7 @@
     // Inner sphere, attached to our Clips, but with clipping disabled,
     // so nothing gets clipped off this sphere
 
-    var innerSphere = new xeogl.Entity({
+    var innerSphere = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 1.2,
             heightSegments: 60,

@@ -27,6 +27,8 @@
  @param [cfg.fovAxis="min"] {String} The field-of-view axis: "x", "y", or "min" to use whichever is currently the minimum.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
+ @author xeolabs / http://xeolabs.com
+ @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
 (function () {
@@ -42,7 +44,7 @@
             this._state = new xeogl.renderer.ProjTransform({
                 matrix: xeogl.math.mat4()
             });
-            
+
             this._dirty = false;
             this._fov = 60.0;
             this._near = 0.1;

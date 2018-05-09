@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -21,7 +21,7 @@
             display: inline-block;
             margin: 10px;
             border: 1px solid white;
-            position:absolute;
+            position: absolute;
             top: 60px;
             left: 0;
         }
@@ -30,7 +30,7 @@
             display: inline-block;
             margin: 10px;
             border: 1px solid white;
-            position:absolute;
+            position: absolute;
             top: 60px;
             left: 420px;
         }
@@ -39,7 +39,7 @@
             display: inline-block;
             margin: 10px;
             border: 1px solid white;
-            position:absolute;
+            position: absolute;
             top: 480px;
             left: 0px;
         }
@@ -48,14 +48,15 @@
 <body>
 
 <div id="info">
-   <h1>multiple <a
-        href="../docs/classes/Scene.html"
-        target="_parent">Scenes</a> in a page</h1>
+    <h1>multiple <a
+            href="../docs/classes/Scene.html"
+            target="_parent">Scenes</a> in a page</h1>
 </div>
 
-<canvas id="myCanvas1" class="multiCanvas" width="400px" height="400px" style="  background-image: url(textures/diffuse/uvGrid2.jpg);"></canvas>
+<canvas id="myCanvas1" class="multiCanvas" width="400px" height="400px"
+        style="  background-image: url(textures/diffuse/uvGrid2.jpg);"></canvas>
 <canvas id="myCanvas2" class="multiCanvas" width="400px" height="400px"></canvas>
-<canvas id="myCanvas3" class="multiCanvas" width="400px" height="400px"></canvas>
+<canvas id="myCanvas3" class="multiCanvas" width="820px" height="400px"></canvas>
 
 <script>
 
@@ -69,7 +70,7 @@
         transparent: true
     });
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,
@@ -103,7 +104,7 @@
         canvas: "myCanvas2"
     });
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.BoxGeometry(),
         material: new xeogl.PhongMaterial({
             diffuseMap: new xeogl.Texture({
@@ -136,7 +137,7 @@
     camera.up = [-0.15, 0.97, 0.13];
 
     var gearbox = new xeogl.GLTFModel({
-            src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
 
     xeogl.scene.on("tick", function () {

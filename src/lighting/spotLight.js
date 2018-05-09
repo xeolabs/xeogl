@@ -1,6 +1,6 @@
 /**
  A **SpotLight** defines a positional light source that originates from a single point and eminates in a given direction,
- to illuminate {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ to illuminate {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  ## Overview
 
@@ -22,7 +22,7 @@
  ## Usage
 
  In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
- SpotLights, then create a Phong-shaded box entity.
+ SpotLights, then create a Phong-shaded box mesh.
 
  ````javascript
 
@@ -58,8 +58,8 @@
      })
  ];
 
- // Create box entity
- new xeogl.Entity({
+ // Create box mesh
+ new xeogl.Mesh({
     material: new xeogl.PhongMaterial({
         ambient: [0.5, 0.5, 0.5],
         diffuse: [1,0.3,0.3]

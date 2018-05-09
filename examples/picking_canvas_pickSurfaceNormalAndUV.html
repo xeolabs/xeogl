@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -18,7 +18,7 @@
 <body>
 
 <div id="info">
-    <h1>raycasting to find position, UV and normal on <a href="../docs/classes/Entity.html" target="_parent">Entity</a>
+    <h1>raycasting to find position, UV and normal on <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a>
         surfaces</h1>
     <br>
     <img id="diffuseTexture" src="textures/diffuse/uvGrid2.jpg" width="400px" height="400px">
@@ -57,10 +57,10 @@
         backfaces: true
     });
 
-    // A Entity that we can pick - a heightmap with a diffuse map
+    // A Mesh that we can pick - a heightmap with a diffuse map
 
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
 
         // xeogl.HeightMap is defined in ./js/geometry/heightmapGeometry.js
         geometry: new xeogl.HeightmapGeometry({
@@ -72,15 +72,13 @@
             xSegments: 60,
             zSegments: 60
         }),
-        transform: new xeogl.Translate({
-            xyz: [0, 0, 0]
-        }),
+        position: [0, 0, 0],
         material: material
     });
 
     // Torus
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.TorusGeometry({
             radius: 3.0,
             tube: 1.0,
@@ -88,28 +86,24 @@
             tubeSegments: 24,
             arc: Math.PI * 2.0
         }),
-        transform: new xeogl.Translate({
-            xyz: [-10, 0, 0]
-        }),
+        position: [-10, 0, 0],
         material: material
     });
 
     // Sphere
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 3.0
         }),
-        transform: new xeogl.Translate({
-            xyz: [0, -10, 0]
-        }),
+        position: [0, -10, 0],
         material: material
     });
 
     //
     //    // Sphere 2
     //
-    //    new xeogl.Entity({
+    //    new xeogl.Mesh({
     //        geometry: new xeogl.SphereGeometry({
     //            radius: 3.0
     //        }),
@@ -121,7 +115,7 @@
 
     // Cylinder
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.CylinderGeometry({
             radiusTop: 1.0,
             radiusBottom: 2.0,
@@ -130,9 +124,7 @@
             heightSegments: 1,
             openEnded: false
         }),
-        transform: new xeogl.Translate({
-            xyz: [0, 10, 0]
-        }),
+        position: [0, 10, 0],
         material: material
     });
 
@@ -147,7 +139,7 @@
     camera.orbitYaw(50);
 
 
-    // Whenever mouse moves, attempt to pick a triangle on a Entity,
+    // Whenever mouse moves, attempt to pick a triangle on a Mesh,
     // then show the cartesian coordinates at the picked position within
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.

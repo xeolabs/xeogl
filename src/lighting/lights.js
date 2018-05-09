@@ -6,11 +6,11 @@
  A Lights may contain a virtually unlimited number of three types of light source:
 
  * {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
- affect all the Scene's {{#crossLink "Entity"}}Entities{{/crossLink}} equally,
+ affect all the Scene's {{#crossLink "Mesh"}}Meshes{{/crossLink}} equally,
  * {{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
  originates from a single point and spreads outward in all directions,
  * {{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
- Entities equally from a given direction and may cast shadows, and
+ Meshes equally from a given direction and may cast shadows, and
  * {{#crossLink "SpotLight"}}SpotLight{{/crossLink}}s, which eminate from a position in a given direction and may also cast shadows.
 
  A Lights can also have two other components that define environmental reflection and irradiance:
@@ -29,7 +29,7 @@
 
  ## Usage
 
- In the example below we'll customize the default Scene's light sources, then create a metallic sphere entity.
+ In the example below we'll customize the default Scene's light sources, then create a metallic sphere mesh.
 
  ````javascript
 
@@ -80,8 +80,8 @@
     ]
  });
 
- // Create a metallic sphere entity
- new xeogl.Entity({
+ // Create a metallic sphere mesh
+ new xeogl.Mesh({
     material: new xeogl.MetallicMaterial({
         roughness: 1.0,
         metallic: 1.0,
@@ -105,7 +105,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
- @param [cfg.lights] {Array of String|Entity} Array of light source IDs or instances.
+ @param [cfg.lights] {Array of String|Mesh} Array of light source IDs or instances.
  @param [cfg.lightMap=undefined] {CubeTexture} A light map {{#crossLink "CubeTexture"}}{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Lights.
  @param [cfg.reflectionMap=undefined] {CubeTexture} A reflection map {{#crossLink "CubeTexture"}}{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Lights.
  @extends Component
@@ -256,7 +256,7 @@
 
                     this.fire("dirty", true);
 
-                    this._renderer.setImageForceDirty(); // Triggers a re-render (to clear) even if there are no entities
+                    this._renderer.setImageForceDirty(); // Triggers a re-render (to clear) even if there are no meshes
 
                     /**
                      Fired whenever this Lights's {{#crossLink "Lights/lights:property"}}{{/crossLink}} property changes.
@@ -274,7 +274,7 @@
 
             /**
              A {{#crossLink "CubeTexture"}}{{/crossLink}} that defines the brightness of the
-             surfaces of attached {{#crossLink "Entities"}}{{/crossLink}}.
+             surfaces of attached {{#crossLink "Meshes"}}{{/crossLink}}.
 
              Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Lights.
 
@@ -304,7 +304,7 @@
 
             /**
              A {{#crossLink "CubeTexture"}}{{/crossLink}} that defines a background image that is reflected in the
-             surfaces of attached {{#crossLink "Entities"}}{{/crossLink}}.
+             surfaces of attached {{#crossLink "Meshes"}}{{/crossLink}}.
 
              Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Lights.
 

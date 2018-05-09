@@ -20,17 +20,18 @@
  * [Frustum projection](../../examples/#camera_frustum)
  * [Camera with world Z-axis as "up"](../../examples/#camera_zAxisUp)
  * [Camera with world Y-axis as "up"](../../examples/#camera_yAxisUp)
- * [Automatically following an Entity with a Camera](../../examples/#camera_follow)
+ * [Automatically following a Mesh with a Camera](../../examples/#camera_follow)
  * [Animating a Camera along a path](../../examples/#camera_path_interpolation)
  * [Architectural fly-through](../../examples/#importing_gltf_ModernOffice)
 
  ## Usage
 
- * [Getting the Camera](#getting)
+ * [Getting the Camera](#getting-the-camera)
  * [Moving around](#moving-around)
  * [Projection](#projection)
  * [Configuring World up direction](#configuring-world-up-direction)
  * [Gimbal locking](#gimbal-locking)
+ * [Stereo rendering](#stereo-rendering)
 
  ### Getting the Camera
 
@@ -116,9 +117,12 @@
  camera.frustum.far = 1000.0;
  //...
 
+ camera.customProjection.matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
  camera.projection = "perspective"; // Switch to perspective
  camera.projection = "frustum"; // Switch to frustum
  camera.projection = "ortho"; // Switch to ortho
+ camera.projection = "customProjection"; // Switch to custom
  ````
 
  Get the projection matrix:
@@ -177,6 +181,10 @@
 
  See: <a href="https://en.wikipedia.org/wiki/Gimbal_lock">https://en.wikipedia.org/wiki/Gimbal_lock</a>
 
+ ### Stereo rendering
+
+ TODO: Describe stereo techniques and the deviceMatrix property
+
  @class Camera
  @module xeogl
  @submodule camera
@@ -209,6 +217,8 @@
         _init: function (cfg) {
 
             this._state = new xeogl.renderer.ViewTransform({
+                deviceMatrix: math.mat4(),
+                hasDeviceMatrix: false, // True when deviceMatrix set to other than identity
                 matrix: math.mat4(),
                 normalMatrix: math.mat4()
             });
@@ -216,6 +226,7 @@
             this._perspective = new xeogl.Perspective(this);
             this._ortho = new xeogl.Ortho(this);
             this._frustum = new xeogl.Frustum(this);
+            this._customProjection = new xeogl.CustomProjection(this);
             this._project = this._perspective;
 
             var self = this;
@@ -228,6 +239,7 @@
             this._worldRight = math.vec3([1, 0, 0]);
             this._worldForward = math.vec3([0, 0, -1]);
 
+            this.deviceMatrix = cfg.deviceMatrix;
             this.eye = cfg.eye;
             this.look = cfg.look;
             this.up = cfg.up;
@@ -253,6 +265,12 @@
                     self.fire("projMatrix", self._frustum.matrix);
                 }
             });
+
+            this._customProjection.on("matrix", function () {
+                if (self._projectionType === "customProjection") {
+                    self.fire("projMatrix", self._customProjection.matrix);
+                }
+            });
         },
 
         _update: (function () {
@@ -261,8 +279,11 @@
             var eyeLookVecNorm = math.vec3();
             var eyeLookOffset = math.vec3();
             var offsetEye = math.vec3();
+            var tempMat = math.mat4();
 
             return function () {
+
+                var state = this._state;
 
                 // In ortho mode, build the view matrix with an eye position that's translated
                 // well back from look, so that the front clip plane doesn't unexpectedly cut
@@ -280,7 +301,14 @@
                     eye = this._eye;
                 }
 
-                math.lookAtMat4v(eye, this._look, this._up, this._state.matrix);
+                if (state.hasDeviceMatrix) {
+                    math.lookAtMat4v(eye, this._look, this._up, tempMat);
+                    math.mulMat4(state.deviceMatrix, tempMat, state.matrix);
+                    //state.matrix.set(state.deviceMatrix);
+                } else {
+                    math.lookAtMat4v(eye, this._look, this._up, state.matrix);
+                }
+
                 math.inverseMat4(this._state.matrix, this._state.normalMatrix);
                 math.transposeMat4(this._state.normalMatrix);
 
@@ -525,6 +553,35 @@
             },
 
             /**
+             Sets an optional matrix to premultiply into this Camera's {{#crossLink "Camera/matrix:property"}}{{/crossLink}} matrix.
+
+             This is intended to be used for stereo rendering with WebVR etc.
+
+             * @property deviceMatrix
+             * @type {Float32Array}
+             */
+            deviceMatrix: {
+
+                set: function (matrix) {
+                    this._state.deviceMatrix.set(matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                    this._state.hasDeviceMatrix = !!matrix;
+                    this._needUpdate(0);
+
+                    /**
+                     * Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event deviceMatrix
+                     * @param value The property's new value
+                     */
+                    this.fire("deviceMatrix", this._state.deviceMatrix);
+                },
+
+                get: function () {
+                    return this._state.deviceMatrix;
+                }
+            },
+
+            /**
              * Indicates the up, right and forward axis of the World coordinate system.
              *
              * Has format: ````[rightX, rightY, rightZ, upX, upY, upZ, forwardX, forwardY, forwardZ]````
@@ -650,6 +707,7 @@
              * Distance from "look" to "eye".
              * @property eyeLookDist
              * @type Number
+             * @final
              */
             eyeLookDist: {
 
@@ -668,6 +726,7 @@
              *
              * @property matrix
              * @type {Float32Array}
+             * @final
              * @deprecated
              */
             matrix: {
@@ -688,6 +747,7 @@
              * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
              *
              * @property viewMatrix
+             * @final
              * @type {Float32Array}
              */
             viewMatrix: {
@@ -709,6 +769,7 @@
              *
              * @property normalMatrix
              * @type {Float32Array}
+             * @final
              * @deprecated
              */
             normalMatrix: {
@@ -729,6 +790,7 @@
              * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
              *
              * @property viewNormalMatrix
+             * @final
              * @type {Float32Array}
              */
             viewNormalMatrix: {
@@ -749,6 +811,7 @@
              * Fires a {{#crossLink "Camera/projMatrix:event"}}{{/crossLink}} event on change.
              *
              * @property projMatrix
+             * @final
              * @type {Float32Array}
              */
             projMatrix: {
@@ -808,9 +871,25 @@
             },
 
             /**
+             * A custom projection transform, given as a 4x4 matrix.
+             *
+             * This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "customProjection".
+             *
+             * @property customProjection
+             * @type CustomProjection
+             * @final
+             */
+            customProjection: {
+
+                get: function () {
+                    return this._customProjection;
+                }
+            },
+
+            /**
              The active projection type.
 
-             Accepted values are "perspective", "ortho" and "frustum".
+             Accepted values are "perspective", "ortho", "frustum" and "customProjection".
 
              @property projection
              @default "perspective"
@@ -834,6 +913,9 @@
 
                     } else if (value === "frustum") {
                         this._project = this._frustum;
+
+                    } else if (value === "customProjection") {
+                        this._project = this._customProjection;
 
                     } else {
                         this.error("Unsupported value for 'projection': " + value + " defaulting to 'perspective'");

@@ -1,6 +1,6 @@
 /**
  A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
+ attached {{#crossLink "Mesh"}}Meshes{{/crossLink}} using
  the classic <a href="https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model">Blinn-Phong</a> lighting model.
 
  ## Examples
@@ -13,8 +13,6 @@
 
  * Used for rendering non-realistic objects such as "helpers", wireframe objects, labels etc.
  * Use the physically-based {{#crossLink "MetallicMaterial"}}{{/crossLink}} or {{#crossLink "SpecularMaterial"}}{{/crossLink}} when more realism is required.
-
- <img src="../../../assets/images/PhongMaterial.png"></img>
 
  The following table summarizes PhongMaterial properties:
 
@@ -47,14 +45,14 @@
 
  ## Usage
 
- In this example we have an Entity with
+ In this example we have a Mesh with
 
  * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
  * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  ```` javascript
- var torus = new xeogl.Entity({
+ var torus = new xeogl.Mesh({
 
     lights: new xeogl.Lights({
         lights: [
@@ -1017,10 +1015,10 @@
             },
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
@@ -1047,10 +1045,10 @@
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"

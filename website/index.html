@@ -115,7 +115,6 @@
                                 <!-- Collect the nav links, forms, and other content for toggling -->
                                 <div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
                                     <ul class="nav navbar-nav navbar-right">
-                                        <li class="active"><a href="#banner">Home</a></li>
                                         <li><a href="#introduction">Intro</a></li>
                                         <!--<li><a href="#features">Features</a></li>-->
                                         <li><a href="../examples" target="_parent">Examples</a></li>
@@ -124,6 +123,7 @@
                                         <li>
                                             <a href="https://github.com/xeolabs/xeogl/archive/master.zip">Download</a>
                                         </li>
+                                        <li class="active"><a href="http://xeolabs.com/about">Contract inquiries</a></li>
                                     </ul>
                                 </div>
 
@@ -153,6 +153,7 @@
                     <a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/office.png" alt="Archviz emphasis demo"></a>
                     <a href="../examples/#importing_scenejs_tronTank"><img src="assets/images/tronTank.png" alt="Importing SceneJS content"></a>
                     <a href="../examples/#materials_metallic_fireHydrant"><img src="assets/images/fireHydrant.jpg" alt="Physically-based rendering"></a>
+                    <a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/officePlanXRay.jpg" alt="Archviz emphasis demo"></a>
                     <a href="../examples/#importing_stl_gear"><img src="assets/images/gear.png" alt="Importing STL"></a>
                     <a href="../examples/#featured_VanGoghRoom"><img src="assets/images/room.png" alt="Loading a glTF model from SketchFab"></a>
                     <a href="../examples/#importing_gltf_Hoverbike"><img src="assets/images/hoverbike.png" alt="Loading a glTF model from SketchFab"></a>
@@ -160,11 +161,15 @@
                     <a href="../examples/#effects_demo_adam"><img src="assets/images/adam3.png" alt="Adam head glTF model"></a>
                     <a href="../examples/#effects_ghost"><img src="assets/images/teapotWireframe.png" alt="Ghost emphasis effect"></a>
                     <a href="../examples/#importing_gltf_BranchHouse"><img src="assets/images/branchHouse.png" alt="Branch house"></a>
+                    <a href="https://www.contezza.nl/techno-alfresco-bimserver-3d-integration-2-0/"><img src="assets/images/contezza.png" alt="Physically-based rendering"></a>
                     <a href="../examples/#effects_demo_gearbox"><img src="assets/images/gearboxGhosted.png" alt="Gearbox with ghosting and highlight"></a>
-                    <a href="../examples/#"><img src="assets/images/sceneDef2.png" alt="Defining an entity in xeogl"></a>
-                    <a href="../examples/#effects_demo_sportscar"><img src="assets/images/adam6.jpg" alt="Adam head with emphasis effects"></a>
-                    <a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/officePlanXRay.jpg" alt="Archviz emphasis demo"></a>
+
+                    <!--<a href="../examples/#"><img src="assets/images/sceneDef2.png" alt="Defining an mesh in xeogl"></a>-->
+                    <a href="../examples/#effects_demo_adam"><img src="assets/images/adam6.jpg" alt="Adam head with emphasis effects"></a>
+                    <a href="http://www.bimsurfer.org"><img src="assets/images/bimsurfer.png" alt="Physically-based rendering"></a>
+                    <a href="https://www.bimdata.io/"><img src="assets/images/bimdata.png" alt="Physically-based rendering"></a>
                     <a href="../examples/#featured_VianneyHouse2"><img src="assets/images/stairwell.png" alt="Archviz"></a>
+
 
                     <!--<a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/sceneDef.png" alt="Archviz emphasis demo"></a>-->
                     <!--<a href="../examples/#effects_demo_sportscar"><img src="assets/images/outlineGear.jpg" alt=""></a>-->
@@ -194,8 +199,8 @@
                 for 3D model visualization on WebGL.</p>
 
             <p>It gives you the tools to create interactive 3D worlds in your browser. Build your objects
-                programmatically, or load them from glTF. Navigate them with the camera and script them with
-                Javascript, to create cool presentations.</p>
+                programmatically, or load them from standard file formats such as glTF and OBJ. Navigate them with the
+                camera and script them with Javascript, to create compelling 3D presentations.</p>
 
             <h2>Features</h2>
 
@@ -210,7 +215,7 @@
                                 href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>).
                     </ul>
                 </li>
-                <li><b>Designed for CAD, BIM and Archviz:</b>
+                <li><b>Designed for CAD, BIM and ArchViz:</b>
                     <ul>
                         <li class="first">Load multiple models</li>
                         <li>Isolate/move/emphasize objects</li>
@@ -219,6 +224,7 @@
                         <li>Emphasis effects (wireframe, ghost, highlight, outline)</li>
                         <li>Annotations</li>
                         <li>Cross-section views</li>
+                        <li>Scene object hierarchies</li>
                         <li>Transform hierarchies</li>
                         <li>Bounding volumes</li>
                         <li>Fast 3D picking, raycasting</li>
@@ -227,7 +233,7 @@
                 </li>
                 <li><b>Imported formats:</b>
                     <ul>
-                        <li class="first">glTF, STL, OBJ+MTL, 3DS, SceneJS</li>
+                        <li class="first">glTF, STL, OBJ+MTL, 3DS, 3DXML and SceneJS</li>
                     </ul>
                 </li>
                 <li><b>Materials</b>
@@ -257,11 +263,8 @@
             <pre>&lt;script src="xeogl.js"&gt;&lt;/script&gt;</pre>
             <br>
 
-            <p>Then define your 3D scene as an entity-component graph, as shown below.</p>
-            <p>Your scene is basically a bunch of <a href="http://xeogl.org/docs/classes/Component.html"
-                                                     target="_parent">components</a> that are
-                tied together by <a href="http://xeogl.org/docs/classes/Entity.html" target="_parent">entities</a>. Each
-                entity represents a WebGL draw call.</p>
+            <p>Then define your 3D scene as a bunch of <a href="http://xeogl.org/docs/classes/Mesh.html" target="_parent">meshes</a>, as shown below. Each
+                mesh represents a WebGL draw call.</p>
 
             <pre class="prettyprint lang-javascript">
 var geometry = new xeogl.TorusGeometry({
@@ -278,14 +281,14 @@ var material = new xeogl.MetallicMaterial({
     })
 });
 
-var entity = new xeogl.Entity({
+var mesh = new xeogl.Mesh({
     geometry: geometry,
     material: material
 });</pre>
             <br>
             <p>Here's what we just created:</p>
 
-            <a href="http://xeogl.org/examples/#entities_examples_metallicTorus"><img
+            <a href="http://xeogl.org/examples/#meshes_examples_metallicTorus"><img
                     src="assets/images/example1.png"></a>
 
             <a href="http://xeogl.org/examples/#importing_gltf_GearboxAssy"><img
@@ -302,8 +305,8 @@ var entity = new xeogl.Entity({
                         href="http://xeogl.org/docs/classes/Scale.html" target="_parent">scale</a> transforms to our
                 torus, then increase its size:</p>
 
-            <pre class="prettyprint lang-javascript">// Rotate and scale our torus entity
-entity.transform = new xeogl.Rotate({
+            <pre class="prettyprint lang-javascript">// Rotate and scale our torus mesh
+mesh.transform = new xeogl.Rotate({
     xyz: [0,1,0],
     angle : 0,
     parent: new xeogl.Scale({
@@ -312,19 +315,19 @@ entity.transform = new xeogl.Rotate({
 });
 
 // Increase the size
-entity.transform.parent.[1.5,  1.5, 1.5]; </pre>
+mesh.transform.parent.[1.5,  1.5, 1.5]; </pre>
 
             <h2>Animating scenes</h2>
 
             <p>Animate your scenes by updating the properties of their components:</p>
 
             <pre class="prettyprint lang-javascript">// Update the rotation angle
-entity.transform.angle = 90.0;</pre>
+mesh.transform.angle = 90.0;</pre>
             <br>
 
             <p>Let's start our torus spinning:</p>
-            <pre class="prettyprint lang-javascript">entity.scene.on("tick", function () {
-    entity.transform.angle += 0.5;
+            <pre class="prettyprint lang-javascript">mesh.scene.on("tick", function () {
+    mesh.transform.angle += 0.5;
 });</pre>
 
             <h2>Loading models</h2>
@@ -336,23 +339,22 @@ entity.transform.angle = 90.0;</pre>
     src: "models/gltf/office/scene.gltf"
 });</pre>
             <br>
-            <p>Then animate and navigate their entities to create custom visualizations:</p>
+            <p>Then animate and navigate their meshes to create custom visualizations:</p>
             <pre>
 model.on("loaded", function() {
 
-    // When model loaded, highlight its furniture
-    // furniture entities and fit to view
+    // When model loaded, highlight its furniture meshes and fit to view
 
-    var entityIds = [
+    var meshIds = [
         "office#79.0", "office#31.0", "office#105.0",
         "office#8.0", "office#65.0", "office#65.0" //....
     ];
 
-    for (var i = 0; i < entityIds.length; i++) {
-        var id = entityIds[i];
-        var entity = model.entities[id];
+    for (var i = 0; i < meshIds.length; i++) {
+        var id = meshIds[i];
+        var mesh = model.meshes[id];
 
-        entity.highlight = true;
+        mesh.highlight = true;
     }
 
     var cameraFlight = new xeogl.CameraFlightAnimation();

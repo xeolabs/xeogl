@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -17,7 +17,7 @@
 
 <div id="info">
     <h1>using <a href="../docs/classes/AABBHelper.html" target="_parent">AABBHelpers</a>
-        and <a href="../docs/classes/OBBHelper.html" target="_parent">OBBHelpers</a>  to visualize boundaries of <a href="../docs/classes/Entity.html" target="_parent">Entity</a>s within a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></h1>
+        and <a href="../docs/classes/OBBHelper.html" target="_parent">OBBHelpers</a>  to visualize boundaries of <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a>s within a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></h1>
     <pre id="log">model:  gearbox assembly - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/GearboxAssy/README.md'
             target="_parent">model info</a>]</pre>
@@ -32,21 +32,21 @@
 
     model.on("loaded", function () {
 
-        var entities = model.entities;
+        var meshes = model.meshes;
 
-        for (var id in entities) {
-            if (entities.hasOwnProperty(id)) {
+        for (var id in meshes) {
+            if (meshes.hasOwnProperty(id)) {
 
-                var entity = entities[id];
+                var mesh = meshes[id];
 
                 new xeogl.OBBHelper({
-                    target: entity,
+                    target: mesh,
                     color: [0, 1, 0],
                     visible: true
                 });
 
                 new xeogl.AABBHelper({
-                    target: entity,
+                    target: mesh,
                     color: [1, 0, 0],
                     visible: true
                 });

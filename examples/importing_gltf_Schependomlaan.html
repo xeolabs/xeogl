@@ -3,26 +3,21 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
-
     <script src="js/models/glTFModel.js"></script>
-
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing Schependomlaan model from
-        glTF</h1>
-    <ul>
-        <li>IFC model from <a href='http://openbimstandards.org/schependomlaan/' target="_parent">openbimstandards.org</a></li>
-        <li>IFC converted to COLLADA using <a href='http://ifcopenshell.org/ifcconvert.html' target="_parent">IfcConvert</a></li>
-        <li>COLLADA converted to glTF using <a href='https://github.com/KhronosGroup/COLLADA2GLTF' target="_parent">COLLADA2GLTF</a></li>
-        <li>viewed in xeogl using a <a href='../docs/classes/GLTFModel.html' target="_parent">GLTFModel</a></li>
-    </ul>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF</h1>
+    <pre id="log">model:  Schependomlaan - [<a
+            href='https://github.com/openBIMstandards/DataSetSchependomlaan'
+            target="_parent">model info</a>]</pre>
 </div>
+
 
 <script>
 
@@ -38,27 +33,25 @@
     camera.look = [10.98, 5.82, -11.23];
     camera.up = [0.35, 0.88, -0.29];
 
-    var cameraControl = new xeogl.CameraControl({
-        doublePickFlyTo: false
-    });
+    var cameraControl = new xeogl.CameraControl();
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
     cameraControl.on("hoverEnter", function (hit) {
-        hit.entity.highlighted = true;
+        hit.mesh.highlighted = true;
     });
 
     cameraControl.on("hoverOut", function (hit) {
-        hit.entity.highlighted = false;
+        hit.mesh.highlighted = false;
     });
 
     cameraControl.on("picked", function (hit) {
-        var entity = hit.entity;
+        var mesh = hit.mesh;
         if (input.keyDown[input.KEY_SHIFT]) {
-            entity.selected = !entity.selected;
-            entity.highlighted = !entity.selected;
+            mesh.selected = !mesh.selected;
+            mesh.highlighted = !mesh.selected;
         } else {
-            cameraFlight.flyTo(entity);
+            cameraFlight.flyTo(mesh);
         }
     });
 

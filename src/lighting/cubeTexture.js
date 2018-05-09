@@ -254,7 +254,7 @@
 
                     this._state.encoding = value;
 
-                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of entities using this CubeTexture in their materials
+                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of meshes using this CubeTexture in their materials
                 },
 
                 get: function () {

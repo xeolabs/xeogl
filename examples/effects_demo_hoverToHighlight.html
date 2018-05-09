@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -14,11 +14,16 @@
 <body>
 
 <div id="info">
-    <h1>using an <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a> to highlight the <a
-            href="../docs/classes/Entity.html" target="_parent">Entitty</a> currently under the mouse</h1>
-</div>
-
-<div id="dat-gui-container">
+    <h1>
+        <ul>
+            <li>hover over an <a href="../docs/classes/Object.html" target="_parent">Object</a> in this
+                <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> to highlight it
+            </li>
+            <li>click an Object to fly to it</li>
+            <li>shift-click an Object to select it</li>
+            <li>click nothing to fit everything in view</li>
+        </ul>
+    </h1>
 </div>
 
 <script>
@@ -26,21 +31,17 @@
     var model = new xeogl.GLTFModel({
         id: "saw",
         src: "models/gltf/ReciprocatingSaw/glTF-MaterialsCommon/ReciprocatingSaw.gltf",
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: 90
-        }),
+        rotation: [90, 0, 0],
         ghostEdgeThreshold: 20
     });
-
 
     var scene = model.scene;
     var camera = scene.camera;
     var input = scene.input;
 
-    camera.eye = [-112.6245346069336, -31.463842391967773, 278.8330993652344];
-    camera.look = [-110.8940200805664, -44.85665512084961, -0.46092796325683594];
-    camera.up = [0.0002966552274301648, 0.9988529682159424, -0.04789572209119797];
+    camera.eye = [-112.62, -31.46, 278.83];
+    camera.look = [-110.89, -44.85, -0.46];
+    camera.up = [0.0, 0.9, -0.04];
 
     var cameraControl = new xeogl.CameraControl({
         doublePickFlyTo: false
@@ -48,20 +49,18 @@
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
     cameraControl.on("hoverEnter", function (hit) {
-        hit.entity.highlighted = true;
+        hit.mesh.highlighted = true;
     });
 
     cameraControl.on("hoverOut", function (hit) {
-        hit.entity.highlighted = false;
+        hit.mesh.highlighted = false;
     });
 
     cameraControl.on("picked", function (hit) {
-        var entity = hit.entity;
         if (input.keyDown[input.KEY_SHIFT]) {
-            entity.selected = !entity.selected;
-            entity.highlighted = !entity.selected;
+            hit.mesh.selected = !hit.mesh.selected;
         } else {
-            cameraFlight.flyTo(entity);
+            cameraFlight.flyTo(hit.mesh);
         }
     });
 
@@ -69,61 +68,10 @@
         cameraFlight.flyTo(model);
     });
 
-    scene.lights.lights = [
-        new xeogl.DirLight({
-            id: "keyLight",
-            dir: [0.8, -0.6, -0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "world"
-        }),
-
-        new xeogl.DirLight({
-            id: "fillLight",
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
-            intensity: 1.0,
-            space: "world"
-        }),
-
-        new xeogl.DirLight({
-            id: "rimLight",
-            dir: [0.2, -0.8, 0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "world"
-        })
-    ];
-
     scene.highlightMaterial.fillAlpha = 0.6;
     scene.highlightMaterial.edgeAlpha = 0.6;
     scene.highlightMaterial.edgeColor = [0, 0, 0];
     scene.highlightMaterial.edgeWidth = 2;
-
-    scene.lights.lightMap = new xeogl.CubeTexture({
-        src: [
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-        ],
-        encoding: "linear"
-    });
-
-    scene.lights.reflectionMap = new xeogl.CubeTexture({
-        src: [
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-        ],
-        encoding: "linear"
-    });
-
 
 </script>
 </body>

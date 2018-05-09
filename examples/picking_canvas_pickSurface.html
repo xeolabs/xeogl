@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -13,7 +13,7 @@
 <body>
 
 <div id="info">
-    <h1>mouse over the <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to ray-pick their surfaces
+    <h1>mouse over the <a href="../docs/classes/Mesh.html" target="_parent">Entities</a> to ray-pick their surfaces
     </h1>
 
 </div>
@@ -21,11 +21,7 @@
 <script>
 
     var gearbox = new xeogl.GLTFModel({
-        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf",
-        flattenTransforms: true,
-        //lambertMaterials: true,
-        combineGeometry: true,
-        quantizeGeometry: true
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
 
     var scene = gearbox.scene;
@@ -40,36 +36,34 @@
     new xeogl.CameraControl();
 
     //--------------------------------------------
-    // Create helper to show ray-Entity hits
+    // Create helper to show ray-Mesh hits
     //--------------------------------------------
 
 
     var hitHelper = new (function () {
 
-        var entity = new xeogl.Entity({
+        var mesh = new xeogl.Mesh({
             geometry: new xeogl.SphereGeometry({radius: .4}),
             material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
-            transform: new xeogl.Translate({
-                xyz: [0, 0, 0]
-            }),
+            position: [0, 0, 0],
             pickable: false,
             visible: true
         });
 
         this.show = function (hit) {
-            entity.transform.xyz = hit.worldPos;
-            entity.visible = true;
+            mesh.position = hit.worldPos;
+            mesh.visible = true;
         };
 
         this.hide = function () {
-            entity.visible = false;
+            mesh.visible = false;
         };
     })();
 
     //--------------------------------------------------------------------
 
-    // Attempt to pick a Entity on each mouse move.
-    // Highlight each Entity that we successfully pick.
+    // Attempt to pick a Mesh on each mouse move.
+    // Highlight each Mesh that we successfully pick.
 
     var input = scene.input;
 
@@ -83,21 +77,21 @@
 
         var hit = scene.pick({
             canvasPos: coords,
-            pickSurface: true  // <<------ This causes picking to find the intersection point on the entity
+            pickSurface: true  // <<------ This causes picking to find the intersection point on the mesh
         });
 
         if (hit) {
 
-            if (!lastEntity || hit.entity.id !== lastEntity.id) {
+            if (!lastEntity || hit.mesh.id !== lastEntity.id) {
 
                 if (lastEntity) {
                     lastEntity.colorize = lastColorize;
                 }
 
-                lastEntity = hit.entity;
-                lastColorize = hit.entity.colorize.slice();
+                lastEntity = hit.mesh;
+                lastColorize = hit.mesh.colorize.slice();
 
-                hit.entity.colorize = [0.0, 1.0, 0.0, 1.0];
+                hit.mesh.colorize = [0.0, 1.0, 0.0, 1.0];
             }
 
             hitHelper.show(hit);

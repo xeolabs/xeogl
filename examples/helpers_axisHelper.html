@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
@@ -21,7 +21,7 @@
 
 <script>
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
 
         geometry: new xeogl.OBJGeometry({
             src: "models/obj/raptor/raptor.obj"
@@ -52,26 +52,20 @@
             })
         }),
 
-        transform: new xeogl.Rotate({
-            xyz: [0, 1, 0],
-            angle: 120,
-
-            parent: new xeogl.Translate({
-                xyz: [10, 3, 10]
-            })
-        })
+        rotation: [0, 120, 0],
+        position: [10, 3, 10]
     });
 
-    entity.geometry.on("loaded", function () {
+    mesh.geometry.on("loaded", function () {
         var cameraFlight = new xeogl.CameraFlightAnimation();
         cameraFlight.jumpTo({
-            aabb: entity.aabb,
+            aabb: mesh.aabb,
             fit: true,
             fitFOV: 45
         });
     });
 
-    var scene = entity.scene;
+    var scene = mesh.scene;
     var camera = scene.camera;
 
     new xeogl.AxisHelper({

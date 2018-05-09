@@ -1,5 +1,5 @@
 /**
- An **OutlineMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that's applied to {{#crossLink "Entity"}}Entities{{/crossLink}}
+ An **OutlineMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that's applied to {{#crossLink "Mesh"}}Meshes{{/crossLink}}
  to render an outline around them.
 
  WIP

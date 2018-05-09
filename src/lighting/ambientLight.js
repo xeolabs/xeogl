@@ -1,5 +1,5 @@
 /**
- An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all {{#crossLink "Entity"}}Entities{{/crossLink}}
+ An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all {{#crossLink "Mesh"}}Meshes{{/crossLink}}
  equally.
 
  <a href="../../examples/#lights_ambient"><img src="http://i.giphy.com/l0HlGTxXQWMRVOPwk.gif"></img></a>
@@ -8,10 +8,10 @@
 
  * AmbientLights are grouped, along with other light source types, within a {{#crossLink "Lights"}}Lights{{/crossLink}} component,
  which belongs to a {{#crossLink "Scene"}}{{/crossLink}}.
- * When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ * When the {{#crossLink "Mesh"}}Meshes{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  PhongMaterial {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} at each rendered fragment of the {{#crossLink "Geometry"}}{{/crossLink}} surface.
- * When the Entities have {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}},
+ * When the Meshes have {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  LambertMaterial {{#crossLink "LambertMaterial/ambient:property"}}{{/crossLink}} for each rendered triangle of the Geometry surface (ie. flat shaded).
 
@@ -22,7 +22,7 @@
  ## Usage
 
  In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
- DirLights, then create a Phong-shaded box entity.
+ DirLights, then create a Phong-shaded box mesh.
 
  ````javascript
 
@@ -50,8 +50,8 @@
     })
  ];
 
- // Create box entity
- new xeogl.Entity({
+ // Create box mesh
+ new xeogl.Mesh({
     material: new xeogl.PhongMaterial({
         ambient: [0.5, 0.5, 0.5],
         diffuse: [1,0.3,0.3]

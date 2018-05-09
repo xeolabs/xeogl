@@ -64,12 +64,12 @@ function materialGallery(menuId, cfg) {
 
     var lights = new xeogl.Lights({
         lights: dirLights,
-     //  lightMap: lightMap,
+        //  lightMap: lightMap,
         reflectionMap: reflectionMap
     });
 
     //-----------------------------------------------------------------------------------------------------
-    // Entities showing our materials, with labels on wires
+    // Meshes showing our materials, with labels on wires
     //-----------------------------------------------------------------------------------------------------
 
     (function () {
@@ -84,8 +84,8 @@ function materialGallery(menuId, cfg) {
     })();
 
     var ids = Object.keys(cfg);
-    var numEntities = ids.length;
-    var numSide = numEntities;
+    var numMeshes = ids.length;
+    var numSide = numMeshes;
     var entityWidth = 2.5;
     var width = numSide * entityWidth;
     var halfWidth = width / 2;
@@ -122,33 +122,29 @@ function materialGallery(menuId, cfg) {
         materialCfg = entityCfg.material || material;
         geometryCfg = entityCfg.geometry || geometry;
 
-        var transform = new xeogl.Translate({
-            xyz: [x, 0, 0]
-        });
-
-        new xeogl.Entity({
+        new xeogl.Mesh({
             id: id,
             lights: lights,
             geometry: geometryCfg,
             material: materialCfg,
-            transform: transform
+            position: [x, 0, 0]
         });
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: new xeogl.VectorTextGeometry({
                 text: id + "\n" + materialCfg.type.substring(6),
                 origin: [0, y + -1.5, 0],
                 size: .1
             }),
             material: textMaterial,
-            transform: transform,
+            position: [x, 0, 0],
             billboard: "spherical"
         });
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: wireGeometry,
             material: textMaterial,
-            transform: transform,
+            position: [x, 0, 0],
             billboard: "spherical"
         });
     }
@@ -168,15 +164,15 @@ function materialGallery(menuId, cfg) {
     });
 
     window.flyTo = function (id) {
-            var entity = xeogl.scene.entities[id];
-            if (entity) {
-                cameraFlight.flyTo({
-                    aabb: entity.aabb,
-                    fit: true,
-                    fitFOV: 30
-                });
-            }
-        };
+        var mesh = xeogl.scene.meshes[id];
+        if (mesh) {
+            cameraFlight.flyTo({
+                aabb: mesh.aabb,
+                fit: true,
+                fitFOV: 30
+            });
+        }
+    };
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control
