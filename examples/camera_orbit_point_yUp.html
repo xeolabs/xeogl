@@ -187,6 +187,10 @@
                 dx = -dx;
             }
 
+            // We'll need to preserve the eye->look distance,
+            // since in xeogl "look" is the point-of-interest, not the direction vector.
+            var eyeLookLen = xeogl.math.lenVec3(xeogl.math.subVec3(camera.look, camera.eye, xeogl.math.vec3()));
+
             // update spherical coordinates based on mouse coordinates
             azimuth += -dx * .01;
             polar += dy * .01;
@@ -233,7 +237,7 @@
             camera.eye = [lookat[12], lookat[13], lookat[14]];
 
             // Z-axis points backwards, so a valid look position is Eye - Zaxis (any point on that line will do)
-            xeogl.math.subVec3(camera.eye, zAxis, camera.look);
+            xeogl.math.subVec3(camera.eye, xeogl.math.mulVec3Scalar(zAxis, eyeLookLen), camera.look);
             camera.up = [lookat[4], lookat[5], lookat[6]];
         }
 
