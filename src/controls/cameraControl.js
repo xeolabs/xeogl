@@ -145,6 +145,7 @@
                     scene.on("tick", function () {
                         if (pivoting && distDirty) {
                             math.transformPoint3(camera.viewMatrix, pivotPoint, viewPos);
+                            viewPos[3] = 1;
                             math.transformPoint4(camera.projMatrix, viewPos, projPos);
                             var aabb = canvas.boundary;
                             canvasPos[0] = Math.floor((1 + projPos[0] / projPos[3]) * aabb[2] / 2);
