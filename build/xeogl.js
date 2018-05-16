@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-05-09
+ * Built on 2018-05-16
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -17223,8 +17223,8 @@ xeogl.Object = xeogl.Component.extend({
                 this._worldMatrix[i] = this._localMatrix[i];
             }
         } else {
-          //  xeogl.math.mulMat4(this._parent.worldMatrix, this._localMatrix, this._worldMatrix);
-            xeogl.math.mulMat4(this._localMatrix, this._parent.worldMatrix, this._worldMatrix);
+            xeogl.math.mulMat4(this._parent.worldMatrix, this._localMatrix, this._worldMatrix);
+          //  xeogl.math.mulMat4(this._localMatrix, this._parent.worldMatrix, this._worldMatrix);
         }
         this._worldMatrixDirty = false;
     },
@@ -18059,10 +18059,26 @@ xeogl.Group = xeogl.Object.extend({
 
      The child Object must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Group, and may not be a parent of this Group.
 
+     The child object's transforms will become relative to this Group.
+
+     Unless overridden (see params), the child will automatically inherit the values of these properties of this Group:
+
+     * {{#crossLink "Group/visible:property"}}{{/crossLink}}
+     * {{#crossLink "Group/culled:property"}}{{/crossLink}}
+     * {{#crossLink "Group/ghosted:property"}}{{/crossLink}}
+     * {{#crossLink "Group/highlighted:property"}}{{/crossLink}}
+     * {{#crossLink "Group/selected:property"}}{{/crossLink}}
+     * {{#crossLink "Group/outlined:property"}}{{/crossLink}}
+     * {{#crossLink "Group/clippable:property"}}{{/crossLink}}
+     * {{#crossLink "Group/pickable:property"}}{{/crossLink}}
+     * {{#crossLink "Group/collidable:property"}}{{/crossLink}}
+
      @method addChild
-     @param {Number|String|*|Component} object ID, definition or instance of an Object type or subtype.
+     @param {Number|String|*|Object} object ID, definition or instance of an Object type or subtype.
+     @param {Boolean} [inheritStates] Option to prevent the Object from inheriting values of this Group's properties.
+     @returns {Object} The child Object.
      */
-    addChild: function (object) {
+    addChild: function (object, inheritStates) {
         if (xeogl._isNumeric(object) || xeogl._isString(object)) {
             var objectId = object;
             object = this.scene.objects[objectId];
@@ -18098,17 +18114,20 @@ xeogl.Group = xeogl.Object.extend({
         this._childList.push(object);
         this._childMap[id] = object;
         object._parent = this;
-        object.visible = this._visible;
-        object.culled = this._culled;
-        object.ghosted = this._ghosted;
-        object.highlited = this._highlighted;
-        object.selected = this._selected;
-        object.outlined = this._outlined;
-        object.clippable = this._clippable;
-        object.pickable = this._pickable;
-        object.collidable = this._collidable;
+        if (inheritStates !== false) {
+            object.visible = this._visible;
+            object.culled = this._culled;
+            object.ghosted = this._ghosted;
+            object.highlited = this._highlighted;
+            object.selected = this._selected;
+            object.outlined = this._outlined;
+            object.clippable = this._clippable;
+            object.pickable = this._pickable;
+            object.collidable = this._collidable;
+        }
         object._setWorldMatrixDirty();
         this._setBoundaryDirty();
+        return object;
     },
 
     /**
@@ -22391,29 +22410,63 @@ xeogl.Group = xeogl.Object.extend({
                 // Pivot math by: http://www.derschmale.com/
 
                 var math = xeogl.math;
-                var camera = self.scene.camera;
+                var scene = self.scene;
+                var camera = scene.camera;
+                var canvas = scene.canvas;
                 var pivotPoint = new Float32Array(3);
                 var cameraOffset;
                 var azimuth = 0;
                 var polar = 0;
                 var radius = 0;
-                var pivotHelper = new xeogl.Mesh(self, { // Shows the pivot position
-                    geometry: new xeogl.SphereGeometry(self, {radius: 1}),
-                    material: new xeogl.PhongMaterial(self, {emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
-                    position: [0, 0, 0],
-                    pickable: false,
-                    visible: false,
-                    highlighted: true,
-                    highlightMaterial: new xeogl.EmphasisMaterial(self, {
-                        edges: false
-                    })
-                });
+                var pivoting = false; // True while pivoting
 
-                this.pivoting = false; // True while pivoting
+                var spot = document.createElement("div");
+                spot.innerText = " ";
+                spot.style.color = "#ffffff";
+                spot.style.position = "absolute";
+                spot.style.width = "25px";
+                spot.style.height = "25px";
+                spot.style.left = "0px";
+                spot.style.top = "0px";
+                spot.style["border-radius"] = "15px";
+                spot.style["border"] = "2px solid #ffffff";
+                spot.style["background"] = "black";
+                spot.style.visibility = "hidden";
+                spot.style["box-shadow"] = "5px 5px 15px 1px #000000";
+                spot.style["z-index"] = 0;
+                spot.style["pointer-events"] = "none";
+                document.body.appendChild(spot);
+
+                (function () {
+                    var viewPos = math.vec4();
+                    var projPos = math.vec4();
+                    var canvasPos = math.vec2();
+                    var distDirty = true;
+                    camera.on("viewMatrix", function () {
+                        distDirty = true;
+                    });
+                    camera.on("projMatrix", function () {
+                        distDirty = true;
+                    });
+                    scene.on("tick", function () {
+                        if (pivoting && distDirty) {
+                            math.transformPoint3(camera.viewMatrix, pivotPoint, viewPos);
+                            viewPos[3] = 1;
+                            math.transformPoint4(camera.projMatrix, viewPos, projPos);
+                            var aabb = canvas.boundary;
+                            canvasPos[0] = Math.floor((1 + projPos[0] / projPos[3]) * aabb[2] / 2);
+                            canvasPos[1] = Math.floor((1 - projPos[1] / projPos[3]) * aabb[3] / 2);
+                            var canvasElem = canvas.canvas;
+                            var rect = canvasElem.getBoundingClientRect();
+                            spot.style.left = (Math.floor(rect.left + canvasPos[0]) - 12) + "px";
+                            spot.style.top = (Math.floor(rect.top + canvasPos[1]) - 12) + "px";
+                            spot.style.visibility = "visible";
+                            distDirty = false;
+                        }
+                    });
+                })();
 
                 this.startPivot = function (worldPos) {
-                    pivotHelper.visible = true;
-                    pivotHelper.position = worldPos;
                     pivotPoint.set(worldPos);
                     var lookat = math.lookAtMat4v(camera.eye, camera.look, camera.worldUp);
                     cameraOffset = math.transformPoint3(lookat, pivotPoint);
@@ -22431,11 +22484,18 @@ xeogl.Group = xeogl.Object.extend({
                     radius = math.lenVec3(diff);
                     polar = Math.acos(diff[1] / radius);
                     azimuth = Math.atan2(diff[0], diff[2]);
-                    this.pivoting = true;
+                    pivoting = true;
+                };
+
+                this.getPivoting = function () {
+                    return pivoting;
                 };
 
                 this.continuePivot = function (yawInc, pitchInc) {
-                    if (!this.pivoting) {
+                    if (!pivoting) {
+                        return;
+                    }
+                    if (yawInc === 0 && pitchInc === 0) {
                         return;
                     }
                     if (camera.worldUp[2] === 1) {
@@ -22456,6 +22516,8 @@ xeogl.Group = xeogl.Object.extend({
                         pos[1] = pos[2];
                         pos[2] = t;
                     }
+                    // Preserve the eye->look distance, since in xeogl "look" is the point-of-interest, not the direction vector.
+                    var eyeLookLen = math.lenVec3(math.subVec3(camera.look, camera.eye, math.vec3()));
                     math.addVec3(pos, pivotPoint);
                     var lookat = math.lookAtMat4v(pos, pivotPoint, camera.worldUp);
                     lookat = math.inverseMat4(lookat);
@@ -22465,13 +22527,14 @@ xeogl.Group = xeogl.Object.extend({
                     lookat[14] -= offset[2];
                     var zAxis = [lookat[8], lookat[9], lookat[10]];
                     camera.eye = [lookat[12], lookat[13], lookat[14]];
-                    math.subVec3(camera.eye, zAxis, camera.look);
+                    math.subVec3(camera.eye, math.mulVec3Scalar(zAxis, eyeLookLen), camera.look);
                     camera.up = [lookat[4], lookat[5], lookat[6]];
+                    spot.style.visibility = "visible";
                 };
 
                 this.endPivot = function () {
-                    pivotHelper.visible = false;
-                    this.pivoting = false;
+                    spot.style.visibility = "hidden";
+                    pivoting = false;
                 };
 
             })();
@@ -22913,7 +22976,7 @@ xeogl.Group = xeogl.Object.extend({
 
                     if (rotateVy !== 0 || rotateVx !== 0) {
 
-                        if (self._pivoter.pivoting) {
+                        if (self._pivoter.getPivoting()) {
                             self._pivoter.continuePivot(rotateVy, rotateVx);
 
                         } else {
