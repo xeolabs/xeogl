@@ -151,10 +151,9 @@
                             canvasPos[0] = Math.floor((1 + projPos[0] / projPos[3]) * aabb[2] / 2);
                             canvasPos[1] = Math.floor((1 - projPos[1] / projPos[3]) * aabb[3] / 2);
                             var canvasElem = canvas.canvas;
-                            var left = canvasElem.offsetLeft;
-                            var top = canvasElem.offsetTop;
-                            spot.style.left = (Math.floor(left + canvasPos[0]) - 12) + "px";
-                            spot.style.top = (Math.floor(top + canvasPos[1]) - 12) + "px";
+                            var rect = canvasElem.getBoundingClientRect();
+                            spot.style.left = (Math.floor(rect.left + canvasPos[0]) - 12) + "px";
+                            spot.style.top = (Math.floor(rect.top + canvasPos[1]) - 12) + "px";
                             spot.style.visibility = "visible";
                             distDirty = false;
                         }
