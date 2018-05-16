@@ -141,10 +141,26 @@ xeogl.Group = xeogl.Object.extend({
 
      The child Object must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Group, and may not be a parent of this Group.
 
+     The child object's transforms will become relative to this Group.
+
+     Unless overridden (see params), the child will automatically inherit the values of these properties of this Group:
+
+     * {{#crossLink "Group/visible:property"}}{{/crossLink}}
+     * {{#crossLink "Group/culled:property"}}{{/crossLink}}
+     * {{#crossLink "Group/ghosted:property"}}{{/crossLink}}
+     * {{#crossLink "Group/highlighted:property"}}{{/crossLink}}
+     * {{#crossLink "Group/selected:property"}}{{/crossLink}}
+     * {{#crossLink "Group/outlined:property"}}{{/crossLink}}
+     * {{#crossLink "Group/clippable:property"}}{{/crossLink}}
+     * {{#crossLink "Group/pickable:property"}}{{/crossLink}}
+     * {{#crossLink "Group/collidable:property"}}{{/crossLink}}
+
      @method addChild
-     @param {Number|String|*|Component} object ID, definition or instance of an Object type or subtype.
+     @param {Number|String|*|Object} object ID, definition or instance of an Object type or subtype.
+     @param {Boolean} [inheritStates] Option to prevent the Object from inheriting values of this Group's properties.
+     @returns {Object} The child Object.
      */
-    addChild: function (object) {
+    addChild: function (object, inheritStates) {
         if (xeogl._isNumeric(object) || xeogl._isString(object)) {
             var objectId = object;
             object = this.scene.objects[objectId];
@@ -180,17 +196,20 @@ xeogl.Group = xeogl.Object.extend({
         this._childList.push(object);
         this._childMap[id] = object;
         object._parent = this;
-        object.visible = this._visible;
-        object.culled = this._culled;
-        object.ghosted = this._ghosted;
-        object.highlited = this._highlighted;
-        object.selected = this._selected;
-        object.outlined = this._outlined;
-        object.clippable = this._clippable;
-        object.pickable = this._pickable;
-        object.collidable = this._collidable;
+        if (inheritStates !== false) {
+            object.visible = this._visible;
+            object.culled = this._culled;
+            object.ghosted = this._ghosted;
+            object.highlited = this._highlighted;
+            object.selected = this._selected;
+            object.outlined = this._outlined;
+            object.clippable = this._clippable;
+            object.pickable = this._pickable;
+            object.collidable = this._collidable;
+        }
         object._setWorldMatrixDirty();
         this._setBoundaryDirty();
+        return object;
     },
 
     /**
