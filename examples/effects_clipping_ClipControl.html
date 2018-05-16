@@ -8,7 +8,6 @@
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="../build/xeogl.js"></script>
-    <script src="js/geometry/vectorTextGeometry.js"></script>
 
     <script src="js/controls/clipControl.js"></script>
 
@@ -45,10 +44,10 @@
 
     var clip = clips.clips[0];
 
-    var clipControl = new xeogl.ClipControl({
-        clip: clip,
-        visible: true
-    });
+    var clipControl = new xeogl.ClipControl(scene);
+
+    clipControl.clip = clip;
+    clipControl.active = true;
 
     var outerSphere = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
@@ -85,13 +84,6 @@
     camera.eye = [5, 0, -3];
 
     var cameraControl = new xeogl.CameraControl();
-    cameraControl.active = false;
-
-    cameraControl.on("picked", function(e) {
-        if (e.mesh) {
-            console.log(e.mesh.id);
-        }
-    });
 
 </script>
 </body>
