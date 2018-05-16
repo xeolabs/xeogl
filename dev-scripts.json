@@ -101,12 +101,6 @@
     "src/materials/fresnel.js",
     "src/viewport/_module.js",
     "src/viewport/viewport.js",
-    "src/transforms/_module.js",
-    "src/transforms/transform.js",
-    "src/transforms/rotate.js",
-    "src/transforms/quaternion.js",
-    "src/transforms/scale.js",
-    "src/transforms/translate.js",
 
     "src/camera/camera.js",
     "src/camera/frustum.js",
