@@ -97,9 +97,9 @@
     }
 
     const TEXTURE_DECODE_FUNCS = {
-        "linear":   "linearToLinear",
-        "sRGB":     "sRGBToLinear",
-        "gamma":    "gammaToLinear"
+        "linear": "linearToLinear",
+        "sRGB": "sRGBToLinear",
+        "gamma": "gammaToLinear"
     };
 
     function buildVertexLambert(gl, cfg, scene, object) {
@@ -777,11 +777,10 @@
                     }
 
                     if (scene.lights.reflectionMap) {
-                        //     src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.worldNormal);");
-                        //   //  src.push("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
-                        //     src.push("   vec3 radiance               = textureCube(reflectionMap, geometry.worldNormal).rgb;");
-                        ////     src.push("   radiance *= PI;");
-                        //     src.push("   reflectedLight.specular     += radiance;");
+                        src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
+                        src.push("   vec3 radiance               = textureCube(reflectionMap, reflectVec).rgb;");
+                  //      src.push("   radiance *= PI;");
+                        src.push("   reflectedLight.specular     += radiance;");
                     }
 
                     src.push("}");
