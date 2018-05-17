@@ -243,13 +243,13 @@
 
     model.on("loaded", function () {
         var gunDir = 0;
-        var gunDirInc = -0.15;
+        var gunDirInc = -0.45;
         model.scene.on("tick", function () {
             gunDir += gunDirInc;
             if (gunDir < -50 || gunDir > 10) {
                 gunDirInc *= -1;
             }
-            //model.objects["tank.gunDir"].angle = gunDir;
+            model.components["tank.gunDir"].rotate([0, 0, 1], gunDirInc);
         });
     });
 
