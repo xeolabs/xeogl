@@ -129,8 +129,7 @@
         // Faux shadow under the tank
         //----------------------------------
 
-        model.add({
-            type: "xeogl.Mesh",
+        new xeogl.Mesh({
             geometry: {
                 type: "xeogl.PlaneGeometry",
                 xSize: 16,
@@ -250,7 +249,7 @@
             if (gunDir < -50 || gunDir > 10) {
                 gunDirInc *= -1;
             }
-            model.components["tank.gunDir"].angle = gunDir;
+            //model.objects["tank.gunDir"].angle = gunDir;
         });
     });
 
