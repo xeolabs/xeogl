@@ -29,8 +29,8 @@
 
  In addition to glTF's core metal-roughness material workflow, GLTFModel also supports two material extensions:
 
- * [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)
- * [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)
+ * KHR_materials_pbrSpecularGlossiness
+ * KHR_materials_common
 
  ## Examples
 
