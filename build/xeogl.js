@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-05-16
+ * Built on 2018-05-17
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -1200,6 +1200,14 @@ xeogl.utils.Map = function (items, baseId) {
          * @type {Number}
          */
         DEGTORAD: 0.0174532925,
+
+        /**
+         * The number of degrees in a radian.
+         * @property RADTODEG
+         * @namespace xeogl.math
+         * @type {Number}
+         */
+        RADTODEG: 57.295779513,
 
         openCache: function () {
             caching = true;
@@ -9211,9 +9219,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     }
 
     const TEXTURE_DECODE_FUNCS = {
-        "linear":   "linearToLinear",
-        "sRGB":     "sRGBToLinear",
-        "gamma":    "gammaToLinear"
+        "linear": "linearToLinear",
+        "sRGB": "sRGBToLinear",
+        "gamma": "gammaToLinear"
     };
 
     function buildVertexLambert(gl, cfg, scene, object) {
@@ -9891,11 +9899,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     }
 
                     if (scene.lights.reflectionMap) {
-                        //     src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.worldNormal);");
-                        //   //  src.push("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
-                        //     src.push("   vec3 radiance               = textureCube(reflectionMap, geometry.worldNormal).rgb;");
-                        ////     src.push("   radiance *= PI;");
-                        //     src.push("   reflectedLight.specular     += radiance;");
+                        src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
+                        src.push("   vec3 radiance               = textureCube(reflectionMap, reflectVec).rgb * 0.2;");
+                  //      src.push("   radiance *= PI;");
+                        src.push("   reflectedLight.specular     += radiance;");
                     }
 
                     src.push("}");
@@ -22367,6 +22374,8 @@ xeogl.Group = xeogl.Object.extend({
  @param [cfg.active=true] {Boolean} Indicates whether or not this CameraControl is active.
  @param [cfg.pivoting=false] {Boolean} When true, clicking on a {{#crossLink "Mesh"}}{{/crossLink}} and dragging will pivot
  the {{#crossLink "Camera"}}{{/crossLink}} about the picked point on the Mesh's surface.
+ @param [cfg.panToPointer=false] {Boolean} When true, mouse wheel when mouse is over a {{#crossLink "Mesh"}}{{/crossLink}} will zoom
+ the {{#crossLink "Camera"}}{{/crossLink}} towards the hoveredd point on the Mesh's surface.
  @param [cfg.inertia=0.5] {Number} A factor in range [0..1] indicating how much the camera keeps moving after you finish panning or rotating it.
  @author xeolabs / http://xeolabs.com
  @author DerSchmale / http://www.derschmale.com
@@ -22549,6 +22558,7 @@ xeogl.Group = xeogl.Object.extend({
             this.doublePickFlyTo = cfg.doublePickFlyTo;
             this.active = cfg.active;
             this.pivoting = cfg.pivoting;
+            this.panToPointer = cfg.panToPointer;
             this.inertia = cfg.inertia;
 
             this._initEvents(); // Set up all the mouse/touch/kb handlers
@@ -22608,6 +22618,33 @@ xeogl.Group = xeogl.Object.extend({
 
                 get: function () {
                     return this._pivoting;
+                }
+            },
+
+
+            /**
+             When true, mouse wheel when mouse is over a {{#crossLink "Mesh"}}{{/crossLink}} will zoom
+             the {{#crossLink "Camera"}}{{/crossLink}} towards the hoveredd point on the Mesh's surface.
+
+             @property panToPointer
+             @default false
+             @type Boolean
+             */
+            panToPointer: {
+
+                set: function (value) {
+                    this._panToPointer = !!value;
+
+                    /**
+                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/panToPointer:property"}}{{/crossLink}} property changes.
+                     * @event panToPointer
+                     * @param value The property's new value
+                     */
+                    this.fire('panToPointer', this._panToPointer);
+                },
+
+                get: function () {
+                    return this._panToPointer;
                 }
             },
 
@@ -22825,6 +22862,102 @@ xeogl.Group = xeogl.Object.extend({
                 return canvasPos;
             };
 
+            var pickCursorPos = [0, 0];
+            var needPickMesh = false;
+            var needPickSurface = false;
+            var lastPickedMeshId;
+            var hit;
+            var picked = false;
+            var pickedSurface = false;
+
+            function updatePick() {
+                if (!needPickMesh && !needPickSurface) {
+                    return;
+                }
+                picked = false;
+                pickedSurface = false;
+                if (needPickSurface || self.hasSubs("hoverSurface")) {
+                    hit = scene.pick({
+                        pickSurface: true,
+                        canvasPos: pickCursorPos
+                    });
+                } else { // needPickMesh == true
+                    hit = scene.pick({
+                        canvasPos: pickCursorPos
+                    });
+                }
+                if (hit) {
+                    picked = true;
+                    var pickedMeshId = hit.mesh.id;
+                    if (lastPickedMeshId !== pickedMeshId) {
+                        if (lastPickedMeshId !== undefined) {
+
+                            /**
+                             * Fired whenever the pointer no longer hovers over an {{#crossLink "Mesh"}}{{/crossLink}}.
+                             * @event hoverOut
+                             * @param mesh The Mesh
+                             */
+                            self.fire("hoverOut", {
+                                mesh: scene.meshes[lastPickedMeshId]
+                            });
+                        }
+
+                        /**
+                         * Fired when the pointer is over a new {{#crossLink "Mesh"}}{{/crossLink}}.
+                         * @event hoverEnter
+                         * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                         */
+                        self.fire("hoverEnter", hit);
+                        lastPickedMeshId = pickedMeshId;
+                    }
+                    /**
+                     * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Mesh"}}{{/crossLink}}.
+                     * @event hover
+                     * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                     */
+                    self.fire("hover", hit);
+                    if (hit.worldPos) {
+                        pickedSurface = true;
+
+                        /**
+                         * Fired while the pointer hovers over the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
+                         *
+                         * This event provides 3D information about the point on the surface that the pointer is
+                         * hovering over.
+                         *
+                         * @event hoverSurface
+                         * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
+                         * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                         */
+                        self.fire("hoverSurface", hit);
+                    }
+                } else {
+                    if (lastPickedMeshId !== undefined) {
+                        /**
+                         * Fired whenever the pointer no longer hovers over an {{#crossLink "Mesh"}}{{/crossLink}}.
+                         * @event hoverOut
+                         * @param mesh The Mesh
+                         */
+                        self.fire("hoverOut", {
+                            mesh: scene.meshes[lastPickedMeshId]
+                        });
+                        lastPickedMeshId = undefined;
+                    }
+                    /**
+                     * Fired continuously while the pointer is moving but not hovering over anything.
+                     *
+                     * @event hoverOff
+                     */
+                    self.fire("hoverOff", {
+                        canvasPos: pickCursorPos
+                    });
+                }
+                needPickMesh = false;
+                needPickSurface = false;
+            }
+
+            scene.on("tick", updatePick);
+
             //------------------------------------------------------------------------------------
             // Mouse, touch and keyboard camera control
             //------------------------------------------------------------------------------------
@@ -22962,6 +23095,21 @@ xeogl.Group = xeogl.Object.extend({
                     };
                 })();
 
+                var panToWorldPos = (function () {
+                    var eyeCursorVec = math.vec3();
+                    return function (worldPos, factor) {
+                        math.subVec3(worldPos, camera.eye, eyeCursorVec);
+                        math.normalizeVec3(eyeCursorVec);
+                        var px = eyeCursorVec[0] * factor;
+                        var py = eyeCursorVec[1] * factor;
+                        var pz = eyeCursorVec[2] * factor;
+                        var eye = camera.eye;
+                        var look = camera.look;
+                        camera.eye = [eye[0] + px, eye[1] + py, eye[2] + pz];
+                        camera.look = [look[0] + px, look[1] + py, look[2] + pz];
+                    };
+                })();
+
                 scene.on("tick", function () {
 
                     var cameraInertia = self._inertia;
@@ -23057,7 +23205,16 @@ xeogl.Group = xeogl.Object.extend({
                             }
                         } else {
                             // Do both zoom and ortho scale so that we can switch projections without weird scale jumps
-                            camera.zoom(vZoom);
+                            if (self._panToPointer) {
+                                updatePick();
+                                if (pickedSurface) {
+                                    panToWorldPos(hit.worldPos, -vZoom);
+                                } else {
+                                    camera.zoom(vZoom);
+                                }
+                            } else {
+                                camera.zoom(vZoom);
+                            }
                             camera.ortho.scale = camera.ortho.scale + vZoom;
                         }
                         vZoom *= cameraInertia;
@@ -23175,6 +23332,28 @@ xeogl.Group = xeogl.Object.extend({
                         yDelta = 0;
                     });
 
+                    document.addEventListener("mouseup", function (e) {
+                        if (!self._active) {
+                            return;
+                        }
+                        switch (e.which) {
+                            case 1: // Left button
+                                mouseDownLeft = false;
+                                break;
+                            case 2: // Middle/both buttons
+                                mouseDownMiddle = false;
+                                break;
+                            case 3: // Right button
+                                mouseDownRight = false;
+                                break;
+                            default:
+                                break;
+                        }
+                        down = false;
+                        xDelta = 0;
+                        yDelta = 0;
+                    });
+
                     canvas.addEventListener("mouseenter", function () {
                         if (!self._active) {
                             return;
@@ -23247,6 +23426,9 @@ xeogl.Group = xeogl.Object.extend({
                     canvas.addEventListener("wheel", function (e) {
                         if (!self._active) {
                             return;
+                        }
+                        if (self._panToPointer) {
+                            needPickSurface = true;
                         }
                         var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
                         if (delta === 0) {
@@ -23524,102 +23706,6 @@ xeogl.Group = xeogl.Object.extend({
             //------------------------------------------------------------------------------------
 
             (function () {
-
-                var pickCursorPos = [0, 0];
-                var needPickMesh = false;
-                var needPickSurface = false;
-                var lastPickedMeshId;
-                var hit;
-                var picked = false;
-                var pickedSurface = false;
-
-                function updatePick() {
-                    if (!needPickMesh && !needPickSurface) {
-                        return;
-                    }
-                    picked = false;
-                    pickedSurface = false;
-                    if (needPickSurface || self.hasSubs("hoverSurface")) {
-                        hit = scene.pick({
-                            pickSurface: true,
-                            canvasPos: pickCursorPos
-                        });
-                    } else { // needPickMesh == true
-                        hit = scene.pick({
-                            canvasPos: pickCursorPos
-                        });
-                    }
-                    if (hit) {
-                        picked = true;
-                        var pickedMeshId = hit.mesh.id;
-                        if (lastPickedMeshId !== pickedMeshId) {
-                            if (lastPickedMeshId !== undefined) {
-
-                                /**
-                                 * Fired whenever the pointer no longer hovers over an {{#crossLink "Mesh"}}{{/crossLink}}.
-                                 * @event hoverOut
-                                 * @param mesh The Mesh
-                                 */
-                                self.fire("hoverOut", {
-                                    mesh: scene.meshes[lastPickedMeshId]
-                                });
-                            }
-
-                            /**
-                             * Fired when the pointer is over a new {{#crossLink "Mesh"}}{{/crossLink}}.
-                             * @event hoverEnter
-                             * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
-                             */
-                            self.fire("hoverEnter", hit);
-                            lastPickedMeshId = pickedMeshId;
-                        }
-                        /**
-                         * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Mesh"}}{{/crossLink}}.
-                         * @event hover
-                         * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
-                         */
-                        self.fire("hover", hit);
-                        if (hit.worldPos) {
-                            pickedSurface = true;
-
-                            /**
-                             * Fired while the pointer hovers over the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
-                             *
-                             * This event provides 3D information about the point on the surface that the pointer is
-                             * hovering over.
-                             *
-                             * @event hoverSurface
-                             * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
-                             * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
-                             */
-                            self.fire("hoverSurface", hit);
-                        }
-                    } else {
-                        if (lastPickedMeshId !== undefined) {
-                            /**
-                             * Fired whenever the pointer no longer hovers over an {{#crossLink "Mesh"}}{{/crossLink}}.
-                             * @event hoverOut
-                             * @param mesh The Mesh
-                             */
-                            self.fire("hoverOut", {
-                                mesh: scene.meshes[lastPickedMeshId]
-                            });
-                            lastPickedMeshId = undefined;
-                        }
-                        /**
-                         * Fired continuously while the pointer is moving but not hovering over anything.
-                         *
-                         * @event hoverOff
-                         */
-                        self.fire("hoverOff", {
-                            canvasPos: pickCursorPos
-                        });
-                    }
-                    needPickMesh = false;
-                    needPickSurface = false;
-                }
-
-                scene.on("tick", updatePick);
 
                 // Mouse picking
 
@@ -31086,35 +31172,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             }
             this.numComponents++;
             component._addedToModel(this);
+            return component;
         },
-        //
-        // _addComponentOLD: function (component) {
-        //     var types;
-        //     if (component.scene !== this.scene) { // Component in wrong Scene
-        //         this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
-        //         return;
-        //     }
-        //     if (this.components[component.id]) {
-        //         return;
-        //     }
-        //     if (component.model && component.model.id !== this.id) {
-        //         component.model.remove(component);
-        //     }
-        //     this.components[component.id] = component;
-        //     types = this.types[component.type];
-        //     if (!types) {
-        //         types = this.types[component.type] = {};
-        //     }
-        //     types[component.id] = component;
-        //     if (component.isType("xeogl.Mesh")) {
-        //         this.meshes[component.id] = component;
-        //     }
-        //     if (component.isType("xeogl.Object")) {
-        //         this.objects[component.id] = component;
-        //     }
-        //     this.numComponents++;
-        //     component._addedToModel(this);
-        // },
 
         /**
          Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Model.

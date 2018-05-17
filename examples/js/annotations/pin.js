@@ -227,7 +227,7 @@
 
     // Updates the World-space position of a Pin
     VisibilityTester.prototype.setPinWorldPos = function (pinId, worldPos) {
-        this._markers[pinId].transform.xyz = worldPos;
+        this._markers[pinId].position = worldPos;
     };
 
     // De-registers a Pin, so that it is not tested for visibility
@@ -517,7 +517,7 @@
              This is read-only and is automatically calculated.
 
              @property viewPos
-             @default [0,0]
+             @default [0,0,0]
              @type Float32Array
              @final
              */
@@ -648,7 +648,6 @@
         _update: function () {
 
             var localPosDirty = this._localPosDirty;
-            var localNormalDirty = this._localNormalDirty;
             var worldPosDirty = localPosDirty || this._worldPosDirty;
 
             this.__update();
@@ -748,8 +747,7 @@
 
                     // Transform Local position into World space
 
-                    var transform = mesh.transform;
-                    transform ? math.transformPoint3(transform.leafMatrix, this._localPos, this._worldPos) : this._worldPos.set(this._localPos);
+                    math.transformPoint3(mesh.worldMatrix, this._localPos, this._worldPos);
 
                     if (this._visTester) {
                         this._visTester.setPinWorldPos(this.id, this._worldPos);
@@ -762,8 +760,7 @@
 
                     // Transform Local normal into World space
 
-                    var transform = mesh.transform;
-                    transform ? math.transformVec3(transform.leafMatrix, this._localNormal, this._worldNormal) : this._worldNormal.set(this._localNormal);
+                    math.transformVec3(mesh.worldMatrix, this._localNormal, this._worldNormal);
 
                     this._worldNormalDirty = false;
                 }

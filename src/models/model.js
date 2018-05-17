@@ -170,35 +170,8 @@
             }
             this.numComponents++;
             component._addedToModel(this);
+            return component;
         },
-        //
-        // _addComponentOLD: function (component) {
-        //     var types;
-        //     if (component.scene !== this.scene) { // Component in wrong Scene
-        //         this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
-        //         return;
-        //     }
-        //     if (this.components[component.id]) {
-        //         return;
-        //     }
-        //     if (component.model && component.model.id !== this.id) {
-        //         component.model.remove(component);
-        //     }
-        //     this.components[component.id] = component;
-        //     types = this.types[component.type];
-        //     if (!types) {
-        //         types = this.types[component.type] = {};
-        //     }
-        //     types[component.id] = component;
-        //     if (component.isType("xeogl.Mesh")) {
-        //         this.meshes[component.id] = component;
-        //     }
-        //     if (component.isType("xeogl.Object")) {
-        //         this.objects[component.id] = component;
-        //     }
-        //     this.numComponents++;
-        //     component._addedToModel(this);
-        // },
 
         /**
          Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Model.

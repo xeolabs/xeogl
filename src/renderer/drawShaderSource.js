@@ -778,7 +778,7 @@
 
                     if (scene.lights.reflectionMap) {
                         src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
-                        src.push("   vec3 radiance               = textureCube(reflectionMap, reflectVec).rgb;");
+                        src.push("   vec3 radiance               = textureCube(reflectionMap, reflectVec).rgb * 0.2;");
                   //      src.push("   radiance *= PI;");
                         src.push("   reflectedLight.specular     += radiance;");
                     }
