@@ -869,6 +869,28 @@
                         yDelta = 0;
                     });
 
+                    document.addEventListener("mouseup", function (e) {
+                        if (!self._active) {
+                            return;
+                        }
+                        switch (e.which) {
+                            case 1: // Left button
+                                mouseDownLeft = false;
+                                break;
+                            case 2: // Middle/both buttons
+                                mouseDownMiddle = false;
+                                break;
+                            case 3: // Right button
+                                mouseDownRight = false;
+                                break;
+                            default:
+                                break;
+                        }
+                        down = false;
+                        xDelta = 0;
+                        yDelta = 0;
+                    });
+
                     canvas.addEventListener("mouseenter", function () {
                         if (!self._active) {
                             return;
