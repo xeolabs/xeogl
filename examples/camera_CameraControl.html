@@ -51,6 +51,7 @@
         this["active"] = cameraControl.active;
         this["firstPerson"] = cameraControl.firstPerson;
         this["pivoting"] = cameraControl.pivoting;
+        this["panToPointer"] = cameraControl.panToPointer;
         this["doublePickFlyTo"] = cameraControl.doublePickFlyTo;
         this["inertia"] = cameraControl.inertia;
         this["gimbalLock"] = camera.gimbalLock;
@@ -63,6 +64,7 @@
             cameraControl.active = self["active"];
             cameraControl.firstPerson = self["firstPerson"];
             cameraControl.pivoting = self["pivoting"];
+            cameraControl.panToPointer = self["panToPointer"];
             cameraControl.doublePickFlyTo = self["doublePickFlyTo"];
             cameraControl.inertia = self["inertia"];
 
@@ -84,6 +86,7 @@
     cameraControlFolder.add(menu, 'active', cameraControl.active);
     cameraControlFolder.add(menu, 'firstPerson', cameraControl.firstPerson);
     cameraControlFolder.add(menu, 'pivoting', cameraControl.pivoting);
+    cameraControlFolder.add(menu, 'panToPointer', cameraControl.panToPointer);
     cameraControlFolder.add(menu, 'doublePickFlyTo', cameraControl.doublePickFlyTo);
     cameraControlFolder.add(menu, 'inertia', 0.0, 1.0);
     cameraControlFolder.open();
