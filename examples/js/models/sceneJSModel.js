@@ -347,7 +347,9 @@
 
                     load(this._src, function (node) {
 
-                            self._parse(node, null, null, null);
+                            var group = self;
+
+                            self._parse(node, group, null, null);
 
                             // Decrement processes represented by loading spinner
                             // Spinner disappears if the count is now zero
@@ -404,7 +406,9 @@
 
                     this._data = value;
 
-                    this._parse(this._data, null, null, null);
+                    var group = this;
+
+                    this._parse(this._data, group, null, null);
 
                     var self = this;
 
@@ -462,70 +466,73 @@
 
                     switch (this._materialWorkflow) {
                         case "MetallicMaterial":
-                            material = this._addComponent({
-                                type: "xeogl.MetallicMaterial",
+                            material = this._addComponent(new xeogl.MetallicMaterial({
                                 id: this._createID(node),
                                 baseColor: diffuse,
                                 metallic: 1.0,
                                 roughness: 0.4,
                                 emissive: emissive,
-                                alpha: node.alpha
-                            });
+                                alpha: node.alpha,
+                                alphaMode: "blend"
+                            }));
                             break;
 
                         case "SpecularMaterial":
-                            material = this._addComponent({
-                                type: "xeogl.SpecularMaterial",
+                            material = this._addComponent(new xeogl.SpecularMaterial(this.scene, {
                                 id: this._createID(node),
                                 diffuse: diffuse,
                                 specular: specular,
                                 glossiness: 0.5,
                                 emissive: emissive,
-                                alpha: node.alpha
-                            });
+                                alpha: node.alpha,
+                                alphaMode: "blend"
+                            }));
                             break;
 
                         default:
-                            material = this._addComponent({
-                                type: "xeogl.PhongMaterial",
+                            material = this._addComponent(new xeogl.PhongMaterial(this.scene, {
                                 id: this._createID(node),
                                 ambient: [.2, .2, .2],
                                 diffuse: diffuse,
                                 specular: specular,
                                 // shininess: node.shine,
                                 emissive: emissive,
-                                alpha: node.alpha
-                            });
+                                alpha: node.alpha,
+                                alphaMode: "blend"
+                            }));
                     }
 
                     break;
 
                 case "translate":
 
-                    var newGroup = new xeogl.Group(this.scene, {
+                    group = group.addChild(new xeogl.Group(this.scene, {
                         position: [node.x, node.y, node.z]
-                    });
+                    }));
 
-                    if (group) {
-                        group.addChild(newGroup);
-                    }
-
-                    group = newGroup;
+                    this._addComponent(group);
 
                     break;
 
                 case "scale":
 
-                    // var localMatrix = xeogl.math.scalingMat4c(node.x, node.y, node.z);
-                    // if (matrix) {
-                    //     matrix = xeogl.math.mulMat4(matrix, localMatrix, xeogl.math.mat4());
-                    // } else {
-                    //     matrix = localMatrix;
-                    // }
+                    group = group.addChild(new xeogl.Group(this.scene, {
+                        scale: [node.x, node.y, node.z]
+                    }));
+
+                    this._addComponent(group);
 
                     break;
 
                 case "rotate":
+
+                    var newGroup = new xeogl.Group(this.scene);
+
+                    newGroup.rotate([node.x, node.y, node.z], node.angle);
+
+                    group = group.addChild(newGroup);
+
+                    this._addComponent(group);
 
                     // var localMatrix = xeogl.math.rotationMat4c(node.angle * xeogl.math.DEGTORAD, node.x, node.y, node.z);
                     // if (matrix) {
@@ -644,6 +651,8 @@
 
                     if (material) {
 
+                        // Set properties on material component
+
                         material.diffuseMap = diffuseMap;
                         material.specularMap = specularMap;
                         material.emissiveMap = emissiveMap;
@@ -667,7 +676,13 @@
                         layer: layer
                     });
 
-                    this.addChild(mesh);
+                    if (group) {
+                        group.addChild(mesh);
+                    } else {
+                        this.addChild(mesh);
+                    }
+
+                    this._addComponent(mesh);
 
                     break;
             }
