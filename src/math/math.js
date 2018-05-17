@@ -34,6 +34,14 @@
          */
         DEGTORAD: 0.0174532925,
 
+        /**
+         * The number of degrees in a radian.
+         * @property RADTODEG
+         * @namespace xeogl.math
+         * @type {Number}
+         */
+        RADTODEG: 57.295779513,
+
         openCache: function () {
             caching = true;
             vec3CacheLen = 0;
