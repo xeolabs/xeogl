@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-05-16
+ * Built on 2018-05-17
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -1200,6 +1200,14 @@ xeogl.utils.Map = function (items, baseId) {
          * @type {Number}
          */
         DEGTORAD: 0.0174532925,
+
+        /**
+         * The number of degrees in a radian.
+         * @property RADTODEG
+         * @namespace xeogl.math
+         * @type {Number}
+         */
+        RADTODEG: 57.295779513,
 
         openCache: function () {
             caching = true;
@@ -23154,6 +23162,28 @@ xeogl.Group = xeogl.Object.extend({
                     });
 
                     canvas.addEventListener("mouseup", function (e) {
+                        if (!self._active) {
+                            return;
+                        }
+                        switch (e.which) {
+                            case 1: // Left button
+                                mouseDownLeft = false;
+                                break;
+                            case 2: // Middle/both buttons
+                                mouseDownMiddle = false;
+                                break;
+                            case 3: // Right button
+                                mouseDownRight = false;
+                                break;
+                            default:
+                                break;
+                        }
+                        down = false;
+                        xDelta = 0;
+                        yDelta = 0;
+                    });
+
+                    document.addEventListener("mouseup", function (e) {
                         if (!self._active) {
                             return;
                         }
