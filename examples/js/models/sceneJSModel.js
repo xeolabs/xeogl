@@ -507,6 +507,7 @@
                 case "translate":
 
                     group = group.addChild(new xeogl.Group(this.scene, {
+                        id: this._createID(node),
                         position: [node.x, node.y, node.z]
                     }));
 
@@ -517,6 +518,7 @@
                 case "scale":
 
                     group = group.addChild(new xeogl.Group(this.scene, {
+                        id: this._createID(node),
                         scale: [node.x, node.y, node.z]
                     }));
 
@@ -526,7 +528,9 @@
 
                 case "rotate":
 
-                    var newGroup = new xeogl.Group(this.scene);
+                    var newGroup = new xeogl.Group(this.scene, {
+                        id: this._createID(node)
+                    });
 
                     newGroup.rotate([node.x, node.y, node.z], node.angle);
 
