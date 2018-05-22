@@ -28,17 +28,13 @@
             this._solid = false;
             this._visible = false;
 
-            var transform = this._planeScale = new xeogl.Scale(this, {
-                worldPos: [10, 10, 0],
-                parent: this._quaternion = new xeogl.Quaternion(this, {
-                    worldPosw: [0, 0, 0, 1],
-                    parent: this._translate = new xeogl.Translate(this, {
-                        worldPos: [0, 0, 0]
-                    })
-                })
+            this._group = new xeogl.Group(this, {
+                positions: [10,10,0],
+                backfaces: false,
+                clippable: false
             });
 
-            this._planeWire = new xeogl.Mesh(this, {
+            this._planeWire = this._group.addChild(new xeogl.Mesh(this, {
                 geometry: new xeogl.Geometry(this, {
                     primitive: "lines",
                     positions: [
@@ -54,13 +50,12 @@
                     diffuse: [0, 0, 0],
                     lineWidth: 2
                 }),
-                transform: transform,
                 pickable: false,
                 collidable: false,
                 clippable: false
-            });
+            }));
 
-            this._planeSolid = new xeogl.Mesh(this, {
+            this._planeSolid = this._group.addChild(new xeogl.Mesh(this, {
                 geometry: new xeogl.Geometry(this, {
                     primitive: "triangles",
                     positions: [
@@ -80,11 +75,27 @@
                     alphaMode: "blend",
                     backfaces: true
                 }),
-                transform: transform,
                 pickable: false,
                 collidable: false,
-                clippable: false
-            });
+                clippable: false,
+                visible: false
+            }));
+
+            this._label = this._group.addChild(new xeogl.Mesh(this, {
+                geometry: new xeogl.VectorTextGeometry(this, {
+                    text: this.id,
+                    size: 0.07,
+                    origin: [0.02, 0.02, 0.0]
+                }),
+                material: new xeogl.PhongMaterial(this, {
+                    emissive: [0.3, 1, 0.3],
+                    lineWidth: 2
+                }),
+                pickable: false,
+                collidable: false,
+                clippable: false,
+                billboard: "spherical"
+            }));
 
             this._arrow = new xeogl.Mesh(this, {
                 geometry: new xeogl.Geometry(this, {
@@ -102,23 +113,6 @@
                 pickable: false,
                 collidable: false,
                 clippable: false
-            });
-
-            this._label = new xeogl.Mesh(this, {
-                geometry: new xeogl.VectorTextGeometry(this, {
-                    text: this.id,
-                    size: 0.07,
-                    origin: [0.02, 0.02, 0.0]
-                }),
-                material: new xeogl.PhongMaterial(this, {
-                    emissive: [0.3, 1, 0.3],
-                    lineWidth: 2
-                }),
-                transform: transform, // Shares transform with plane
-                pickable: false,
-                collidable: false,
-                clippable: false,
-                billboard: "spherical"
             });
 
             this.planeSize = cfg.planeSize;
@@ -163,7 +157,7 @@
 
                 set: function (value) {
                     (this._pos = this._pos || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-                    this._translate.xyz = this._pos;
+                    this._group.position = this._pos;
                     this._needUpdate(); // Need to rebuild arrow
                 },
 
@@ -189,7 +183,7 @@
                     return function (value) {
                         (this._dir = this._dir || new xeogl.math.vec3()).set(value || [0, 0, 1]);
                         xeogl.math.vec3PairToQuaternion(zeroVec, this._dir, quat);
-                        this._quaternion.xyzw = quat;
+                        this._group.quaternion = quat;
                         this._needUpdate(); // Need to rebuild arrow
                     };
                 })(),
@@ -213,7 +207,7 @@
 
                 set: function (value) {
                     (this._planeSize = this._planeSize || new xeogl.math.vec2()).set(value || [1, 1]);
-                    this._planeScale.xyz = [this._planeSize[0], this._planeSize[1], 1.0];
+                    this._group.scale = [this._planeSize[0], this._planeSize[1], 1.0];
                 },
 
                 get: function () {
