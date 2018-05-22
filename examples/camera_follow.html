@@ -70,22 +70,18 @@
     // Save references to a couple of rotations within
     // its transform hierarchy so we can make it tumble
 
-    var rotate1;
-    var rotate2;
-    var rotate3;
-
     var tumblingTorus = new xeogl.Group({
-
         rotation: [45, 45, 0],
-
-        objects: [new xeogl.Mesh({
-            geometry: torusGeometry,
-            material: new xeogl.PhongMaterial({
-                diffuse: [1, 0.3, 0.3]
-            }),
-            scale: [0.5, 0.5, 0.5],
-            position: [10, 0, 0]
-        })]
+        children: [
+            new xeogl.Mesh({
+                geometry: torusGeometry,
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1, 0.3, 0.3]
+                }),
+                scale: [0.5, 0.5, 0.5],
+                position: [10, 0, 0]
+            })
+        ]
     });
 
 

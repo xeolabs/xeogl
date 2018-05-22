@@ -63,29 +63,6 @@
         })
     ];
 
-    //
-    //    lights.lightMap = new xeogl.CubeTexture({
-    //        src: [
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-    //        ]
-    //    });
-
-    lights.reflectionMap = new xeogl.CubeTexture({
-        src: [
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-        ]
-    });
-
     // Load glTF model
 
     var model = new xeogl.GLTFModel({
@@ -103,9 +80,11 @@
     camera.up = [-0.31, 0.87, -0.35];
     camera.zoom(-10);
 
-    //    scene.on("tick", function () {
-    //        camera.orbitYaw(-0.2);
-    //    });
+    scene.on("tick", function () {
+        camera.orbitYaw(-0.2);
+    });
+
+    scene.highlightMaterial.fillAlpha = 0.7
 
     // Handle user input
 
@@ -124,8 +103,8 @@
     model.on("loaded", function () {
 
         var selectedMeshes = [
-            "gearbox#77.0",
-            "gearbox#79.0"
+            "gearbox#83.0",
+            "gearbox#81.0"
         ];
 
         model.ghosted = true;

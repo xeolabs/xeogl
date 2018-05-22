@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
-    <script src="js/helpers/obbHelper.js"></script>
-
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="js/animation/cameraFollowAnimation.js"></script>
@@ -15,151 +13,108 @@
 <body>
 
 <div id="info">
-    <h1>visualizing an <a href="../docs/classes/Mesh.html" target="_parent">Mesh's</a> World-space oriented <a
-            href="../docs/classes/Boundary3D.html" target="_parent">Boundary3D</a> (OBB) as we animate the Mesh's
-        transforms</h1>
-
-    <pre id="log" style="text-align: left; color:#77FF77; border:0;"></pre>
+    <h1>visualizing a <a href="../docs/classes/Mesh.html" target="_parent">Mesh's</a> Obj-space object-aligned boundary</h1>
 </div>
 
 <script>
 
+    var table = new xeogl.Group({
+        id: "table",
+        rotation: [0, 50, 0],
+        position: [20, 0, 0],
+        scale: [1, 1, 1],
 
-    var meshes = [];
-    var mesh;
+        children: [
 
-    var torusGeometry = new xeogl.TorusGeometry();
-
-    for (var i = 0; i < 20; i++) {
-
-        mesh = new xeogl.Mesh({
-
-            geometry: torusGeometry,
-
-            transform: new xeogl.Scale({
-                xyz: [
-                    0.5 + Math.random() * 2,
-                    0.5 + Math.random() * 2,
-                    0.5 + Math.random() * 2
-                ],
-
-                parent: new xeogl.Rotate({
-                    xyz: [
-                        Math.random(),
-                        Math.random(),
-                        Math.random()
-                    ],
-                    angle: Math.random() * 360,
-
-                    parent: new xeogl.Translate({
-                        xyz: [
-                            Math.random() * 15 - 7,
-                            Math.random() * 15 - 7,
-                            Math.random() * 15 - 7
-                        ]
-                    })
+            new xeogl.Mesh({ // Red table leg
+                id: "redLeg",
+                position: [-4, -6, -4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1, 0.3, 0.3]
                 })
-
             }),
 
-            material: new xeogl.PhongMaterial({
-                diffuse: [
-                    Math.random(),
-                    Math.random(),
-                    Math.random()
-                ]
-            })
-        });
+            new xeogl.Mesh({ // Green table leg
+                id: "greenLeg",
+                position: [4, -6, -4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [0.3, 1.0, 0.3]
+                })
+            }),
 
-        meshes.push(mesh);
-    }
+            new xeogl.Mesh({// Blue table leg
+                id: "blueLeg",
+                position: [4, -6, 4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [0.3, 0.3, 1.0]
+                })
+            }),
 
-    // ------------------------------------------------------------------
-    // Create a tumbling red torus
-    // ------------------------------------------------------------------
+            new xeogl.Mesh({  // Yellow table leg
+                id: "yellowLeg",
+                position: [-4, -6, 4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1.0, 1.0, 0.0]
+                })
+            }),
 
-    // Save references to a couple of rotations within
-    // its transform hierarchy
-
-    var rotate0;
-    var rotate1;
-
-    var torus = new xeogl.Mesh({
-
-        geometry: torusGeometry,
-
-        material: new xeogl.PhongMaterial({
-            diffuse: [1, 0.3, 0.3]
-        }),
-
-        transform: new xeogl.Scale({
-            xyz: [0.5, 0.5, 0.5],
-
-            parent: rotate1 = new xeogl.Rotate({
-                xyz: [1, 1, 0],
-                angle: 45,
-
-                parent: new xeogl.Rotate({
-                    xyz: [1, 0, 1],
-                    angle: 25,
-
-                    parent: new xeogl.Translate({
-                        xyz: [5, 0, 0]
-                        ,
-                        parent: rotate0 = new xeogl.Rotate({
-                            xyz: [0, 0, 1],
-                            angle: 40
-                        })
-                    })
+            new xeogl.Mesh({ // Purple table top
+                id: "tableTop",
+                position: [0, -3, 0],
+                scale: [6, 0.5, 6],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1.0, 0.3, 1.0]
                 })
             })
-        })
+        ]
     });
 
+    var scene = xeogl.scene;
+    var camera = scene.camera;
 
-    // ------------------------------------------------------------------
-    // Animate the torus' tumbling rotations
-    // ------------------------------------------------------------------
+    camera.eye = [-21.80, 4.01, 6.56];
+    camera.look = [0, -5.75, 0];
+    camera.up = [0.37, 0.91, -0.11];
 
-    var a = 0;
-    var i = 0;
+    // Find red leg Mesh by global ID on Scene
+    var redLeg = scene.components["redLeg"];
 
-    rotate1.scene.on("tick",
-            function () {
-                a += 4;
-                //    if (++i > 10) {
-                i = 0;
-                rotate0.angle = a * 0.2;
-                //  }
-                // rotate1.angle = a ;
-
-                //   rotate1.scene.camera.orbitYaw(0.1);
-            });
-
-
-    // Create a helper that renders a snugly-fitted
-    // oriented bounding box (OBB) around the torus mesh.
-
-    var obbHelper = new xeogl.OBBHelper({
-        target: torus,
-        color: [0,1,0],
-        visible: true
+    // Show AABB around red leg
+    new xeogl.Mesh({
+        geometry: new xeogl.OBBGeometry({
+            target: redLeg
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth: 2
+        }),
+        collidable: false
     });
 
-    // Allow user camera control
+    // Periodically update transforms
+    scene.on("tick", function () {
+
+        // Rotate legs
+        redLeg.rotateY(1);
+
+        // Rotate table
+        table.rotateY(0.5);
+        table.rotateX(0.4);
+    });
 
     new xeogl.CameraControl();
 
-    new xeogl.CameraFollowAnimation({
-        target: torus,
-        fly: false,
-        fit: false,
-        fitFOV: 65,
-        trail: false
-    });
-
-    rotate1.scene.camera.gimbalLock = false;
-
 </script>
+
 </body>
 </html>

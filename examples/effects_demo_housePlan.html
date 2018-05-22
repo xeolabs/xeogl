@@ -20,7 +20,7 @@
     <br>
     <ul>
         <li>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
-        <li>highlight effect applied to some kitchen <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a>
+        <li>highlight effect applied to some <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a>
         </li>
         <li>customized by modifying the default <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterials</a> for ghosting and highlight</li>
         <li>model by <a href="https://sketchfab.com/architect47" target="_parent">https://sketchfab.com/architect47</a></li>
@@ -103,6 +103,10 @@
         doublePickFlyTo: false
     });
 
+    cameraControl.on("picked", function (e) {
+        console.log(e.mesh.id)
+    });
+
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
     cameraControl.on("hoverEnter", function (hit) {
@@ -144,11 +148,13 @@
     model.on("loaded", function () {
 
         var selectedMeshes = [
-            "house#184", "house#185", "house#152", "house#151", "house#166",
-            "house#164", "house#163", "house#169", "house#170", "house#152", "house#184",
-            "house#187", "house#185", "house#187", "house#185", "house#160", "house#156",
-            "house#191", "house#189", "house#191", "house#189", "house#193", "house#160",
-            "house#183"];
+            "house#525.0",
+            "house#526.0",
+            "house#346.0",
+            "house#344.0",
+            "house#421.0",
+            "house#449.0"
+        ];
 
         model.ghosted = true;
 

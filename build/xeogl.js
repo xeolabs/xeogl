@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-05-17
+ * Built on 2018-05-22
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -967,7 +967,9 @@ var Canvas2Image = (function () {
 
     var initializing = false;
 
-    var fnTest = /xyz/.test(function () {xyz;}) ? /\b_super\b/ : /.*/;
+    var fnTest = /xyz/.test(function () {
+        xyz;
+    }) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
     this.Class = function () {
@@ -1030,23 +1032,57 @@ var Canvas2Image = (function () {
             }
 
             // Check if we're overwriting an existing function
-            prototype[name] = typeof prop[name] === "function" && typeof _super[name] === "function" && fnTest.test(prop[name]) ?
-                (function (name, fn) {
-                    return function () {
-                        var tmp = this._super;
 
-                        // Add a new ._super() method that is the same method
-                        // but on the super-class
-                        this._super = _super[name];
+            var existsOnSuper = !!_super[name];
+            var isFunc = typeof prop[name] === "function";
+            var superIsFunc = typeof _super[name] === "function";
+            var passFnTest = fnTest.test(prop[name]);
 
-                        // The method only need to be bound temporarily, so we
-                        // remove it when we're done executing
-                        var ret = fn.apply(this, arguments);
-                        this._super = tmp;
+            if (existsOnSuper) {
+                if (isFunc && !superIsFunc) {
+                    throw "Can't override super class property with function: '" + name + "'";
+                }
+                if (!isFunc && superIsFunc) {
+                    throw "Can't override super class function with property: '" + name + "'";
+                }
+            }
 
-                        return ret;
-                    };
-                })(name, prop[name]) : prop[name];
+            if (isFunc) {
+
+                if (existsOnSuper) {
+
+                    // Exists on super, so overriding.
+                    // Allow possibility for sub-class function to call super function from within itself.
+
+                    prototype[name] = (function (name, fn) {
+                        return function () {
+                            var tmp = this._super;
+
+                            // Add a new ._super() method that is the same method
+                            // but on the super-class
+                            this._super = _super[name];
+
+                            // The method only need to be bound temporarily, so we
+                            // remove it when we're done executing
+                            var ret = fn.apply(this, arguments);
+                            this._super = tmp;
+
+                            return ret;
+                        };
+                    })(name, prop[name])
+
+                } else {
+
+                    // Does not exist on super; just define on subclass.
+
+                    prototype[name] = prop[name];
+                }
+            } else {
+
+                // Not a function; just define on subclass.
+
+                prototype[name] = prop[name];
+            }
         }
 
         // Create array of type names to indicate inheritance chain,
@@ -16802,9 +16838,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  ## Usage
 
  * [Creating an Object hierarchy](#creating-an-object-hierarchy)
-   * [Accessing Objects](#accessing-objects)
-   * [Updating Objects](#updating-objects)
-   * [Adding and removing Objects](#updating-objects)
+ * [Accessing Objects](#accessing-objects)
+ * [Updating Objects](#updating-objects)
+ * [Adding and removing Objects](#updating-objects)
  * [Models within Groups](#models-within-groups)
  * [Objects within Models](#objects-within-models)
  * [Destroying Objects](#destroying-objects)
@@ -17130,24 +17166,32 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this xeogl.Object.
- @param [cfg.objects] {Array(Object)} Child Objects to attach to this Object.
+
+ @param [cfg.ifcType] {String} The Object's IFC type, if applicable.
+
  @param [cfg.parent] The parent Object.
- @param [cfg.visible=true] {Boolean}  Indicates if this Object is visible.
- @param [cfg.culled=true] {Boolean}  Indicates if this Object is culled from view.
- @param [cfg.pickable=true] {Boolean}  Indicates if this Object is pickable.
- @param [cfg.clippable=true] {Boolean} Indicates if this Object is clippable.
- @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this Object.
- @param [cfg.ghosted=false] {Boolean} Whether this Object is rendered as ghosted.
- @param [cfg.highlighted=false] {Boolean} Whether this Object is rendered as highlighted.
- @param [cfg.selected=false] {Boolean} Whether this Object is rendered as selected.
- @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
- @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
- @param [cfg.aabbVisible=false] {Boolean} Whether this Object's axis-aligned World-space bounding box is visible.
- @param [cfg.obbVisible=false] {Boolean} Whether this Object's oriented World-space bounding box is visible.
+
  @param [cfg.position=[0,0,0]] {Float32Array} The Object's local 3D position.
  @param [cfg.scale=[1,1,1]] {Float32Array} The Object's local scale.
  @param [cfg.rotation=[0,0,0]] {Float32Array} The Object's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Object's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+
+ @param [cfg.visible=true] {Boolean}        Indicates if the Object is visible.
+ @param [cfg.culled=false] {Boolean}        Indicates if the Object is culled from view.
+ @param [cfg.pickable=true] {Boolean}       Indicates if the Object is pickable.
+ @param [cfg.clippable=true] {Boolean}      Indicates if the Object is clippable.
+ @param [cfg.collidable=true] {Boolean}     Whether the Object is included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean}     Whether the Object casts shadows.
+ @param [cfg.receiveShadow=true] {Boolean}  Whether the Object receives shadows.
+ @param [cfg.outlined=false] {Boolean}      Whether an outline is rendered around the Object.
+ @param [cfg.ghosted=false] {Boolean}       Whether the Object is rendered as ghosted.
+ @param [cfg.highlighted=false] {Boolean}   Whether the Object is rendered as highlighted.
+ @param [cfg.selected=false] {Boolean}      Whether the Object is rendered as selected.
+ @param [cfg.aabbVisible=false] {Boolean}   Whether the Object's axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean}    Whether the Object's oriented World-space bounding box is visible.
+
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
 
  @extends Component
  */
@@ -17164,14 +17208,16 @@ xeogl.Object = xeogl.Component.extend({
 
     _init: function (cfg) {
 
-        // Object base class responsibilities
-        //  - connects to parent
-        //  - builds Local matrix
-        //  - builds World matrix
+        var math = xeogl.math;
 
         this._parent = null;
+        this._childList = [];
+        this._childMap = {};
 
-        var math = xeogl.math;
+        this._aabb = null;
+        this._aabbDirty = true;
+        this._obb = null;
+        this._obbDirty = true;
 
         this._scale = math.vec3();
         this._quaternion = math.identityQuaternion();
@@ -17186,8 +17232,11 @@ xeogl.Object = xeogl.Component.extend({
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
 
+        this.ifcType = cfg.ifcType;
+
         if (cfg.matrix) {
             this.matrix = cfg.matrix;
+
         } else {
             this.scale = cfg.scale;
             this.position = cfg.position;
@@ -17197,31 +17246,74 @@ xeogl.Object = xeogl.Component.extend({
             }
         }
 
-        this.ifcType = cfg.ifcType;
+        // Properties
+
+        // If this component instance is a subclass of xeogl.Object that redefines these properties,
+        // then it's the subclass's properties that are being set here
+        // (eg. as redefined on xeogl.Mesh, xeogl.Model etc)
+
+        this.visible = cfg.visible;
+        this.culled = cfg.culled;
+        this.pickable = cfg.pickable;
+        this.clippable = cfg.clippable;
+        this.collidable = cfg.collidable;
+        this.castShadow = cfg.castShadow;
+        this.receiveShadow = cfg.receiveShadow;
+        this.outlined = cfg.outlined;
+        this.layer = cfg.layer;
+        this.stationary = cfg.stationary;
+        this.billboard = cfg.billboard;
+        this.solid = cfg.solid;
+        this.ghosted = cfg.ghosted;
+        this.highlighted = cfg.highlighted;
+        this.selected = cfg.selected;
+        this.colorize = cfg.colorize;
+        this.opacity = cfg.opacity;
         this.aabbVisible = cfg.aabbVisible;
         this.obbVisible = cfg.obbVisible;
+
+        // Add children, which inherit state from this Object
+
+        if (cfg.children) {
+            var children = cfg.children;
+            for (var i = 0, len = children.length; i < len; i++) {
+                this.addChild(children[i]);
+            }
+        }
 
         if (cfg.parent) {
             cfg.parent.addChild(this);
         }
     },
 
-    _setLocalMatrixDirty: function () { // Redefined by xeogl.Group to include child Objects
+    //------------------------------------------------------------------------------------------------------------------
+    // Transform management
+    //------------------------------------------------------------------------------------------------------------------
+
+    _setLocalMatrixDirty: function () { // Invalidates Local matrix of the Object and invalidates World matrix of child Objects
         this._localMatrixDirty = true;
         this._setWorldMatrixDirty();
     },
 
-    _setWorldMatrixDirty: function () {
+    _setWorldMatrixDirty: function () { // Invalidates World matrix of the Object and child Objects
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
+        this._aabbDirty = true;
+        this._obbDirty = true;
+        if (this._childList) {
+            for (var i = 0, len = this._childList.length; i < len; i++) {
+                this._childList[i]._setWorldMatrixDirty();
+            }
+        }
+        this.fire("boundary");
     },
 
-    _buildLocalMatrix: function () {
+    _buildLocalMatrix: function () { // Rebuilds and validates the Object's Local matrix
         xeogl.math.composeMat4(this._position, this._quaternion, this._scale, this._localMatrix);
         this._localMatrixDirty = false;
     },
 
-    _buildWorldMatrix: function () {
+    _buildWorldMatrix: function () { // Rebuilds and validates Local matrix of the Object, then rebuilds and validates World matrices of the Object and parent Objects
         if (this._localMatrixDirty) {
             this._buildLocalMatrix();
         }
@@ -17231,12 +17323,12 @@ xeogl.Object = xeogl.Component.extend({
             }
         } else {
             xeogl.math.mulMat4(this._parent.worldMatrix, this._localMatrix, this._worldMatrix);
-          //  xeogl.math.mulMat4(this._localMatrix, this._parent.worldMatrix, this._worldMatrix);
+            //  xeogl.math.mulMat4(this._localMatrix, this._parent.worldMatrix, this._worldMatrix);
         }
         this._worldMatrixDirty = false;
     },
 
-    _buildWorldNormalMatrix: function () {
+    _buildWorldNormalMatrix: function () { // Rebuilds and validates World matrix of the Object, then builds and revalidates World normal matrix of the Object
         if (this._worldMatrixDirty) {
             this._buildWorldMatrix();
         }
@@ -17248,778 +17340,11 @@ xeogl.Object = xeogl.Component.extend({
         this._worldNormalMatrixDirty = false;
     },
 
-    _props: {
-
-        /**
-         The IFC type of this Object, if applicable.
-
-         @property ifcType
-         @default null
-         @type String
-         */
-        ifcType: {
-            set: function (ifcType) {
-                ifcType = ifcType || "DEFAULT";
-                if (this._ifcType !== ifcType) {
-                    var ifcTypeObjects = this.scene.ifcTypes;
-                    if (this._ifcType) {
-                        var objectsOfType = ifcTypeObjects[this._ifcType];
-                        if (objectsOfType) {
-                            delete objectsOfType[this.id];
-                            // TODO remove submap if now empty
-                        }
-                    }
-                    this._ifcType = ifcType;
-                    objectsOfType = ifcTypeObjects[this._ifcType];
-                    if (!objectsOfType) {
-                        objectsOfType = {};
-                        ifcTypeObjects[this._ifcType] = objectsOfType;
-                    }
-                    objectsOfType[this.id] = this;
-                }
-            },
-            get: function () {
-                return this._ifcType;
-            }
-        },
-
-        /**
-         The parent Group/Model.
-
-         The parent Group may also be set by passing this Object to the
-         Group's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
-
-         @property parent
-         @type Group
-         */
-        parent: {
-            set: function (object) {
-                if (xeogl._isNumeric(object) || xeogl._isString(object)) {
-                    var objectId = object;
-                    object = this.scene.objects[objectId];
-                    if (!object) {
-                        this.warn("Group not found: " + xeogl._inQuotes(objectId));
-                        return;
-                    }
-                }
-                if (object.scene.id !== this.scene.id) {
-                    this.error("Group not in same Scene: " + object.id);
-                    return;
-                }
-                if (this._parent && this._parent.id === object.id) {
-                    this.warn("Already a child of Group: " + object.id);
-                    return;
-                }
-                object.addChild(this);
-            },
-            get: function () {
-                return this._parent;
-            }
-        },
-
-        /**
-         The Local-space position of this Object.
-
-         @property position
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-        position: {
-            set: function (value) {
-                this._position.set(value || [0, 0, 0]);
-                this._setLocalMatrixDirty();
-                this._renderer.imageDirty();
-            },
-            get: function () {
-                return this._position;
-            }
-        },
-
-        /**
-         The Object's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
-
-         @property rotation
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-        rotation: {
-            set: function (value) {
-                this._rotation.set(value || [0, 0, 0]);
-                xeogl.math.eulerToQuaternion(this._rotation, "XYZ", this._quaternion);
-                this._setLocalMatrixDirty();
-                this._renderer.imageDirty();
-            },
-            get: function () {
-                return this._rotation;
-            }
-        },
-
-        /**
-         The Local-space rotation quaternion for this Object.
-
-         @property quaternion
-         @default [0,0,0, 1]
-         @type {Float32Array}
-         */
-        quaternion: {
-            set: function (value) {
-                this._quaternion.set(value || [0, 0, 0, 1]);
-                xeogl.math.quaternionToEuler(this._quaternion, "XYZ", this._rotation);
-                this._setLocalMatrixDirty();
-                this._renderer.imageDirty();
-            },
-            get: function () {
-                return this._quaternion;
-            }
-        },
-
-        /**
-         The Local-space scale of this Object.
-
-         @property scale
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-        scale: {
-            set: function (value) {
-                this._scale.set(value || [1, 1, 1]);
-                this._setLocalMatrixDirty();
-                this._renderer.imageDirty();
-            },
-            get: function () {
-                return this._scale;
-            }
-        },
-
-        /**
-         * This Object's local matrix.
-         *
-         * @property matrix
-         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-         * @type {Float32Array}
-         */
-        matrix: {
-            set: (function () {
-                var identityMat = xeogl.math.identityMat4();
-                return function (value) {
-                    this._localMatrix.set(value || identityMat);
-                    xeogl.math.decomposeMat4(this._localMatrix, this._position, this._quaternion, this._scale);
-                    this._localMatrixDirty = false;
-                    this._setWorldMatrixDirty();
-                    this._renderer.imageDirty();
-                };
-            })(),
-            get: function () {
-                if (this._localMatrixDirty) {
-                    this._buildLocalMatrix();
-                }
-                return this._localMatrix;
-            }
-        },
-
-        /**
-         * This Object's World matrix.
-         *
-         * @property worldMatrix
-         * @type {Float32Array}
-         */
-        worldMatrix: {
-            get: function () {
-                if (this._worldMatrixDirty) {
-                    this._buildWorldMatrix();
-                }
-                return this._worldMatrix;
-            }
-        },
-
-        /**
-         * This Object's World normal matrix.
-         *
-         * @property worldNormalMatrix
-         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-         * @type {Float32Array}
-         */
-        worldNormalMatrix: {
-            get: function () {
-                if (this._worldNormalMatrixDirty) {
-                    this._buildWorldNormalMatrix();
-                }
-                return this._worldNormalMatrix;
-            }
-        },
-
-        // worldPosition: {
-        //     get: function (optionalTarget) {
-        //         var result = optionalTarget || new Vector3();
-        //         this.updateMatrixWorld(true);
-        //         return result.setFromMatrixPosition(this.matrixWorld);
-        //     }
-        // },
-        //
-        // worldQuaternion: {
-        //     get: function () {
-        //         var position = new Vector3();
-        //         var scale = new Vector3();
-        //         return function getWorldQuaternion(optionalTarget) {
-        //             var result = optionalTarget || new Quaternion();
-        //             this.updateMatrixWorld(true);
-        //             this.matrixWorld.decompose(position, result, scale);
-        //             return result;
-        //         };
-        //     }()
-        // },
-        //
-        // worldRotation: {
-        //     get: function () {
-        //         var quaternion = new Quaternion();
-        //         return function getWorldRotation(optionalTarget) {
-        //             var result = optionalTarget || new Euler();
-        //             this.getWorldQuaternion(quaternion);
-        //             return result.setFromQuaternion(quaternion, this.rotation.order, false)
-        //         };
-        //     }
-        // }(),
-        //
-        // worldScale: {
-        //     get: (function () {
-        //         var position = new Float32Array(3);
-        //         var quaternion = new Float32Array(4);
-        //         return function getWorldScale(optionalTarget) {
-        //             var result = optionalTarget || new Float32Array(3);
-        //             xeogl.math.decomposeMat4(this.worldMatrix, position, quaternion, result);
-        //             return result;
-        //         };
-        //     })()
-        // },
-        //
-        // worldDirection: {
-        //     get: (function () {
-        //         var quaternion = new Quaternion();
-        //         return function getWorldDirection(optionalTarget) {
-        //             var result = optionalTarget || new Vector3();
-        //             this.getWorldQuaternion(quaternion);
-        //             return result.set(0, 0, 1).applyQuaternion(quaternion);
-        //         };
-        //     })()
-        // },
-
-        /**
-         Whether this Object's axis-aligned bounding box (AABB) is visible.
-
-         @property aabbVisible
-         @default false
-         @type {Boolean}
-         */
-        aabbVisible: {
-            set: function (show) {
-                if (!show && !this._aabbHelper) {
-                    return;
-                }
-                if (!this._aabbHelper) {
-                    this._aabbHelper = new xeogl.Mesh(this, {
-                        geometry: new xeogl.AABBGeometry(this, {
-                            target: this
-                        }),
-                        material: new xeogl.PhongMaterial(this, {
-                            diffuse: [0.5, 1.0, 0.5],
-                            emissive: [0.5, 1.0, 0.5],
-                            lineWidth: 2
-                        })
-                    });
-                }
-                this._aabbHelper.visible = show;
-            },
-            get: function () {
-                return this._aabbHelper ? this._aabbHelper.visible : false;
-            }
-        },
-
-        /**
-         Whether this Object's object-aligned bounding box (OBB) is visible.
-
-         @property obbVisible
-         @default false
-         @type {Boolean}
-         */
-        obbVisible: {
-            set: function (show) {
-                if (!show && !this._obbHelper) {
-                    return;
-                }
-                if (!this._obbHelper) {
-                    this._obbHelper = new xeogl.Mesh(this, {
-                        geometry: new xeogl.OBBGeometry(this, {
-                            target: this
-                        }),
-                        material: new xeogl.PhongMaterial(this, {
-                            diffuse: [0.5, 1.0, 0.5],
-                            emissive: [0.5, 1.0, 0.5],
-                            lineWidth: 2
-                        })
-                    });
-                }
-                this._obbHelper.visible = show;
-            },
-            get: function () {
-                return this._obbHelper ? this._obbHelper.visible : false;
-            }
-        }
-
-        /**
-         Set true to show the axis-aligned bounding box (AABB) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         @property aabbHierarchyVisible
-         @type {Boolean}
-         */
-
-        /**
-         Set true to show the object-aligned bounding box (obb) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         @property obbHierarchyVisible
-         @type {Boolean}
-         */
-    },
-
-    /**
-     Rotates this Object about the given Local-space axis by the given increment.
-
-     @method rotate
-     @paream {Float32Array} axis The Local-space axis about which to rotate.
-     @param {Number} angle Angle increment in degrees.
-     */
-    rotate: (function () {
-        // rotate object on axis in world space
-        // axis is assumed to be normalized
-        // method assumes no rotated parent
-        var angleAxis = new Float32Array(4);
-        var q1 = new Float32Array(4);
-        var q2 = new Float32Array(4);
-        return function rotateOnWorldAxis(axis, angle) {
-            angleAxis[0] = axis[0];
-            angleAxis[1] = axis[1];
-            angleAxis[2] = axis[2];
-            angleAxis[3] = angle * xeogl.math.DEGTORAD;
-            xeogl.math.angleAxisToQuaternion(angleAxis, q1);
-            xeogl.math.mulQuaternions(this.quaternion, q1, q2);
-            this.quaternion = q2;
-            this._setWorldMatrixDirty();
-            this._renderer.imageDirty();
-            return this;
-        };
-    })(),
-
-    /**
-     Rotates this Object about the given World-space axis by the given increment.
-
-     @method rotate
-     @paream {Float32Array} axis The local axis about which to rotate.
-     @param {Number} angle Angle increment in degrees.
-     */
-    rotateOnWorldAxis: (function () {
-        // rotate object on axis in world space
-        // axis is assumed to be normalized
-        // method assumes no rotated parent
-        var angleAxis = new Float32Array(4);
-        var q1 = new Float32Array(4);
-        return function rotateOnWorldAxis(axis, angle) {
-            angleAxis[0] = axis[0];
-            angleAxis[1] = axis[1];
-            angleAxis[2] = axis[2];
-            angleAxis[3] = angle * xeogl.math.DEGTORAD;
-            xeogl.math.angleAxisToQuaternion(angleAxis, q1);
-            xeogl.math.mulQuaternions(q1, this.quaternion, q1);
-            //this.quaternion.premultiply(q1);
-            return this;
-        };
-    })(),
-
-    /**
-     Rotates this Object about the Local-space X-axis by the given increment.
-     
-     @method rotateX
-     @param {Number} angle Angle increment in degrees. 
-     */
-    rotateX: (function () {
-        var axis = new Float32Array([1, 0, 0]);
-        return function rotateX(angle) {
-            return this.rotate(axis, angle);
-        };
-    })(),
-
-    /**
-     Rotates this Object about the Local-space Y-axis by the given increment.
-
-     @method rotateY
-     @param {Number} angle Angle increment in degrees.
-     */
-    rotateY: (function () {
-        var axis = new Float32Array([0, 1, 0]);
-        return function rotateY(angle) {
-            return this.rotate(axis, angle);
-        };
-    })(),
-
-    /**
-     Rotates this Object about the Local-space Z-axis by the given increment.
-
-     @method rotateZ
-     @param {Number} angle Angle increment in degrees.
-     */
-    rotateZ: (function () {
-        var axis = new Float32Array([0, 0, 1]);
-        return function rotateZ(angle) {
-            return this.rotate(axis, angle);
-        };
-    })(),
-
-    /**
-     * Translates this Object in Local-space by the given increment.
-     *
-     * @method translate
-     * @param {Float32Array} axis Normalized local space 3D vector along which to translate.
-     * @param {Number} distance Distance to translate along  the vector.
-     */
-    translate: (function () {
-        var veca = new Float32Array(3);
-        var vecb = new Float32Array(3);
-        return function (axis, distance) {
-            xeogl.math.vec3ApplyQuaternion(this.quaternion, axis, veca);
-            xeogl.math.mulVec3Scalar(veca, distance, vecb);
-            xeogl.math.addVec3(this.position, vecb, this.position);
-            this._setWorldMatrixDirty();
-            this._renderer.imageDirty();
-            return this;
-        };
-    })(),
-
-    /**
-     * Translates this Object along the Local-space X-axis by the given increment.
-     *
-     * @method translateX
-     * @param {Number} distance Distance to translate along  the X-axis.
-     */
-    translateX: (function () {
-        var v1 = new Float32Array([1, 0, 0]);
-        return function translateX(distance) {
-            return this.translate(v1, distance);
-        };
-    })(),
-
-    /**
-     * Translates this Object along the Local-space Y-axis by the given increment.
-     *
-     * @method translateX
-     * @param {Number} distance Distance to translate along  the Y-axis.
-     */
-    translateY: (function () {
-        var v1 = new Float32Array([0, 1, 0]);
-        return function translateY(distance) {
-            return this.translate(v1, distance);
-        };
-    })(),
-
-    /**
-     * Translates this Object along the Local-space Z-axis by the given increment.
-     *
-     * @method translateX
-     * @param {Number} distance Distance to translate along  the Z-axis.
-     */
-    translateZ: (function () {
-        var v1 = new Float32Array([0, 0, 1]);
-        return function translateZ(distance) {
-            return this.translate(v1, distance);
-        };
-    })(),
-
-    _destroy: function () {
-        if (this._parent) {
-            this._parent.removeChild(this);
-        }
-        var objectsOfType = this.scene.ifcTypes[this._ifcType];
-        if (objectsOfType) {
-            delete objectsOfType[this.id];
-            // TODO remove submap if now empty
-        }
-    }
-
-    /**
-     The axis-aligned World-space boundary of this Object.
-
-     This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     The AABB is represented by a six-element Float32Array containing the min/max extents of the
-     axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-
-     @property aabb
-     @final
-     @type {Float32Array}
-     */
-
-    /**
-     Whether this Object's axis-aligned bounding box (AABB) is visible.
-
-     @property aabbVisible
-     @default false
-     @type {Boolean}
-     */
-
-    /**
-     World-space oriented 3D bounding box (OBB) of this object.
-
-     This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
-     where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
-
-     The OBB will only be properly object-aligned if the Object has exactly one Mesh within its subtree. When
-     there are multiple Meshes, then the OBB will be set to the extents of the World-space axis-aligned boundary, equivalent
-     to {{#crossLink "Object/aabb:property"}}{{/crossLink}}.
-
-     @property obb
-     @final
-     @type {Float32Array}
-     */
-
-    /**
-     Whether this Object's object-aligned bounding box (OBB) is visible.
-
-     @property obbVisible
-     @default false
-     @type {Boolean}
-     */
-
-    /**
-     The World-space center of this Object.
-
-     This is the collective center of all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     @final
-     @returns {Float32Array}
-     */
-
-    /**
-     Indicates whether this Object is visible or not.
-
-     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
-     {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
-
-     @property visible
-     @default true
-     @type Boolean
-     */
-
-    /**
-     Indicates whether this Object is highlighted.
-
-     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     The highlight effect is configured via the
-     {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
-     within this Object's subtree.
-
-     @property highlighted
-     @default false
-     @type Boolean
-     */
-
-    /**
-     Indicates whether this Object appears selected.
-
-     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     The selected effect is configured via the
-     {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
-     within this Object's subtree.
-
-     @property selected
-     @default false
-     @type Boolean
-     */
-
-    /**
-     Indicates whether or not this Object is currently culled from view.
-
-     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
-     {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
-
-     @property culled
-     @default false
-     @type Boolean
-     */
-
-    /**
-     Indicates whether this Object is clippable.
-
-     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     Meshes are clipped by {{#crossLink "Clips"}}{{/crossLink}} components that are attached to them.
-
-     @property clippable
-     @default true
-     @type Boolean
-     */
-
-    /**
-     Indicates whether this Object is pickable or not.
-
-     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
-
-     @property pickable
-     @default true
-     @type Boolean
-     */
-
-    /**
-     Indicates whether this Object appears outlined.
-
-     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     The outlined effect is configured via the
-     {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
-     within this Object's subtree.
-
-     @property outlined
-     @default false
-     @type Boolean
-     */
-
-    /**
-     Indicates whether this Object appears ghosted.
-
-     This is applied to all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the Object's subtree.
-
-     The ghosted effect is configured via the
-     {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
-     within this Object's subtree.
-
-     @property outlined
-     @default false
-     @type Boolean
-     */
-
-    /**
-     RGB colorize color, multiplies by the rendered fragment colors.
-
-     This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}}  in the subtree.
-
-     @property colorize
-     @default [1.0, 1.0, 1.0]
-     @type Float32Array
-     */
-
-    /**
-     Opacity factor, multiplies by the rendered fragment alpha.
-
-     This is a factor in range ````[0..1]````.
-
-     @property opacity
-     @default 1.0
-     @type Number
-     */
-
-});;/**
- A **Group** is an {{#crossLink "Object"}}{{/crossLink}} that groups other Objects.
-
- Group is subclassed by (at least) {{#crossLink "Model"}}{{/crossLink}}, which is the abstract base class for {{#crossLink "GLTFModel"}}{{/crossLink}}, {{#crossLink "STLModel"}}{{/crossLink}} etc.
-
- See {{#crossLink "Object"}}{{/crossLink}} for overall usage info.
-
- @class Group
- @module xeogl
- @submodule objects
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Group.
- @param [cfg.parent] The parent Object.
- @param [cfg.children] {Array(Object)} Child Objects to attach to this Group.
- @param [cfg.visible=true] {Boolean}  Indicates if this Group is visible.
- @param [cfg.culled=true] {Boolean}  Indicates if this Group is culled from view.
- @param [cfg.pickable=true] {Boolean}  Indicates if this Group is pickable.
- @param [cfg.clippable=true] {Boolean} Indicates if this Group is clippable.
- @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this Group.
- @param [cfg.ghosted=false] {Boolean} Whether this Group is rendered as ghosted.
- @param [cfg.highlighted=false] {Boolean} Whether this Group is rendered as highlighted.
- @param [cfg.selected=false] {Boolean} Whether this Group is rendered as selected.
- @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
- @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
- @param [cfg.collidable=true] {Boolean} Whether this Group contributes to boundary calculations.
- @param [cfg.aabbVisible=false] {Boolean} Whether this Group's axis-aligned World-space bounding box is visible.
- @param [cfg.obbVisible=false] {Boolean} Whether this Group's oriented World-space bounding box is visible.
- @param [cfg.position=[0,0,0]] {Float32Array} The Group's local 3D position.
- @param [cfg.scale=[1,1,1]] {Float32Array} The Group's local scale.
- @param [cfg.rotation=[0,0,0]] {Float32Array} The Group's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
-
- @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Group's local modelling transform matrix. Overrides the position, scale and rotation parameters.
- @extends Object
- */
-xeogl.Group = xeogl.Object.extend({
-
-    /**
-     JavaScript class name for this xeogl.Group.
-
-     @property type
-     @type String
-     @final
-     */
-    type: "xeogl.Group",
-
-    // Constructor
-
-    _init: function (cfg) {
-
-        // Group class responsibilities:
-        //  - connects to child objects
-        //  - propagates state changes down to child objects
-        //  - provides AABB & OBB of self and children
-
-        this._super(cfg);
-
-        this._childList = [];
-        this._childMap = {};
-
-        this._aabb = null;
-        this._aabbDirty = true;
-        this._obb = null;
-        this._obbDirty = true;
-
-        this.visible = cfg.visible;
-        this.culled = cfg.culled;
-        this.ghosted = cfg.ghosted;
-        this.highlighted = cfg.highlighted;
-        this.selected = cfg.selected;
-        this.outlined = cfg.outlined;
-        this.clippable = cfg.clippable;
-        this.pickable = cfg.pickable;
-        this.collidable = cfg.collidable;
-
-        if (cfg.children) {
-            var children = cfg.children;
-            for (var i = 0, len = children.length; i < len; i++) {
-                this.addChild(children[i]);
-            }
-        }
-    },
-
-    _setWorldMatrixDirty: function () {
-        this._worldMatrixDirty = true;
-        this._worldNormalMatrixDirty = true;
-        if (this._childList) {
-            for (var i = 0, len = this._childList.length; i < len; i++) {
-                this._childList[i]._setWorldMatrixDirty();
-            }
-        }
-        this.fire("boundary");
-    },
-
-    _setBoundaryDirty: function () {
+    //------------------------------------------------------------------------------------------------------------------
+    // Boundary methods
+    //------------------------------------------------------------------------------------------------------------------
+
+    _setBoundaryDirty: function () { // Invalidates AABB and OBB boundaries of the Object and parent Objects
         for (var object = this; object; object = object._parent) {
             object._aabbDirty = true;
             object._obbDirty = true;
@@ -18122,15 +17447,15 @@ xeogl.Group = xeogl.Object.extend({
         this._childMap[id] = object;
         object._parent = this;
         if (inheritStates !== false) {
-            object.visible = this._visible;
-            object.culled = this._culled;
-            object.ghosted = this._ghosted;
-            object.highlited = this._highlighted;
-            object.selected = this._selected;
-            object.outlined = this._outlined;
-            object.clippable = this._clippable;
-            object.pickable = this._pickable;
-            object.collidable = this._collidable;
+            object.visible = this.visible;
+            object.culled = this.culled;
+            object.ghosted = this.ghosted;
+            object.highlited = this.highlighted;
+            object.selected = this.selected;
+            object.outlined = this.outlined;
+            object.clippable = this.clippable;
+            object.pickable = this.pickable;
+            object.collidable = this.collidable;
         }
         object._setWorldMatrixDirty();
         this._setBoundaryDirty();
@@ -18176,8 +17501,197 @@ xeogl.Group = xeogl.Object.extend({
         this._setBoundaryDirty();
     },
 
+    /**
+     Rotates the Object about the given Local-space axis by the given increment.
+
+     @method rotate
+     @paream {Float32Array} axis The Local-space axis about which to rotate.
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotate: (function () {
+        // rotate object on axis in world space
+        // axis is assumed to be normalized
+        // method assumes no rotated parent
+        var angleAxis = new Float32Array(4);
+        var q1 = new Float32Array(4);
+        var q2 = new Float32Array(4);
+        return function rotateOnWorldAxis(axis, angle) {
+            angleAxis[0] = axis[0];
+            angleAxis[1] = axis[1];
+            angleAxis[2] = axis[2];
+            angleAxis[3] = angle * xeogl.math.DEGTORAD;
+            xeogl.math.angleAxisToQuaternion(angleAxis, q1);
+            xeogl.math.mulQuaternions(this.quaternion, q1, q2);
+            this.quaternion = q2;
+            this._setWorldMatrixDirty();
+            this._setBoundaryDirty();
+            this._renderer.imageDirty();
+            return this;
+        };
+    })(),
+
+    /**
+     Rotates the Object about the given World-space axis by the given increment.
+
+     @method rotate
+     @paream {Float32Array} axis The local axis about which to rotate.
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotateOnWorldAxis: (function () {
+        // rotate object on axis in world space
+        // axis is assumed to be normalized
+        // method assumes no rotated parent
+        var angleAxis = new Float32Array(4);
+        var q1 = new Float32Array(4);
+        return function rotateOnWorldAxis(axis, angle) {
+            angleAxis[0] = axis[0];
+            angleAxis[1] = axis[1];
+            angleAxis[2] = axis[2];
+            angleAxis[3] = angle * xeogl.math.DEGTORAD;
+            xeogl.math.angleAxisToQuaternion(angleAxis, q1);
+            xeogl.math.mulQuaternions(q1, this.quaternion, q1);
+            //this.quaternion.premultiply(q1);
+            return this;
+        };
+    })(),
+
+    /**
+     Rotates the Object about the Local-space X-axis by the given increment.
+
+     @method rotateX
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotateX: (function () {
+        var axis = new Float32Array([1, 0, 0]);
+        return function rotateX(angle) {
+            return this.rotate(axis, angle);
+        };
+    })(),
+
+    /**
+     Rotates the Object about the Local-space Y-axis by the given increment.
+
+     @method rotateY
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotateY: (function () {
+        var axis = new Float32Array([0, 1, 0]);
+        return function rotateY(angle) {
+            return this.rotate(axis, angle);
+        };
+    })(),
+
+    /**
+     Rotates the Object about the Local-space Z-axis by the given increment.
+
+     @method rotateZ
+     @param {Number} angle Angle increment in degrees.
+     */
+    rotateZ: (function () {
+        var axis = new Float32Array([0, 0, 1]);
+        return function rotateZ(angle) {
+            return this.rotate(axis, angle);
+        };
+    })(),
+
+    /**
+     * Translates the Object in Local-space by the given increment.
+     *
+     * @method translate
+     * @param {Float32Array} axis Normalized local space 3D vector along which to translate.
+     * @param {Number} distance Distance to translate along  the vector.
+     */
+    translate: (function () {
+        var veca = new Float32Array(3);
+        var vecb = new Float32Array(3);
+        return function (axis, distance) {
+            xeogl.math.vec3ApplyQuaternion(this.quaternion, axis, veca);
+            xeogl.math.mulVec3Scalar(veca, distance, vecb);
+            xeogl.math.addVec3(this.position, vecb, this.position);
+            this._setWorldMatrixDirty();
+            this._setBoundaryDirty();
+            this._renderer.imageDirty();
+            return this;
+        };
+    })(),
+
+    /**
+     * Translates the Object along the Local-space X-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the X-axis.
+     */
+    translateX: (function () {
+        var v1 = new Float32Array([1, 0, 0]);
+        return function translateX(distance) {
+            return this.translate(v1, distance);
+        };
+    })(),
+
+    /**
+     * Translates the Object along the Local-space Y-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the Y-axis.
+     */
+    translateY: (function () {
+        var v1 = new Float32Array([0, 1, 0]);
+        return function translateY(distance) {
+            return this.translate(v1, distance);
+        };
+    })(),
+
+    /**
+     * Translates the Object along the Local-space Z-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the Z-axis.
+     */
+    translateZ: (function () {
+        var v1 = new Float32Array([0, 0, 1]);
+        return function translateZ(distance) {
+            return this.translate(v1, distance);
+        };
+    })(),
+
     _props: {
 
+        /**
+         The IFC type of the Object, if applicable.
+
+         @property ifcType
+         @default null
+         @type String
+         */
+        ifcType: {
+            set: function (ifcType) {
+                ifcType = ifcType || "DEFAULT";
+                if (this._ifcType !== ifcType) {
+                    var ifcTypeObjects = this.scene.ifcTypes;
+                    if (this._ifcType) {
+                        var objectsOfType = ifcTypeObjects[this._ifcType];
+                        if (objectsOfType) {
+                            delete objectsOfType[this.id];
+                            // TODO remove submap if now empty
+                        }
+                    }
+                    this._ifcType = ifcType;
+                    objectsOfType = ifcTypeObjects[this._ifcType];
+                    if (!objectsOfType) {
+                        objectsOfType = {};
+                        ifcTypeObjects[this._ifcType] = objectsOfType;
+                    }
+                    objectsOfType[this.id] = this;
+                }
+            },
+            get: function () {
+                return this._ifcType;
+            }
+        },
+
+        //------------------------------------------------------------------------------------------------------------------
+        // Children and parent properties
+        //------------------------------------------------------------------------------------------------------------------
 
         /**
          * Convenience property containing the number of child {{#crossLink "Object"}}Objects{{/crossLink}}.
@@ -18219,9 +17733,240 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         The axis-aligned World-space boundary of this Group.
+         The parent Group/Model.
 
-         This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+         The parent Group may also be set by passing the Object to the
+         Group/Model's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
+
+         @property parent
+         @type Group
+         */
+        parent: {
+            set: function (object) {
+                if (xeogl._isNumeric(object) || xeogl._isString(object)) {
+                    var objectId = object;
+                    object = this.scene.objects[objectId];
+                    if (!object) {
+                        this.warn("Group not found: " + xeogl._inQuotes(objectId));
+                        return;
+                    }
+                }
+                if (object.scene.id !== this.scene.id) {
+                    this.error("Group not in same Scene: " + object.id);
+                    return;
+                }
+                if (this._parent && this._parent.id === object.id) {
+                    this.warn("Already a child of Group: " + object.id);
+                    return;
+                }
+                object.addChild(this);
+            },
+            get: function () {
+                return this._parent;
+            }
+        },
+
+        //------------------------------------------------------------------------------------------------------------------
+        // Transform properties
+        //------------------------------------------------------------------------------------------------------------------
+
+        /**
+         The Object's Local-space translation.
+
+         @property position
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+        position: {
+            set: function (value) {
+                this._position.set(value || [0, 0, 0]);
+                this._setLocalMatrixDirty();
+                this._setBoundaryDirty();
+                this._renderer.imageDirty();
+            },
+            get: function () {
+                return this._position;
+            }
+        },
+
+        /**
+         The Object's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+         @property rotation
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+        rotation: {
+            set: function (value) {
+                this._rotation.set(value || [0, 0, 0]);
+                xeogl.math.eulerToQuaternion(this._rotation, "XYZ", this._quaternion);
+                this._setLocalMatrixDirty();
+                this._setBoundaryDirty();
+                this._renderer.imageDirty();
+            },
+            get: function () {
+                return this._rotation;
+            }
+        },
+
+        /**
+         The Object's Local-space rotation quaternion.
+
+         @property quaternion
+         @default [0,0,0, 1]
+         @type {Float32Array}
+         */
+        quaternion: {
+            set: function (value) {
+                this._quaternion.set(value || [0, 0, 0, 1]);
+                xeogl.math.quaternionToEuler(this._quaternion, "XYZ", this._rotation);
+                this._setLocalMatrixDirty();
+                this._setBoundaryDirty();
+                this._renderer.imageDirty();
+            },
+            get: function () {
+                return this._quaternion;
+            }
+        },
+
+        /**
+         The Object's Local-space scale.
+
+         @property scale
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+        scale: {
+            set: function (value) {
+                this._scale.set(value || [1, 1, 1]);
+                this._setLocalMatrixDirty();
+                this._setBoundaryDirty();
+                this._renderer.imageDirty();
+            },
+            get: function () {
+                return this._scale;
+            }
+        },
+
+        /**
+         * The Object's local matrix.
+         *
+         * @property matrix
+         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         * @type {Float32Array}
+         */
+        matrix: {
+            set: (function () {
+                var identityMat = xeogl.math.identityMat4();
+                return function (value) {
+                    this._localMatrix.set(value || identityMat);
+                    xeogl.math.decomposeMat4(this._localMatrix, this._position, this._quaternion, this._scale);
+                    this._localMatrixDirty = false;
+                    this._setWorldMatrixDirty();
+                    this._setBoundaryDirty();
+                    this._renderer.imageDirty();
+                };
+            })(),
+            get: function () {
+                if (this._localMatrixDirty) {
+                    this._buildLocalMatrix();
+                }
+                return this._localMatrix;
+            }
+        },
+
+        /**
+         * The Object's World matrix.
+         *
+         * @property worldMatrix
+         * @type {Float32Array}
+         */
+        worldMatrix: {
+            get: function () {
+                if (this._worldMatrixDirty) {
+                    this._buildWorldMatrix();
+                }
+                return this._worldMatrix;
+            }
+        },
+
+        /**
+         * This Object's World normal matrix.
+         *
+         * @property worldNormalMatrix
+         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         * @type {Float32Array}
+         */
+        worldNormalMatrix: {
+            get: function () {
+                if (this._worldNormalMatrixDirty) {
+                    this._buildWorldNormalMatrix();
+                }
+                return this._worldNormalMatrix;
+            }
+        },
+
+        // worldPosition: {
+        //     get: function (optionalTarget) {
+        //         var result = optionalTarget || new Vector3();
+        //         this.updateMatrixWorld(true);
+        //         return result.setFromMatrixPosition(this.matrixWorld);
+        //     }
+        // },
+        //
+        // worldQuaternion: {
+        //     get: function () {
+        //         var position = new Vector3();
+        //         var scale = new Vector3();
+        //         return function getWorldQuaternion(optionalTarget) {
+        //             var result = optionalTarget || new Quaternion();
+        //             this.updateMatrixWorld(true);
+        //             this.matrixWorld.decompose(position, result, scale);
+        //             return result;
+        //         };
+        //     }()
+        // },
+        //
+        // worldRotation: {
+        //     get: function () {
+        //         var quaternion = new Quaternion();
+        //         return function getWorldRotation(optionalTarget) {
+        //             var result = optionalTarget || new Euler();
+        //             this.getWorldQuaternion(quaternion);
+        //             return result.setFromQuaternion(quaternion, this.rotation.order, false)
+        //         };
+        //     }
+        // }(),
+        //
+        // worldScale: {
+        //     get: (function () {
+        //         var position = new Float32Array(3);
+        //         var quaternion = new Float32Array(4);
+        //         return function getWorldScale(optionalTarget) {
+        //             var result = optionalTarget || new Float32Array(3);
+        //             xeogl.math.decomposeMat4(this.worldMatrix, position, quaternion, result);
+        //             return result;
+        //         };
+        //     })()
+        // },
+        //
+        // worldDirection: {
+        //     get: (function () {
+        //         var quaternion = new Quaternion();
+        //         return function getWorldDirection(optionalTarget) {
+        //             var result = optionalTarget || new Vector3();
+        //             this.getWorldQuaternion(quaternion);
+        //             return result.set(0, 0, 1).applyQuaternion(quaternion);
+        //         };
+        //     })()
+        // },
+
+        //------------------------------------------------------------------------------------------------------------------
+        // Boundary properties
+        //------------------------------------------------------------------------------------------------------------------
+
+        /**
+         The axis-aligned World-space boundary of the Object.
 
          The AABB is represented by a six-element Float32Array containing the min/max extents of the
          axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
@@ -18240,9 +17985,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         World-space oriented 3D bounding box (OBB) of this Group.
-
-         This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+         World-space oriented 3D bounding box (OBB) of the Object.
 
          The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
          where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
@@ -18265,9 +18008,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         The World-space center of this Group.
-
-         This is the collective center of all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+         The Object's World-space center.
 
          @property center
          @final
@@ -18281,12 +18022,83 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         Indicates whether this Group is visible or not.
+         Whether the Object's axis-aligned bounding box (AABB) is visible.
 
-         This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+         @property aabbVisible
+         @default false
+         @type {Boolean}
+         */
+        aabbVisible: {
+            set: function (show) {
+                if (!show && !this._aabbHelper) {
+                    return;
+                }
+                if (!this._aabbHelper) {
+                    this._aabbHelper = new xeogl.Mesh(this, {
+                        geometry: new xeogl.AABBGeometry(this, {
+                            target: this
+                        }),
+                        material: new xeogl.PhongMaterial(this, {
+                            diffuse: [0.5, 1.0, 0.5],
+                            emissive: [0.5, 1.0, 0.5],
+                            lineWidth: 2
+                        })
+                    });
+                }
+                this._aabbHelper.visible = show;
+            },
+            get: function () {
+                return this._aabbHelper ? this._aabbHelper.visible : false;
+            }
+        },
 
-         The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
-         {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+        /**
+         Whether the Object's object-aligned bounding box (OBB) is visible.
+
+         @property obbVisible
+         @default false
+         @type {Boolean}
+         */
+        obbVisible: {
+            set: function (show) {
+                if (!show && !this._obbHelper) {
+                    return;
+                }
+                if (!this._obbHelper) {
+                    this._obbHelper = new xeogl.Mesh(this, {
+                        geometry: new xeogl.OBBGeometry(this, {
+                            target: this
+                        }),
+                        material: new xeogl.PhongMaterial(this, {
+                            diffuse: [0.5, 1.0, 0.5],
+                            emissive: [0.5, 1.0, 0.5],
+                            lineWidth: 2
+                        })
+                    });
+                }
+                this._obbHelper.visible = show;
+            },
+            get: function () {
+                return this._obbHelper ? this._obbHelper.visible : false;
+            }
+        },
+
+        /**
+         Set true to show the axis-aligned bounding box (AABB) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         @property aabbHierarchyVisible
+         @type {Boolean}
+         */
+
+        /**
+         Set true to show the object-aligned bounding box (obb) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+         @property obbHierarchyVisible
+         @type {Boolean}
+         */
+
+        /**
+         Indicates whether or not the Object is currently visible.
 
          @property visible
          @default true
@@ -18306,106 +18118,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         Set true to show the axis-aligned bounding box (AABB) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         @property aabbHierarchyVisible
-         @default false
-         @type {Boolean}
-         */
-        aabbHierarchyVisible: {
-            set: function (visible) {
-                var child;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    child = this._childList[i];
-                    if (child.children) {
-                        child.aabbHierarchyVisible = visible;
-                    } else {
-                        child.aabbVisible = visible;
-                    }
-                }
-            }
-        },
-
-        /**
-         Set true to show the object-aligned bounding box (obb) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         @property obbHierarchyVisible
-         @default false
-         @type {Boolean}
-         */
-        obbHierarchyVisible: {
-            set: function (visible) {
-                var child;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    child = this._childList[i];
-                    if (child.children) {
-                        child.obbHierarchyVisible = visible;
-                    } else {
-                        child.obbVisible = visible;
-                    }
-                }
-            }
-        },
-
-        /**
-         Indicates whether this Group is highlighted.
-
-         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         The highlight effect is configured via the
-         {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
-         within this Group's subtree.
-
-         @property highlighted
-         @default false
-         @type Boolean
-         */
-        highlighted: {
-            set: function (highlighted) {
-                highlighted = !!highlighted;
-                this._highlighted = highlighted;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].highlighted = highlighted;
-                }
-            },
-            get: function () {
-                return this._highlighted;
-            }
-        },
-
-        /**
-         Indicates whether this Group appears selected.
-
-         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         The selected effect is configured via the
-         {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
-         within this Group's subtree.
-
-         @property selected
-         @default false
-         @type Boolean
-         */
-        selected: {
-            set: function (selected) {
-                selected = !!selected;
-                this._selected = selected;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].selected = selected;
-                }
-            },
-            get: function () {
-                return this._selected;
-            }
-        },
-
-        /**
-         Indicates whether or not this Group is currently culled from view.
-
-         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
-         {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+         Indicates whether or not the Object is currently culled from view.
 
          @property culled
          @default false
@@ -18425,11 +18138,47 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         Indicates whether this Group is clippable.
+         Indicates whether the Object is highlighted.
 
-         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+         @property highlighted
+         @default false
+         @type Boolean
+         */
+        highlighted: {
+            set: function (highlighted) {
+                highlighted = !!highlighted;
+                this._highlighted = highlighted;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].highlighted = highlighted;
+                }
+            },
+            get: function () {
+                return this._highlighted;
+            }
+        },
 
-         {{#crossLink "Mesh"}}Mesh{{/crossLink}}  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree are clipped by {{#crossLink "Clips"}}{{/crossLink}} components that are attached to them.
+        /**
+         Indicates whether the Object appears selected.
+
+         @property selected
+         @default false
+         @type Boolean
+         */
+        selected: {
+            set: function (selected) {
+                selected = !!selected;
+                this._selected = selected;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].selected = selected;
+                }
+            },
+            get: function () {
+                return this._selected;
+            }
+        },
+
+        /**
+         Indicates whether the Object is clippable.
 
          @property clippable
          @default true
@@ -18449,9 +18198,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         Indicates whether this Group is included in boundary calculations.
-
-         This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+         Indicates whether the Object is included in boundary calculations.
 
          @property collidable
          @default true
@@ -18471,9 +18218,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         Indicates whether this Group is pickable or not.
-
-         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+         Indicates whether the Object is pickable or not.
 
          Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
 
@@ -18496,8 +18241,6 @@ xeogl.Group = xeogl.Object.extend({
 
         /**
          RGB colorize color, multiplies by the rendered fragment color.
-
-         This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}}  in the subtree.
 
          @property colorize
          @default [1.0, 1.0, 1.0]
@@ -18557,13 +18300,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         Indicates whether this Group appears outlined.
-
-         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         The outlined effect is configured via the
-         {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
-         within this Group's subtree.
+         Indicates whether the Object appears outlined.
 
          @property outlined
          @default false
@@ -18583,13 +18320,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         /**
-         Indicates whether this Group appears ghosted.
-
-         This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         The ghosted effect is configured via the
-         {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
-         within this Group's subtree.
+         Indicates whether the Object appears ghosted.
 
          @property outlined
          @default false
@@ -18607,171 +18338,504 @@ xeogl.Group = xeogl.Object.extend({
                 return this._ghosted;
             }
         }
-
-        //--------------------------------------------------------------------------------------------------------------
-        // Redefining comments for base class properties to help with documentation navigation
-        //--------------------------------------------------------------------------------------------------------------
-
-        /**
-         The parent Group/Model.
-
-         The parent Group may also be set by passing this Object to the
-         Group's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
-
-         @property parent
-         @type Group
-         */
-
-        /**
-         The IFC type of this Group, if applicable.
-
-         @property ifcType
-         @default null
-         @type String
-         */
-
-        /**
-         The Local-space position of this Group.
-
-         @property position
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-
-        /**
-         The Group's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
-
-         @property rotation
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-
-        /**
-         The Local-space rotation quaternion for this Group.
-
-         @property quaternion
-         @default [0,0,0, 1]
-         @type {Float32Array}
-         */
-
-        /**
-         The Local-space scale of this Group.
-
-         @property scale
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-
-        /**
-         * This Group's local matrix.
-         *
-         * @property matrix
-         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-         * @type {Float32Array}
-         */
-
-        /**
-         * This Group's World matrix.
-         *
-         * @property worldMatrix
-         * @type {Float32Array}
-         */
-
-        /**
-         * This Group's World normal matrix.
-         *
-         * @property worldNormalMatrix
-         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-         * @type {Float32Array}
-         */
-
-        /**
-         Rotates this Group about the given Local-space axis by the given increment.
-
-         @method rotate
-         @paream {Float32Array} axis The Local-space axis about which to rotate.
-         @param {Number} angle Angle increment in degrees.
-         */
-
-        /**
-         Rotates this Group about the given World-space axis by the given increment.
-
-         @method rotate
-         @paream {Float32Array} axis The local axis about which to rotate.
-         @param {Number} angle Angle increment in degrees.
-         */
-
-        /**
-         Rotates this Group about the Local-space X-axis by the given increment.
-
-         @method rotateX
-         @param {Number} angle Angle increment in degrees.
-         */
-
-        /**
-         Rotates this Group about the Local-space Y-axis by the given increment.
-
-         @method rotateY
-         @param {Number} angle Angle increment in degrees.
-         */
-
-        /**
-         Rotates this Group about the Local-space Z-axis by the given increment.
-
-         @method rotateZ
-         @param {Number} angle Angle increment in degrees.
-         */
-
-        /**
-         * Translates this Group in Local-space by the given increment.
-         *
-         * @method translate
-         * @param {Float32Array} axis Normalized local space 3D vector along which to translate.
-         * @param {Number} distance Distance to translate along  the vector.
-         */
-
-        /**
-         * Translates this Group along the Local-space X-axis by the given increment.
-         *
-         * @method translateX
-         * @param {Number} distance Distance to translate along  the X-axis.
-         */
-
-        /**
-         * Translates this Group along the Local-space Y-axis by the given increment.
-         *
-         * @method translateX
-         * @param {Number} distance Distance to translate along  the Y-axis.
-         */
-
-        /**
-         * Translates this Group along the Local-space Z-axis by the given increment.
-         *
-         * @method translateX
-         * @param {Number} distance Distance to translate along  the Z-axis.
-         */
-
-        /**
-         Whether this Group's axis-aligned bounding box (AABB) is visible.
-
-         @property aabbVisible
-         @default false
-         @type {Boolean}
-         */
-
-        /**
-         Whether this Group's object-aligned bounding box (OBB) is visible.
-
-         @property obbVisible
-         @default false
-         @type {Boolean}
-         */
     },
 
     _destroy: function () {
+
         this._super();
+
         this.removeChildren();
+
+        if (this._parent) {
+            this._parent.removeChild(this);
+        }
+        var objectsOfType = this.scene.ifcTypes[this._ifcType];
+        if (objectsOfType) {
+            delete objectsOfType[this.id];
+            // TODO remove submap if now empty
+        }
     }
+});;/**
+ A **Group** is an {{#crossLink "Object"}}{{/crossLink}} that groups other Objects.
+
+ Group is subclassed by (at least) {{#crossLink "Model"}}{{/crossLink}}, which is the abstract base class for {{#crossLink "GLTFModel"}}{{/crossLink}}, {{#crossLink "STLModel"}}{{/crossLink}} etc.
+
+ See {{#crossLink "Object"}}{{/crossLink}} for overall usage info.
+
+ @class Group
+ @module xeogl
+ @submodule objects
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Group.
+
+ @param [cfg.ifcType] {String} The Group's IFC type, if applicable.
+
+ @param [cfg.parent] The parent Object.
+ @param [cfg.children] {Array(Object)} Child Objects to attach to this Group.
+
+ @param [cfg.position=[0,0,0]] {Float32Array} The Group's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The Group's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The Group's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Group's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+
+ @param [cfg.visible=true] {Boolean}  Indicates if this Group is visible.
+ @param [cfg.culled=false] {Boolean}  Indicates if this Group is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Group is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Group is clippable.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this Group.
+ @param [cfg.ghosted=false] {Boolean} Whether this Group is rendered as ghosted.
+ @param [cfg.highlighted=false] {Boolean} Whether this Group is rendered as highlighted.
+ @param [cfg.selected=false] {Boolean} Whether this Group is rendered as selected.
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
+ @param [cfg.collidable=true] {Boolean} Whether this Group contributes to boundary calculations.
+ @param [cfg.aabbVisible=false] {Boolean} Whether this Group's axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean} Whether this Group's oriented World-space bounding box is visible.
+
+ @extends Object
+ */
+xeogl.Group = xeogl.Object.extend({
+
+    /**
+     JavaScript class name for this xeogl.Group.
+
+     @property type
+     @type String
+     @final
+     */
+    type: "xeogl.Group",
+
+    _init: function (cfg) {
+        this._super(cfg); // Call xeogl.Object._init()
+    }
+
+    /**
+     The IFC type of this Group, if applicable.
+
+     @property ifcType
+     @default null
+     @type String
+     */
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Children and parent
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     The parent Group/Model.
+
+     The parent Group may also be set by passing this Object to the
+     Group's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
+
+     @property parent
+     @type Group
+     */
+
+    /**
+     Adds a child {{#crossLink "Object"}}{{/crossLink}}.
+
+     The child Object may be specified by ID, instance or JSON definition.
+
+     The child Object must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Group, and may not be a parent of this Group.
+
+     The child object's transforms will become relative to this Group.
+
+     Unless overridden (see params), the child will automatically inherit the values of these properties of this Group:
+
+     * {{#crossLink "Group/visible:property"}}{{/crossLink}}
+     * {{#crossLink "Group/culled:property"}}{{/crossLink}}
+     * {{#crossLink "Group/ghosted:property"}}{{/crossLink}}
+     * {{#crossLink "Group/highlighted:property"}}{{/crossLink}}
+     * {{#crossLink "Group/selected:property"}}{{/crossLink}}
+     * {{#crossLink "Group/outlined:property"}}{{/crossLink}}
+     * {{#crossLink "Group/clippable:property"}}{{/crossLink}}
+     * {{#crossLink "Group/pickable:property"}}{{/crossLink}}
+     * {{#crossLink "Group/collidable:property"}}{{/crossLink}}
+
+     @method addChild
+     @param {Number|String|*|Object} object ID, definition or instance of an Object type or subtype.
+     @param {Boolean} [inheritStates] Option to prevent the Object from inheriting values of this Group's properties.
+     @returns {Object} The child Object.
+     */
+
+    /**
+     * Convenience property containing the number of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+     *
+     * @property numChildren
+     * @final
+     * @type Number
+     */
+
+    /**
+     Array of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+     @property children
+     @final
+     @type Array
+     */
+
+    /**
+     Child {{#crossLink "Object"}}Objects{{/crossLink}} mapped to their IDs.
+
+     @property childMap
+     @final
+     @type {*}
+     */
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Transform properties
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     The Group's Local-space position.
+
+     @property position
+     @default [0,0,0]
+     @type {Float32Array}
+     */
+
+    /**
+     The Group's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+     @property rotation
+     @default [0,0,0]
+     @type {Float32Array}
+     */
+
+    /**
+     The Group's Local-space rotation quaternion.
+
+     @property quaternion
+     @default [0,0,0, 1]
+     @type {Float32Array}
+     */
+
+    /**
+     The Group's Local-space scale.
+
+     @property scale
+     @default [0,0,0]
+     @type {Float32Array}
+     */
+
+    /**
+     * The Group's local matrix.
+     *
+     * @property matrix
+     * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+     * @type {Float32Array}
+     */
+
+    /**
+     * The Group's World matrix.
+     *
+     * @property worldMatrix
+     * @type {Float32Array}
+     */
+
+    /**
+     * The Group's World normal matrix.
+     *
+     * @property worldNormalMatrix
+     * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+     * @type {Float32Array}
+     */
+
+    /**
+     Rotates this Group about the given Local-space axis by the given increment.
+
+     @method rotate
+     @paream {Float32Array} axis The Local-space axis about which to rotate.
+     @param {Number} angle Angle increment in degrees.
+     */
+
+    /**
+     Rotates this Group about the given World-space axis by the given increment.
+
+     @method rotate
+     @paream {Float32Array} axis The local axis about which to rotate.
+     @param {Number} angle Angle increment in degrees.
+     */
+
+    /**
+     Rotates this Group about the Local-space X-axis by the given increment.
+
+     @method rotateX
+     @param {Number} angle Angle increment in degrees.
+     */
+
+    /**
+     Rotates this Group about the Local-space Y-axis by the given increment.
+
+     @method rotateY
+     @param {Number} angle Angle increment in degrees.
+     */
+
+    /**
+     Rotates this Group about the Local-space Z-axis by the given increment.
+
+     @method rotateZ
+     @param {Number} angle Angle increment in degrees.
+     */
+
+    /**
+     * Translates this Group in Local-space by the given increment.
+     *
+     * @method translate
+     * @param {Float32Array} axis Normalized local space 3D vector along which to translate.
+     * @param {Number} distance Distance to translate along  the vector.
+     */
+
+    /**
+     * Translates this Group along the Local-space X-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the X-axis.
+     */
+
+    /**
+     * Translates this Group along the Local-space Y-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the Y-axis.
+     */
+
+    /**
+     * Translates this Group along the Local-space Z-axis by the given increment.
+     *
+     * @method translateX
+     * @param {Number} distance Distance to translate along  the Z-axis.
+     */
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Boundaries
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     The Group's axis-aligned World-space boundary.
+
+     This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+
+     The AABB is represented by a six-element Float32Array containing the min/max extents of the
+     axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+
+     @property aabb
+     @final
+     @type {Float32Array}
+     */
+
+    /**
+     The Group's World-space oriented 3D bounding box (OBB).
+
+     This encloses all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+
+     The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+     where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+
+     The OBB will only be properly object-aligned if the Object has exactly one Mesh within its subtree. When
+     there are multiple Meshes, then the OBB will be set to the extents of the World-space axis-aligned boundary, equivalent
+     to {{#crossLink "Object/aabb:property"}}{{/crossLink}}.
+
+     @property obb
+     @final
+     @type {Float32Array}
+     */
+
+    /**
+     The Group's World-space center.
+
+     This is the collective center of all the {{#crossLink "Mesh"}}Meshes{{/crossLink}} within the subtree.
+
+     @property center
+     @final
+     @returns {Float32Array}
+     */
+
+    //------------------------------------------------------------------------------------------------------------------
+    // States
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     Indicates whether this Group is visible or not.
+
+     This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+     {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+     @property visible
+     @default true
+     @type Boolean
+     */
+
+    /**
+     Whether this Group's axis-aligned bounding box (AABB) is visible.
+
+     @property aabbVisible
+     @default false
+     @type {Boolean}
+     */
+
+    /**
+     Whether this Group's object-aligned bounding box (OBB) is visible.
+
+     @property obbVisible
+     @default false
+     @type {Boolean}
+     */
+
+    /**
+     Set true to show the axis-aligned bounding box (AABB) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     @property aabbHierarchyVisible
+     @default false
+     @type {Boolean}
+     */
+
+    /**
+     Set true to show the object-aligned bounding box (obb) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     @property obbHierarchyVisible
+     @default false
+     @type {Boolean}
+     */
+
+    /**
+     Indicates whether this Group is highlighted.
+
+     This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     The highlight effect is configured via the
+     {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+     within this Group's subtree.
+
+     @property highlighted
+     @default false
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Group appears selected.
+
+     This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     The selected effect is configured via the
+     {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+     within this Group's subtree.
+
+     @property selected
+     @default false
+     @type Boolean
+     */
+
+    /**
+     Indicates whether or not this Group is currently culled from view.
+
+     This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     The Object is only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+     {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+     @property culled
+     @default false
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Group is clippable.
+
+     This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     {{#crossLink "Mesh"}}Mesh{{/crossLink}}  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree are clipped by {{#crossLink "Clips"}}{{/crossLink}} components that are attached to them.
+
+     @property clippable
+     @default true
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Group is included in boundary calculations.
+
+     This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     @property collidable
+     @default true
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Group is pickable or not.
+
+     This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+     @property pickable
+     @default true
+     @type Boolean
+     */
+
+    /**
+     RGB colorize color, multiplies by the rendered fragment color.
+
+     This is applied to all  {{#crossLink "Object"}}Objects{{/crossLink}}  in the subtree.
+
+     @property colorize
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+
+    /**
+     Opacity factor, multiplies by the rendered fragment alpha.
+
+     This is a factor in range ````[0..1]````.
+
+     @property opacity
+     @default 1.0
+     @type Number
+     */
+
+    /**
+     Indicates whether this Group appears outlined.
+
+     This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     The outlined effect is configured via the
+     {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+     within this Group's subtree.
+
+     @property outlined
+     @default false
+     @type Boolean
+     */
+
+    /**
+     Indicates whether this Group appears ghosted.
+
+     This is applied to all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+
+     The ghosted effect is configured via the
+     {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}} on the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
+     within this Group's subtree.
+
+     @property outlined
+     @default false
+     @type Boolean
+     */
+
+    /**
+     The parent Group/Model.
+
+     The parent Group may also be set by passing this Object to the
+     Group's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
+
+     @property parent
+     @type Group
+     */
 });;/**
  A **Mesh** is an {{#crossLink "Object"}}{{/crossLink}} that represents a drawable 3D primitive.
 
@@ -19239,29 +19303,23 @@ xeogl.Group = xeogl.Object.extend({
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Mesh.
 
+ @param [cfg.ifcType] {String} The Mesh's IFC type, if applicable.
+
+ @param [cfg.position=[0,0,0]] {Float32Array} The Mesh's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The Mesh's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The Mesh's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Mesh's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+
  @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
-
  @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
-
- @param [cfg.visible=true] {Boolean}  Indicates if this Mesh is visible.
- @param [cfg.culled=true] {Boolean}  Indicates if this Mesh is culled from view.
- @param [cfg.pickable=true] {Boolean}  Indicates if this Mesh is pickable.
- @param [cfg.clippable=true] {Boolean} Indicates if this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
- @param [cfg.collidable=true] {Boolean} Whether this Mesh is included in boundary calculations.
- @param [cfg.castShadow=true] {Boolean} Whether this Mesh casts shadows.
- @param [cfg.receiveShadow=true] {Boolean} Whether this Mesh receives shadows.
- @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this mesh, as configured by the Mesh's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
  @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghosted=false] {Boolean} Whether this mesh is rendered as ghosted, as configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
  @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlighted=false] {Boolean} Whether this mesh is rendered as highlighted, as configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
  @param [cfg.highlightMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
- @param [cfg.selected=false] {Boolean} Whether this mesh is rendered as selected, as configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
  @param [cfg.selectedMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define selected appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
@@ -19269,13 +19327,26 @@ xeogl.Group = xeogl.Object.extend({
  @param [cfg.layer=0] {Number} Indicates this Mesh's rendering priority, typically used for transparency sorting,
  @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Mesh. This is useful for skybox Meshes.
  @param [cfg.billboard="none"] {String} Specifies the billboarding behaviour for this Mesh. Options are "none", "spherical" and "cylindrical".
- @param [cfg.aabbVisible=false] {Boolean} Whether this Mesh's axis-aligned World-space bounding box is visible.
- @param [cfg.obbVisible=false] {Boolean} Whether this Mesh's oriented World-space bounding box is visible.
- @param [cfg.position=[0,0,0]] {Float32Array} The Mesh's local 3D position.
- @param [cfg.scale=[1,1,1]] {Float32Array} The Mesh's local scale.
- @param [cfg.rotation=[0,0,0]] {Float32Array} The Mesh's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
- @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Mesh's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+
+ @param [cfg.visible=true] {Boolean}  Indicates if this Mesh is visible.
+ @param [cfg.culled=false] {Boolean}  Indicates if this Mesh is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Mesh is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
+ @param [cfg.collidable=true] {Boolean} Whether this Mesh is included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean} Whether this Mesh casts shadows.
+ @param [cfg.receiveShadow=true] {Boolean} Whether this Mesh receives shadows.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this mesh, as configured by the Mesh's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
+ @param [cfg.ghosted=false] {Boolean} Whether this mesh is rendered as ghosted, as configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+ @param [cfg.highlighted=false] {Boolean}   Whether this mesh is rendered as highlighted, as configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+ @param [cfg.selected=false] {Boolean}      Whether this mesh is rendered as selected, as configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+ @param [cfg.aabbVisible=false] {Boolean}   Whether this Mesh's axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean}    Whether this Mesh's oriented World-space bounding box is visible.
+
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
+
  @param [cfg.loading=false] {Boolean} Flag which indicates that this Mesh is freshly loaded.
+
  @extends Object
  */
 
@@ -19297,7 +19368,7 @@ xeogl.Group = xeogl.Object.extend({
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            var self = this;
 
             this._state = new xeogl.renderer.Modes({
                 visible: true,
@@ -19317,8 +19388,6 @@ xeogl.Group = xeogl.Object.extend({
                 hash: ""
             });
 
-            var self = this;
-
             this._modelTransformState = new xeogl.renderer.Transform({
                 getMatrix: function () {
                     return self.worldMatrix;
@@ -19330,14 +19399,10 @@ xeogl.Group = xeogl.Object.extend({
 
             this._objectId = null; // Renderer object
             this._loading = cfg.loading !== false;
-
             this._aabbDirty = true;
             this._obbDirty = true;
-
             this._worldPositions = null;
             this._worldPositionsDirty = true;
-
-            // Components
 
             this.geometry = cfg.geometry;
             this.material = cfg.material;
@@ -19347,55 +19412,186 @@ xeogl.Group = xeogl.Object.extend({
             this.highlightMaterial = cfg.highlightMaterial;
             this.selectedMaterial = cfg.selectedMaterial;
 
-            // Properties
+            // xeogl.Mesh overrides xeogl.Object's state properties, (eg. visible, ghosted etc)
+            // and those redefined properties are being set here through the super constructor.
 
-            this.visible = cfg.visible;
-            this.culled = cfg.culled;
-            this.pickable = cfg.pickable;
-            this.clippable = cfg.clippable;
-            this.collidable = cfg.collidable;
-            this.castShadow = cfg.castShadow;
-            this.receiveShadow = cfg.receiveShadow;
-            this.outlined = cfg.outlined;
-            this.layer = cfg.layer;
-            this.stationary = cfg.stationary;
-            this.billboard = cfg.billboard;
-            this.solid = cfg.solid;
-            this.ghosted = cfg.ghosted;
-            this.highlighted = cfg.highlighted;
-            this.selected = cfg.selected;
-            this.colorize = cfg.colorize;
-            this.opacity = cfg.opacity;
+            this._super(cfg); // Call xeogl.Object._init()
         },
 
-        _setWorldMatrixDirty: function () {
-            this._worldMatrixDirty = true;
-            this._worldNormalMatrixDirty = true;
-            this._setBoundaryDirty();
-        },
-
-        _setBoundaryDirty: function () {
-            this._worldPositionsDirty = true;
-            for (var object = this; object; object = object._parent) {
-                object._aabbDirty = true;
-                object._obbDirty = true;
-            }
-            //var lights = this._attached.lights;
-            //if (lights) {
-            //    lights._shadowsDirty(); // Need to re-render shadow maps
-            //}
-            /**
-             Fired whenever this Mesh's World-space boundary changes.
-
-             Get the latest boundary from the Mesh's {{#crossLink "Mesh/aabb:property"}}{{/crossLink}}
-             and {{#crossLink "Mesh/obb:property"}}{{/crossLink}} properties.
-
-             @event boundary
-             */
-            this.fire("boundary");
-        },
 
         _props: {
+
+            //------------------------------------------------------------------------------------------------------------------
+            // Transform properties
+            //------------------------------------------------------------------------------------------------------------------
+
+            /**
+             The Mesh's Local-space translation.
+
+             @property position
+             @default [0,0,0]
+             @type {Float32Array}
+             */
+
+            /**
+             The Meshes's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+             @property rotation
+             @default [0,0,0]
+             @type {Float32Array}
+             */
+
+            /**
+             The Mesh's Local-space rotation quaternion.
+
+             @property quaternion
+             @default [0,0,0, 1]
+             @type {Float32Array}
+             */
+
+            /**
+             The Mesh's Local-space scale.
+
+             @property scale
+             @default [0,0,0]
+             @type {Float32Array}
+             */
+
+            /**
+             The Mesh's local matrix.
+
+             @property matrix
+             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             @type {Float32Array}
+             */
+
+            /**
+             The Mesh's World matrix.
+
+             @property worldMatrix
+             @type {Float32Array}
+             */
+
+            /**
+             * This Object's World normal matrix.
+             *
+             * @property worldNormalMatrix
+             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             * @type {Float32Array}
+             */
+
+            //----------------------------------------------------------------------------------------------------------
+            // Boundary properties
+            //----------------------------------------------------------------------------------------------------------
+
+            /**
+             * This Mesh's World-space axis-aligned 3D boundary (AABB).
+             *
+             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+             *
+             * @property aabb
+             * @final
+             * @type {Float32Array}
+             */
+            aabb: { // Overrides xeogl.Object.aabb
+                get: function () {
+                    if (this._aabbDirty) {
+                        this._aabbDirty = false;
+                        var math = xeogl.math;
+                        var geometry = this._attached.geometry;
+                        if (!this._aabb) {
+                            this._aabb = math.AABB3();
+                        }
+                        if (!this._obb) {
+                            this._obb = math.OBB3();
+                        }
+                        math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
+                        math.OBB3ToAABB3(this._obb, this._aabb);
+                    }
+                    return this._aabb;
+                }
+            },
+
+            /**
+             * This Mesh's World-space oriented 3D boundary (OBB).
+             *
+             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+             *
+             * @property obb
+             * @final
+             * @type {Float32Array}
+             */
+            obb: { // Overrides xeogl.Object.obb
+                get: function () {
+                    if (this._obbDirty) {
+                        this._obbDirty = false;
+                        var geometry = this._attached.geometry;
+                        if (!this._obb) {
+                            this._obb = xeogl.math.OBB3();
+                        }
+                        xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
+                    }
+                    return this._obb;
+                }
+            },
+
+            /**
+             * World-space 3D center of this Mesh.
+             *
+             * @property center
+             * @final
+             * @type {Float32Array}
+             */
+            center: { // Overrides xeogl.Object.center
+                get: function () {
+                    if (this._aabbDirty) {
+                        if (!this._center || !this._center) {
+                            this._center = xeogl.math.vec3();
+                        }
+                        var aabb = this.aabb;
+                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
+                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
+                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
+                    }
+                    return this._center;
+                }
+            },
+
+            /**
+             * This Mesh's World-space vertex positions.
+             *
+             * These are internally generated on-demand and cached. To free the cached
+             * vertex World positions when you're done with them, set this property to null or undefined.
+             *
+             * @property worpdPositions
+             * @type Float32Array
+             * @final
+             */
+            worldPositions: {
+                get: function () {
+                    if (this._worldPositionsDirty) {
+                        var positions = this.geometry.positions;
+                        if (!this._worldPositions) {
+                            this._worldPositions = new Float32Array(positions.length);
+                        }
+                        xeogl.math.transformPositions3(this.worldMatrix, positions, this._worldPositions);
+                        this._worldPositionsDirty = false;
+                    }
+                    return this._worldPositions;
+                },
+                set: function (value) {
+                    if (value = undefined || value === null) {
+                        this._worldPositions = null; // Release memory
+                        this._worldPositionsDirty = true;
+                    }
+                }
+            },
+
+            //----------------------------------------------------------------------------------------------------------
+            // Component properties
+            //----------------------------------------------------------------------------------------------------------
 
             /**
              * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Mesh.
@@ -19555,6 +19751,10 @@ xeogl.Group = xeogl.Object.extend({
                     return this._attached.outlineMaterial;
                 }
             },
+
+            //----------------------------------------------------------------------------------------------------------
+            // State properties
+            //----------------------------------------------------------------------------------------------------------
 
             /**
              Indicates whether this Mesh is visible or not.
@@ -19934,114 +20134,12 @@ xeogl.Group = xeogl.Object.extend({
                 get: function () {
                     return this._state.ghosted;
                 }
-            },
-
-
-            /**
-             * World-space 3D center of this Mesh.
-             *
-             * @property center
-             * @final
-             * @type {Float32Array}
-             */
-            center: {
-                get: function () {
-                    if (this._aabbDirty) {
-                        if (!this._center || !this._center) {
-                            this._center = xeogl.math.vec3();
-                        }
-                        var aabb = this.aabb;
-                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
-                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
-                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
-                    }
-                    return this._center;
-                }
-            },
-
-            /**
-             * World-space axis-aligned 3D boundary (AABB) of this Mesh.
-             *
-             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
-             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-             *
-             * @property aabb
-             * @final
-             * @type {Float32Array}
-             */
-            aabb: {
-                get: function () {
-                    if (this._aabbDirty) {
-                        this._aabbDirty = false;
-                        var math = xeogl.math;
-                        var geometry = this._attached.geometry;
-                        if (!this._aabb) {
-                            this._aabb = math.AABB3();
-                        }
-                        if (!this._obb) {
-                            this._obb = math.OBB3();
-                        }
-                        math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                        math.OBB3ToAABB3(this._obb, this._aabb);
-                    }
-                    return this._aabb;
-                }
-            },
-
-            /**
-             * World-space oriented 3D boundary (OBB) of this Mesh.
-             *
-             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
-             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
-             *
-             * @property obb
-             * @final
-             * @type {Float32Array}
-             */
-            obb: {
-                get: function () {
-                    if (this._obbDirty) {
-                        this._obbDirty = false;
-                        var geometry = this._attached.geometry;
-                        if (!this._obb) {
-                            this._obb = xeogl.math.OBB3();
-                        }
-                        xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                    }
-                    return this._obb;
-                }
-            },
-
-            /**
-             * World-space vertex positions of this Mesh.
-             *
-             * These are internally generated on-demand and cached. To free the cached
-             * vertex World positions when you're done with them, set this property to null or undefined.
-             *
-             * @property worpdPositions
-             * @type Float32Array
-             * @final
-             */
-            worldPositions: {
-                get: function () {
-                    if (this._worldPositionsDirty) {
-                        var positions = this.geometry.positions;
-                        if (!this._worldPositions) {
-                            this._worldPositions = new Float32Array(positions.length);
-                        }
-                        xeogl.math.transformPositions3(this.worldMatrix, positions, this._worldPositions);
-                        this._worldPositionsDirty = false;
-                    }
-                    return this._worldPositions;
-                },
-                set: function (value) {
-                    if (value = undefined || value === null) {
-                        this._worldPositions = null; // Release memory
-                        this._worldPositionsDirty = true;
-                    }
-                }
             }
         },
+
+        //----------------------------------------------------------------------------------------------------------
+        //
+        //----------------------------------------------------------------------------------------------------------
 
         _valid: function () { // Returns true if there is enough on this Mesh to render something.
             if (this.destroyed) {
@@ -31024,7 +31122,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
  @param [cfg.parent] The parent Object.
  @param [cfg.visible=true] {Boolean}  Indicates if this Model is visible.
- @param [cfg.culled=true] {Boolean}  Indicates if this Model is culled from view.
+ @param [cfg.culled=false] {Boolean}  Indicates if this Model is culled from view.
  @param [cfg.pickable=true] {Boolean}  Indicates if this Model is pickable.
  @param [cfg.clippable=true] {Boolean} Indicates if this Model is clippable.
  @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this Model.
@@ -31071,8 +31169,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         type: "xeogl.Model",
 
         _init: function (cfg) {
-
-            this._super(cfg);
 
             /**
              * The {{#crossLink "Components"}}{{/crossLink}} within this Model, mapped to their IDs.
@@ -31129,6 +31225,11 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
              * @type {String:xeogl.Mesh}
              */
             this.meshes = {};
+
+            // xeogl.Model overrides xeogl.Group / xeogl.Object state properties, (eg. visible, ghosted etc)
+            // and those redefined properties are being set here through the super constructor.
+
+            this._super(cfg); // Call xeogl.Group._init()
         },
 
         _addComponent: function (component) {
@@ -38448,7 +38549,7 @@ TODO
             this._bottom = -1.0;
             this._top = 1.0;
             this._near = 0.1;
-            this._far = 10000.0;
+            this._far = 5000.0;
 
             // Set component properties
 
@@ -38486,7 +38587,7 @@ TODO
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
@@ -38517,7 +38618,7 @@ TODO
 
                     this._right = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
@@ -38548,7 +38649,7 @@ TODO
 
                     this._top = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
@@ -38579,7 +38680,7 @@ TODO
 
                     this._bottom = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
@@ -38610,7 +38711,7 @@ TODO
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
@@ -38641,7 +38742,7 @@ TODO
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
@@ -38805,7 +38906,7 @@ TODO
 
                     this._scale = value;
 
-                    this._needUpdate(0);
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho's {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property changes.
@@ -38836,7 +38937,7 @@ TODO
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._needUpdate(0);
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
@@ -38867,7 +38968,7 @@ TODO
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._needUpdate(0);
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.

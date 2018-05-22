@@ -14,6 +14,14 @@
 
     <script src="js/libs/dat.gui.min.js"></script>
 
+    <style>
+        body {
+            background-color: black;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
 <body>
 
 <div id="info">
@@ -28,6 +36,10 @@
 
 <script>
 
+    xeogl.scene = new xeogl.Scene({
+        transparent: true
+    });
+
     //---------------------------------------------------
     // Load the model
     //---------------------------------------------------
@@ -41,6 +53,7 @@
     });
 
     var scene = model.scene;
+    var input = scene.input;
 
     //-----------------------------------------------------------------------------------------------------
     // Camera
@@ -63,13 +76,13 @@
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
-    cameraControl.on("hoverEnter", function (hit) {
-        hit.mesh.highlighted = true;
-    });
-
-    cameraControl.on("hoverOut", function (hit) {
-        hit.mesh.highlighted = false;
-    });
+//    cameraControl.on("hoverEnter", function (hit) {
+//        hit.mesh.highlighted = true;
+//    });
+//
+//    cameraControl.on("hoverOut", function (hit) {
+//        hit.mesh.highlighted = false;
+//    });
 
     cameraControl.on("picked", function (hit) {
         if (input.keyDown[input.KEY_SHIFT]) {
@@ -91,17 +104,13 @@
     //
     lights.lights = [
 
-//        new xeogl.AmbientLight({
-//            color: [1, 1, 1],
-//            intensity: 0.4
-//        }),
         new xeogl.DirLight({
             dir: [0.4, -0.7, -.7],
             color: [1.0, 1.0, 0.9],
             intensity: 1.0,
             space: "world"
-        })
-        ,
+        }),
+
         new xeogl.DirLight({
             dir: [-0.5, -0.6, 0.5],
             color: [0.9, 0.9, 1.0],
@@ -119,13 +128,19 @@
 
         model.ghosted = true;
 
+        var selectedMeshes = [
+            "office#285.0",
+            "office#291.0",
+            "office#57.0"
+        ];
+
         var Menu = function () {
 
             var ghostMaterial = scene.ghostMaterial;
             var highlightMaterial = scene.highlightMaterial;
 
             this["ghosted"] = true;
-            this["ghostMaterial.preset"] = "defaultLightBG";
+            this["ghostMaterial.preset"] = "defaultDarkBG";
             this["ghostMaterial.edges"] = ghostMaterial.edges;
             this["ghostMaterial.fill"] = ghostMaterial.fill;
             this["ghostMaterial.vertices"] = ghostMaterial.vertices;
@@ -224,6 +239,15 @@
                 }
 
                 var highlighted = !!self["highlighted"];
+
+                for (var i = 0; i < selectedMeshes.length; i++) {
+                    var id = selectedMeshes[i];
+                    var mesh = model.meshes[id];
+                    if (mesh) {
+                        mesh.highlighted = highlighted;
+                        mesh.ghosted = false;
+                    }
+                }
 
                 model.scene.gammaOutput = self["scene.gammaOutput"];
                 model.scene.gammaFactor = self["scene.gammaFactor"];

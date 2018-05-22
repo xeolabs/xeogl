@@ -16,8 +16,8 @@
 <body>
 
 <div id="info">
-    <h1>highlight effect applied to an <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a> with a custom <a
-            href="../docs/classes/HighlightMaterial.html" target="_parent">HighlightMaterial</a></h1>
+    <h1>highlight effect applied to a <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a> with a custom <a
+            href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a></h1>
 </div>
 
 <div id="dat-gui-container">
@@ -45,14 +45,9 @@
             fillColor: [1.0, 1.0, 0.0],
             fillAlpha: 0.5
         }),
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90,
-            parent: new xeogl.Translate({
-                xyz: [0, -20, 0]
-            })
-        }),
-       // highlighted: true
+        rotation: [-90, 0, 0],
+        position: [0, -20, 0]
+        // highlighted: true
     });
 
     var camera = mesh.scene.camera;
@@ -60,7 +55,7 @@
     camera.eye = [0, 0, -100];
 
     mesh.scene.on("tick", function () {
-       // camera.orbitYaw(0.2);
+        // camera.orbitYaw(0.2);
     });
 
     new xeogl.CameraControl();

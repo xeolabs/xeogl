@@ -140,8 +140,8 @@
     tankModel.addChild(new xeogl.Mesh({
         geometry: {
             type: "xeogl.PlaneGeometry",
-            xSize: 16,
-            zSize: 22
+            xSize: 22,
+            zSize: 16
         },
         material: {
             type: "xeogl.PhongMaterial",
@@ -150,7 +150,7 @@
             alpha: 0.3,
             alphaMode: "blend"
         },
-        position: [-1, 0.1, -4]
+        position: [-1, 0.1, -2]
     }));
 
     // Follow the tank with the camera; don't keep tank fitted to view
@@ -200,7 +200,7 @@
     // keep it pointing along the path
     path.on("t", function () {
         tankModel.position = this.point;
-        tankModel.rotation = [0, 360 - (Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) + 270, 0];
+        tankModel.rotation = [0, 360 - ((Math.atan2(this.tangent[2], this.tangent[0]) /xeogl.math.DEGTORAD)-180) , 0];
     });
 
 
@@ -313,7 +313,7 @@
 
         // Slowly rotate the tank and gun
         var gunDir = 0;
-        var gunDirInc = -0.3;
+        var gunDirInc = -0.4;
         var zoom = 100;
 
         // Game loop
@@ -322,12 +322,12 @@
             gunDir += gunDirInc;
 
             if (gunDir < -60 || gunDir > 60) {
-                gunDirInc *= -1;
+                gunDirInc *= -1.0;
             }
 
             // Access the gun rotation in the Model;
             // the first part of the IDs is the ID of the Model
-           // tankModel.components["tank.gunDir"].angle = gunDir;
+            tankModel.components["tank.gunDir"].rotation = [0, 0, gunDir];
 
             // Update the path animation
             path.t = (path.t + 0.0002) % 1.0;

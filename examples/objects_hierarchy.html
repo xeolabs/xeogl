@@ -6,12 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
+
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="info">
-    <h1>a simple <a href="../docs/classes/Object.html" target="_parent">Object</a> hierarchy
+    <h1>a simple <a href="../docs/classes/Object.html" target="_parent">Object</a> hierarchy, demonstrating different
+        ways to find Objects and Meshes within the hierarchy
 </div>
 
 <script>
@@ -19,9 +21,9 @@
     var table = new xeogl.Group({
         id: "table",
         rotation: [0, 50, 0],
-        position: [0, 0, 0],
+        position: [20, 0, 0],
         scale: [1, 1, 1],
-        XaabbVisible: true,
+        aabbVisible: true,
 
         children: [
 
@@ -62,7 +64,8 @@
                 rotation: [0, 0, 0],
                 material: new xeogl.PhongMaterial({
                     diffuse: [1.0, 1.0, 0.0]
-                })
+                }),
+                aabbVisible: true
             }),
 
             new xeogl.Mesh({ // Purple table top
@@ -84,21 +87,27 @@
     camera.look = [0, -5.75, 0];
     camera.up = [0.37, 0.91, -0.11];
 
-//    var yellowLeg = scene.children["yellowLeg"];
-//    table.ghosted = true;
-//    yellowLeg.highlighted = true;
-//
-//    table.aabbVisible = true;
-//    table.obbVisible = true;
+    // Find Mesh by global ID on Scene
+    var redLeg = scene.components["redLeg"];
 
+    // Find mesh by global ID on parent Group
+    var greenLeg = table.childMap["greenLeg"];
 
-    //scene.objects["redLeg"].aabbVisible = true;
+    // Find mesh by index in Group's child list
+    var blueLeg = table.children[2];
 
-//    scene.on("tick", function () {
-//        yellowLeg.rotateY(0.5);
-//        table.rotateY(0.2);
-//        table.rotateX(0.1);
-//    });
+    // Periodically update transforms
+    scene.on("tick", function () {
+
+        // Rotate legs
+        redLeg.rotateY(0.5);
+        greenLeg.rotateY(0.5);
+        blueLeg.rotateY(0.5);
+
+        // Rotate table
+        table.rotateY(0.2);
+        table.rotateX(0.1);
+    });
 
     new xeogl.CameraControl();
 

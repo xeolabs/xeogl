@@ -13,128 +13,107 @@
 <body>
 
 <div id="info">
-    <h1>visualizing an <a href="../docs/classes/Mesh.html" target="_parent">Mesh's</a> World-space axis-aligned <a
-            href="../docs/classes/Boundary3D.html" target="_parent">Boundary3D</a> (AABB) as we animate the Mesh's
-        transforms</h1>
-
-    <pre id="log" style="text-align: left; color:#77FF77; border:0;"></pre>
+    <h1>visualizing a <a href="../docs/classes/Mesh.html" target="_parent">Mesh's</a> World-space axis-aligned boundary</h1>
 </div>
 
 <script>
 
-    var torusGeometry = new xeogl.TorusGeometry();
+    var table = new xeogl.Group({
+        id: "table",
+        rotation: [0, 50, 0],
+        position: [20, 0, 0],
+        scale: [1, 1, 1],
 
-    for (var i = 0; i < 20; i++) {
+        children: [
 
-        new xeogl.Mesh({
-                    geometry: torusGeometry,
-                    scale: [
-                        0.5 + Math.random() * 2,
-                        0.5 + Math.random() * 2,
-                        0.5 + Math.random() * 2
-                    ],
-                    rotation: [
-                        Math.random() * 360,
-                        Math.random() * 360,
-                        Math.random() * 360
-                    ],
-                    position: [
-                        Math.random() * 15 - 7,
-                        Math.random() * 15 - 7,
-                        Math.random() * 15 - 7
-                    ],
-                    material: new xeogl.PhongMaterial({
-                        diffuse: [
-                            Math.random(),
-                            Math.random(),
-                            Math.random()
-                        ]
-                    })
-                }
-        );
-    }
+            new xeogl.Mesh({ // Red table leg
+                id: "redLeg",
+                position: [-4, -6, -4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1, 0.3, 0.3]
+                })
+            }),
 
-    // ------------------------------------------------------------------
-    // Create a tumbling red torus
-    // ------------------------------------------------------------------
+            new xeogl.Mesh({ // Green table leg
+                id: "greenLeg",
+                position: [4, -6, -4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [0.3, 1.0, 0.3]
+                })
+            }),
 
-    // Save references to a couple of rotations within
-    // its transform hierarchy
+            new xeogl.Mesh({// Blue table leg
+                id: "blueLeg",
+                position: [4, -6, 4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [0.3, 0.3, 1.0]
+                })
+            }),
 
-    var rotate0;
-    var rotate1;
+            new xeogl.Mesh({  // Yellow table leg
+                id: "yellowLeg",
+                position: [-4, -6, 4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1.0, 1.0, 0.0]
+                })
+            }),
 
-    var torus = new xeogl.Mesh({
-        geometry: new xeogl.TorusGeometry({
-            radius: 1.0,
-            tube: 0.3
-        }),
-        material: new xeogl.PhongMaterial({
-            diffuse: [1, 0.3, 0.3]
-        }),
-        scale: [0.5, 0.5, 0.5],
-        rotation: [45, 45, 0],
-        position: [5, 0, 0]
+            new xeogl.Mesh({ // Purple table top
+                id: "tableTop",
+                position: [0, -3, 0],
+                scale: [6, 0.5, 6],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1.0, 0.3, 1.0]
+                })
+            })
+        ]
     });
 
+    var scene = xeogl.scene;
+    var camera = scene.camera;
 
-    // ------------------------------------------------------------------
-    // Animate the torus' tumbling rotations
-    // ------------------------------------------------------------------
+    camera.eye = [-21.80, 4.01, 6.56];
+    camera.look = [0, -5.75, 0];
+    camera.up = [0.37, 0.91, -0.11];
 
-    var a = 0;
-    var i = 0;
+    // Find red leg Mesh by global ID on Scene
+    var redLeg = scene.components["redLeg"];
 
-    rotate1.scene.on("tick", function () {
-        a += 4;
-        //    if (++i > 10) {
-        i = 0;
-        rotate0.angle = a * 0.1;
-        //  }
-        // rotate1.angle = a ;
-    });
-
-
-    // ------------------------------------------------------------------
-    // Show the torus' World-space oriented bounding box (AABB)
-    // ------------------------------------------------------------------
-
-    // Create a boundary mesh that renders a snugly-fitted
-    // oriented bounding box (AABB) around the torus mesh.
-
-    // As the torus tumbles about, the geometry on the
-    // boundary mesh will automatically update to the
-    // shape of the torus' World-space oriented boundary.
-
+    // Show AABB around red leg
     new xeogl.Mesh({
-
         geometry: new xeogl.AABBGeometry({
-            target: torus
+            target: redLeg
         }),
-
         material: new xeogl.PhongMaterial({
-            diffuse: [0.0, 0.0, 0.0],
-            specular: [0.0, 0.0, 0.0],
-            ambient: [0.0, 0.0, 0.0],
-            emissive: [0.6, 1.0, 0.6],
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
             lineWidth: 2
         })
     });
 
-    // Allow user camera control
+    // Periodically update transforms
+    scene.on("tick", function () {
+
+        // Rotate legs
+        redLeg.rotateY(1);
+
+        // Rotate table
+        table.rotateY(0.5);
+        table.rotateX(0.4);
+    });
 
     new xeogl.CameraControl();
 
-    new xeogl.CameraFollowAnimation({
-        target: torus,
-        fly: false,
-        fit: false,
-        fitFOV: 35,
-        trail: false
-    });
-
-    rotate1.scene.camera.gimbalLock = false;
-
 </script>
+
 </body>
 </html>

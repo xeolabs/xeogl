@@ -89,15 +89,15 @@
 
     // Visualize each Clip with a ClipHelper
 
-//    for (var i = 0, len = clips.clips.length; i < len; i++) {
-//        new xeogl.ClipHelper({
-//            clip: clips.clips[i],
-//            planeSize: [1.5, 1.5],
-//            autoPlaneSize: false,
-//            visible: true,
-//            solid: true // Filled planes
-//        });
-//    }
+    for (var i = 0, len = clips.clips.length; i < len; i++) {
+        new xeogl.ClipHelper({
+            clip: clips.clips[i],
+            planeSize: [1.5, 1.5],
+            autoPlaneSize: false,
+            visible: true,
+            solid: true // Filled planes
+        });
+    }
 
     // Outer sphere attached to our Clips, with clipping enabled,
     // causing eight portions to get clipped off the sphere

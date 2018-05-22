@@ -16,7 +16,7 @@
 <body>
 
 <div id="info">
-    <h1>ghost effect applied to an <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a> with a custom <a
+    <h1>ghost effect applied to a <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a> with a custom <a
             href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a></h1>
 </div>
 
@@ -45,13 +45,9 @@
             fillColor: [0, 0, 0],
             fillAlpha: 0.7
         }),
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90,
-            parent: new xeogl.Translate({
-                xyz: [0, -20, 0]
-            })
-        }),
+
+        rotation: [-90, 0, 0],
+        position: [0, -20, 0],
         ghosted: true
     });
 

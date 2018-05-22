@@ -25,17 +25,12 @@
             ambient: [0.3, 0.3, 0.3],
             shininess: 30
         }),
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90,
-            parent: new xeogl.Translate({
-                xyz: [0, -20, 0]
-            })
-        }),
-        outline: true,
+        rotation: [-90, 0, 0],
+        position: [0, -20, 0],
+        outlined: true,
         outlineMaterial: new xeogl.OutlineMaterial({
             width: 10,
-            color:[1,0,0]
+            color: [1, 0, 0]
         })
     });
 

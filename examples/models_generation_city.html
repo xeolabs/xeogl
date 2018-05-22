@@ -28,27 +28,27 @@
 
     // Create some geometry and material assets
 
-    buildableModel.asset("box", {
+    buildableModel.createAsset("box", {
         type: "xeogl.BoxGeometry",
         xSize: 1,
         ySize: 1,
         zSize: 1
     });
 
-    buildableModel.asset("asphalt", {
+    buildableModel.createAsset("asphalt", {
         type: "xeogl.LambertMaterial",
         diffuse: [0.2, 0.2, 0.2],
         ambient: [0.2, 0.2, 0.2],
         specular: [0.0, 0.0, 0.0]
     });
 
-    buildableModel.asset("lightConcrete", {
+    buildableModel.createAsset("lightConcrete", {
         type: "xeogl.LambertMaterial",
         diffuse: [0.6, 0.6, 0.6],
         ambient: [0.2, 0.2, 0.2]
     });
 
-    buildableModel.asset("grass", {
+    buildableModel.createAsset("grass", {
         type: "xeogl.LambertMaterial",
         diffuse: [0, 0.5, 0.2],
         ambient: [0.1, 0.1, 0.1]
@@ -56,11 +56,11 @@
 
     // Select a couple of assets and generate the asphalt ground
 
-    buildableModel.geometry("box");
-    buildableModel.material("asphalt");
-    buildableModel.pos(20, -.5, 20);
-    buildableModel.scale(140, 0.1, 140);
-    buildableModel.mesh();
+    buildableModel.setGeometry("box");
+    buildableModel.setMaterial("asphalt");
+    buildableModel.setPosition(20, -.5, 20);
+    buildableModel.setScale(140, 0.1, 140);
+    buildableModel.createMesh();
 
     // Generate the buildings
 
@@ -80,12 +80,12 @@
 
         // Each building gets a green lawn under it
 
-        buildableModel.geometry("box");
-        buildableModel.material("grass");
-        buildableModel.pos(xpos, ypos, zpos);
-        buildableModel.scale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
-        buildableModel.colorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
-        buildableModel.mesh();
+        buildableModel.setGeometry("box");
+        buildableModel.setMaterial("grass");
+        buildableModel.setPosition(xpos, ypos, zpos);
+        buildableModel.setScale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
+        buildableModel.setColorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
+        buildableModel.createMesh();
 
         // Now generate the building as a bunch of boxes
 
@@ -151,11 +151,11 @@
                     break;
             }
 
-            buildableModel.geometry("box");
-            buildableModel.material("lightConcrete");
-            buildableModel.pos(xpos, ypos + ySize, zpos);
-            buildableModel.scale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
-            buildableModel.mesh();
+            buildableModel.setGeometry("box");
+            buildableModel.setMaterial("lightConcrete");
+            buildableModel.setPosition(xpos, ypos + ySize, zpos);
+            buildableModel.setScale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
+            buildableModel.createMesh();
 
             // Decrease current vertical box size
             ySize -= (Math.random() * 5) + 2;

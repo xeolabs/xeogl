@@ -21,7 +21,7 @@
         position: [0, 0, 0],
         scale: [1, 1, 1],
 
-        objects: [
+        children: [
 
             new xeogl.Mesh({ // Red table leg
                 position: [-4, -6, -4],
@@ -84,15 +84,18 @@
     table.ghosted = true;
     yellowLeg.highlighted = true;
 
+    var a = 0;
     scene.on("tick", function () {
 
-        var rotation = yellowLeg.rotation;
-        rotation[1] += 1;
-        yellowLeg.rotation = rotation;
+        table.rotation = [0, a++, 0];
 
-        rotation = table.rotation;
-        rotation[1] -= .3;
-        table.rotation = rotation;
+//        var rotation = yellowLeg.rotation;
+//        rotation[1] += 1;
+//        yellowLeg.rotation = rotation;
+//
+//        rotation = table.rotation;
+//        rotation[1] -= .3;
+//        table.rotation = rotation;
 
     });
 

@@ -30,6 +30,11 @@
     var scene = mesh.scene;
     var camera = scene.camera;
 
+    var ortho = camera.ortho;
+    ortho.near = 0.1;
+    ortho.far = 5000;
+    ortho.scale = 10;
+
     camera.projection = "ortho";
 
     scene.on("tick", function () {

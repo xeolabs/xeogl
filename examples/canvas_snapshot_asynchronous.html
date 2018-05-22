@@ -103,7 +103,7 @@
         // drawing buffer.
 
         scene.canvas.getSnapshot({
-            width: 500, // Defaults to size of canvas
+            width: 100, // Defaults to size of canvas
             height: 500,
             format: "png" // Options are "jpeg" (default), "png" and "bmp"
         }, function (src) {
@@ -111,7 +111,7 @@
             snapshotImage.src = src;
         });
 
-    }, 100);
+    }, 1000);
 
 </script>
 </body>
