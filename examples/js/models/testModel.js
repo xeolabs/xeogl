@@ -69,27 +69,27 @@
 
             // Create some geometry and material assets
 
-            this.asset("box", {
+            this.createAsset("box", {
                 type: "xeogl.BoxGeometry",
                 xSize: 1,
                 ySize: 1,
                 zSize: 1
             });
 
-            this.asset("asphalt", {
+            this.createAsset("asphalt", {
                 type: "xeogl.LambertMaterial",
                 diffuse: [0.2, 0.2, 0.2],
                 ambient: [0.2, 0.2, 0.2],
                 specular: [0.0, 0.0, 0.0]
             });
 
-            this.asset("lightConcrete", {
+            this.createAsset("lightConcrete", {
                 type: "xeogl.LambertMaterial",
                 diffuse: [0.6, 0.6, 0.6],
                 ambient: [0.2, 0.2, 0.2]
             });
 
-            this.asset("grass", {
+            this.createAsset("grass", {
                 type: "xeogl.LambertMaterial",
                 diffuse: [0, 0.5, 0.2],
                 ambient: [0.1, 0.1, 0.1]
@@ -97,11 +97,11 @@
 
             // Select a couple of assets and generate the asphalt ground
 
-            this.geometry("box");
-            this.material("asphalt");
-            this.pos(20, -.5, 20);
-            this.scale(140, 0.1, 140);
-            this.mesh();
+            this.setGeometry("box");
+            this.setMaterial("asphalt");
+            this.setPosition(20, -.5, 20);
+            this.setScale(140, 0.1, 140);
+            this.createMesh();
 
             // Generate the buildings
 
@@ -125,12 +125,12 @@
 
             // Each building gets a green lawn under it
 
-            this.geometry("box");
-            this.material("grass");
-            this.pos(xpos, ypos, zpos);
-            this.scale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
-            this.colorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
-            this.mesh();
+            this.setGeometry("box");
+            this.setMaterial("grass");
+            this.setPosition(xpos, ypos, zpos);
+            this.setScale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
+            this.setColorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
+            this.createMesh();
 
             // Now generate the building as a bunch of boxes
 
@@ -196,11 +196,11 @@
                         break;
                 }
 
-                this.geometry("box");
-                this.material("lightConcrete");
-                this.pos(xpos, ypos + ySize, zpos);
-                this.scale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
-                this.mesh();
+                this.setGeometry("box");
+                this.setMaterial("lightConcrete");
+                this.setPosition(xpos, ypos + ySize, zpos);
+                this.setScale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
+                this.createMesh();
 
                 // Decrease current vertical box size
                 ySize -= (Math.random() * 5) + 2;
