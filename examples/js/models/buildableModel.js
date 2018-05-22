@@ -83,7 +83,13 @@
 
         _init: function (cfg) {
 
-            this._state = { // Less chance of property name collisions with parent classes
+            this._initState();
+            
+            this._super(cfg);
+        },
+
+        _initState: function () {
+            this._state = {
                 material: null,
                 geometry: null,
                 pos: xeogl.math.vec3([0, 0, 0]),
@@ -94,8 +100,6 @@
                 assetCfgs: {},
                 assets: {}
             };
-
-            this._super(cfg);
         },
 
         /**
@@ -306,7 +310,7 @@
          */
         clear: function () {
             this._super();
-            this._state = {};
+            this._initState();
         },
 
         /**
