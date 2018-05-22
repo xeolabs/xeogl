@@ -123,7 +123,7 @@
 
                     this._scale = value;
 
-                    this._needUpdate(0);
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho's {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property changes.
@@ -154,7 +154,7 @@
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._needUpdate(0);
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
@@ -185,7 +185,7 @@
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._needUpdate(0);
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
