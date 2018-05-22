@@ -20,21 +20,21 @@
 
     var geometries = [
         new xeogl.SphereGeometry({
-            radius: 0.7
+            radius: 2.7
         }),
         new xeogl.SphereGeometry({
-            radius: 1.4
+            radius: 4.4
         }),
         new xeogl.SphereGeometry({
-            radius: 2.1
+            radius: 5.1
         }),
         new xeogl.SphereGeometry({
-            radius: 2.8
+            radius: 6.8
         })
     ];
 
     var gi = 0;
-    var sqrtNum = 30;
+    var sqrtNum = 20;
     var diffuse = [0, 0, 0];
     var specular = [0, 0, 0];
     var inc = 1.0 / sqrtNum;
@@ -46,15 +46,11 @@
             for (var z = 0; z <= 1.0; z += inc) {
 
                 new xeogl.Mesh({
-
                     colorize: [x, z, y, 1],
-
                     geometry: geometries[gi < 3 ? gi++ : gi = 0],
-
                     material: new xeogl.LambertMaterial({
                         diffuse: [x, z, y]
                     }),
-
                     position: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
                 });
             }

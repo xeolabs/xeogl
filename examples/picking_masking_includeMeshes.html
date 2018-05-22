@@ -13,15 +13,15 @@
 <body>
 
 <div id="info" class="light">
-    <h1>pick masking - using the "exclude" option to exclude meshes from being picked</h1>
+    <h1>pick masking - using the "includeMeshes" option to restrict picking to a given list of <a href="../docs/classes/GLTFModel.html" target="_parent">Meshes</a></h1>
     <br>
     <ul>
-        <li>load a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
-        <li>apply ghost effect to <a href="../docs/classes/Mesh.html" target="_parent">Entities</a> "gearbox#70.0" and
-            "gearbox#90.0"
+        <li>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
+        <li>un-ghost <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a> "gearbox#83.0" and "gearbox#81.0"
         </li>
-        <li>pick and highlight Entities on mouse-over, except "gearbox#70.0" and "gearbox#90.0"</li>
-        <li>other meshes are pickable <em>through</em> those two Entities</li>
+        <li>attempt to pick and highlight Meshes on mouse-over</li>
+        <li>using the <em>include</em> option, only allow "gearbox#83.0" and "gearbox#81.0" to be picked</li>
+        <li>those meshes are then pickable <em>through</em> the other Meshes</li>
         <li>model by <a href="https://sketchfab.com/tflexcad" target="_parent">https://sketchfab.com/tflexcad</a></li>
     </ul>
 </div>
@@ -44,24 +44,24 @@
     });
 
     model.on("loaded", function () {
-
+        model.ghosted = true;
         scene.ghostMaterial.preset = "gamegrid";
-
-        model.meshes["gearbox#70.0"].ghosted = true;
-        model.meshes["gearbox#90.0"].ghosted = true;
+        model.meshes["gearbox#83.0"].ghosted = false;
+        model.meshes["gearbox#81.0"].ghosted = false;
     });
 
     // Position the camera
 
-    camera.eye = [-13.78, -1.52, -13.00];
-    camera.look = [-2.53, -4.90, -0.10];
-    camera.up = [0.11, 0.97, 0.14];
+    camera.eye = [13.55, 8.24, 17.84];
+    camera.look = [-2.54, -4.90, -0.10];
+    camera.up = [-0.31, 0.87, -0.35];
+    camera.zoom(-10);
 
     // Camera interaction
 
     new xeogl.CameraControl();
 
-    // Highlight everything but the excluded Entities on mouseover
+    // Highlight only the included Meshes on mouse over
 
     var lastEntity = null;
 
@@ -69,7 +69,10 @@
 
         var hit = scene.pick({
             canvasPos: coords,
-            excludeMeshes: ["gearbox#70.0", "gearbox#90.0"]
+            includeMeshes: [
+                "gearbox#83.0",
+                "gearbox#81.0"
+            ]
         });
 
         if (hit) {

@@ -150,7 +150,7 @@
 
     skybox.scene.on("tick",
             function () {
-                moon.transform.angle += 0.1;
+                moon.rotateY(0.1);
                 skybox.scene.camera.orbitYaw(0.2);
             });
 

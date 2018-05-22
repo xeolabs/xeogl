@@ -39,10 +39,8 @@
     // Spin the model when it has loaded;
     // we must wait for the model to load before we access its components
 
-    model.on("loaded", function () {
-        model.scene.on("tick", function () {
-            model.rotateY(0.2);
-        });
+    model.scene.on("tick", function () {
+        model.rotateY(0.5);
     });
 
     // Allow user camera control

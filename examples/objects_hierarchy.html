@@ -21,7 +21,7 @@
     var table = new xeogl.Group({
         id: "table",
         rotation: [0, 50, 0],
-        position: [20, 0, 0],
+        position: [0, 0, 0],
         scale: [1, 1, 1],
         aabbVisible: true,
 
@@ -105,8 +105,8 @@
         blueLeg.rotateY(0.5);
 
         // Rotate table
-        table.rotateY(0.2);
-        table.rotateX(0.1);
+        table.rotateY(0.5);
+        table.rotateX(0.3);
     });
 
     new xeogl.CameraControl();

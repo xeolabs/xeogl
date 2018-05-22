@@ -145,8 +145,7 @@
 
     // Spin the model
     model.scene.on("tick", function () {
-        var rotate = model.components["spinningBox.boxRotateY"];
-        rotate.angle += 0.2;
+        model.rotateY(.5);
     });
 
     // Allow user camera control
