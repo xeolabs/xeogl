@@ -244,7 +244,7 @@
 
  ### Pick masking
 
- We can use the {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method's ````include```` and ````exclude````
+ We can use the {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method's ````includeMeshes```` and ````excludeMeshes````
  options to mask which Meshes we attempt to pick.
 
  This is useful for picking <em>through</em> things, to pick only the Meshes of interest.
