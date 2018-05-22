@@ -475,6 +475,11 @@
             var material = new xeogl.MetallicMaterial(model, { // Share material with all meshes
                 roughness: 0.5
             });
+            // var material = new xeogl.PhongMaterial(model, { // Share material with all meshes
+            //     diffuse: [0.4, 0.4, 0.4],
+            //     reflectivity: 1,
+            //     specular: [0.5, 0.5, 1.0]
+            // });
             model._addComponent(material);
             var dataOffset = 84;
             var faceLength = 12 * 4 + 2;
@@ -573,6 +578,11 @@
             var material = new xeogl.MetallicMaterial(model, {
                 roughness: 0.5
             });
+            // var material = new xeogl.PhongMaterial(model, {
+            //     diffuse: [0.4, 0.4, 0.4],
+            //     reflectivity: 1,
+            //     specular: [0.5, 0.5, 1.0]
+            // });
             model._addComponent(material);
             addMesh(model, positions, normals, colors, material, options);
         }

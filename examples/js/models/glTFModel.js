@@ -314,7 +314,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
  @param [cfg.parent] The parent Object.
  @param [cfg.visible=true] {Boolean}  Indicates if this GLTFModel is visible.
- @param [cfg.culled=true] {Boolean}  Indicates if this GLTFModel is culled from view.
+ @param [cfg.culled=false] {Boolean}  Indicates if this GLTFModel is culled from view.
  @param [cfg.pickable=true] {Boolean}  Indicates if this GLTFModel is pickable.
  @param [cfg.clippable=true] {Boolean} Indicates if this GLTFModel is clippable.
  @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this GLTFModel.
@@ -349,7 +349,9 @@
         type: "xeogl.GLTFModel",
 
         _init: function (cfg) {
-            this._super(cfg);
+
+            this._super(cfg); // Call xeogl.Model._init()
+
             this._src = null;
             this._options = {
                 objectTree: !!cfg.objectTree,
