@@ -22,7 +22,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
  @param [cfg.parent] The parent Object.
  @param [cfg.visible=true] {Boolean}  Indicates if this Model is visible.
- @param [cfg.culled=true] {Boolean}  Indicates if this Model is culled from view.
+ @param [cfg.culled=false] {Boolean}  Indicates if this Model is culled from view.
  @param [cfg.pickable=true] {Boolean}  Indicates if this Model is pickable.
  @param [cfg.clippable=true] {Boolean} Indicates if this Model is clippable.
  @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this Model.
@@ -69,8 +69,6 @@
         type: "xeogl.Model",
 
         _init: function (cfg) {
-
-            this._super(cfg);
 
             /**
              * The {{#crossLink "Components"}}{{/crossLink}} within this Model, mapped to their IDs.
@@ -127,6 +125,11 @@
              * @type {String:xeogl.Mesh}
              */
             this.meshes = {};
+
+            // xeogl.Model overrides xeogl.Group / xeogl.Object state properties, (eg. visible, ghosted etc)
+            // and those redefined properties are being set here through the super constructor.
+
+            this._super(cfg); // Call xeogl.Group._init()
         },
 
         _addComponent: function (component) {

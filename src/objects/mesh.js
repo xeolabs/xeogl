@@ -465,29 +465,23 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Mesh.
 
+ @param [cfg.ifcType] {String} The Mesh's IFC type, if applicable.
+
+ @param [cfg.position=[0,0,0]] {Float32Array} The Mesh's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The Mesh's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The Mesh's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Mesh's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+
  @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
-
  @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
-
- @param [cfg.visible=true] {Boolean}  Indicates if this Mesh is visible.
- @param [cfg.culled=true] {Boolean}  Indicates if this Mesh is culled from view.
- @param [cfg.pickable=true] {Boolean}  Indicates if this Mesh is pickable.
- @param [cfg.clippable=true] {Boolean} Indicates if this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
- @param [cfg.collidable=true] {Boolean} Whether this Mesh is included in boundary calculations.
- @param [cfg.castShadow=true] {Boolean} Whether this Mesh casts shadows.
- @param [cfg.receiveShadow=true] {Boolean} Whether this Mesh receives shadows.
- @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this mesh, as configured by the Mesh's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
  @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghosted=false] {Boolean} Whether this mesh is rendered as ghosted, as configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
  @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlighted=false] {Boolean} Whether this mesh is rendered as highlighted, as configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
  @param [cfg.highlightMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
- @param [cfg.selected=false] {Boolean} Whether this mesh is rendered as selected, as configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
  @param [cfg.selectedMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define selected appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
@@ -495,13 +489,26 @@
  @param [cfg.layer=0] {Number} Indicates this Mesh's rendering priority, typically used for transparency sorting,
  @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Mesh. This is useful for skybox Meshes.
  @param [cfg.billboard="none"] {String} Specifies the billboarding behaviour for this Mesh. Options are "none", "spherical" and "cylindrical".
- @param [cfg.aabbVisible=false] {Boolean} Whether this Mesh's axis-aligned World-space bounding box is visible.
- @param [cfg.obbVisible=false] {Boolean} Whether this Mesh's oriented World-space bounding box is visible.
- @param [cfg.position=[0,0,0]] {Float32Array} The Mesh's local 3D position.
- @param [cfg.scale=[1,1,1]] {Float32Array} The Mesh's local scale.
- @param [cfg.rotation=[0,0,0]] {Float32Array} The Mesh's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
- @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Mesh's local modelling transform matrix. Overrides the position, scale and rotation parameters.
+
+ @param [cfg.visible=true] {Boolean}  Indicates if this Mesh is visible.
+ @param [cfg.culled=false] {Boolean}  Indicates if this Mesh is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Mesh is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
+ @param [cfg.collidable=true] {Boolean} Whether this Mesh is included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean} Whether this Mesh casts shadows.
+ @param [cfg.receiveShadow=true] {Boolean} Whether this Mesh receives shadows.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this mesh, as configured by the Mesh's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
+ @param [cfg.ghosted=false] {Boolean} Whether this mesh is rendered as ghosted, as configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+ @param [cfg.highlighted=false] {Boolean}   Whether this mesh is rendered as highlighted, as configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+ @param [cfg.selected=false] {Boolean}      Whether this mesh is rendered as selected, as configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+ @param [cfg.aabbVisible=false] {Boolean}   Whether this Mesh's axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean}    Whether this Mesh's oriented World-space bounding box is visible.
+
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
+
  @param [cfg.loading=false] {Boolean} Flag which indicates that this Mesh is freshly loaded.
+
  @extends Object
  */
 
@@ -523,7 +530,7 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            var self = this;
 
             this._state = new xeogl.renderer.Modes({
                 visible: true,
@@ -543,8 +550,6 @@
                 hash: ""
             });
 
-            var self = this;
-
             this._modelTransformState = new xeogl.renderer.Transform({
                 getMatrix: function () {
                     return self.worldMatrix;
@@ -556,14 +561,10 @@
 
             this._objectId = null; // Renderer object
             this._loading = cfg.loading !== false;
-
             this._aabbDirty = true;
             this._obbDirty = true;
-
             this._worldPositions = null;
             this._worldPositionsDirty = true;
-
-            // Components
 
             this.geometry = cfg.geometry;
             this.material = cfg.material;
@@ -573,55 +574,186 @@
             this.highlightMaterial = cfg.highlightMaterial;
             this.selectedMaterial = cfg.selectedMaterial;
 
-            // Properties
+            // xeogl.Mesh overrides xeogl.Object's state properties, (eg. visible, ghosted etc)
+            // and those redefined properties are being set here through the super constructor.
 
-            this.visible = cfg.visible;
-            this.culled = cfg.culled;
-            this.pickable = cfg.pickable;
-            this.clippable = cfg.clippable;
-            this.collidable = cfg.collidable;
-            this.castShadow = cfg.castShadow;
-            this.receiveShadow = cfg.receiveShadow;
-            this.outlined = cfg.outlined;
-            this.layer = cfg.layer;
-            this.stationary = cfg.stationary;
-            this.billboard = cfg.billboard;
-            this.solid = cfg.solid;
-            this.ghosted = cfg.ghosted;
-            this.highlighted = cfg.highlighted;
-            this.selected = cfg.selected;
-            this.colorize = cfg.colorize;
-            this.opacity = cfg.opacity;
+            this._super(cfg); // Call xeogl.Object._init()
         },
 
-        _setWorldMatrixDirty: function () {
-            this._worldMatrixDirty = true;
-            this._worldNormalMatrixDirty = true;
-            this._setBoundaryDirty();
-        },
-
-        _setBoundaryDirty: function () {
-            this._worldPositionsDirty = true;
-            for (var object = this; object; object = object._parent) {
-                object._aabbDirty = true;
-                object._obbDirty = true;
-            }
-            //var lights = this._attached.lights;
-            //if (lights) {
-            //    lights._shadowsDirty(); // Need to re-render shadow maps
-            //}
-            /**
-             Fired whenever this Mesh's World-space boundary changes.
-
-             Get the latest boundary from the Mesh's {{#crossLink "Mesh/aabb:property"}}{{/crossLink}}
-             and {{#crossLink "Mesh/obb:property"}}{{/crossLink}} properties.
-
-             @event boundary
-             */
-            this.fire("boundary");
-        },
 
         _props: {
+
+            //------------------------------------------------------------------------------------------------------------------
+            // Transform properties
+            //------------------------------------------------------------------------------------------------------------------
+
+            /**
+             The Mesh's Local-space translation.
+
+             @property position
+             @default [0,0,0]
+             @type {Float32Array}
+             */
+
+            /**
+             The Meshes's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+             @property rotation
+             @default [0,0,0]
+             @type {Float32Array}
+             */
+
+            /**
+             The Mesh's Local-space rotation quaternion.
+
+             @property quaternion
+             @default [0,0,0, 1]
+             @type {Float32Array}
+             */
+
+            /**
+             The Mesh's Local-space scale.
+
+             @property scale
+             @default [0,0,0]
+             @type {Float32Array}
+             */
+
+            /**
+             The Mesh's local matrix.
+
+             @property matrix
+             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             @type {Float32Array}
+             */
+
+            /**
+             The Mesh's World matrix.
+
+             @property worldMatrix
+             @type {Float32Array}
+             */
+
+            /**
+             * This Object's World normal matrix.
+             *
+             * @property worldNormalMatrix
+             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             * @type {Float32Array}
+             */
+
+            //----------------------------------------------------------------------------------------------------------
+            // Boundary properties
+            //----------------------------------------------------------------------------------------------------------
+
+            /**
+             * This Mesh's World-space axis-aligned 3D boundary (AABB).
+             *
+             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+             *
+             * @property aabb
+             * @final
+             * @type {Float32Array}
+             */
+            aabb: { // Overrides xeogl.Object.aabb
+                get: function () {
+                    if (this._aabbDirty) {
+                        this._aabbDirty = false;
+                        var math = xeogl.math;
+                        var geometry = this._attached.geometry;
+                        if (!this._aabb) {
+                            this._aabb = math.AABB3();
+                        }
+                        if (!this._obb) {
+                            this._obb = math.OBB3();
+                        }
+                        math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
+                        math.OBB3ToAABB3(this._obb, this._aabb);
+                    }
+                    return this._aabb;
+                }
+            },
+
+            /**
+             * This Mesh's World-space oriented 3D boundary (OBB).
+             *
+             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+             *
+             * @property obb
+             * @final
+             * @type {Float32Array}
+             */
+            obb: { // Overrides xeogl.Object.obb
+                get: function () {
+                    if (this._obbDirty) {
+                        this._obbDirty = false;
+                        var geometry = this._attached.geometry;
+                        if (!this._obb) {
+                            this._obb = xeogl.math.OBB3();
+                        }
+                        xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
+                    }
+                    return this._obb;
+                }
+            },
+
+            /**
+             * World-space 3D center of this Mesh.
+             *
+             * @property center
+             * @final
+             * @type {Float32Array}
+             */
+            center: { // Overrides xeogl.Object.center
+                get: function () {
+                    if (this._aabbDirty) {
+                        if (!this._center || !this._center) {
+                            this._center = xeogl.math.vec3();
+                        }
+                        var aabb = this.aabb;
+                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
+                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
+                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
+                    }
+                    return this._center;
+                }
+            },
+
+            /**
+             * This Mesh's World-space vertex positions.
+             *
+             * These are internally generated on-demand and cached. To free the cached
+             * vertex World positions when you're done with them, set this property to null or undefined.
+             *
+             * @property worpdPositions
+             * @type Float32Array
+             * @final
+             */
+            worldPositions: {
+                get: function () {
+                    if (this._worldPositionsDirty) {
+                        var positions = this.geometry.positions;
+                        if (!this._worldPositions) {
+                            this._worldPositions = new Float32Array(positions.length);
+                        }
+                        xeogl.math.transformPositions3(this.worldMatrix, positions, this._worldPositions);
+                        this._worldPositionsDirty = false;
+                    }
+                    return this._worldPositions;
+                },
+                set: function (value) {
+                    if (value = undefined || value === null) {
+                        this._worldPositions = null; // Release memory
+                        this._worldPositionsDirty = true;
+                    }
+                }
+            },
+
+            //----------------------------------------------------------------------------------------------------------
+            // Component properties
+            //----------------------------------------------------------------------------------------------------------
 
             /**
              * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Mesh.
@@ -781,6 +913,10 @@
                     return this._attached.outlineMaterial;
                 }
             },
+
+            //----------------------------------------------------------------------------------------------------------
+            // State properties
+            //----------------------------------------------------------------------------------------------------------
 
             /**
              Indicates whether this Mesh is visible or not.
@@ -1160,114 +1296,12 @@
                 get: function () {
                     return this._state.ghosted;
                 }
-            },
-
-
-            /**
-             * World-space 3D center of this Mesh.
-             *
-             * @property center
-             * @final
-             * @type {Float32Array}
-             */
-            center: {
-                get: function () {
-                    if (this._aabbDirty) {
-                        if (!this._center || !this._center) {
-                            this._center = xeogl.math.vec3();
-                        }
-                        var aabb = this.aabb;
-                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
-                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
-                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
-                    }
-                    return this._center;
-                }
-            },
-
-            /**
-             * World-space axis-aligned 3D boundary (AABB) of this Mesh.
-             *
-             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
-             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-             *
-             * @property aabb
-             * @final
-             * @type {Float32Array}
-             */
-            aabb: {
-                get: function () {
-                    if (this._aabbDirty) {
-                        this._aabbDirty = false;
-                        var math = xeogl.math;
-                        var geometry = this._attached.geometry;
-                        if (!this._aabb) {
-                            this._aabb = math.AABB3();
-                        }
-                        if (!this._obb) {
-                            this._obb = math.OBB3();
-                        }
-                        math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                        math.OBB3ToAABB3(this._obb, this._aabb);
-                    }
-                    return this._aabb;
-                }
-            },
-
-            /**
-             * World-space oriented 3D boundary (OBB) of this Mesh.
-             *
-             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
-             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
-             *
-             * @property obb
-             * @final
-             * @type {Float32Array}
-             */
-            obb: {
-                get: function () {
-                    if (this._obbDirty) {
-                        this._obbDirty = false;
-                        var geometry = this._attached.geometry;
-                        if (!this._obb) {
-                            this._obb = xeogl.math.OBB3();
-                        }
-                        xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                    }
-                    return this._obb;
-                }
-            },
-
-            /**
-             * World-space vertex positions of this Mesh.
-             *
-             * These are internally generated on-demand and cached. To free the cached
-             * vertex World positions when you're done with them, set this property to null or undefined.
-             *
-             * @property worpdPositions
-             * @type Float32Array
-             * @final
-             */
-            worldPositions: {
-                get: function () {
-                    if (this._worldPositionsDirty) {
-                        var positions = this.geometry.positions;
-                        if (!this._worldPositions) {
-                            this._worldPositions = new Float32Array(positions.length);
-                        }
-                        xeogl.math.transformPositions3(this.worldMatrix, positions, this._worldPositions);
-                        this._worldPositionsDirty = false;
-                    }
-                    return this._worldPositions;
-                },
-                set: function (value) {
-                    if (value = undefined || value === null) {
-                        this._worldPositions = null; // Release memory
-                        this._worldPositionsDirty = true;
-                    }
-                }
             }
         },
+
+        //----------------------------------------------------------------------------------------------------------
+        //
+        //----------------------------------------------------------------------------------------------------------
 
         _valid: function () { // Returns true if there is enough on this Mesh to render something.
             if (this.destroyed) {
