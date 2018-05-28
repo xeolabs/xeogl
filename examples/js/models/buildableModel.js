@@ -283,7 +283,7 @@
                 colorize: this._state.colorize
             });
             this._addComponent(mesh);
-            this.addChild(mesh);
+            this.addChild(mesh, false); // Don't inherit state from this Model
         },
 
         _getAsset: function (assetId) {
