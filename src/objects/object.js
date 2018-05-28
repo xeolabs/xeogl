@@ -9,11 +9,11 @@
  * {{#crossLink "Group"}}{{/crossLink}}, which is a composite Object that represents a group of child Objects.
  * {{#crossLink "Model"}}{{/crossLink}}, which is a Group and is subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}},
  {{#crossLink "STLModel"}}{{/crossLink}}, {{#crossLink "OBJModel"}}{{/crossLink}} etc. A Model can contain child Groups
- and Meshes that represent its component parts.
+ and {{#crossLink "Mesh"}}Meshes{{/crossLink}} that represent its component parts.
 
  As shown in the examples below, these component types can be connected into flexible scene hierarchies that contain
- content loaded from multiple sources and file formats. Since a Group implements the *[Composite](https://en.wikipedia.org/wiki/Composite_pattern)* pattern,
- property updates on a Group will apply recursively to all the Objects within it.
+ content loaded from multiple sources and file formats. Since a {{#crossLink "Group"}}{{/crossLink}} implements the *[Composite](https://en.wikipedia.org/wiki/Composite_pattern)* pattern,
+ property updates on a {{#crossLink "Group"}}Group{{/crossLink}} will apply recursively to all the Objects within it.
 
  ## Usage
 
@@ -27,7 +27,7 @@
 
  ### Creating an Object hierarchy
 
- Let's create a Group that represents a table, with five child {{#crossLink "Mesh"}}{{/crossLink}}es for its top and legs:
+ Let's create a {{#crossLink "Group"}}Group{{/crossLink}} that represents a table, with five child {{#crossLink "Mesh"}}{{/crossLink}}es for its top and legs:
 
  <a href="../../examples/#objects_hierarchy"><img src="../../assets/images/screenshots/objectHierarchy.png"></img></a>
 
@@ -41,7 +41,7 @@
      position: [0, 0, 0],
      scale: [1, 1, 1],
 
-     objects: [
+     children: [
 
          new xeogl.Mesh({ // Red table leg
              id: "redLeg",
@@ -103,47 +103,47 @@
 
  ### Accessing Objects
 
- We can then get those Mesh Objects by index from the Group's children property:
+ We can then get those {{#crossLink "Mesh"}}Mesh{{/crossLink}} Objects by index from the {{#crossLink "Group"}}Group{{/crossLink}}'s children property:
 
  ````javascript
  var blueLeg = table.children[2];
  blueLeg.highlighted = true;
  ````
 
- We can also get them by ID from the Group's childMap property:
+ We can also get them by ID from the {{#crossLink "Group"}}Group{{/crossLink}}'s childMap property:
 
  ````javascript
  var blueLeg = table.childMap["blueLeg"];
  blueLeg.highlighted = true;
  ````
 
- or by ID from the Scene's components map:
+ or by ID from the {{#crossLink "Scene"}}{{/crossLink}}'s components map:
 
  ````javascript
  var blueLeg = table.scene.components["blueLeg"];
  blueLeg.highlighted = true;
  ````
 
- or from the Scene's objects map (only Objects are in this map, and Meshes are Objects):
+ or from the {{#crossLink "Scene"}}{{/crossLink}}'s objects map (only Objects are in this map, and {{#crossLink "Mesh"}}Meshes{{/crossLink}} are Objects):
 
  ````javascript
  var blueLeg = table.scene.objects["blueLeg"];
  blueLeg.highlighted = true;
  ````
 
- or from the Scene's meshes map (only Meshes are in that map):
+ or from the {{#crossLink "Scene"}}{{/crossLink}}'s meshes map (only {{#crossLink "Mesh"}}Meshes{{/crossLink}} are in that map):
 
  ````javascript
  var blueLeg = table.scene.meshes["blueLeg"];
  blueLeg.highlighted = true;
  ````
 
- For convenience, the Scene's objects map explicitly registers what Objects exist within the Scene, while its meshes map
- explicitly registers what Meshes exist.
+ For convenience, the {{#crossLink "Scene"}}{{/crossLink}}'s objects map explicitly registers what Objects exist within the {{#crossLink "Scene"}}{{/crossLink}}, while its meshes map
+ explicitly registers what {{#crossLink "Mesh"}}Meshes{{/crossLink}} exist.
 
  ### Updating Objects
 
- As mentioned earlier, property updates on a Group will apply recursively to all the Objects within it. Let's highlight
+ As mentioned earlier, property updates on a {{#crossLink "Group"}}Group{{/crossLink}} will apply recursively to all the Objects within it. Let's highlight
  the whole table in one shot:
 
  ````javascript
@@ -172,10 +172,10 @@
  var obb = table.obb;
  ````
 
- Those boundaries will automatically update whenever we add or remove child Meshes, or update the Meshes' Geometries
- or transforms.
+ Those boundaries will automatically update whenever we add or remove child {{#crossLink "Object"}}Objects{{/crossLink}} or {{#crossLink "Mesh"}}Meshes{{/crossLink}}, or update child {{#crossLink "Mesh"}}Meshes{{/crossLink}}' {{#crossLink "Geometry"}}Geometries{{/crossLink}}
+ or modeling transforms.
 
- We can subscribe to boundary updates on our Group, like this:
+ We can subscribe to boundary updates on our {{#crossLink "Group"}}Group{{/crossLink}}, like this:
 
  ````javascript
  table.on("boundary", function() {
@@ -186,7 +186,7 @@
 
  ### Adding and removing Objects
 
- Let's add another Mesh to our table Group, a sort of spherical ornament sitting on the table top:
+ Let's add another {{#crossLink "Mesh"}}Mesh{{/crossLink}} to our table {{#crossLink "Group"}}Group{{/crossLink}}, a sort of spherical ornament sitting on the table top:
 
  ````javascript
  table.addChild(new xeogl.Mesh({
@@ -200,7 +200,7 @@
  });
  ````
 
- That's going to update the Group's boundary, as mentioned earlier.
+ That's going to update the {{#crossLink "Group"}}Group{{/crossLink}}'s boundary, as mentioned earlier.
 
  To remove it, we just destroy it:
 
@@ -210,7 +210,7 @@
 
  ### Models within Groups
 
- Now let's create a Group that contains three Models. Recall that Models are Groups, which are Objects.
+ Now let's create a {{#crossLink "Group"}}Group{{/crossLink}} that contains three Models. Recall that Models are {{#crossLink "Group"}}Group{{/crossLink}}s, which are Objects.
 
  <a href="../../examples/#objects_hierarchy_models"><img src="../../assets/images/screenshots/modelHierarchy.png"></img></a>
 
@@ -251,52 +251,52 @@
  });
  ````
 
- Like with the {{#crossLink "Mesh"}}{{/crossLink}} Objects in the previous example, we can then get those Models by index from the Group's children property:
+ Like with the {{#crossLink "Mesh"}}{{/crossLink}} Objects in the previous example, we can then get those Models by index from the {{#crossLink "Group"}}Group{{/crossLink}}'s children property:
 
  ````javascript
  var hoverBike = myModels.children[1];
  hoverBike.scale = [0.5, 0.5, 0.5];
  ````
 
- or by ID from the Group's childMap property:
+ or by ID from the {{#crossLink "Group"}}Group{{/crossLink}}'s childMap property:
 
  ````javascript
  var hoverBike = myModels.childMap["hoverBike"];
  hoverBike.scale = [0.5, 0.5, 0.5];
  ````
 
- or by ID from the Scene's components map:
+ or by ID from the {{#crossLink "Scene"}}{{/crossLink}}'s components map:
 
  ````javascript
  var hoverBike = myModels.scene.components["hoverBike"];
  hoverBike.scale = [0.75, 0.75, 0.75];
  ````
 
- or from the Scene's objects map (only Objects are in this map, and Models are Objects):
+ or from the {{#crossLink "Scene"}}{{/crossLink}}'s objects map (only Objects are in this map, and Models are Objects):
 
  ````javascript
  var hoverBike = myModels.scene.objects["hoverBike"];
  hoverBike.scale = [0.75, 0.75, 0.75];
  ````
 
- or from the Scene's models map (which only contains Models):
+ or from the {{#crossLink "Scene"}}{{/crossLink}}'s models map (which only contains Models):
 
  ````javascript
  var hoverBike = myModels.scene.models["hoverBike"];
  hoverBike.scale = [0.5, 0.5, 0.5];
  ````
 
- For convenience, the Scene's objects map explicitly registers what Objects exist within the Scene, while its models map
+ For convenience, the {{#crossLink "Scene"}}{{/crossLink}}'s objects map explicitly registers what Objects exist within the {{#crossLink "Scene"}}{{/crossLink}}, while its models map
  explicitly registers what Models exist.
 
- As mentioned earlier, property updates on a Group will apply recursively to all the Objects within it. Let's highlight
- all the Models in the Group, in one shot:
+ As mentioned earlier, property updates on a {{#crossLink "Group"}}Group{{/crossLink}} will apply recursively to all the Objects within it. Let's highlight
+ all the Models in the {{#crossLink "Group"}}Group{{/crossLink}}, in one shot:
 
  ````javascript
  myModels.highlighted = true;
  ````
 
- and just for fun, let's scale the Group down, then rotate one of the Models, relative to the Group:
+ and just for fun, let's scale the {{#crossLink "Group"}}Group{{/crossLink}} down, then rotate one of the Models, relative to the {{#crossLink "Group"}}Group{{/crossLink}}:
 
  ````javascript
  myModels.scale = [0.5, 0.5, 0.5]; // (X,Y,Z)
@@ -306,7 +306,7 @@
  ### Objects within Models
 
  Notice the ````objectTree```` configuration on the first child {{#crossLink "GLTFModel"}}{{/crossLink}} in the previous
- example. That's going to cause the GLTFModel (which is a Group) to create one or more subtrees of child Objects from the
+ example. That's going to cause the GLTFModel (which is a {{#crossLink "Group"}}Group{{/crossLink}}) to create one or more subtrees of child Objects from the
  glTF scene node graph. The root Objects of the subtrees will be available in the GLTFModel's {{#crossLink "GLTFModel/children:property"}}{{/crossLink}} and {{#crossLink "GLTFModel/childMap:property"}}{{/crossLink}}
  properties, while all the Objects in the subtrees will be available in the GLTFModel's objects property, and all the {{#crossLink "Mesh"}}{{/crossLink}}es at the
  leaves of the subtrees will be available in the GLTFModel's objects property.
@@ -345,34 +345,33 @@
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this xeogl.Object.
-
- @param [cfg.ifcType] {String} The Object's IFC type, if applicable.
-
- @param [cfg.parent] The parent Object.
-
- @param [cfg.position=[0,0,0]] {Float32Array} The Object's local 3D position.
- @param [cfg.scale=[1,1,1]] {Float32Array} The Object's local scale.
- @param [cfg.rotation=[0,0,0]] {Float32Array} The Object's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
- @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Object's local modelling transform matrix. Overrides the position, scale and rotation parameters.
-
- @param [cfg.visible=true] {Boolean}        Indicates if the Object is visible.
- @param [cfg.culled=false] {Boolean}        Indicates if the Object is culled from view.
- @param [cfg.pickable=true] {Boolean}       Indicates if the Object is pickable.
- @param [cfg.clippable=true] {Boolean}      Indicates if the Object is clippable.
- @param [cfg.collidable=true] {Boolean}     Whether the Object is included in boundary calculations.
- @param [cfg.castShadow=true] {Boolean}     Whether the Object casts shadows.
- @param [cfg.receiveShadow=true] {Boolean}  Whether the Object receives shadows.
- @param [cfg.outlined=false] {Boolean}      Whether an outline is rendered around the Object.
- @param [cfg.ghosted=false] {Boolean}       Whether the Object is rendered as ghosted.
- @param [cfg.highlighted=false] {Boolean}   Whether the Object is rendered as highlighted.
- @param [cfg.selected=false] {Boolean}      Whether the Object is rendered as selected.
- @param [cfg.aabbVisible=false] {Boolean}   Whether the Object's axis-aligned World-space bounding box is visible.
- @param [cfg.obbVisible=false] {Boolean}    Whether the Object's oriented World-space bounding box is visible.
-
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata.
+ @param [cfg.ifcType] {String} IFC type, if applicable.
+ @param [cfg.parent] {Object} The parent.
+ @param [cfg.position=[0,0,0]] {Float32Array} Local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} Local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} Local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} Local modelling transform matrix. Overrides the position, scale and rotation parameters.
+ @param [cfg.visible=true] {Boolean}        Indicates if visible.
+ @param [cfg.culled=false] {Boolean}        Indicates if culled from view.
+ @param [cfg.pickable=true] {Boolean}       Indicates if pickable.
+ @param [cfg.clippable=true] {Boolean}      Indicates if clippable.
+ @param [cfg.collidable=true] {Boolean}     Indicates if included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean}     Indicates if casting shadows.
+ @param [cfg.receiveShadow=true] {Boolean}  Indicates if receiving shadows.
+ @param [cfg.outlined=false] {Boolean}      Indicates if outline is rendered.
+ @param [cfg.ghosted=false] {Boolean}       Indicates if rendered as ghosted.
+ @param [cfg.highlighted=false] {Boolean}   Indicates if rendered as highlighted.
+ @param [cfg.selected=false] {Boolean}      Indicates if rendered as selected.
+ @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
- @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
-
+ @param [cfg.opacity=1.0] {Number}          Opacity factor, multiplies by the rendered fragment alpha.
+ @param [cfg.children] {Array(Object)}      Children to add. Children must be in the same {{#crossLink "Scene"}}{{/crossLink}} and will be removed from whatever parents they may already have.
+ @param [cfg.inheritStates=true] {Boolean}  Indicates if children given to this constructor should inherit state from this parent as they are added. State includes {{#crossLink "Object/visible:property"}}{{/crossLink}}, {{#crossLink "Object/culled:property"}}{{/crossLink}}, {{#crossLink "Object/pickable:property"}}{{/crossLink}},
+ {{#crossLink "Object/clippable:property"}}{{/crossLink}}, {{#crossLink "Object/castShadow:property"}}{{/crossLink}}, {{#crossLink "Object/receiveShadow:property"}}{{/crossLink}},
+ {{#crossLink "Object/outlined:property"}}{{/crossLink}}, {{#crossLink "Object/ghosted:property"}}{{/crossLink}}, {{#crossLink "Object/highlighted:property"}}{{/crossLink}},
+ {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
  @extends Component
  */
 xeogl.Object = xeogl.Component.extend({
@@ -393,6 +392,7 @@ xeogl.Object = xeogl.Component.extend({
         this._parent = null;
         this._childList = [];
         this._childMap = {};
+        this._childIDs = null;
 
         this._aabb = null;
         this._aabbDirty = true;
@@ -457,7 +457,7 @@ xeogl.Object = xeogl.Component.extend({
         if (cfg.children) {
             var children = cfg.children;
             for (var i = 0, len = children.length; i < len; i++) {
-                this.addChild(children[i]);
+                this.addChild(children[i], cfg.inheritStates);
             }
         }
 
@@ -485,7 +485,6 @@ xeogl.Object = xeogl.Component.extend({
                 this._childList[i]._setWorldMatrixDirty();
             }
         }
-        this.fire("boundary");
     },
 
     _buildLocalMatrix: function () { // Rebuilds and validates the Object's Local matrix
@@ -524,12 +523,44 @@ xeogl.Object = xeogl.Component.extend({
     // Boundary methods
     //------------------------------------------------------------------------------------------------------------------
 
-    _setBoundaryDirty: function () { // Invalidates AABB and OBB boundaries of the Object and parent Objects
-        for (var object = this; object; object = object._parent) {
-            object._aabbDirty = true;
-            object._obbDirty = true;
+    _setBoundaryDirty: (function () {
+
+        var notifications = [];
+        var lenNotifications = 0;
+
+        function setParentBoundariesDirty(object) {
+            for (; object; object = object._parent) {
+                if (object._aabbDirty) {
+                    object._aabbDirty = true;
+                    object._obbDirty = true;
+                    notifications[lenNotifications++] = object;
+                }
+            }
         }
-    },
+
+        function setSubtreeBoundariesDirty(object) {
+            if (object._childList) {
+                for (var i = 0, len = object._childList.length; i < len; i++) {
+                    setSubtreeBoundariesDirty(object._childList[i]);
+                }
+            }
+            if (object._aabbDirty) {
+                object._aabbDirty = true;
+                object._obbDirty = true;
+                notifications[lenNotifications++] = object;
+            }
+        }
+
+        return function () { // Invalidates AABB and OBB boundaries of the Object and parent Objects
+            lenNotifications = 0;
+            setSubtreeBoundariesDirty(this);
+            setParentBoundariesDirty(this);
+            for (var i = 0; i < lenNotifications; i++) {
+                notifications[i].fire("boundary");
+            }
+        };
+    })(),
+
 
     _updateAABB: function () {
         if (!this._aabb) {
@@ -564,31 +595,26 @@ xeogl.Object = xeogl.Component.extend({
         }
     },
 
+    //------------------------------------------------------------------------------------------------------------------
+    // Child management methods
+    //------------------------------------------------------------------------------------------------------------------
+
     /**
-     Adds a child {{#crossLink "Object"}}{{/crossLink}}.
+     Adds a child.
 
-     The child Object may be specified by ID, instance or JSON definition.
+     The child must be in the same {{#crossLink "Scene"}}{{/crossLink}}.
 
-     The child Object must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Group, and may not be a parent of this Group.
+     If the child already has a parent, will be removed from that parent first.
 
-     The child object's transforms will become relative to this Group.
+     Does nothing if already a child.
 
-     Unless overridden (see params), the child will automatically inherit the values of these properties of this Group:
-
-     * {{#crossLink "Group/visible:property"}}{{/crossLink}}
-     * {{#crossLink "Group/culled:property"}}{{/crossLink}}
-     * {{#crossLink "Group/ghosted:property"}}{{/crossLink}}
-     * {{#crossLink "Group/highlighted:property"}}{{/crossLink}}
-     * {{#crossLink "Group/selected:property"}}{{/crossLink}}
-     * {{#crossLink "Group/outlined:property"}}{{/crossLink}}
-     * {{#crossLink "Group/clippable:property"}}{{/crossLink}}
-     * {{#crossLink "Group/pickable:property"}}{{/crossLink}}
-     * {{#crossLink "Group/collidable:property"}}{{/crossLink}}
-
-     @method addChild
-     @param {Number|String|*|Object} object ID, definition or instance of an Object type or subtype.
-     @param {Boolean} [inheritStates] Option to prevent the Object from inheriting values of this Group's properties.
-     @returns {Object} The child Object.
+     @param {Object|String} object Instance or ID of the child to add.
+     @param [inheritStates=true] Indicates if the child should inherit state from this parent as it is added. State includes
+     {{#crossLink "Object/visible:property"}}{{/crossLink}}, {{#crossLink "Object/culled:property"}}{{/crossLink}}, {{#crossLink "Object/pickable:property"}}{{/crossLink}},
+     {{#crossLink "Object/clippable:property"}}{{/crossLink}}, {{#crossLink "Object/castShadow:property"}}{{/crossLink}}, {{#crossLink "Object/receiveShadow:property"}}{{/crossLink}},
+     {{#crossLink "Object/outlined:property"}}{{/crossLink}}, {{#crossLink "Object/ghosted:property"}}{{/crossLink}}, {{#crossLink "Object/highlighted:property"}}{{/crossLink}},
+     {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
+     @returns {Object} The child object.
      */
     addChild: function (object, inheritStates) {
         if (xeogl._isNumeric(object) || xeogl._isString(object)) {
@@ -625,6 +651,7 @@ xeogl.Object = xeogl.Component.extend({
         delete this.scene.rootObjects[id];
         this._childList.push(object);
         this._childMap[id] = object;
+        this._childIDs = null;
         object._parent = this;
         if (inheritStates !== false) {
             object.visible = this.visible;
@@ -636,17 +663,21 @@ xeogl.Object = xeogl.Component.extend({
             object.clippable = this.clippable;
             object.pickable = this.pickable;
             object.collidable = this.collidable;
+            object.castShadow = this.castShadow;
+            object.receiveShadow = this.receiveShadow;
+            object.colorize = this.colorize;
+            object.opacity = this.opacity;
         }
         object._setWorldMatrixDirty();
-        this._setBoundaryDirty();
+        object._setBoundaryDirty(); // Propagates up to this as parent
         return object;
     },
 
     /**
-     Removes a child {{#crossLink "Object"}}{{/crossLink}}.
+     Removes the given child.
 
      @method removeChild
-     @param {Object} object An Object instance.
+     @param {Object} object Child to remove.
      */
     removeChild: function (object) {
         var id = object.id;
@@ -655,8 +686,10 @@ xeogl.Object = xeogl.Component.extend({
                 object._parent = null;
                 this._childList = this._childList.splice(i, 1);
                 delete this._childMap[id];
+                this._childIDs = null;
                 this.scene.rootObjects[object.id] = object;
                 object._setWorldMatrixDirty();
+                object._setBoundaryDirty();
                 this._setBoundaryDirty();
                 return;
             }
@@ -664,7 +697,7 @@ xeogl.Object = xeogl.Component.extend({
     },
 
     /**
-     Removes all child {{#crossLink "Object"}}Objects{{/crossLink}}.
+     Removes all children.
 
      @method removeChildren
      */
@@ -675,23 +708,22 @@ xeogl.Object = xeogl.Component.extend({
             object._parent = null;
             this.scene.rootObjects[object.id] = object;
             object._setWorldMatrixDirty();
+            object._setBoundaryDirty();
         }
         this._childList = [];
         this._childMap = {};
+        this._childIDs = null;
         this._setBoundaryDirty();
     },
 
     /**
-     Rotates the Object about the given Local-space axis by the given increment.
+     Rotates about the given local axis by the given increment.
 
      @method rotate
-     @paream {Float32Array} axis The Local-space axis about which to rotate.
+     @paream {Float32Array} axis Local axis about which to rotate.
      @param {Number} angle Angle increment in degrees.
      */
     rotate: (function () {
-        // rotate object on axis in world space
-        // axis is assumed to be normalized
-        // method assumes no rotated parent
         var angleAxis = new Float32Array(4);
         var q1 = new Float32Array(4);
         var q2 = new Float32Array(4);
@@ -703,7 +735,7 @@ xeogl.Object = xeogl.Component.extend({
             xeogl.math.angleAxisToQuaternion(angleAxis, q1);
             xeogl.math.mulQuaternions(this.quaternion, q1, q2);
             this.quaternion = q2;
-            this._setWorldMatrixDirty();
+            this._setLocalMatrixDirty();
             this._setBoundaryDirty();
             this._renderer.imageDirty();
             return this;
@@ -711,16 +743,13 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     Rotates the Object about the given World-space axis by the given increment.
+     Rotates about the given World-space axis by the given increment.
 
      @method rotate
-     @paream {Float32Array} axis The local axis about which to rotate.
+     @paream {Float32Array} axis Local axis about which to rotate.
      @param {Number} angle Angle increment in degrees.
      */
     rotateOnWorldAxis: (function () {
-        // rotate object on axis in world space
-        // axis is assumed to be normalized
-        // method assumes no rotated parent
         var angleAxis = new Float32Array(4);
         var q1 = new Float32Array(4);
         return function rotateOnWorldAxis(axis, angle) {
@@ -736,7 +765,7 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     Rotates the Object about the Local-space X-axis by the given increment.
+     Rotates about the local X-axis by the given increment.
 
      @method rotateX
      @param {Number} angle Angle increment in degrees.
@@ -749,7 +778,7 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     Rotates the Object about the Local-space Y-axis by the given increment.
+     Rotates about the local Y-axis by the given increment.
 
      @method rotateY
      @param {Number} angle Angle increment in degrees.
@@ -762,7 +791,7 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     Rotates the Object about the Local-space Z-axis by the given increment.
+     Rotates about the local Z-axis by the given increment.
 
      @method rotateZ
      @param {Number} angle Angle increment in degrees.
@@ -775,11 +804,11 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     * Translates the Object in Local-space by the given increment.
-     *
-     * @method translate
-     * @param {Float32Array} axis Normalized local space 3D vector along which to translate.
-     * @param {Number} distance Distance to translate along  the vector.
+     Translates in local by the given increment.
+
+     @method translate
+     @param {Float32Array} axis Normalized local space 3D vector along which to translate.
+     @param {Number} distance Distance to translate along  the vector.
      */
     translate: (function () {
         var veca = new Float32Array(3);
@@ -788,7 +817,7 @@ xeogl.Object = xeogl.Component.extend({
             xeogl.math.vec3ApplyQuaternion(this.quaternion, axis, veca);
             xeogl.math.mulVec3Scalar(veca, distance, vecb);
             xeogl.math.addVec3(this.position, vecb, this.position);
-            this._setWorldMatrixDirty();
+            this._setLocalMatrixDirty();
             this._setBoundaryDirty();
             this._renderer.imageDirty();
             return this;
@@ -796,10 +825,10 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     * Translates the Object along the Local-space X-axis by the given increment.
-     *
-     * @method translateX
-     * @param {Number} distance Distance to translate along  the X-axis.
+     Translates along the local X-axis by the given increment.
+
+     @method translateX
+     @param {Number} distance Distance to translate along  the X-axis.
      */
     translateX: (function () {
         var v1 = new Float32Array([1, 0, 0]);
@@ -809,7 +838,7 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     * Translates the Object along the Local-space Y-axis by the given increment.
+     * Translates along the local Y-axis by the given increment.
      *
      * @method translateX
      * @param {Number} distance Distance to translate along  the Y-axis.
@@ -822,10 +851,10 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     * Translates the Object along the Local-space Z-axis by the given increment.
-     *
-     * @method translateX
-     * @param {Number} distance Distance to translate along  the Z-axis.
+     Translates along the local Z-axis by the given increment.
+
+     @method translateX
+     @param {Number} distance Distance to translate along  the Z-axis.
      */
     translateZ: (function () {
         var v1 = new Float32Array([0, 0, 1]);
@@ -837,7 +866,7 @@ xeogl.Object = xeogl.Component.extend({
     _props: {
 
         /**
-         The IFC type of the Object, if applicable.
+         IFC type, if applicable.
 
          @property ifcType
          @default null
@@ -874,11 +903,11 @@ xeogl.Object = xeogl.Component.extend({
         //------------------------------------------------------------------------------------------------------------------
 
         /**
-         * Convenience property containing the number of child {{#crossLink "Object"}}Objects{{/crossLink}}.
-         *
-         * @property numChildren
-         * @final
-         * @type Number
+         Number of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+         @property numChildren
+         @final
+         @type Number
          */
         numChildren: {
             get: function () {
@@ -913,7 +942,23 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         The parent Group/Model.
+         IDs of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+         @property childIDs
+         @final
+         @type Array
+         */
+        childIDs: {
+            get: function () {
+                if (!this._childIDs) {
+                    this._childIDs = Object.keys(this._childMap);
+                }
+                return this._childIDs;
+            }
+        },
+
+        /**
+         The parent.
 
          The parent Group may also be set by passing the Object to the
          Group/Model's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
@@ -951,7 +996,7 @@ xeogl.Object = xeogl.Component.extend({
         //------------------------------------------------------------------------------------------------------------------
 
         /**
-         The Object's Local-space translation.
+         Local translation.
 
          @property position
          @default [0,0,0]
@@ -970,7 +1015,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         The Object's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+         Local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
 
          @property rotation
          @default [0,0,0]
@@ -990,7 +1035,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         The Object's Local-space rotation quaternion.
+         Local rotation quaternion.
 
          @property quaternion
          @default [0,0,0, 1]
@@ -1010,7 +1055,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         The Object's Local-space scale.
+         Local scale.
 
          @property scale
          @default [0,0,0]
@@ -1029,7 +1074,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         * The Object's local matrix.
+         * Local matrix.
          *
          * @property matrix
          * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
@@ -1056,7 +1101,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         * The Object's World matrix.
+         * The World matrix.
          *
          * @property worldMatrix
          * @type {Float32Array}
@@ -1071,7 +1116,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         * This Object's World normal matrix.
+         * This World normal matrix.
          *
          * @property worldNormalMatrix
          * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
@@ -1146,9 +1191,9 @@ xeogl.Object = xeogl.Component.extend({
         //------------------------------------------------------------------------------------------------------------------
 
         /**
-         The axis-aligned World-space boundary of the Object.
+         World-space 3D axis-aligned bounding box (AABB).
 
-         The AABB is represented by a six-element Float32Array containing the min/max extents of the
+         Represented by a six-element Float32Array containing the min/max extents of the
          axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
 
          @property aabb
@@ -1158,21 +1203,17 @@ xeogl.Object = xeogl.Component.extend({
         aabb: {
             get: function () {
                 if (this._aabbDirty) {
-                    this._updateAABB();
+                    this._updateAABB();  // Could be xeogl.Mesh._updateAABB()
                 }
                 return this._aabb;
             }
         },
 
         /**
-         World-space oriented 3D bounding box (OBB) of the Object.
+         World-space 3D oriented bounding box (OBB).
 
-         The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+         Represented by a 32-element Float32Array containing the eight vertices of the box,
          where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
-
-         The OBB will only be properly object-aligned if the Object has exactly one Mesh within its subtree. When
-         there are multiple Meshes, then the OBB will be set to the extents of the World-space axis-aligned boundary, equivalent
-         to {{#crossLink "Object/aabb:property"}}{{/crossLink}}.
 
          @property obb
          @final
@@ -1181,28 +1222,30 @@ xeogl.Object = xeogl.Component.extend({
         obb: {
             get: function () {
                 if (this._obbDirty) {
-                    this._updateOBB();
+                    this._updateOBB(); // Could be xeogl.Mesh._updateAABB()
                 }
                 return this._obb;
             }
         },
 
         /**
-         The Object's World-space center.
+         World-space 3D center.
 
          @property center
          @final
-         @returns {Float32Array}
+         @type {Float32Array}
          */
-        center: function () {
-            if (this._aabbDirty) {
-                this._updateAABB();
+        center: {
+            get: function () {
+                if (this._aabbDirty) {
+                    this._updateAABB();
+                }
+                return this._aabbCenter;
             }
-            return this._aabbCenter;
         },
 
         /**
-         Whether the Object's axis-aligned bounding box (AABB) is visible.
+         Indicates if the 3D World-space axis-aligned bounding box (AABB) is visible.
 
          @property aabbVisible
          @default false
@@ -1233,7 +1276,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Whether the Object's object-aligned bounding box (OBB) is visible.
+         Indicates if the World-space 3D object-aligned bounding box (OBB) is visible.
 
          @property obbVisible
          @default false
@@ -1264,21 +1307,10 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Set true to show the axis-aligned bounding box (AABB) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
+         Indicates if visible.
 
-         @property aabbHierarchyVisible
-         @type {Boolean}
-         */
-
-        /**
-         Set true to show the object-aligned bounding box (obb) of all {{#crossLink "Object"}}Objects{{/crossLink}} in the subtree.
-
-         @property obbHierarchyVisible
-         @type {Boolean}
-         */
-
-        /**
-         Indicates whether or not the Object is currently visible.
+         Only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+         {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
 
          @property visible
          @default true
@@ -1298,7 +1330,10 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates whether or not the Object is currently culled from view.
+         Indicates if culled from view.
+
+         Only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+         {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
 
          @property culled
          @default false
@@ -1318,7 +1353,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates whether the Object is highlighted.
+         Indicates if rendered as highlighted.
 
          @property highlighted
          @default false
@@ -1338,7 +1373,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates whether the Object appears selected.
+         Indicates if rendered as selected.
 
          @property selected
          @default false
@@ -1358,7 +1393,9 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates whether the Object is clippable.
+         Indicates if clippable.
+
+         Clipping is done by the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}} component.
 
          @property clippable
          @default true
@@ -1378,7 +1415,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates whether the Object is included in boundary calculations.
+         Indicates if included in boundary calculations.
 
          @property collidable
          @default true
@@ -1398,7 +1435,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates whether the Object is pickable or not.
+         Whether or not to allow picking.
 
          Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
 
@@ -1480,7 +1517,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates whether the Object appears outlined.
+         Indicates if rendered as outlined.
 
          @property outlined
          @default false
@@ -1500,9 +1537,9 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates whether the Object appears ghosted.
+         Indicates if rendered as ghosted.
 
-         @property outlined
+         @property ghosted
          @default false
          @type Boolean
          */
@@ -1516,6 +1553,46 @@ xeogl.Object = xeogl.Component.extend({
             },
             get: function () {
                 return this._ghosted;
+            }
+        },
+
+        /**
+         Indicates if casting shadows.
+
+         @property castShadow
+         @default true
+         @type Boolean
+         */
+        castShadow: {
+            set: function (castShadow) {
+                castShadow = !!castShadow;
+                this._castShadow = castShadow;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].castShadow = castShadow;
+                }
+            },
+            get: function () {
+                return this._castShadow;
+            }
+        },
+
+        /**
+         Indicates if receiving shadows.
+
+         @property receiveShadow
+         @default true
+         @type Boolean
+         */
+        receiveShadow: {
+            set: function (receiveShadow) {
+                receiveShadow = !!receiveShadow;
+                this._receiveShadow = receiveShadow;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].receiveShadow = receiveShadow;
+                }
+            },
+            get: function () {
+                return this._receiveShadow;
             }
         }
     },

@@ -466,43 +466,43 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Mesh.
 
  @param [cfg.ifcType] {String} The Mesh's IFC type, if applicable.
-
+ @param [cfg.parent] {Object} The parent.
  @param [cfg.position=[0,0,0]] {Float32Array} The Mesh's local 3D position.
  @param [cfg.scale=[1,1,1]] {Float32Array} The Mesh's local scale.
  @param [cfg.rotation=[0,0,0]] {Float32Array} The Mesh's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Mesh's local modelling transform matrix. Overrides the position, scale and rotation parameters.
 
- @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Mesh to define its shape. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
  @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
- @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Mesh to specify its appearance when outlined. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to specify its appearance when ghosted. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlightMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.highlightMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to specify its appearance when highlighted. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
- @param [cfg.selectedMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define selected appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.selectedMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define its appearance when selected. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
- @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array} RGB colorize color, multiplies by the rendered fragment colors.
  @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
- @param [cfg.layer=0] {Number} Indicates this Mesh's rendering priority, typically used for transparency sorting,
- @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Mesh. This is useful for skybox Meshes.
+ @param [cfg.layer=0] {Number} Indicates this Mesh's rendering priority, relative to other Meshes. Typically used for transparency sorting,
+ @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Camera"}}{{/crossLink}} translations for this Mesh. This is useful for making skyboxes.
  @param [cfg.billboard="none"] {String} Specifies the billboarding behaviour for this Mesh. Options are "none", "spherical" and "cylindrical".
 
- @param [cfg.visible=true] {Boolean}  Indicates if this Mesh is visible.
- @param [cfg.culled=false] {Boolean}  Indicates if this Mesh is culled from view.
- @param [cfg.pickable=true] {Boolean}  Indicates if this Mesh is pickable.
- @param [cfg.clippable=true] {Boolean} Indicates if this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
- @param [cfg.collidable=true] {Boolean} Whether this Mesh is included in boundary calculations.
- @param [cfg.castShadow=true] {Boolean} Whether this Mesh casts shadows.
- @param [cfg.receiveShadow=true] {Boolean} Whether this Mesh receives shadows.
- @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this mesh, as configured by the Mesh's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
- @param [cfg.ghosted=false] {Boolean} Whether this mesh is rendered as ghosted, as configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlighted=false] {Boolean}   Whether this mesh is rendered as highlighted, as configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
- @param [cfg.selected=false] {Boolean}      Whether this mesh is rendered as selected, as configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
- @param [cfg.aabbVisible=false] {Boolean}   Whether this Mesh's axis-aligned World-space bounding box is visible.
- @param [cfg.obbVisible=false] {Boolean}    Whether this Mesh's oriented World-space bounding box is visible.
+ @param [cfg.visible=true] {Boolean}        Indicates if this Mesh is visible. Mesh is only rendered when visible and not culled.
+ @param [cfg.culled=false] {Boolean}        Indicates if this Mesh is culled from view. Mesh is only rendered when visible and not culled.
+ @param [cfg.pickable=true] {Boolean}       Indicates if this Mesh is pickable. When false, the Mesh will never be picked by calls to the {{#crossLink "Scene/pick:method"}}Scene pick(){{/crossLink}} method, and picking will happen as "through" the Mesh, to attempt to pick whatever lies on the other side of it.
+ @param [cfg.clippable=true] {Boolean}      Indicates if this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}}. When false, Mesh will not be affected by the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}}.
+ @param [cfg.collidable=true] {Boolean}     Whether this Mesh is included in boundary calculations. When false, the bounding boxes of the containing {{#crossLink "Scene"}}{{/crossLink}} and parent {{#crossLink "Object"}}{{/crossLink}}, {{#crossLink "Group"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} will not be calculated to enclose this Mesh.
+ @param [cfg.castShadow=true] {Boolean}     Whether this Mesh casts shadows.
+ @param [cfg.receiveShadow=true] {Boolean}  Whether this Mesh receives shadows.
+ @param [cfg.outlined=false] {Boolean}      Whether an outline is rendered around this mesh.
+ @param [cfg.ghosted=false] {Boolean}       Whether this Mesh is rendered with a ghosted appearance.
+ @param [cfg.highlighted=false] {Boolean}   Whether this Mesh is rendered with a highlighted appearance.
+ @param [cfg.selected=false] {Boolean}      Whether this Mesh is rendered with a selected appearance.
+ @param [cfg.aabbVisible=false] {Boolean}   Whether this Mesh's World-space axis-aligned bounding box (AABB) is visible.
+ @param [cfg.obbVisible=false] {Boolean}    Whether this Mesh's World-space oriented bounding box (OBB) is visible.
 
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
  @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
@@ -561,8 +561,6 @@
 
             this._objectId = null; // Renderer object
             this._loading = cfg.loading !== false;
-            this._aabbDirty = true;
-            this._obbDirty = true;
             this._worldPositions = null;
             this._worldPositionsDirty = true;
 
@@ -580,156 +578,44 @@
             this._super(cfg); // Call xeogl.Object._init()
         },
 
+        _updateAABB: function () { // Overrides xeogl.Object._updateAABB
+            if (this._aabbDirty) {
+                var math = xeogl.math;
+                var geometry = this._attached.geometry;
+                if (!this._aabb) {
+                    this._aabb = math.AABB3();
+                }
+                if (!this._obb) {
+                    this._obb = math.OBB3();
+                }
+                math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
+                math.OBB3ToAABB3(this._obb, this._aabb);
+                this._aabbDirty = false;
+            }
+        },
+
+        _updateOBB: function () { // Overrides xeogl.Object._updateOBB
+            if (this._obbDirty) {
+                var geometry = this._attached.geometry;
+                if (!this._obb) {
+                    this._obb = xeogl.math.OBB3();
+                }
+                xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
+                this._obbDirty = false;
+            }
+        },
 
         _props: {
 
-            //------------------------------------------------------------------------------------------------------------------
-            // Transform properties
-            //------------------------------------------------------------------------------------------------------------------
-
             /**
-             The Mesh's Local-space translation.
+             World-space 3D vertex positions.
 
-             @property position
-             @default [0,0,0]
-             @type {Float32Array}
-             */
+             These are internally generated on-demand and cached. To free the cached
+             vertex World positions when you're done with them, set this property to null or undefined.
 
-            /**
-             The Meshes's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
-
-             @property rotation
-             @default [0,0,0]
-             @type {Float32Array}
-             */
-
-            /**
-             The Mesh's Local-space rotation quaternion.
-
-             @property quaternion
-             @default [0,0,0, 1]
-             @type {Float32Array}
-             */
-
-            /**
-             The Mesh's Local-space scale.
-
-             @property scale
-             @default [0,0,0]
-             @type {Float32Array}
-             */
-
-            /**
-             The Mesh's local matrix.
-
-             @property matrix
-             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             @type {Float32Array}
-             */
-
-            /**
-             The Mesh's World matrix.
-
-             @property worldMatrix
-             @type {Float32Array}
-             */
-
-            /**
-             * This Object's World normal matrix.
-             *
-             * @property worldNormalMatrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
-             */
-
-            //----------------------------------------------------------------------------------------------------------
-            // Boundary properties
-            //----------------------------------------------------------------------------------------------------------
-
-            /**
-             * This Mesh's World-space axis-aligned 3D boundary (AABB).
-             *
-             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
-             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-             *
-             * @property aabb
-             * @final
-             * @type {Float32Array}
-             */
-            aabb: { // Overrides xeogl.Object.aabb
-                get: function () {
-                    if (this._aabbDirty) {
-                        this._aabbDirty = false;
-                        var math = xeogl.math;
-                        var geometry = this._attached.geometry;
-                        if (!this._aabb) {
-                            this._aabb = math.AABB3();
-                        }
-                        if (!this._obb) {
-                            this._obb = math.OBB3();
-                        }
-                        math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                        math.OBB3ToAABB3(this._obb, this._aabb);
-                    }
-                    return this._aabb;
-                }
-            },
-
-            /**
-             * This Mesh's World-space oriented 3D boundary (OBB).
-             *
-             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
-             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
-             *
-             * @property obb
-             * @final
-             * @type {Float32Array}
-             */
-            obb: { // Overrides xeogl.Object.obb
-                get: function () {
-                    if (this._obbDirty) {
-                        this._obbDirty = false;
-                        var geometry = this._attached.geometry;
-                        if (!this._obb) {
-                            this._obb = xeogl.math.OBB3();
-                        }
-                        xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                    }
-                    return this._obb;
-                }
-            },
-
-            /**
-             * World-space 3D center of this Mesh.
-             *
-             * @property center
-             * @final
-             * @type {Float32Array}
-             */
-            center: { // Overrides xeogl.Object.center
-                get: function () {
-                    if (this._aabbDirty) {
-                        if (!this._center || !this._center) {
-                            this._center = xeogl.math.vec3();
-                        }
-                        var aabb = this.aabb;
-                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
-                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
-                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
-                    }
-                    return this._center;
-                }
-            },
-
-            /**
-             * This Mesh's World-space vertex positions.
-             *
-             * These are internally generated on-demand and cached. To free the cached
-             * vertex World positions when you're done with them, set this property to null or undefined.
-             *
-             * @property worpdPositions
-             * @type Float32Array
-             * @final
+             @property worldPositions
+             @type Float32Array
+             @final
              */
             worldPositions: {
                 get: function () {
@@ -751,23 +637,19 @@
                 }
             },
 
-            //----------------------------------------------------------------------------------------------------------
-            // Component properties
-            //----------------------------------------------------------------------------------------------------------
-
             /**
-             * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Mesh.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}
-             * (a simple box) when set to a null or undefined value.
-             *
-             * Updates {{#crossLink "Mesh/boundary"}}{{/crossLink}},
-             * {{#crossLink "Mesh/worldObb"}}{{/crossLink}} and
-             * {{#crossLink "Mesh/center"}}{{/crossLink}}
-             *
-             * @property geometry
-             * @type Geometry
+             Defines the shape of this Mesh.
+
+             This {{#crossLink "Geometry"}}{{/crossLink}} must be within the same {{#crossLink "Scene"}}{{/crossLink}}
+             as this Mesh and defaults to the {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}
+             (a simple box) when set to a null or undefined value.
+
+             Updates {{#crossLink "Mesh/boundary"}}{{/crossLink}},
+             {{#crossLink "Mesh/worldObb"}}{{/crossLink}} and
+             {{#crossLink "Mesh/center"}}{{/crossLink}}
+
+             @property geometry
+             @type Geometry
              */
             geometry: {
                 set: function (value) {
@@ -795,14 +677,14 @@
             },
 
             /**
-             * The {{#crossLink "Material"}}Material{{/crossLink}} attached to this Mesh.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/material:property"}}material{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property material
-             * @type Material
+             Defines appearance when rendering normally, ie. when not ghosted, highlighted or selected.
+
+             This {{#crossLink "Material"}}{{/crossLink}} must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Mesh and defaults to the parent
+             {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/material:property"}}material{{/crossLink}} when set to
+             a null or undefined value.
+
+             @property material
+             @type Material
              */
             material: {
                 set: function (value) {
@@ -819,14 +701,15 @@
             },
 
             /**
-             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Mesh.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property ghostMaterial
-             * @type EmphasisMaterial
+             Defines surface appearance when rendering as ghosted.
+
+             This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
+             same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
+             {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}} when set to
+             a null or undefined value.
+
+             @property ghostMaterial
+             @type EmphasisMaterial
              */
             ghostMaterial: {
                 set: function (value) {
@@ -843,14 +726,15 @@
             },
 
             /**
-             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Mesh.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property highlightMaterial
-             * @type EmphasisMaterial
+             Defines surface appearance when rendering as highlighted.
+
+             This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
+             same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
+             {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}} when set to
+             a null or undefined value.
+
+             @property highlightMaterial
+             @type EmphasisMaterial
              */
             highlightMaterial: {
                 set: function (value) {
@@ -867,14 +751,15 @@
             },
 
             /**
-             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Mesh.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property selectedMaterial
-             * @type EmphasisMaterial
+             Defines surface appearance when rendering as selected.
+
+             This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
+             same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
+             {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}} when set to
+             a null or undefined value.
+
+             @property selectedMaterial
+             @type EmphasisMaterial
              */
             selectedMaterial: {
                 set: function (value) {
@@ -891,14 +776,15 @@
             },
 
             /**
-             * The {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} attached to this Mesh.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property outlineMaterial
-             * @type OutlineMaterial
+             Defines surface appearance when rendering as outlined.
+
+             This {{#crossLink "OutlineMaterial"}}{{/crossLink}} must be within the
+             same {{#crossLink "Scene"}}{{/crossLink}} as this Mesh, and defaults to the
+             {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}} when set to
+             a null or undefined value.
+
+             @property outlineMaterial
+             @type OutlineMaterial
              */
             outlineMaterial: {
                 set: function (value) {
@@ -914,12 +800,8 @@
                 }
             },
 
-            //----------------------------------------------------------------------------------------------------------
-            // State properties
-            //----------------------------------------------------------------------------------------------------------
-
             /**
-             Indicates whether this Mesh is visible or not.
+             Indicates if visible.
 
              The Mesh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
              {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
@@ -939,9 +821,9 @@
             },
 
             /**
-             Indicates whether or not this Mesh is currently culled from view.
+             Indicates if culled from view.
 
-             The Mesh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
+             The MEsh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
              {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
 
              @property culled
@@ -959,9 +841,9 @@
             },
 
             /**
-             Indicates whether this Mesh is pickable or not.
+             Indicates if pickable.
 
-             Picking is done via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
+             When false, the Mesh will never be picked by calls to the {{#crossLink "Scene/pick:method"}}Scene pick(){{/crossLink}} method, and picking will happen as "through" the Mesh, to attempt to pick whatever lies on the other side of it.
 
              @property pickable
              @default true
@@ -983,7 +865,9 @@
             },
 
             /**
-             Indicates whether this Mesh is clippable by {{#crossLink "Clips"}}{{/crossLink}} components.
+             Indicates if clippable.
+
+             When false, the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}} will have no effect on the Mesh.
 
              @property clippable
              @default true
@@ -1004,7 +888,9 @@
             },
 
             /**
-             Indicates whether this Mesh is included in boundary calculations.
+             Indicates if included in boundary calculations.
+
+             When false, this Mesh will not be included in the bounding boxes provided by parent components (
 
              @property collidable
              @default true
@@ -1025,7 +911,7 @@
 
 
             /**
-             Indicates whether this Mesh casts shadows.
+             Indicates if casting shadows.
 
              @property castShadow
              @default true
@@ -1046,7 +932,7 @@
             },
 
             /**
-             Indicates whether this Mesh receives shadows.
+             Indicates if receiving shadows.
 
              @property receiveShadow
              @default true
@@ -1068,9 +954,32 @@
             },
 
             /**
-             Indicates whether this Mesh is rendered with an outline.
+             Indicates if rendered as ghosted.
 
-             The outline effect is configured via the Mesh's {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}} component.
+             The ghosted appearance is configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+
+             @property ghosted
+             @default false
+             @type Boolean
+             */
+            "ghosted,ghost": {
+                set: function (value) {
+                    value = !!value;
+                    if (this._state.ghosted === value) {
+                        return;
+                    }
+                    this._state.ghosted = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.ghosted;
+                }
+            },
+
+            /**
+             Indicates if rendered with an outline.
+
+             The outline appearance is configured by {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
 
              @property outlined
              @default false
@@ -1091,9 +1000,9 @@
             },
 
             /**
-             Indicates whether this Mesh is highlighted.
+             Indicates if rendered as highlighted.
 
-             The highlight effect is configured via the Mesh's {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+             The highlight appearance is configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
 
              @property highlighted
              @default false
@@ -1114,9 +1023,9 @@
             },
 
             /**
-             Indicates whether this Mesh is selected.
+             Indicates if rendered as selected.
 
-             The selected effect is configured via the Mesh's {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+             The selected appearance is configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
 
              @property selected
              @default false
@@ -1140,7 +1049,7 @@
              RGB colorize color, multiplies by the rendered fragment colors.
 
              @property colorize
-             @default [1.0, 1.0, 1.0, 1.0]
+             @default [1.0, 1.0, 1.0]
              @type Float32Array
              */
             colorize: {
@@ -1193,14 +1102,14 @@
             },
 
             /**
-             * Indicates this Mesh's rendering order.
-             *
-             * This can be set on multiple transparent Meshes, to make them render in a specific order
-             * for correct alpha blending.
-             *
-             * @property layer
-             * @default 0
-             * @type Number
+             The rendering order.
+
+             This can be set on multiple transparent Meshes, to make them render in a specific order
+             for correct alpha blending.
+
+             @property layer
+             @default 0
+             @type Number
              */
             layer: {
                 set: function (value) {
@@ -1219,14 +1128,14 @@
             },
 
             /**
-             * Flag which indicates whether this Mesh is stationary or not.
-             *
-             * Setting this true will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
-             * translations for this Mesh, while still alowing it to rotate. This is useful for skybox Meshes.
-             *
-             * @property stationary
-             * @default false
-             * @type Boolean
+             Indicates if the position is stationary.
+
+             Setting this true will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
+             translations for this Mesh, while still allowing it to rotate. This is useful for skybox Meshes.
+
+             @property stationary
+             @default false
+             @type Boolean
              */
             stationary: {
                 set: function (value) {
@@ -1243,7 +1152,7 @@
             },
 
             /**
-             Specifies the billboarding behaviour for this Mesh.
+             Indicates the billboarding behaviour.
 
              Options are:
 
@@ -1272,29 +1181,6 @@
                 },
                 get: function () {
                     return this._state.billboard;
-                }
-            },
-
-            /**
-             * Flag which indicates if this Mesh is rendered with ghost effect.
-             *
-             * The ghost effect is configured via the Mesh's {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
-             *
-             * @property ghosted
-             * @default false
-             * @type Boolean
-             */
-            "ghosted,ghost": {
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.ghosted === value) {
-                        return;
-                    }
-                    this._state.ghosted = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.ghosted;
                 }
             }
         },
