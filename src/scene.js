@@ -763,8 +763,8 @@
 
             if (c.isType("xeogl.Mesh")) {
                 c.on("dirty", this._meshDirty, this);
-                this.meshes[c.id] = c;
                 c.on("boundary", this._setBoundaryDirty, this);
+                this.meshes[c.id] = c;
                 xeogl.stats.components.meshes++;
             }
 
