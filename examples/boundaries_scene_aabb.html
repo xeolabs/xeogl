@@ -38,14 +38,16 @@
                 scale: [.2, .2, .2],
                 position: [-110, 0, 0],
                 rotation: [0, 90, 0],
-                objectTree: true
+                objectTree: true,
+                XaabbVisible: true // FIXME: Scene boundary incorrect when this true
             }),
 
             new xeogl.GLTFModel({
                 id: "hoverBike",
                 src: "models/gltf/hover_bike/scene.gltf",
                 scale: [.5, .5, .5],
-                position: [0, -40, 0]
+                position: [0, -40, 0],
+                XaabbVisible: true // FIXME: Scene boundary incorrect when this true
             }),
 
             new xeogl.STLModel({
@@ -54,7 +56,8 @@
                 smoothNormals: true,
                 scale: [3, 3, 3],
                 position: [110, -20, 60],
-                rotation: [0, 90, 0]
+                rotation: [0, 90, 0],
+                XaabbVisible: true // FIXME: Scene boundary incorrect when this true
             })
         ]
     });
@@ -88,6 +91,18 @@
         collidable: false  // <<------------------- Important! Don't contribute to the Scene boundary.
     });
 
+
+    scene.models["f1Car"].on("loaded", function() {
+        this.aabbVisible = true;
+    });
+
+    scene.models["engine"].on("loaded", function() {
+        this.aabbVisible = true;
+    });
+
+    scene.models["hoverBike"].on("loaded", function() {
+        this.aabbVisible = true;
+    });
 
 </script>
 </body>
