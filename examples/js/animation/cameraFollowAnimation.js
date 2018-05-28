@@ -77,7 +77,7 @@
  @module xeogl
  @submodule animation
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CameraFollowAnimation within xeogl's default {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} by default.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CameraFollowAnimation within xeogl's default {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {*} Optional map of user-defined metadata to attach to this CameraFollowAnimation.

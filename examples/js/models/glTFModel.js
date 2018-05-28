@@ -370,19 +370,35 @@
         _props: {
 
             /**
-             Child {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel, mapped to their IDs.
+             Array of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel.
 
-             @property childMap
-             @final
-             @type {*}
-             */
+             When **objectTree** is set ````true```` in the GLTFModel's constructor, this will contain the root
+             {{#crossLink "Object"}}Objects{{/crossLink}} corresponding to root ````nodes```` within the glTF
+             ````scene```` graph.
 
-            /**
-             Array of child {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel.
+             When **objectTree** is omitted or set ````false```` in the GLTFModel's constructor, this will contain
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} corresponding to leaf ````nodes```` within the glTF
+             ````scene```` graph.
 
              @property children
              @final
              @type Array
+             */
+
+            /**
+             Map of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel, mapped to their IDs.
+
+             When **objectTree** is set ````true```` in the GLTFModel's constructor, this will contain the root
+             {{#crossLink "Object"}}Objects{{/crossLink}} corresponding to root ````nodes```` within the glTF
+             ````scene```` graph.
+
+             When **objectTree** is omitted or set ````false```` in the GLTFModel's constructor, this will contain
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} corresponding to leaf ````nodes```` within the glTF
+             ````scene```` graph.
+
+             @property childMap
+             @final
+             @type {*}
              */
 
             /**
@@ -393,7 +409,6 @@
              @type Boolean
              */
             loaded: {
-
                 set: function (value) {
                     value = value !== false;
                     if (this._loaded === value) {
@@ -407,7 +422,6 @@
                         }
                     }
                 },
-
                 get: function () {
                     return this._loaded;
                 }
@@ -425,22 +439,17 @@
              @type String
              */
             src: {
-
                 set: function (value) {
-
                     if (!value) {
                         this.clear();
                         this._src = null;
                         return;
                     }
-
                     if (!xeogl._isString(value)) {
                         this.error("Value for 'src' should be a string");
                         return;
                     }
-
                     if (value === this._src) { // Already loaded this GLTFModel
-
                         /**
                          Fired whenever this GLTFModel has finished loading components from the glTF file
                          specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
@@ -449,16 +458,12 @@
                         this.fire("loaded", true, true);
                         return;
                     }
-
                     this.clear();
-
                     this._src = value;
-
                     if (this._loaded) {
                         xeogl.GLTFModel.load(this, this._src, this._options);
                     }
                 },
-
                 get: function () {
                     return this._src;
                 }
@@ -564,19 +569,6 @@
                 },
                 error);
         };
-
-        // function loadJSON(src, ok, error) {
-        //     var request = new XMLHttpRequest();
-        //     request.overrideMimeType("application/json");
-        //     request.open('GET', src, true);
-        //     request.onreadystatechange = function () {
-        //         if (request.readyState == 4 && // Request finished, response ready
-        //             request.status == "200") { // Status OK
-        //             ok(request.responseText, this);
-        //         }
-        //     };
-        //     request.send(null);
-        // }
 
         function loadJSON(url, ok, err) {
             var request = new XMLHttpRequest();
