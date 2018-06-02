@@ -15,7 +15,8 @@
 <body>
 
 <div id="info">
-    <h1>using an <a href="../docs/classes/AABBGeometry.html" target="_parent">AABBGeometry</a> to show the axis-aligned World-space boundary of
+    <h1>using an <a href="../docs/classes/AABBGeometry.html" target="_parent">AABBGeometry</a> to show the axis-aligned
+        World-space boundary of
         a <a href="../docs/classes/Scene.html" target="_parent">Scene</a></h1>
     <br>
     <pre id="log">
@@ -38,16 +39,14 @@
                 scale: [.2, .2, .2],
                 position: [-110, 0, 0],
                 rotation: [0, 90, 0],
-                objectTree: true,
-                XaabbVisible: true // FIXME: Scene boundary incorrect when this true
+                XobjectTree: true
             }),
 
             new xeogl.GLTFModel({
                 id: "hoverBike",
                 src: "models/gltf/hover_bike/scene.gltf",
                 scale: [.5, .5, .5],
-                position: [0, -40, 0],
-                XaabbVisible: true // FIXME: Scene boundary incorrect when this true
+                position: [0, -40, 0]
             }),
 
             new xeogl.STLModel({
@@ -56,8 +55,64 @@
                 smoothNormals: true,
                 scale: [3, 3, 3],
                 position: [110, -20, 60],
-                rotation: [0, 90, 0],
-                XaabbVisible: true // FIXME: Scene boundary incorrect when this true
+                rotation: [0, 90, 0]
+            }),
+
+            new xeogl.Group({
+                id: "table",
+                rotation: [0, 50, 0],
+                position: [0, 150, 0],
+                scale: [6, 6, 6],
+                children: [
+                    new xeogl.Mesh({ // Red table leg
+                        id: "redLeg",
+                        position: [-4, -6, -4],
+                        scale: [1, 3, 1],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [1, 0.3, 0.3]
+                        }),
+                        published: false
+                    }),
+                    new xeogl.Mesh({ // Green table leg
+                        id: "greenLeg",
+                        position: [4, -6, -4],
+                        scale: [1, 3, 1],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [0.3, 1.0, 0.3]
+                        }),
+                        published: false
+                    }),
+                    new xeogl.Mesh({// Blue table leg
+                        id: "blueLeg",
+                        position: [4, -6, 4],
+                        scale: [1, 3, 1],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [0.3, 0.3, 1.0]
+                        })
+                    }),
+                    new xeogl.Mesh({  // Yellow table leg
+                        id: "yellowLeg",
+                        position: [-4, -6, 4],
+                        scale: [1, 3, 1],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [1.0, 1.0, 0.0]
+                        }),
+                        aabbVisible: true
+                    }),
+                    new xeogl.Mesh({ // Purple table top
+                        id: "tableTop",
+                        position: [0, -3, 0],
+                        scale: [6, 0.5, 6],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [1.0, 0.3, 1.0]
+                        })
+                    })
+                ]
             })
         ]
     });
@@ -73,7 +128,30 @@
 
     var engine = scene.models["engine"];
 
+    // Find Mesh by global ID on Scene
+    var table = scene.components["table"];
+
+    // Find Mesh by global ID on Scene
+    var redLeg = scene.components["redLeg"];
+
+    // Find mesh by global ID on parent Group
+    var greenLeg = table.childMap["greenLeg"];
+
+    // Find mesh by index in Group's child list
+    var blueLeg = table.children[2];
+
+    // Periodically update transforms
     scene.on("tick", function () {
+
+        // Rotate legs
+        redLeg.rotateY(0.5);
+        greenLeg.rotateY(0.5);
+        blueLeg.rotateY(0.5);
+
+        // Rotate table
+        table.rotateY(0.5);
+        table.rotateX(0.3);
+
         models.rotateY(.5); // Spin the whole group
         engine.rotateZ(.5); // Spin one of the models
     });
@@ -91,16 +169,17 @@
         collidable: false  // <<------------------- Important! Don't contribute to the Scene boundary.
     });
 
+    table.aabbVisible = true;
 
-    scene.models["f1Car"].on("loaded", function() {
+    scene.models["f1Car"].on("loaded", function () {
         this.aabbVisible = true;
     });
 
-    scene.models["engine"].on("loaded", function() {
+    scene.models["engine"].on("loaded", function () {
         this.aabbVisible = true;
     });
 
-    scene.models["hoverBike"].on("loaded", function() {
+    scene.models["hoverBike"].on("loaded", function () {
         this.aabbVisible = true;
     });
 
