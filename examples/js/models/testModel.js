@@ -37,6 +37,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TestModel.
  @param [cfg.size] {Number} World-space width of each axis.
  @param [cfg.density] {Number} Number of buildings on each axis.

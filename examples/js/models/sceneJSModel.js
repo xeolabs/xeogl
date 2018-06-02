@@ -215,6 +215,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SceneJSModel.
  @param [cfg.materialWorkflow] {String} Selects material workflow - "classic" | "pbrMatalness" | "pbrSpecular"
  @param [cfg.src] {String} Path to a SceneJS JSON scene description file.

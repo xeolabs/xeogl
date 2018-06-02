@@ -239,6 +239,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this STLModel.
  @param [cfg.src] {String} Path to an STL file. You can set this to a new file path at any time, which will cause the
  @param [cfg.quantizeGeometry=true] {Boolean} When true, quantizes geometry to reduce memory and GPU bus usage.

@@ -64,8 +64,8 @@
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BuildableModel in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
- generated automatically when omitted.
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BuildableModel.
  @param [cfg.position=[0,0,0]] {Float32Array} The BuildableModel's local 3D position.
  @param [cfg.scale=[1,1,1]] {Float32Array} The BuildableModel's local scale.
