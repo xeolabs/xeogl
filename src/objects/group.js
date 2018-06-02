@@ -14,7 +14,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata.
- @param [cfg.ifcType] {String} IFC type, if applicable.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.parent] {Object} The parent.
  @param [cfg.position=[0,0,0]] {Float32Array} Local 3D position.
  @param [cfg.scale=[1,1,1]] {Float32Array} Local scale.

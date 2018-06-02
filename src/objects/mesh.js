@@ -16,6 +16,9 @@
  * For best performance, reuse as many of the same component instances among your Meshes as possible.
  * Use {{#crossLink "Object"}}Objects{{/crossLink}} to organize Meshes into hierarchies, if required.
 
+ This page covers functionality specific to the Mesh component, while {{#crossLink "Object"}}{{/crossLink}} covers the
+ generic functionality in its base class.
+
  ## Usage
 
  * [Creating a Mesh](#creating-a-mesh)
@@ -73,7 +76,7 @@
  the leaf Objects have links to Meshes. In an Object tree, an operation on an
  Object is collectively applied to the Meshes within its subtree.
 
- For more info on organizing Meshes hierarchically, see the {{#crossLink "Object"}}{{/crossLink}} and {{#crossLink "GLTFModel"}}{{/crossLink}} components.
+ See {{#crossLink "Object"}}{{/crossLink}} for information on organizing Meshes hierarchically.
 
  ### Controlling visibility
 
@@ -83,6 +86,8 @@
  mesh.visible = false; // Hide
  mesh.visible = true; // Show (default)
  ````
+
+ This property is inherited from {{#crossLink "Object/visible:property"}}Object{{/crossLink}}.
 
  ### Controlling clipping
 
@@ -464,8 +469,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Mesh.
-
- @param [cfg.ifcType] {String} The Mesh's IFC type, if applicable.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.parent] {Object} The parent.
  @param [cfg.position=[0,0,0]] {Float32Array} The Mesh's local 3D position.
  @param [cfg.scale=[1,1,1]] {Float32Array} The Mesh's local scale.
@@ -513,12 +517,10 @@
  */
 
 /**
- * Fired when this Mesh is *picked* via a call to the {{#crossLink "Canvas/pick:method"}}{{/crossLink}} method
- * on the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas {{/crossLink}}.
- * @event picked
- * @param {String} meshId The ID of this Mesh.
- * @param {Number} canvasX The X-axis Canvas coordinate that was picked.
- * @param {Number} canvasY The Y-axis Canvas coordinate that was picked.
+ Fired when this Mesh is picked via a call to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+ The event parameters will be the hit result returned by the {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} method.
+ @event picked
  */
 (function () {
 
@@ -701,7 +703,7 @@
             },
 
             /**
-             Defines surface appearance when rendering as ghosted.
+             Defines surface appearance when ghosted.
 
              This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
              same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
@@ -726,7 +728,7 @@
             },
 
             /**
-             Defines surface appearance when rendering as highlighted.
+             Defines surface appearance when highlighted.
 
              This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
              same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
@@ -751,7 +753,7 @@
             },
 
             /**
-             Defines surface appearance when rendering as selected.
+             Defines surface appearance when selected.
 
              This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
              same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
@@ -776,7 +778,7 @@
             },
 
             /**
-             Defines surface appearance when rendering as outlined.
+             Defines surface appearance when outlined.
 
              This {{#crossLink "OutlineMaterial"}}{{/crossLink}} must be within the
              same {{#crossLink "Scene"}}{{/crossLink}} as this Mesh, and defaults to the
@@ -806,17 +808,115 @@
              The Mesh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
              {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
 
+             Each visible Mesh is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+             {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+             is set to a value.
+
              @property visible
              @default true
              @type Boolean
              */
             visible: {
-                set: function (value) {
-                    this._state.visible = value !== false;
+                set: function (visible) {
+                    visible = visible !== false;
+                    this._state.visible = visible;
+                    if (this._entityType) {
+                        this.scene._entityVisibilityUpdated(this, visible);
+                    }
                     this._renderer.imageDirty();
                 },
                 get: function () {
                     return this._state.visible;
+                }
+            },
+
+            /**
+             Indicates if ghosted.
+
+             The ghosted appearance is configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+
+             Each ghosted Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+             {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+             is set to a value.
+
+             @property ghosted
+             @default false
+             @type Boolean
+             */
+            "ghosted,ghost": {
+                set: function (ghosted) {
+                    ghosted = !!ghosted;
+                    if (this._state.ghosted === ghosted) {
+                        return;
+                    }
+                    this._state.ghosted = ghosted;
+                    if (this._entityType) {
+                        this.scene._entityGhostedUpdated(this, ghosted);
+                    }
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.ghosted;
+                }
+            },
+
+            /**
+             Indicates if highlighted.
+
+             The highlight appearance is configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+
+             Each highlighted Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+             {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+             is set to a value.
+
+             @property highlighted
+             @default false
+             @type Boolean
+             */
+            "highlight,highlighted": {
+                set: function (highlighted) {
+                    highlighted = !!highlighted;
+                    if (highlighted === this._state.highlighted) {
+                        return;
+                    }
+                    this._state.highlighted = highlighted;
+                    if (this._entityType) {
+                        this.scene._entityHighlightedUpdated(this, highlighted);
+                    }
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.highlighted;
+                }
+            },
+
+            /**
+             Indicates if selected.
+
+             The selected appearance is configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+
+             Each selected Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+             {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+             is set to a value.
+
+             @property selected
+             @default false
+             @type Boolean
+             */
+            selected: {
+                set: function (selected) {
+                    selected = !!selected;
+                    if (selected === this._state.selected) {
+                        return;
+                    }
+                    this._state.selected = selected;
+                    if (this._entityType) {
+                        this.scene._entitySelectedUpdated(this, selected);
+                    }
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.selected;
                 }
             },
 
@@ -954,29 +1054,6 @@
             },
 
             /**
-             Indicates if rendered as ghosted.
-
-             The ghosted appearance is configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
-
-             @property ghosted
-             @default false
-             @type Boolean
-             */
-            "ghosted,ghost": {
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.ghosted === value) {
-                        return;
-                    }
-                    this._state.ghosted = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.ghosted;
-                }
-            },
-
-            /**
              Indicates if rendered with an outline.
 
              The outline appearance is configured by {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
@@ -996,52 +1073,6 @@
                 },
                 get: function () {
                     return this._state.outlined;
-                }
-            },
-
-            /**
-             Indicates if rendered as highlighted.
-
-             The highlight appearance is configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
-
-             @property highlighted
-             @default false
-             @type Boolean
-             */
-            "highlight,highlighted": {
-                set: function (value) {
-                    value = !!value;
-                    if (value === this._state.highlighted) {
-                        return;
-                    }
-                    this._state.highlighted = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.highlighted;
-                }
-            },
-
-            /**
-             Indicates if rendered as selected.
-
-             The selected appearance is configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
-
-             @property selected
-             @default false
-             @type Boolean
-             */
-            selected: {
-                set: function (value) {
-                    value = !!value;
-                    if (value === this._state.selected) {
-                        return;
-                    }
-                    this._state.selected = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.selected;
                 }
             },
 

@@ -331,7 +331,9 @@
             // Components created with #create
             this._adoptees = null; // Lazy-instantiated map
 
-            if (this.scene && this.type !== "xeogl.Scene") { // HACK: Don't add scene to itself
+            var isScene = this.type == "xeogl.Scene";
+
+            if (this.scene && !isScene) { // HACK: Don't add scene to itself
                 // Register this component on its scene
                 // Assigns this component an automatic ID if not yet assigned
                 this.scene._addComponent(this);
@@ -387,7 +389,7 @@
         _removedFromModel: function (model) { // Called by xeogl.Model.remove()
             this._model = null;
         },
-        
+
         _props: {
 
             /**

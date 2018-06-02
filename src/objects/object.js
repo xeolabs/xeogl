@@ -15,6 +15,9 @@
  content loaded from multiple sources and file formats. Since a {{#crossLink "Group"}}{{/crossLink}} implements the *[Composite](https://en.wikipedia.org/wiki/Composite_pattern)* pattern,
  property updates on a {{#crossLink "Group"}}Group{{/crossLink}} will apply recursively to all the Objects within it.
 
+ This page mostly covers the base functionality provided by Object, while the pages for the subclasses document the
+ functionality specific to those subclasses.
+
  ## Usage
 
  * [Creating an Object hierarchy](#creating-an-object-hierarchy)
@@ -23,6 +26,7 @@
  * [Adding and removing Objects](#updating-objects)
  * [Models within Groups](#models-within-groups)
  * [Objects within Models](#objects-within-models)
+ * [Applying a semantic data model](#applying-a-semantic-data-model)
  * [Destroying Objects](#destroying-objects)
 
  ### Creating an Object hierarchy
@@ -44,7 +48,8 @@
      children: [
 
          new xeogl.Mesh({ // Red table leg
-             id: "redLeg",
+             id: "redLeg",                                  // <<-------- Optional ID within Scene
+             guid: "5782d454-9f06-4d71-aff1-78c597eacbfb",  // <<-------- Optional GUID
              position: [-4, -6, -4],
              scale: [1, 3, 1],
              rotation: [0, 0, 0],
@@ -55,7 +60,8 @@
          }),
 
          new xeogl.Mesh({ // Green table leg
-             id: "greenLeg",
+             id: "greenLeg",                                // <<-------- Optional ID within Scene
+             guid: "c37e421f-5440-4ce1-9b4c-9bd06d8ab5ed",  // <<-------- Optional GUID
              position: [4, -6, -4],
              scale: [1, 3, 1],
              rotation: [0, 0, 0],
@@ -137,50 +143,104 @@
  var blueLeg = table.scene.meshes["blueLeg"];
  blueLeg.highlighted = true;
  ````
-
  For convenience, the {{#crossLink "Scene"}}{{/crossLink}}'s objects map explicitly registers what Objects exist within the {{#crossLink "Scene"}}{{/crossLink}}, while its meshes map
  explicitly registers what {{#crossLink "Mesh"}}Meshes{{/crossLink}} exist.
 
+ #### GUIDs
+
+ Lastly, note the optional globally unique identifiers (GUIDs) on the first two Objects. While regular IDs are unique within the Scene,
+ GUIDs are unique throughout the entire universe, and are often used to identify elements in things like architectural models. We can
+ find those Objects within their Scene using their GUIDs, like this:
+
+ ````javascript
+ var redLeg = scene.guidObjects["5782d454-9f06-4d71-aff1-78c597eacbfb"];
+ var greenLeg = scene.guidObjects["c37e421f-5440-4ce1-9b4c-9bd06d8ab5ed"];
+ ````
+
  ### Updating Objects
 
- As mentioned earlier, property updates on a {{#crossLink "Group"}}Group{{/crossLink}} will apply recursively to all the Objects within it. Let's highlight
- the whole table in one shot:
+ As mentioned earlier, property updates on a {{#crossLink "Group"}}Group{{/crossLink}} {{#crossLink "Object"}}{{/crossLink}} will apply recursively to all
+ sub-Objects within it, eventually updating the {{#crossLink "Mesh"}}{{/crossLink}} {{#crossLink "Object"}}Objects{{/crossLink}} at the leaves.
+
+ These properties, defined in Object, are:
+
+ * {{#crossLink "Object/visible:property"}}visible{{/crossLink}}
+ * {{#crossLink "Object/highlighted:property"}}highlighted{{/crossLink}}
+ * {{#crossLink "Object/ghosted:property"}}ghosted{{/crossLink}}
+ * {{#crossLink "Object/selected:property"}}selected{{/crossLink}}
+ * {{#crossLink "Object/colorize:property"}}colorize{{/crossLink}}
+ * {{#crossLink "Object/opacity:property"}}opacity{{/crossLink}}
+ * {{#crossLink "Object/clippable:property"}}clippable{{/crossLink}}
+ * {{#crossLink "Object/collidable:property"}}collidable{{/crossLink}}
+ * {{#crossLink "Object/pickable:property"}}pickable{{/crossLink}}
+ * {{#crossLink "Object/castShadow:property"}}castShadow{{/crossLink}}
+ * {{#crossLink "Object/receiveShadow:property"}}receiveShadow{{/crossLink}}
+ * {{#crossLink "Object/receiveShadow:property"}}receiveShadow{{/crossLink}}
+
+ Let's highlight the whole table in one shot:
 
  ````javascript
  table.highlighted = true;
  ````
 
- and just for fun, let's rotate the table, then lift the table top up a bit:
+ That property value will then recursively propagate down our five Meshes.
+
+ Each Object has a local transformation that's applied within the coordinate space set up the
+ transform of its parent, if it has one.
+
+ Let's rotate the table:
 
  ````javascript
  table.rotation = [0, 45, 0]; // (X,Y,Z)
  table.childMap["tableTop"].position = [0, -10, 0]; // (X,Y,Z)
  ````
 
- We can also query the World-space axis-aligned boundary of the whole table:
+ That will rotate the coordinate space containing the five child Meshes.
+
+ Now let's translate the table top Mesh:
 
  ````javascript
- var aabb = table.aabb;
-
- var cameraFlight = new xeogl.CameraFlightAnimation(); // Fit the boundary in view
- cameraFlight.flyTo(aabb);
+ table.childMap["tableTop"].position = [0, -10, 0]; // (X,Y,Z)
  ````
 
- and we can also query its World-space object-aligned boundary:
+ As we translated table top Mesh, we updated the extents its World-space boundary. That update, in addition to rotating
+ the table Group, has updated the collective boundary of the whole table.
+
+ We can get the boundary of the table top like this:
 
  ````javascript
- var obb = table.obb;
+ var tableTopMesh = table.childMap["tableTop"].aabb;
+ ````
+
+ We can get the collective boundary of the whole table, like this:
+
+ ````javascript
+ var tableTopMesh = table.aabb;
+ ````
+
+ Just for fun, let's fit the view to the table top:
+
+ ````javascript
+ var cameraFlight = new xeogl.CameraFlightAnimation(); // Fit the boundary in view
+ cameraFlight.flyTo(tableTopMesh.aabb);
  ````
 
  Those boundaries will automatically update whenever we add or remove child {{#crossLink "Object"}}Objects{{/crossLink}} or {{#crossLink "Mesh"}}Meshes{{/crossLink}}, or update child {{#crossLink "Mesh"}}Meshes{{/crossLink}}' {{#crossLink "Geometry"}}Geometries{{/crossLink}}
  or modeling transforms.
 
- We can subscribe to boundary updates on our {{#crossLink "Group"}}Group{{/crossLink}}, like this:
+ Let's follow the table top wherever it goes:
+
+ tableTopMesh.on("boundary", function() {
+    cameraFlight.flyTo(this.aabb); // "this" is the table top Mesh
+ });
+
+ Or perhaps keep the whole table fitted to view whenever we transform any Objects or Meshes within the hierarchy, or add
+ or remove Objects within the hierarchy:
 
  ````javascript
  table.on("boundary", function() {
-     var aabb = table.aabb;
-     var obb = table.obb;
+     var aabb = this.aabb; // "this" is the table Group
+     cameraFlight.flyTo(aabb);
  });
  ````
 
@@ -202,7 +262,7 @@
 
  That's going to update the {{#crossLink "Group"}}Group{{/crossLink}}'s boundary, as mentioned earlier.
 
- To remove it, we just destroy it:
+ To remove it, just destroy it:
 
  ````javascript
  table.childMap["myExtraObject"].destroy();
@@ -328,6 +388,196 @@
  models.childMap["engine"].meshes["engine#3.0"].highlighted=true;
  ````
 
+ ### Applying a semantic data model
+
+ xeogl allows to organize our Objects using a generic conceptual data model that describes the semantics of our application
+ domain. We do this by assigning "entity classes" to those Objects that we consider to be *entities* within our domain, and then we're
+ able to reference those Objects according to their entity classes.
+
+ #### entityType
+
+ In xeogl, we classify an Object as an entity by setting its {{#crossLink "Object/entityType:property"}}{{/crossLink}} to an arbitrary string
+ value that represents its class. Once we've done that, we regard the Object as being an "entity" within our semantic data model, in
+ addition to being a regular Object within our scene graph. Note that entities in xeogl are not to be confused with *entity-component systems*,
+ which are a completely different concept.
+
+ This classification mechanism is useful for building IFC viewers on xeogl, in which case our entity classes would be the IFC
+ element types. However, since xeogl's concept of entity classes is generic, our semantic model could include any arbitrary
+ set of classes, such as "fluffy", "insulator", "essential" or "optional", for example.
+
+ This mechanism only goes as far as allowing us to assign entity classes to our Objects, for the purpose of finding them
+ within the Scene using their classes. If we wanted to go a step further and model relationships between our classes,
+ we would need to additionally use some sort of entity-relationship data structure, externally to xeogl, such as an IFC structure model
+ in which the relation elements would reference our classes.
+
+ Objects that are not part of any semantic model, such as helpers and gizmos, would not get an ````entityType````, and so would
+ be effectively invisible to maps and methods that deal with specifically with entities. Use component IDs and "lower-level" maps
+ like  {{#crossLink "Scene/components:property"}}Scene#components{{/crossLink}},
+ {{#crossLink "Scene/objects:property"}}Scene#objects{{/crossLink}},
+ {{#crossLink "Scene/meshes:property"}}Scene#meshes{{/crossLink}} and
+ {{#crossLink "Scene/models:property"}}Scene#models{{/crossLink}} to work with such Objects as non-semantic scene elements,
+ and "higher-level" maps like {{#crossLink "Scene/entities:property"}}Scene#entities{{/crossLink}} and
+ {{#crossLink "Scene/entityTypes:property"}}Scene#entityTypes{{/crossLink}} to work with Objects that are entities.
+
+ To show how to use a semantic model with xeogl, let's redefine the Object hierarchy we created earlier, this
+ time assigning some imaginary domain-specific entity classes to our table Mesh Objects:
+
+ ````javascript
+ var boxGeometry = new xeogl.BoxGeometry(); // We'll reuse the same geometry for all our Meshes
+
+ var table = new xeogl.Group({
+
+     id: "table",
+     rotation: [0, 50, 0],
+     position: [0, 0, 0],
+     scale: [1, 1, 1],
+
+     children: [
+
+         new xeogl.Mesh({ // Red table leg
+             id: "redLeg",
+             entityType: "supporting",  // <<------------ Entity class
+             position: [-4, -6, -4],
+             scale: [1, 3, 1],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [1, 0.3, 0.3]
+             })
+         }),
+
+         new xeogl.Mesh({ // Green table leg
+             id: "greenLeg",
+             entityType: "supporting",  // <<------------ Entity class
+             position: [4, -6, -4],
+             scale: [1, 3, 1],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [0.3, 1.0, 0.3]
+             })
+         }),
+
+         new xeogl.Mesh({// Blue table leg
+             id: "blueLeg",
+             entityType: "supporting",  // <<------------ Entity class
+             position: [4, -6, 4],
+             scale: [1, 3, 1],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [0.3, 0.3, 1.0]
+             })
+         }),
+
+         new xeogl.Mesh({  // Yellow table leg
+             id: "yellowLeg",
+             entityType: "supporting",  // <<------------ Entity class
+             position: [-4, -6, 4],
+             scale: [1, 3, 1],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [1.0, 1.0, 0.0]
+             })
+         })
+
+         new xeogl.Mesh({ // Purple table top
+             id: "tableTop",
+             entityType: "surface",     // <<------------ Entity class
+             position: [0, -3, 0],
+             scale: [6, 0.5, 6],
+             rotation: [0, 0, 0],
+             geometry: boxGeometry,
+             material: new xeogl.PhongMaterial({
+                 diffuse: [1.0, 0.3, 1.0]
+             })
+         })
+     ]
+ });
+ ````
+
+ This time, we've set the {{#crossLink "Object/entityType:property"}}{{/crossLink}} property on our Mesh Objects, to
+ assign our entity classes to them. Our arbitrary semantic model is very simple, with just two classes:
+
+ * "supporting" for entities that support things (eg. table legs), and
+ * "surface" for entities that provide a surface that you can put things on (eg. table tops).
+
+ Note that we can assign entity classes to any component type that extends Object, including {{#crossLink "Group"}}{{/crossLink}},
+ {{#crossLink "Mesh"}}{{/crossLink}}, {{#crossLink "Model"}}{{/crossLink}}, {{#crossLink "GLTFModel"}}{{/crossLink}} etc.
+
+ We can now conveniently work with our Mesh Objects as entities, in addition working with them as ordinary Objects.
+
+ We can find our entities in a dedicated map, that contains only the Objects that have the "entityType" property set:
+
+ ````javascript
+ var yellowLegMesh = scene.entities["yellowLeg"];
+ ````
+
+ We can get a map of all Objects of a given entity class:
+
+ ````javascript
+ var supportingEntities = scene.entityTypes["supporting"];
+ var yellowLegMesh = supportingEntities["yellowLeg"];
+ ````
+
+ We can do state updates on entity Objects by their entity class, in a batch:
+
+ ````javascript
+ scene.setVisible(["supporting"], false);               // Hide the legs
+ scene.setVisible(["supporting"], true);                // Show the legs again
+ scene.setHighlighted(["supporting", "surface"], true); // Highlight the legs and the table top
+ ````
+
+ The {{#crossLink "Scene"}}{{/crossLink}} also has convenience maps dedicated to tracking the visibility, ghosted, highlighted
+ and selected states of entity Objects:
+
+ ````javascript
+ var yellowLegMesh = scene.visibleEntities["yellowLeg"];
+ var isYellowLegVisible = yellowLegMesh !== undefined;
+
+ yellowLegMesh.highlighted = false;
+ var isYellowLegHighlighted = scene.highlightedEntities["yellowLeg"];
+ ````
+
+ We can also update or remove entity classes dynamically, for example:
+
+ ````javascript
+ var tableTop = scene.entities["tableTop"];
+ tableTop.entityType = "workSurface";
+ ````
+
+ Now our table top Mesh can be found with its new class:
+
+ ````javascript
+ var workSurfaceEntities = scene.entityTypes["workSurface"];
+ var tableTop = workSurfaceEntities["tableTop"];
+ ````
+
+ And we can remove its class altogether:
+
+ ````javascript
+ tableTop.entityType = null;
+ ````
+
+ That will remove this entity Mesh from the {{#crossLink "Scene"}}Scene{{/crossLink}}'s visibility and
+ highlighted maps. Restoring a class will register it with those maps again, since the Mesh is currently visible and highlighted.
+
+ * [Example](../../examples/#objects_entities)
+
+ #### Limitations with state inheritance
+
+ Note that you can't currently nest entity Objects within a hierarchy. If we were to set an entityType on our Group,
+ say "furniture", and then do this:
+
+ ````javascript
+ scene.setVisible(["furniture"], false);                // Hide the table
+ ````
+
+ Then all our entity Meshes would be hidden, even though they are not "furniture" entities. The entity classification
+ system does not currently work alongside the way xeogl does state inheritance within Object hierarchies, so keep your
+ entities non-hierarchical.
+
  ### Destroying Objects
 
  Call an Object's {{#crossLink "Component/destroy:method"}}destroy(){{/crossLink}} method to destroy it:
@@ -345,8 +595,9 @@
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.guid] {String} Optional globally unique identifier. This is unique not only within the {{#crossLink "Scene"}}{{/crossLink}}, but throughout the entire universe.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata.
- @param [cfg.ifcType] {String} IFC type, if applicable.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model.
  @param [cfg.parent] {Object} The parent.
  @param [cfg.position=[0,0,0]] {Float32Array} Local 3D position.
  @param [cfg.scale=[1,1,1]] {Float32Array} Local scale.
@@ -360,9 +611,9 @@
  @param [cfg.castShadow=true] {Boolean}     Indicates if casting shadows.
  @param [cfg.receiveShadow=true] {Boolean}  Indicates if receiving shadows.
  @param [cfg.outlined=false] {Boolean}      Indicates if outline is rendered.
- @param [cfg.ghosted=false] {Boolean}       Indicates if rendered as ghosted.
- @param [cfg.highlighted=false] {Boolean}   Indicates if rendered as highlighted.
- @param [cfg.selected=false] {Boolean}      Indicates if rendered as selected.
+ @param [cfg.ghosted=false] {Boolean}       Indicates if ghosted.
+ @param [cfg.highlighted=false] {Boolean}   Indicates if highlighted.
+ @param [cfg.selected=false] {Boolean}      Indicates if selected.
  @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
  @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
@@ -412,7 +663,8 @@ xeogl.Object = xeogl.Component.extend({
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
 
-        this.ifcType = cfg.ifcType;
+        this._guid = cfg.guid;
+        this.entityType = cfg.entityType;
 
         if (cfg.matrix) {
             this.matrix = cfg.matrix;
@@ -866,35 +1118,63 @@ xeogl.Object = xeogl.Component.extend({
     _props: {
 
         /**
-         IFC type, if applicable.
+         Globally unique identifier.
 
-         @property ifcType
+         This is unique not only within the {{#crossLink "Scene"}}{{/crossLink}}, but throughout the entire universe.
+
+         Only defined when given to the constructor.
+
+         @property guid
+         @type String
+         @final
+         */
+        guid: {
+            get: function () {
+                return this._guid;
+            }
+        },
+
+        /**
+         Optional entity classification when using within a semantic data model.
+
+         See the Object documentation on "Applying a semantic data model" for usage.
+
+         @property entityType
          @default null
          @type String
          */
-        ifcType: {
-            set: function (ifcType) {
-                ifcType = ifcType || "DEFAULT";
-                if (this._ifcType !== ifcType) {
-                    var ifcTypeObjects = this.scene.ifcTypes;
-                    if (this._ifcType) {
-                        var objectsOfType = ifcTypeObjects[this._ifcType];
-                        if (objectsOfType) {
-                            delete objectsOfType[this.id];
-                            // TODO remove submap if now empty
+        entityType: {
+            set: function (newEntityType) {
+                if (this._entityType !== newEntityType) {
+                    var scene = this.scene;
+                    if (this._entityType) {
+                        scene._entityTypeRemoved(this, this._entityType);
+                    }
+                    this._entityType = newEntityType;
+                    if (newEntityType) {
+                        scene._entityTypeAssigned(this, this._entityType);
+                        if (this._visible) {
+                            scene._entityVisibilityUpdated(this, true);
                         }
+                        if (this._ghosted) {
+                            scene._entityGhostedUpdated(this, true);
+                        }
+                        if (this._selected) {
+                            scene._entitySelectedUpdated(this, true);
+                        }
+                        if (this._highlighted) {
+                            scene._entityHighlightedUpdated(this, true);
+                        }
+                    } else {
+                        scene._entityVisibilityUpdated(this, false);
+                        scene._entityGhostedUpdated(this, false);
+                        scene._entitySelectedUpdated(this, false);
+                        scene._entityHighlightedUpdated(this, false);
                     }
-                    this._ifcType = ifcType;
-                    objectsOfType = ifcTypeObjects[this._ifcType];
-                    if (!objectsOfType) {
-                        objectsOfType = {};
-                        ifcTypeObjects[this._ifcType] = objectsOfType;
-                    }
-                    objectsOfType[this.id] = this;
                 }
             },
             get: function () {
-                return this._ifcType;
+                return this._entityType;
             }
         },
 
@@ -1245,72 +1525,14 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates if the 3D World-space axis-aligned bounding box (AABB) is visible.
-
-         @property aabbVisible
-         @default false
-         @type {Boolean}
-         */
-        aabbVisible: {
-            set: function (show) {
-                if (!show && !this._aabbHelper) {
-                    return;
-                }
-                if (!this._aabbHelper) {
-                    this._aabbHelper = new xeogl.Mesh(this, {
-                        geometry: new xeogl.AABBGeometry(this, {
-                            target: this
-                        }),
-                        material: new xeogl.PhongMaterial(this, {
-                            diffuse: [0.5, 1.0, 0.5],
-                            emissive: [0.5, 1.0, 0.5],
-                            lineWidth: 2
-                        })
-                    });
-                }
-                this._aabbHelper.visible = show;
-            },
-            get: function () {
-                return this._aabbHelper ? this._aabbHelper.visible : false;
-            }
-        },
-
-        /**
-         Indicates if the World-space 3D object-aligned bounding box (OBB) is visible.
-
-         @property obbVisible
-         @default false
-         @type {Boolean}
-         */
-        obbVisible: {
-            set: function (show) {
-                if (!show && !this._obbHelper) {
-                    return;
-                }
-                if (!this._obbHelper) {
-                    this._obbHelper = new xeogl.Mesh(this, {
-                        geometry: new xeogl.OBBGeometry(this, {
-                            target: this
-                        }),
-                        material: new xeogl.PhongMaterial(this, {
-                            diffuse: [0.5, 1.0, 0.5],
-                            emissive: [0.5, 1.0, 0.5],
-                            lineWidth: 2
-                        })
-                    });
-                }
-                this._obbHelper.visible = show;
-            },
-            get: function () {
-                return this._obbHelper ? this._obbHelper.visible : false;
-            }
-        },
-
-        /**
          Indicates if visible.
 
          Only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
          {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+         Each visible Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is set to a value.
 
          @property visible
          @default true
@@ -1323,9 +1545,93 @@ xeogl.Object = xeogl.Component.extend({
                 for (var i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].visible = visible;
                 }
+                if (this._entityType) {
+                    this.scene._entityVisibilityUpdated(this, visible);
+                }
             },
             get: function () {
                 return this._visible;
+            }
+        },
+
+        /**
+         Indicates if highlighted.
+
+         Each highlighted Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is set to a value.
+
+         @property highlighted
+         @default false
+         @type Boolean
+         */
+        highlighted: {
+            set: function (highlighted) {
+                highlighted = !!highlighted;
+                this._highlighted = highlighted;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].highlighted = highlighted;
+                }
+                if (this._entityType) {
+                    this.scene._entityHighlightedUpdated(this, highlighted);
+                }
+            },
+            get: function () {
+                return this._highlighted;
+            }
+        },
+
+        /**
+         Indicates if ghosted.
+
+         Each ghosted Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is set to a value.
+
+         @property ghosted
+         @default false
+         @type Boolean
+         */
+        ghosted: {
+            set: function (ghosted) {
+                ghosted = !!ghosted;
+                this._ghosted = ghosted;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].ghosted = ghosted;
+                }
+                if (this._entityType) {
+                    this.scene._entityGhostedUpdated(this, ghosted);
+                }
+            },
+            get: function () {
+                return this._ghosted;
+            }
+        },
+
+        /**
+         Indicates if selected.
+
+         Each selected Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is set to a value.
+
+         @property selected
+         @default false
+         @type Boolean
+         */
+        selected: {
+            set: function (selected) {
+                selected = !!selected;
+                this._selected = selected;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].selected = selected;
+                }
+                if (this._entityType) {
+                    this.scene._entitySelectedUpdated(this, selected);
+                }
+            },
+            get: function () {
+                return this._selected;
             }
         },
 
@@ -1349,46 +1655,6 @@ xeogl.Object = xeogl.Component.extend({
             },
             get: function () {
                 return this._culled;
-            }
-        },
-
-        /**
-         Indicates if rendered as highlighted.
-
-         @property highlighted
-         @default false
-         @type Boolean
-         */
-        highlighted: {
-            set: function (highlighted) {
-                highlighted = !!highlighted;
-                this._highlighted = highlighted;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].highlighted = highlighted;
-                }
-            },
-            get: function () {
-                return this._highlighted;
-            }
-        },
-
-        /**
-         Indicates if rendered as selected.
-
-         @property selected
-         @default false
-         @type Boolean
-         */
-        selected: {
-            set: function (selected) {
-                selected = !!selected;
-                this._selected = selected;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].selected = selected;
-                }
-            },
-            get: function () {
-                return this._selected;
             }
         },
 
@@ -1517,7 +1783,7 @@ xeogl.Object = xeogl.Component.extend({
         },
 
         /**
-         Indicates if rendered as outlined.
+         Indicates if outlined.
 
          @property outlined
          @default false
@@ -1533,26 +1799,6 @@ xeogl.Object = xeogl.Component.extend({
             },
             get: function () {
                 return this._outlined;
-            }
-        },
-
-        /**
-         Indicates if rendered as ghosted.
-
-         @property ghosted
-         @default false
-         @type Boolean
-         */
-        ghosted: {
-            set: function (ghosted) {
-                ghosted = !!ghosted;
-                this._ghosted = ghosted;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].ghosted = ghosted;
-                }
-            },
-            get: function () {
-                return this._ghosted;
             }
         },
 
@@ -1594,22 +1840,100 @@ xeogl.Object = xeogl.Component.extend({
             get: function () {
                 return this._receiveShadow;
             }
+        },
+
+        /**
+         Indicates if the 3D World-space axis-aligned bounding box (AABB) is visible.
+
+         @property aabbVisible
+         @default false
+         @type {Boolean}
+         */
+        aabbVisible: {
+            set: function (show) {
+                if (!show && !this._aabbHelper) {
+                    return;
+                }
+                if (!this._aabbHelper) {
+                    this._aabbHelper = new xeogl.Mesh(this, {
+                        geometry: new xeogl.AABBGeometry(this, {
+                            target: this
+                        }),
+                        material: new xeogl.PhongMaterial(this, {
+                            diffuse: [0.5, 1.0, 0.5],
+                            emissive: [0.5, 1.0, 0.5],
+                            lineWidth: 2
+                        })
+                    });
+                }
+                this._aabbHelper.visible = show;
+            },
+            get: function () {
+                return this._aabbHelper ? this._aabbHelper.visible : false;
+            }
+        },
+
+        /**
+         Indicates if the World-space 3D object-aligned bounding box (OBB) is visible.
+
+         @property obbVisible
+         @default false
+         @type {Boolean}
+         */
+        obbVisible: {
+            set: function (show) {
+                if (!show && !this._obbHelper) {
+                    return;
+                }
+                if (!this._obbHelper) {
+                    this._obbHelper = new xeogl.Mesh(this, {
+                        geometry: new xeogl.OBBGeometry(this, {
+                            target: this
+                        }),
+                        material: new xeogl.PhongMaterial(this, {
+                            diffuse: [0.5, 1.0, 0.5],
+                            emissive: [0.5, 1.0, 0.5],
+                            lineWidth: 2
+                        })
+                    });
+                }
+                this._obbHelper.visible = show;
+            },
+            get: function () {
+                return this._obbHelper ? this._obbHelper.visible : false;
+            }
         }
     },
 
     _destroy: function () {
-
         this._super();
-
         this.removeChildren();
-
         if (this._parent) {
             this._parent.removeChild(this);
         }
-        var objectsOfType = this.scene.ifcTypes[this._ifcType];
-        if (objectsOfType) {
-            delete objectsOfType[this.id];
-            // TODO remove submap if now empty
+        if (this._entityType) {
+            var scene = this.scene;
+            var id = this.id;
+            var objectsOfType = scene.entityTypes[this._entityType];
+            if (objectsOfType) {
+                delete objectsOfType[id];
+                // TODO remove submap if now empty
+            }
+            if (this._entityType) {
+                scene._entityTypeRemoved(this, this._entityType);
+                if (this._visible) {
+                    scene._entityVisibilityUpdated(this, false);
+                }
+                if (this._ghosted) {
+                    scene._entityGhostedUpdated(this, false);
+                }
+                if (this._selected) {
+                    scene._entitySelectedUpdated(this, false);
+                }
+                if (this._highlighted) {
+                    scene._entityHighlightedUpdated(this, false);
+                }
+            }
         }
     }
 });
