@@ -19,7 +19,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata.
- @param [cfg.ifcType] {String} IFC type, if applicable.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.parent] {Object} The parent.
  @param [cfg.position=[0,0,0]] {Float32Array} Local 3D position.
  @param [cfg.scale=[1,1,1]] {Float32Array} Local scale.
@@ -115,6 +115,18 @@
              @type {String:xeogl.Mesh}
              */
             this.meshes = {};
+
+            /**
+             {{#crossLink "Object"}}Objects{{/crossLink}} in this Model that have entity types, mapped to their IDs.
+
+             Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
+             set to value.
+
+             @property entities
+             @final
+             @type {{String:Object}}
+             */
+            this.entities = {};
 
             // xeogl.Model overrides xeogl.Group / xeogl.Object state properties, (eg. visible, ghosted etc)
             // and those redefined properties are being set here through the super constructor.
