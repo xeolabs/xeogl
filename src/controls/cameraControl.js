@@ -63,6 +63,7 @@
  the {{#crossLink "Camera"}}{{/crossLink}} about the picked point on the Mesh's surface.
  @param [cfg.panToPointer=false] {Boolean} When true, mouse wheel when mouse is over a {{#crossLink "Mesh"}}{{/crossLink}} will zoom
  the {{#crossLink "Camera"}}{{/crossLink}} towards the hoveredd point on the Mesh's surface.
+ @param [cfg.panToPivot=false] {Boolean} TODO.
  @param [cfg.inertia=0.5] {Number} A factor in range [0..1] indicating how much the camera keeps moving after you finish panning or rotating it.
  @author xeolabs / http://xeolabs.com
  @author DerSchmale / http://www.derschmale.com
@@ -163,7 +164,9 @@
                 })();
 
                 this.startPivot = function (worldPos) {
-                    pivotPoint.set(worldPos);
+                    if (worldPos) { // Use last pivotPoint by default
+                        pivotPoint.set(worldPos);
+                    }
                     var lookat = math.lookAtMat4v(camera.eye, camera.look, camera.worldUp);
                     cameraOffset = math.transformPoint3(lookat, pivotPoint);
                     cameraOffset[2] += math.distVec3(camera.eye, pivotPoint);
@@ -185,6 +188,10 @@
 
                 this.getPivoting = function () {
                     return pivoting;
+                };
+
+                this.getPivotPos = function () {
+                    return pivotPoint;
                 };
 
                 this.continuePivot = function (yawInc, pitchInc) {
@@ -246,6 +253,7 @@
             this.active = cfg.active;
             this.pivoting = cfg.pivoting;
             this.panToPointer = cfg.panToPointer;
+            this.panToPivot = cfg.panToPivot;
             this.inertia = cfg.inertia;
 
             this._initEvents(); // Set up all the mouse/touch/kb handlers
@@ -256,27 +264,14 @@
             /**
              Indicates whether this CameraControl is active or not.
 
-             Fires a {{#crossLink "CameraControl/active:event"}}{{/crossLink}} event on change.
-
              @property active
              @default true
              @type Boolean
              */
             active: {
-
                 set: function (value) {
-
                     this._active = value !== false;
-
-                    /**
-                     Fired whenever this CameraControl's {{#crossLink "CameraControl/active:property"}}{{/crossLink}} property changes.
-
-                     @event active
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("active", this._active);
                 },
-
                 get: function () {
                     return this._active;
                 }
@@ -291,18 +286,9 @@
              @type Boolean
              */
             pivoting: {
-
                 set: function (value) {
                     this._pivoting = !!value;
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/pivoting:property"}}{{/crossLink}} property changes.
-                     * @event pivoting
-                     * @param value The property's new value
-                     */
-                    this.fire('pivoting', this._pivoting);
                 },
-
                 get: function () {
                     return this._pivoting;
                 }
@@ -318,87 +304,67 @@
              @type Boolean
              */
             panToPointer: {
-
                 set: function (value) {
                     this._panToPointer = !!value;
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/panToPointer:property"}}{{/crossLink}} property changes.
-                     * @event panToPointer
-                     * @param value The property's new value
-                     */
-                    this.fire('panToPointer', this._panToPointer);
                 },
-
                 get: function () {
                     return this._panToPointer;
                 }
             },
 
             /**
-             * Flag which indicates whether this CameraControl is in "first person" mode.
-             *
-             * In "first person" mode (disabled by default) the look position rotates about the eye position. Otherwise,
-             * the eye rotates about the look.
-             *
-             * Fires a {{#crossLink "KeyboardRotateCamera/firstPerson:event"}}{{/crossLink}} event on change.
-             *
-             * @property firstPerson
-             * @default false
-             * @type Boolean
+             When true, mouse wheel when mouse is over a {{#crossLink "Mesh"}}{{/crossLink}} will zoom
+             the {{#crossLink "Camera"}}{{/crossLink}} towards the pivot point.
+
+             @property panToPivot
+             @default false
+             @type Boolean
+             */
+            panToPivot: {
+                set: function (value) {
+                    this._panToPivot = !!value;
+                },
+                get: function () {
+                    return this._panToPivot;
+                }
+            },
+
+            /**
+             Indicates whether this CameraControl is in "first person" mode.
+
+             In "first person" mode (disabled by default) the look position rotates about the eye position. Otherwise,
+             the eye rotates about the look.
+
+             @property firstPerson
+             @default false
+             @type Boolean
              */
             firstPerson: {
-
                 set: function (value) {
-
-                    value = !!value;
-
-                    this._firstPerson = value;
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/firstPerson:property"}}{{/crossLink}} property changes.
-                     * @event firstPerson
-                     * @param value The property's new value
-                     */
-                    this.fire('firstPerson', this._firstPerson);
+                    this._firstPerson = !!value;
                 },
-
                 get: function () {
                     return this._firstPerson;
                 }
             },
 
             /**
-             * Flag which indicates whether this CameraControl is in "walking" mode.
-             *
-             * When set true, this constrains eye movement to the horizontal X-Z plane. When doing a walkthrough,
-             * this is useful to allow us to look upwards or downwards as we move, while keeping us moving in the
-             * horizontal plane.
-             *
-             * This only has an effect when also in "first person" mode.
-             *
-             * Fires a {{#crossLink "KeyboardRotateCamera/walking:event"}}{{/crossLink}} event on change.
-             *
-             * @property walking
-             * @default false
-             * @type Boolean
+             Indicates whether this CameraControl is in "walking" mode.
+
+             When set true, this constrains eye movement to the horizontal X-Z plane. When doing a walkthrough,
+             this is useful to allow us to look upwards or downwards as we move, while keeping us moving in the
+             horizontal plane.
+
+             This only has an effect when also in "first person" mode.
+
+             @property walking
+             @default false
+             @type Boolean
              */
             walking: {
-
                 set: function (value) {
-
-                    value = !!value;
-
-                    this._walking = value;
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/walking:property"}}{{/crossLink}} property changes.
-                     * @event walking
-                     * @param value The property's new value
-                     */
-                    this.fire('walking', this._walking);
+                    this._walking = !!value;
                 },
-
                 get: function () {
                     return this._walking;
                 }
@@ -406,28 +372,16 @@
 
             /**
              * TODO
-             * Fires a {{#crossLink "KeyboardRotateCamera/doublePickFlyTo:event"}}{{/crossLink}} event on change.
+             *
              *
              * @property doublePickFlyTo
              * @default true
              * @type Boolean
              */
             doublePickFlyTo: {
-
                 set: function (value) {
-
                     this._doublePickFlyTo = value !== false;
-
-                    // ..
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/doublePickFlyTo:property"}}{{/crossLink}} property changes.
-                     * @event doublePickFlyTo
-                     * @param value The property's new value
-                     */
-                    this.fire('doublePickFlyTo', this._doublePickFlyTo);
                 },
-
                 get: function () {
                     return this._doublePickFlyTo;
                 }
@@ -435,36 +389,24 @@
 
 
             /**
-             * A fact in range [0..1] indicating how much the camera keeps moving after you finish
-             * panning or rotating it.
-             *
-             * A value of 0.0 causes it to immediately stop, 0.5 causes its movement to decay 50% on each tick,
-             * while 1.0 causes no decay, allowing it continue moving, by the current rate of pan or rotation.
-             *
-             * You may choose an inertia of zero when you want be able to precisely position or rotate the camera,
-             * without interference from inertia. ero inertia can also mean that less frames are rendered while
-             * you are positioning the camera.
-             *
-             * Fires a {{#crossLink "KeyboardRotateCamera/inertia:event"}}{{/crossLink}} event on change.
-             *
-             * @property inertia
-             * @default 0.5
-             * @type Number
+             Factor in range [0..1] indicating how much the camera keeps moving after you finish
+             panning or rotating it.
+
+             A value of 0.0 causes it to immediately stop, 0.5 causes its movement to decay 50% on each tick,
+             while 1.0 causes no decay, allowing it continue moving, by the current rate of pan or rotation.
+
+             You may choose an inertia of zero when you want be able to precisely position or rotate the camera,
+             without interference from inertia. ero inertia can also mean that less frames are rendered while
+             you are positioning the camera.
+
+             @property inertia
+             @default 0.5
+             @type Number
              */
             inertia: {
-
                 set: function (value) {
-
                     this._inertia = value === undefined ? 0.5 : value;
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/inertia:property"}}{{/crossLink}} property changes.
-                     * @event inertia
-                     * @param value The property's new value
-                     */
-                    this.fire('inertia', this._inertia);
                 },
-
                 get: function () {
                     return this._inertia;
                 }
@@ -472,28 +414,15 @@
 
             /**
              * TODO
-             * Fires a {{#crossLink "KeyboardRotateCamera/keyboardLayout:event"}}{{/crossLink}} event on change.
              *
              * @property keyboardLayout
              * @default "qwerty"
              * @type String
              */
             keyboardLayout: {
-
                 set: function (value) {
-
                     this._keyboardLayout = value || "qwerty";
-
-                    // ..
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/keyboardLayout:property"}}{{/crossLink}} property changes.
-                     * @event keyboardLayout
-                     * @param value The property's new value
-                     */
-                    this.fire('keyboardLayout', this._keyboardLayout);
                 },
-
                 get: function () {
                     return this._keyboardLayout;
                 }
@@ -899,6 +828,8 @@
                                 } else {
                                     camera.zoom(vZoom);
                                 }
+                            } else if (self._panToPivot) {
+                                panToWorldPos(self._pivoter.getPivotPos(), -vZoom); // FIXME: What about when pivotPos undefined?
                             } else {
                                 camera.zoom(vZoom);
                             }
@@ -1427,8 +1358,12 @@
 
                         needPickSurface = self._pivoting;
                         updatePick();
-                        if (hit && self._pivoting) {
-                            self._pivoter.startPivot(hit.worldPos);
+                        if (self._pivoting) {
+                            if (hit) {
+                                self._pivoter.startPivot(hit.worldPos);
+                            } else {
+                                self._pivoter.startPivot(); // Continue to use last pivot point
+                            }
                         }
                     });
 
