@@ -331,7 +331,7 @@
             // Components created with #create
             this._adoptees = null; // Lazy-instantiated map
 
-            var isScene = this.type == "xeogl.Scene";
+            var isScene = this.type === "xeogl.Scene";
 
             if (this.scene && !isScene) { // HACK: Don't add scene to itself
                 // Register this component on its scene
