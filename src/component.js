@@ -535,8 +535,8 @@
         },
 
         /**
-         * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}{{/crossLink}} or
-         * {{#crossLink "Component/once:method"}}{{/crossLink}}.
+         * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}Component#on(){{/crossLink}} or
+         * {{#crossLink "Component/once:method"}}Component#once(){{/crossLink}}.
          *
          * @method off
          * @param {String} handle Publication handle
@@ -562,8 +562,8 @@
         /**
          * Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.
          *
-         * This is equivalent to calling {{#crossLink "Component/on:method"}}{{/crossLink}}, and then calling
-         * {{#crossLink "Component/off:method"}}{{/crossLink}} inside the callback function.
+         * This is equivalent to calling {{#crossLink "Component/on:method"}}Component#on(){{/crossLink}}, and then calling
+         * {{#crossLink "Component/off:method"}}Component#off(){{/crossLink}} inside the callback function.
          *
          * @method once
          * @param {String} event Data event to listen to

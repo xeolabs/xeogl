@@ -83,7 +83,7 @@
  @param [cfg.fitFOV=45] {Number} How much field-of-view, in degrees, that a target boundary should
  fill the canvas when fitting the {{#crossLink "Camera"}}Camera{{/crossLink}} to the target boundary. Only applies when the {{#crossLink "Camera"}}Camera{{/crossLink}}'s active projection is a{{#crossLink "Perspective"}}{{/crossLink}}.
  @param [cfg.trail] {Boolean} When true, will cause this CameraFlightAnimation to point the {{#crossLink "Camera"}}{{/crossLink}} in the direction that it is travelling.
- @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}}.
+ @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}CameraFlightAnimation#flyTo(){{/crossLink}}.
  @extends Component
  */
 (function () {
@@ -659,7 +659,7 @@
         _props: {
 
             /**
-             * Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}}.
+             * Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}CameraFlightAnimation#flyTo(){{/crossLink}}.
              *
              * Stops any flight currently in progress.
              *
@@ -706,7 +706,7 @@
 
             /**
              * How much of the perspective field-of-view, in degrees, that a target {{#crossLink "Object"}}{{/crossLink}} or its AABB should
-             * fill the canvas when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlightAnimation/jumpTo:method"}}{{/crossLink}}.
+             * fill the canvas when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}CameraFlightAnimation#jumpTo(){{/crossLink}} or {{#crossLink "CameraFlightAnimation/jumpTo:method"}}{{/crossLink}}.
              *
              * @property fitFOV
              * @default 45

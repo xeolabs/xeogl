@@ -392,7 +392,7 @@
 
  ### Applying a semantic data model
 
- xeogl allows to organize our Objects using a generic conceptual data model that describes the semantics of our application
+ xeogl allows us to organize our Objects using a generic conceptual data model that describes the semantics of our application
  domain. We do this by assigning "entity classes" to those Objects that we consider to be *entities* within our domain, and then we're
  able to reference those Objects according to their entity classes.
 
@@ -582,7 +582,7 @@
 
  ### Destroying Objects
 
- Call an Object's {{#crossLink "Component/destroy:method"}}destroy(){{/crossLink}} method to destroy it:
+ Call an Object's {{#crossLink "Component/destroy:method"}}Object#destroy(){{/crossLink}} method to destroy it:
 
  ````JavaScript
  myObject.destroy();

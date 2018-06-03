@@ -384,7 +384,7 @@
  });
  ````
 
- The {{#crossLink "Scene"}}{{/crossLink}} also has a {{#crossLink "Scene/getAABB:method"}}{{/crossLink}}, which returns
+ The {{#crossLink "Scene"}}{{/crossLink}} also has a {{#crossLink "Scene/getAABB:method"}}Scene#getAABB(){{/crossLink}}, which returns
  the collective World-space AABBs of the {{#crossLink "Object"}}Objects{{/crossLink}} with the given IDs:
 
  ````JavaScript

@@ -521,7 +521,7 @@
                         /**
                          * Fired when the pointer is over a new {{#crossLink "Mesh"}}{{/crossLink}}.
                          * @event hoverEnter
-                         * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                         * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
                          */
                         self.fire("hoverEnter", hit);
                         lastPickedMeshId = pickedMeshId;
@@ -529,7 +529,7 @@
                     /**
                      * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Mesh"}}{{/crossLink}}.
                      * @event hover
-                     * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                     * @param hit A pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
                      */
                     self.fire("hover", hit);
                     if (hit.worldPos) {
@@ -543,7 +543,7 @@
                          *
                          * @event hoverSurface
                          * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
-                         * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                         * surface position - see {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
                          */
                         self.fire("hoverSurface", hit);
                     }
@@ -1398,7 +1398,7 @@
                                      * Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink "Mesh"}}{{/crossLink}}.
                                      *
                                      * @event picked
-                                     * @param hit A surface pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                                     * @param hit A surface pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
                                      */
                                     self.fire("picked", hit);
                                     if (pickedSurface) {
@@ -1410,7 +1410,7 @@
                                          *
                                          * @event pickedSurface
                                          * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
-                                         * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                                         * surface possition - see {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
                                          */
                                         self.fire("pickedSurface", hit);
                                     }
@@ -1465,7 +1465,7 @@
                                      * Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink "Mesh"}}{{/crossLink}}.
                                      *
                                      * @event picked
-                                     * @param hit A surface pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                                     * @param hit A surface pick hit result containing the ID of the Mesh - see {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
                                      */
                                     self.fire("doublePicked", hit);
                                     if (pickedSurface) {
@@ -1476,7 +1476,7 @@
                                          *
                                          * @event doublePickedSurface
                                          * @param hit A surface pick hit result, containing the ID of the Mesh and 3D info on the
-                                         * surface possition - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                                         * surface possition - see {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
                                          */
                                         self.fire("doublePickedSurface", hit);
                                     }

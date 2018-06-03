@@ -4,17 +4,13 @@
  ## Usage
 
  * [Creating a Scene](#creating-a-scene)
- * [Creating meshes](#creating-meshes)
- * [Loading models](#loading-models)
- * [Accessing content](#accessing-content)
+ * [Creating and accessing components](#creating-and-accessing-components)
  * [Controlling the camera](#controlling-the-camera)
  * [Taking snapshots](#taking-snapshots)
  * [Lighting](#lighting)
  * [Clipping](#clipping)
- * [Emphasis effects](#emphasis-effects)
  * [Picking](#picking)
- * [Pick masking](#pick-masking)
- * [Getting the World-space boundary](#getting-the-world-space-boundary)
+ * [Querying and tracking boundaries](#querying-and-tracking-boundaries)
  * [Controlling the viewport](#controlling-the-viewport)
  * [Controlling rendering](#controlling-rendering)
  * [Gamma correction](#gamma-correction)
@@ -39,85 +35,69 @@
  });
  ````
 
- ### Creating meshes
+ ### Creating and accessing components
 
- Creating an {{#crossLink "Mesh"}}{{/crossLink}} within a Scene:
+ As a brief introduction to creating Scene components, we'll create a {{#crossLink "Mesh"}}{{/crossLink}} that has a
+ {{#crossLink "TeapotGeometry"}}{{/crossLink}} and a {{#crossLink "PhongMaterial"}}{{/crossLink}}:
 
  <a href="../../examples/#geometry_primitives_teapot"><img src="../../assets/images/screenshots/Scene/teapot.png"></img></a>
 
  ````javascript
- var mesh = new xeogl.Mesh(scene, {
+ var teapotMesh = new xeogl.Mesh(scene, {
+    id: "myMesh",                               // <<---------- ID automatically generated if not provided
     geometry: new xeogl.TeapotGeometry(scene),
     material: new xeogl.PhongMaterial(scene, {
+        id: "myMaterial",
         diffuse: [0.2, 0.2, 1.0]
     })
  });
  ````
 
- Creating an mesh within the default Scene (which will be automatically created if not yet existing):
+ Creating a {{#crossLink "Mesh"}}{{/crossLink}} within the default Scene (xeogl will automatically create the default Scene if it does not yet exist):
  ````javascript
- mesh = new xeogl.Mesh({
+ var teapotMesh = new xeogl.Mesh({
+    id: "myMesh",
     geometry: new xeogl.TeapotGeometry(),
     material: new xeogl.PhongMaterial({
+        id: "myMaterial",
         diffuse: [0.2, 0.2, 1.0]
     })
  });
 
- mesh.scene.camera.eye = [45, 45, 45];
+ teapotMesh.scene.camera.eye = [45, 45, 45];
  ````
 
  The default Scene can be got from either the Mesh or the xeogl namespace:
 
  ````javascript
- scene = mesh.scene;
+ scene = teapotMesh.scene;
  scene = xeogl.scene;
  ````
-
- ### Loading models
-
- Use {{#crossLink "GLTFModel"}}{{/crossLink}} components to load glTF models into a Scene:
-
- ````javascript
- var model = new xeogl.GLTFModel(scene, { // If we don't provide the Scene, will create in default Scene
-    id: "gearbox",
-    src: "models/gltf/gearbox/gearbox_assy.gltf"
- });
- ````
-
- ### Accessing content
 
  Find components by ID in their Scene's {{#crossLink "Scene/components:property"}}{{/crossLink}} map:
 
  ````javascript
- var gear1 = scene.components["gearbox#gear99"];
- gear1.visible = false;
- //...
+ var teapotMesh = scene.components["myMesh"];
+ teapotMesh.visible = false;
+
+ var teapotMaterial = scene.components["myMaterial"];
+ teapotMaterial.diffuse = [1,0,0]; // Change to red
  ````
 
  A Scene also has a map of component instances for each {{#crossLink "Component"}}{{/crossLink}} subtype:
 
  ````javascript
  var meshes = scene.types["xeogl.Mesh"];
- var gear = meshes["gearbox#gear99"];
- gear.ghost = true;
- //...
+ var teapotMesh = meshes["myMesh"];
+ teapotMesh.ghosted = true;
 
- var glTFModels = scene.types["xeogl.GLTFModel"];
- var gearbox = glTFModels["gearbox"];
- gearbox.visible = false;
- //...
- ````
- a map containing just the {{#crossLink "Model"}}{{/crossLink}} instances:
-
- ````javascript
- gearbox = scene.models["gearbox"];
+ var phongMaterials = scene.types["xeogl.PhongMaterial"];
+ var teapotMaterial = phongMaterials["myMaterial"];
+ teapotMaterial.diffuse = [0,1,0]; // Change to green
  ````
 
- and a map containing just the {{#crossLink "Mesh"}}{{/crossLink}} instances:
-
- ````javascript
- gear = scene.meshes["gearbox#gear99"];
- ````
+ See {{#crossLink "Object"}}{{/crossLink}}, {{#crossLink "Group"}}{{/crossLink}} and {{#crossLink "Model"}}{{/crossLink}}
+ for how to create and access more sophisticated content.
 
  ### Controlling the camera
 
@@ -171,52 +151,23 @@
  ````javascript
  var clips = scene.clips;
  clips.clips = [
- new xeogl.Clip({  // Clip plane on negative diagonal
+    new xeogl.Clip({  // Clip plane on negative diagonal
         pos: [1.0, 1.0, 1.0],
         dir: [-1.0, -1.0, -1.0],
         active: true
     }),
- new xeogl.Clip({ // Clip plane on positive diagonal
+    new xeogl.Clip({ // Clip plane on positive diagonal
         pos: [-1.0, -1.0, -1.0],
         dir: [1.0, 1.0, 1.0],
         active: true
     }),
- //...
+    //...
  ];
- ````
-
- ### Emphasis effects
-
- The Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
- for controlling ghost effects:
-
- ````javascript
- var ghostMaterial = scene.ghostMaterial;
- ghostMaterial.edgeColor = [0.9, 0.9, 0.0];
- //...
- ````
-
- The Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
- for controlling highlight effects:
-
- ````javascript
- var highlightMaterial = scene.highlightMaterial;
- highlightMaterial.color = [0.9, 0.9, 0.0];
- //...
- ````
-
- The Scene's {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "OutlineMaterial"}}{{/crossLink}}
- for controlling outline effects:
-
-
- ````javascript
- var outlineMaterial = scene.outlineMaterial;
- outlineMaterial.edgeWidth = 6;
  ````
 
  ### Picking
 
- Use the Scene's {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method to pick and raycast meshes.
+ Use the Scene's {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} method to pick and raycast meshes.
 
  For example, to pick a point on the surface of the closest mesh at the given canvas coordinates:
 
@@ -242,14 +193,12 @@
  }
  ````
 
- ### Pick masking
+ #### Pick masking
 
- We can use the {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method's ````includeMeshes```` and ````excludeMeshes````
+ We can use the {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} method's ````includeMeshes```` and ````excludeMeshes````
  options to mask which Meshes we attempt to pick.
 
  This is useful for picking <em>through</em> things, to pick only the Meshes of interest.
-
- #### Including meshes
 
  To pick only Meshes ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through any other Meshes that are
  in the way, as if they weren't there:
@@ -266,8 +215,6 @@
  }
  ````
 
- #### Excluding meshes
-
  To pick any pickable Mesh, except for ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through those
  Meshes if they happen to be in the way:
 
@@ -283,35 +230,34 @@
  }
  ````
 
- See {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} for more info on picking.
+ See {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} for more info on picking.
 
- ### Getting the World-space boundary
+ ### Querying and tracking boundaries
 
- Getting a Scene's World-space boundary as an AABB:
+ Getting a Scene's World-space axis-aligned boundary (AABB):
 
  ````javascript
  var aabb = scene.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
  ````
 
- Subscribing to updates to the World-space boundary, which occur whenever Meshes are Transformed, or their Geometries have been updated.
+ Subscribing to updates to the AABB, which occur whenever {{#crossLink "Meshes"}}{{/crossLink}} are transformed, their
+ {{#crossLink "Geometry"}}Geometries{{/crossLink}} have been updated, or the {{#crossLink "Camera"}}Camera{{/crossLink}} has moved:
 
  ````javascript
  scene.on("boundary", function() {
      var aabb = scene.aabb;
-     var obb = scene.obb;
  });
  ````
 
- Getting the collective World-space axis-aligned boundary of the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
- and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
+ Getting the AABB of the {{#crossLink "Object"}}Objects{{/crossLink}} with the given IDs:
 
  ````JavaScript
- scene.getAABB(); // Gets collective boundary of all meshes in the scene
- scene.getAABB("saw"); // Gets collective boundary of all meshes in saw model
- scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all meshes in saw and gearbox models
- scene.getAABB("saw#0.1"); // Get boundary of an mesh in the saw model
- scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two meshes in saw model
+ scene.getAABB(); // Gets collective boundary of all Mesh Objects in the scene
+ scene.getAABB("saw"); // Gets boundary of an Object
+ scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of two Objects
  ````
+
+ See {{#crossLink "Scene/getAABB:method"}}Scene#getAABB(){{/crossLink}} and {{#crossLink "Object"}}{{/crossLink}} for more info on querying and tracking boundaries.
 
  ### Managing the viewport
 
@@ -333,7 +279,7 @@
  two views to be shown on the canvas at the same time.
 
  ````Javascript
- // Load glTF model
+ // Load a glTF model
  var model = new xeogl.GLTFModel({
     src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
  });
@@ -379,8 +325,8 @@
 
  Within its shaders, xeogl performs shading calculations in linear space.
 
- By default, the Scene expects color textures (ie. {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}},
- {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} and {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}) to
+ By default, the Scene expects color textures (eg. {{#crossLink "PhongMaterial/diffuseMap:property"}}PhongMaterial#diffuseMap{{/crossLink}},
+ {{#crossLink "MetallicMaterial/baseColorMap:property"}}MetallicMaterial#baseColorMap{{/crossLink}} and {{#crossLink "SpecularMaterial/diffuseMap:property"}}SphericalMaterial#diffuseMap{{/crossLink}}) to
  be in pre-multipled gamma space, so will convert those to linear space before they are used in shaders. Other textures are
  always expected to be in linear space.
 
@@ -494,7 +440,7 @@
              {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene that have GUIDs, mapped to their GUIDs.
 
              Each Object is registered in this map when its {{#crossLink "Object/guid:property"}}{{/crossLink}} is
-             set to value.
+             assigned a value.
 
              @property guidObjects
              @final
@@ -506,7 +452,7 @@
              For each entity type, a map of IDs to {{#crossLink "Object"}}Objects{{/crossLink}} of that entity type.
 
              Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
-             set to value.
+             assigned a value.
 
              @property entityTypes
              @final
@@ -518,7 +464,7 @@
              {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene that have entity types, mapped to their IDs.
 
              Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
-             set to value.
+             assigned a value.
 
              @property entities
              @final
@@ -530,7 +476,7 @@
              Visible entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
              Each Object is registered in this map when its {{#crossLink "Object/visible:property"}}{{/crossLink}} property is true and its
-             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is set to value.
+             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
 
              @property visibleEntities
              @final
@@ -542,7 +488,7 @@
              Ghosted entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
              Each Object is registered in this map when its {{#crossLink "Object/ghosted:property"}}{{/crossLink}} property is true and its
-             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is set to value.
+             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
 
              @property ghostedEntities
              @final
@@ -554,7 +500,7 @@
              Highlighted entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
              Each Object is registered in this map when its {{#crossLink "Object/highlighted:property"}}{{/crossLink}} property is true and its
-             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is set to value.
+             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
 
              @property highlightedEntities
              @final
@@ -566,7 +512,7 @@
              Selected entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
              Each Object is registered in this map when its {{#crossLink "Object/selected:property"}}{{/crossLink}} property is true and its
-             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is set to value.
+             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
 
              @property selectedEntities
              @final
@@ -597,7 +543,7 @@
 
             /**
              For each {{#crossLink "Component"}}{{/crossLink}} type, a map of
-             IDs to {{#crossLink "Component"}}Components{{/crossLink}} of that type.
+             IDs to {{#crossLink "Component"}}Components{{/crossLink}} instances of that type.
 
              @property types
              @final
@@ -606,8 +552,7 @@
             this.types = {};
 
             /**
-             The {{#crossLink "Component"}}Component{{/crossLink}}s in
-             this Scene, mapped to their IDs.
+             The {{#crossLink "Component"}}Component{{/crossLink}} within this Scene, mapped to their IDs.
 
              @property components
              @final
@@ -2235,7 +2180,7 @@
 
          Each visible Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
          {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is set to value.
+         is assigned a value.
 
          @method setVisible
          @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
@@ -2289,7 +2234,7 @@
 
          Each selected Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
          {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is set to value.
+         is assigned a value.
 
          @method setSelected
          @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
@@ -2318,7 +2263,7 @@
 
          Each highlighted Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
          {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is set to value.
+         is assigned a value.
 
          @method setHighlighted
          @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
@@ -2347,7 +2292,7 @@
 
          Each ghosted Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
          {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is set to value.
+         is assigned a value.
 
          @method setGhosted
          @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
