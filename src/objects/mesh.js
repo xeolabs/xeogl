@@ -16,8 +16,8 @@
  * For best performance, reuse as many of the same component instances among your Meshes as possible.
  * Use {{#crossLink "Object"}}Objects{{/crossLink}} to organize Meshes into hierarchies, if required.
 
- This page covers functionality specific to the Mesh component, while {{#crossLink "Object"}}{{/crossLink}} covers the
- generic functionality in its base class.
+ This page covers functionality specific to the Mesh component, while {{#crossLink "Object"}}{{/crossLink}} covers generic
+ functionality inherited from the base class.
 
  ## Usage
 
@@ -51,10 +51,8 @@
  Since our Mesh has all the default components, we can get those off either the Mesh or its Scene:
 
  ````javascript
- mesh.material.diffuse = [1.0, 0.0, 0.0];  // This is the same Material component...
-
- var scene = mesh.scene;
- scene.material.diffuse  = [1.0, 0.0, 0.0];  // ...as this one.
+ mesh.material.diffuse = [1.0, 0.0, 0.0];           // This is the same Material component...
+ mesh.scene.material.diffuse  = [1.0, 0.0, 0.0];    // ...as this one.
  ````
 
  In practice, we would provide (at least) our own Geometry and Material for the Mesh:
@@ -73,8 +71,8 @@
  ### Creating hierarchies
 
  In xeogl we represent an object hierarchy as a tree of {{#crossLink "Object"}}Objects{{/crossLink}} in which
- the leaf Objects have links to Meshes. In an Object tree, an operation on an
- Object is collectively applied to the Meshes within its subtree.
+ the leaf Objects are Meshes. In an Object tree, an operation on an Object is recursively applied to sub-Objects, down
+ to the Meshes at the leaves.
 
  See {{#crossLink "Object"}}{{/crossLink}} for information on organizing Meshes hierarchically.
 
@@ -92,7 +90,7 @@
  ### Controlling clipping
 
  By default, a Mesh will be clipped by the
- Scene's {{#crossLink "Scene/clips:property"}}clipping planes{{/crossLink}} (if you've created some).
+ Scene's {{#crossLink "Scene/clips:property"}}clipping planes{{/crossLink}}.
 
  Make a Mesh unclippable by setting its {{#crossLink "Mesh/clippable:property"}}{{/crossLink}} property false:
 
@@ -105,7 +103,7 @@
  Control the order in which a Mesh is rendered relative to others by setting its {{#crossLink "Mesh/layer:property"}}{{/crossLink}}
  property. You would normally do this when you need to ensure that transparent Meshes are rendered in back-to-front order for correct alpha blending.
 
- Assign mesh to layer 0 (all Meshes are in layer 0 by default):
+ Assigning our Mesh to layer 0 (all Meshes are in layer 0 by default):
 
  ````javascript
  mesh.layer = 0;
@@ -123,7 +121,7 @@
  ### Geometry
 
  A Mesh has a {{#crossLink "Geometry"}}{{/crossLink}} which describes its shape. When we don't provide it with a
- Geometry, it will have the Scene's {{#crossLink "Scene/geometry:property"}}{{/crossLink}} by default.
+ Geometry, it will automatically get its {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/geometry:property"}}{{/crossLink}} by default.
 
  Creating a Mesh with its own Geometry:
 
@@ -144,7 +142,7 @@
  ````javascript
  ver geometry = mesh.geometry;
 
- var primitive = geometry,primitive;        // Default is "triangles"
+ var primitive = geometry.primitive;        // Default is "triangles"
  var positions = geometry.positions;        // Local-space vertex positions
  var normals = geometry.normals;            // Local-space vertex Normals
  var uv = geometry.uv;                      // UV coordinates
@@ -152,7 +150,7 @@
  ````
 
  The Mesh also has a convenience property which provides the vertex positions in World-space, ie. after they have been
- transformed by the Mesh's Transform:
+ transformed by the Mesh's {{#crossLink "Object/worldMatrix:property"}}{{/crossLink}}:
 
  ````javascript
  // These are internally generated on-demand and cached. To free the cached
@@ -163,9 +161,9 @@
  ### Material
 
  A Mesh has a {{#crossLink "Material"}}{{/crossLink}}, which describes its appearance. When we don't provide it with
- a Material, it will have the Scene's {{#crossLink "Scene/material:property"}}{{/crossLink}} by default.
+ a Material, it will automatically get its {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/material:property"}}{{/crossLink}} by default.
 
- Creating a Mesh with its own custom Geometry and Material:
+ Creating a Mesh with its own custom {{#crossLink "Geometry"}}{{/crossLink}} and {{#crossLink "MetallicMaterial"}}{{/crossLink}}:
 
  ````javascript
  var mesh = new xeogl.Mesh({
@@ -180,7 +178,7 @@
  });
  ````
 
- Dynamically replacing the Material:
+ Dynamically replacing the {{#crossLink "MetallicMaterial"}}{{/crossLink}} with a {{#crossLink "SpecularMaterial"}}{{/crossLink}}:
 
  ````javascript
  mesh.material = new xeogl.SpecularMaterial({
@@ -192,7 +190,7 @@
  })
  ````
 
- Animating the Material's diffuse color - making the Mesh rapidly pulse red:
+ Animating the {{#crossLink "SpecularMaterial"}}{{/crossLink}}'s diffuse color - making the Mesh rapidly pulse red:
 
  ````javascript
  mesh.scene.on("tick", function(e) {
@@ -210,12 +208,13 @@
  ### Ghosting
 
  Ghost a Mesh by setting its {{#crossLink "Mesh/ghosted:property"}}{{/crossLink}} property true. The Mesh's
- {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while ghosted.
+ {{#crossLink "Mesh/ghostMaterial:property"}}{{/crossLink}} property holds the {{#crossLink "EmphasisMaterial"}}{{/crossLink}} 
+ that controls its appearance while ghosted.
 
- When we don't provide it with a EmphasisMaterial, it will have the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
+ When we don't provide it with a EmphasisMaterial, it will automatically get the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
  by default.
 
- In the example below, we'll create a ghosted Mesh with its own EmphasisMaterial.
+ In the example below, we'll create a ghosted Mesh with its own EmphasisMaterial for ghosted appearance:
 
  <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/EmphasisMaterial/teapot.png"></img></a>
 
@@ -249,12 +248,13 @@
  ### Highlighting
 
  Highlight a Mesh by setting its {{#crossLink "Mesh/highlighted:property"}}{{/crossLink}} property true. The Mesh's
- highlighting {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
+ {{#crossLink "Mesh/highlightMaterial:property"}}{{/crossLink}} property holds the {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
+ that controls its appearance while highlighted.
 
- When we don't provide it with a EmphasisMaterial for highlighting, it will have the Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
+ When we don't provide it with a EmphasisMaterial for highlighting, it will automatically get its Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
  by default.
 
- In the example below, we'll create a highlighted Mesh with its own EmphasisMaterial.
+ In the example below, we'll create a highlighted Mesh with its own EmphasisMaterial for highlighted appearance:
 
  <a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/EmphasisMaterial/teapotHighlighted.png"></img></a>
 
@@ -276,15 +276,48 @@
 
  * [Ghost and highlight effects](../../examples/#effects_demo_gearbox)
 
+ ### Selecting
+
+ Make a Mesh appear selected by setting its {{#crossLink "Mesh/selected:property"}}{{/crossLink}} property true. The Mesh's
+ {{#crossLink "Mesh/selectedMaterial:property"}}{{/crossLink}} property holds the {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
+ that controls its appearance while selected.
+
+ When we don't provide it with a EmphasisMaterial for selecting, it will automatically get its Scene's {{#crossLink "Scene/selectMaterial:property"}}{{/crossLink}}
+ by default.
+
+ In the example below, we'll create a selected Mesh with its own EmphasisMaterial for selection appearance:
+
+ <a href="../../examples/#effects_select"><img src="../../assets/images/screenshots/EmphasisMaterial/teapotSelected.png"></img></a>
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+    geometry: new xeogl.TeapotGeometry(),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    }),
+    selectMaterial: new xeogl.EmphasisMaterial({
+        color: [1.0, 1.0, 0.0],
+        alpha: 0.6
+    }),
+    selected: true
+ });
+ ````
+
+ #### Examples
+
+ * [Ghost and select effects](../../examples/#effects_demo_gearbox)
+
+
  ### Outlining
 
  Outline a Mesh by setting its {{#crossLink "Mesh/outlined:property"}}{{/crossLink}} property true. The Mesh's
- {{#crossLink "OutlineMaterial"}}{{/crossLink}} then controls its appearance while outlined.
+ {{#crossLink "Mesh/outlineMaterial:property"}}{{/crossLink}} property holds the {{#crossLink "OutlineMaterial"}}{{/crossLink}}
+ that controls its appearance while outlined.
 
- When we don't provide it with an OutlineMaterial, it will have the Scene's {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}}
- by default.
+ When we don't provide it with an {{#crossLink "OutlineMaterial"}}{{/crossLink}}, it will automatically get its Scene's
+ {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}} by default.
 
- In the example below, we'll create a outlined Mesh with its own OutlineMaterial.
+ In the example below, we'll create a outlined Mesh with its own {{#crossLink "OutlineMaterial"}}{{/crossLink}}:
 
  <a href="../../examples/#effects_outline"><img src="../../assets/images/screenshots/OutlineMaterial/teapot.png"></img></a>
 
@@ -305,18 +338,18 @@
 
  ### Local-space boundary
 
- We can get a Mesh's Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and
+ We can query a Mesh's Local-space boundary at any time, getting it as either an axis-aligned bounding box (AABB) or
  an object-aligned bounding box (OBB).
 
- The Local-space boundary is the boundary of the Mesh's Geometry, without any transforms applied.
+ The Local-space AABB and OBB belong to the Mesh's {{#crossLink "Geometry"}}{{/crossLink}}.
 
- Getting the Local-space boundary as an AABB:
+ Getting the Local-space AABB:
 
  ````
  var aabb = mesh.geometry.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
  ````
 
- Getting the Local-space boundary as an OBB:
+ Getting the Local-space OBB:
 
  ```` javascript
  var obb = mesh.geometry.obb; // Flat array containing eight 3D corner vertices of a box
@@ -329,24 +362,20 @@
 
  ### World-space boundary
 
- We can get a Mesh's World-space boundary at any time, as both an axis-aligned bounding box (AABB) and
- an object-aligned bounding box (OBB).
+ We can query a Mesh's World-space boundary at any time, getting it as an axis-aligned bounding box (AABB).
 
- The World-space boundary is the boundary of the Mesh's Geometry after the Mesh's Transform has been applied to it.
+ The World-space AABB is the boundary of the Mesh's {{#crossLink "Geometry"}}{{/crossLink}} after transformation by the
+ Mesh's {{#crossLink "Object/worldMatrix:property"}}{{/crossLink}} and the {{#crossLink "Camera"}}{{/crossLink}}'s
+ {{#crossLink "Camera/matrix:property"}}{{/crossLink}}.
 
- Getting the World-space boundary as an AABB:
+ Getting the World-space boundary AABB:
 
  ````javascript
  var aabb = mesh.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
  ````
 
- Getting the World-space boundary as an OBB:
-
- ```` javascript
- var obb = mesh.obb; // Flat array containing eight 3D corner vertices of a box
- ````
-
- Subscribing to updates of the World-space boundary, which occur whenever the Mesh's Transform or Geometry have been updated.
+ Subscribing to updates of the World-space boundary, which occur after each update to the
+ Mesh's {{#crossLink "Object/worldMatrix:property"}}{{/crossLink}} or the {{#crossLink "Camera"}}{{/crossLink}}:
 
  ````javascript
  mesh.on("boundary", function() {
@@ -355,14 +384,13 @@
  });
  ````
 
- A Mesh's {{#crossLink "Scene"}}{{/crossLink}} also has a {{#crossLink "Scene/getAABB:method"}}{{/crossLink}}, which returns
- the collective World-space axis-aligned boundary of the {{#crossLink "Mesh"}}Meshes{{/crossLink}}
- and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
+ The {{#crossLink "Scene"}}{{/crossLink}} also has a {{#crossLink "Scene/getAABB:method"}}{{/crossLink}}, which returns
+ the collective World-space AABBs of the {{#crossLink "Object"}}Objects{{/crossLink}} with the given IDs:
 
  ````JavaScript
  var scene = mesh.scene;
 
- scene.getAABB(); // Gets collective boundary of all meshes in the viewer
+ scene.getAABB(); // Gets collective boundary of all meshes in the scene
  scene.getAABB("saw"); // Gets collective boundary of all meshes in a model
  scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all meshes in two models
  scene.getAABB("saw#0.1"); // Get boundary of a mesh
@@ -372,8 +400,9 @@
  #### Excluding from boundary calculations
 
  The {{#crossLink "Scene/aabb:property"}}Scene aabb{{/crossLink}}
- and {{#crossLink "Object/aabb:property"}}Object aabb{{/crossLink}} properties provide AABBs that include the boundaries of all
- contained Meshes, except those Meshes that have their {{#crossLink "Mesh/collidable:property"}}collidable{{/crossLink}} properties set ````false````.
+ and parent {{#crossLink "Object/aabb:property"}}Object{{/crossLink}}'s {{#crossLink "Object/aabb:property"}}aabb{{/crossLink}}
+ properties provide AABBs that dynamically include the AABB of all contained Meshes, except those Meshes that have
+ their {{#crossLink "Mesh/collidable:property"}}collidable{{/crossLink}} properties set ````false````.
 
  Toggle that inclusion like so:
 
@@ -381,9 +410,10 @@
  mesh.collidable = false; // Exclude mesh from calculation of its Scene/Model boundary
  mesh.collidable = true; // Include mesh in calculation of its Scene/Model boundary
  ````
- Setting this false is useful when a Mesh represents some object, such as a control gizmo, that you don't want to consider as
- being a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated
- whenever the Mesh's boundary changes after a Transform or Geometry update.
+ Setting this false is useful when a Mesh represents some element, such as a control gizmo, that you don't want to
+ contribute to the  {{#crossLink "Scene"}}Scene{{/crossLink}} or parent {{#crossLink "Object"}}{{/crossLink}}'s AABB. It
+ also helps performance, since boundaries will not need dynamically re-calculated whenever the Mesh's boundary changes after
+ a {{#crossLink "Object/worldMatrix:property"}}{{/crossLink}} or {{#crossLink "Camera"}}{{/crossLink}} update.
 
  #### Examples
 
@@ -393,7 +423,7 @@
  ### Skyboxing
 
  A Mesh has a {{#crossLink "Mesh/stationary:property"}}{{/crossLink}} property
- that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.
+ that will cause it to never translate with respect to the viewpoint.
 
  This is useful for using Meshes as skyboxes, like this:
 
@@ -431,7 +461,7 @@
  * **Spherical** billboards are free to rotate their Meshes in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.
  * **Cylindrical** billboards rotate their Meshes towards the {{#crossLink "Camera"}}{{/crossLink}}, but only about the Y-axis.
 
- Note that {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on billboarded Meshes.
+ Note that scaling transformations to have no effect on billboarded Meshes.
 
  The example below shows a box that remains rotated directly towards the viewpoint, using spherical billboarding:
 

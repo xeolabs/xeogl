@@ -148,7 +148,7 @@
 
  #### GUIDs
 
- Lastly, note the optional globally unique identifiers (GUIDs) on the first two Objects. While regular IDs are unique within the Scene,
+ Note the optional globally unique identifiers (GUIDs) on the first two Objects. While regular IDs are unique within the Scene,
  GUIDs are unique throughout the entire universe, and are often used to identify elements in things like architectural models. We can
  find those Objects within their Scene using their GUIDs, like this:
 
@@ -230,9 +230,11 @@
 
  Let's follow the table top wherever it goes:
 
+ ````javascript
  tableTopMesh.on("boundary", function() {
     cameraFlight.flyTo(this.aabb); // "this" is the table top Mesh
  });
+ ````
 
  Or perhaps keep the whole table fitted to view whenever we transform any Objects or Meshes within the hierarchy, or add
  or remove Objects within the hierarchy:
