@@ -402,7 +402,7 @@
 
                 /**
                  * Fired whenever the mouse wheel is moved over the parent
-                 * {{#crossLink "Viewer"}}Viewer{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
                  * @event mousewheel
                  * @param delta {Number} The mouse wheel delta,
                  */
