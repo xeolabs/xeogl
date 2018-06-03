@@ -8,12 +8,23 @@
         type: "xeogl.Bookmarks",
 
         _init: function (cfg) {
+            this._cameraFlight = new xeogl.CameraFlightAnimation(this);
             this._bookmarks = {};
+            this.flyTo = cfg.flyTo;
             this.thumbnails = cfg.thumbnails;
             this.thumbnailSize = cfg.thumbnailSize;
         },
 
         _props: {
+
+            flyTo: {
+                set: function (value) {
+                    this._flyTo = value !== false;
+                },
+                get: function () {
+                    return this._flyTo;
+                }
+            },
 
             thumbnails: {
                 set: function (thumbnails) {
@@ -87,17 +98,36 @@
                 return;
             }
             var scene = this.scene;
-            scene.setVisible(scene.visibleEntityIds, false);
-            scene.setVisible(bookmark.visibleEntityIds, true);
-            scene.setGhosted(scene.ghostedEntityIds, false);
-            scene.setGhosted(bookmark.ghostedEntityIds, true);
-            scene.setHighlighted(scene.highlightedEntityIds, false);
-            scene.setHighlighted(bookmark.highlightedEntityIds, true);
-            scene.setSelected(scene.selectedEntityIds, false);
-            scene.setSelected(bookmark.selectedEntityIds, true);
-            scene.camera.eye = bookmark.camera.eye;
-            scene.camera.look = bookmark.camera.look;
-            scene.camera.up = bookmark.camera.up;
+
+            if (this._flyTo) {
+                this._cameraFlight.flyTo({
+                    eye: bookmark.camera.eye,
+                    look: bookmark.camera.look,
+                    up: bookmark.camera.up
+                }, function () {
+                    scene.setVisible(scene.visibleEntityIds, false);
+                    scene.setVisible(bookmark.visibleEntityIds, true);
+                    scene.setGhosted(scene.ghostedEntityIds, false);
+                    scene.setGhosted(bookmark.ghostedEntityIds, true);
+                    scene.setHighlighted(scene.highlightedEntityIds, false);
+                    scene.setHighlighted(bookmark.highlightedEntityIds, true);
+                    scene.setSelected(scene.selectedEntityIds, false);
+                    scene.setSelected(bookmark.selectedEntityIds, true);
+                });
+            } else {
+                scene.setVisible(scene.visibleEntityIds, false);
+                scene.setVisible(bookmark.visibleEntityIds, true);
+                scene.setGhosted(scene.ghostedEntityIds, false);
+                scene.setGhosted(bookmark.ghostedEntityIds, true);
+                scene.setHighlighted(scene.highlightedEntityIds, false);
+                scene.setHighlighted(bookmark.highlightedEntityIds, true);
+                scene.setSelected(scene.selectedEntityIds, false);
+                scene.setSelected(bookmark.selectedEntityIds, true);
+
+                scene.camera.eye = bookmark.camera.eye;
+                scene.camera.look = bookmark.camera.look;
+                scene.camera.up = bookmark.camera.up;
+            }
         },
 
         remove: function (id) {

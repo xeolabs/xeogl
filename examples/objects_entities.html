@@ -210,6 +210,7 @@
     new xeogl.CameraControl();
 
     var bookmarks = new xeogl.Bookmarks({
+        flyTo: true,
         thumbnails: true,
         thumbnailSize: [150, 150]
     });
@@ -221,6 +222,7 @@
         var a = document.createElement("a");
         p.appendChild(a);
         var img = document.createElement("img");
+        img.className = "thumbnail";
         a.appendChild(img);
         img.src = bookmark.thumbnail;
         a.href = "javascript:bookmarks.load('" + bookmark.id + "')";
