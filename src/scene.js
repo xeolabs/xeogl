@@ -1,5 +1,5 @@
 /**
- A Scene represents a 3D world.
+ The container for all 3D graphical objects and state in a xeogl scene.
 
  ## Usage
 
@@ -2253,6 +2253,31 @@
 
             return function (ids, visible) {
                 newValue = visible;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Culls or unculls a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         Each Object indicates its culled status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
+
+         @method setVisible
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param visible {Boolean} The new cull state.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed culled state, else false if all updates were redundant and not applied.
+         */
+        setCulled: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.culled != newValue);
+                object.culled = newValue;
+                return changed;
+            }
+
+            return function (ids, culled) {
+                newValue = culled;
                 return this.withObjects(ids, callback);
             };
         })(),
