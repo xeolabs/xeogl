@@ -19,10 +19,8 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
     this.gammaOutput = true; // Set true to format output as premultiplied gamma
 
     this.viewport = null;
-    this.lights = null;
     this.viewTransform = null;
     this.projTransform = null;
-    this.clips = null;
 
     this.indicesBufs = [];
 
@@ -75,6 +73,129 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         blendOneMinusSrcAlpha = value;
     };
 
+    this.clips = new (function () {
+
+        this.clips = [];
+
+        var hash = null;
+
+        this.getHash = function () {
+            if (hash) {
+                return hash;
+            }
+            var clips = this.clips;
+            if (clips.length === 0) {
+                return this.hash = ";";
+            }
+            var clip;
+            var hashParts = [];
+            for (var i = 0, len = clips.length; i < len; i++) {
+                clip = clips[i];
+                hashParts.push("cp");
+            }
+            hashParts.push(";");
+            hash = hashParts.join("");
+            return hash;
+        };
+
+        this.addClip = function (clip) {
+            this.clips.push(clip);
+            hash = null;
+        };
+
+        this.removeClip = function (clip) {
+            for (var i = 0, len = this.clips.length; i < len; i++) {
+                if (this.clips[i].id === clip.id) {
+                    this.clips.splice(i, 1);
+                    hash = null;
+                    return;
+                }
+            }
+        };
+    })();
+
+    this.lights = new (function () {
+
+        this.lights = [];
+        this.reflectionMaps = [];
+        this.lightMaps = [];
+
+        var hash = null;
+
+        this.getHash = function () {
+            if (hash) {
+                return hash;
+            }
+            var hashParts = [];
+            var lights = this.lights;
+            var light;
+            for (var i = 0, len = lights.length; i < len; i++) {
+                light = lights[i];
+                hashParts.push("/");
+                hashParts.push(light.type);
+                hashParts.push((light.space === "world") ? "w" : "v");
+                if (light.shadow) {
+                    hashParts.push("sh");
+                }
+            }
+            if (this.lightMaps.length > 0) {
+                hashParts.push("/lm");
+            }
+            if (this.reflectionMaps.length > 0) {
+                hashParts.push("/rm");
+            }
+            hashParts.push(";");
+            hash = hashParts.join("");
+            return hash;
+        };
+
+        this.addLight = function (light) {
+            this.lights.push(light);
+            hash = null;
+        };
+
+        this.removeLight = function (light) {
+            for (var i = 0, len = this.lights.length; i < len; i++) {
+                if (this.lights[i].id === light.id) {
+                    this.lights.splice(i, 1);
+                    hash = null;
+                    return;
+                }
+            }
+        };
+
+        this.addReflectionMap = function (reflectionMap) {
+            this.reflectionMaps.push(reflectionMap);
+            hash = null;
+        };
+
+        this.removeReflectionMap = function (reflectionMap) {
+            for (var i = 0, len = this.reflectionMaps.length; i < len; i++) {
+                if (this.reflectionMaps[i].id === reflectionMap.id) {
+                    this.reflectionMaps.splice(i, 1);
+                    hash = null;
+                    return;
+                }
+            }
+        };
+
+        this.addLightMap = function (lightMap) {
+            this.lightMaps.push(lightMap);
+            hash = null;
+        };
+
+        this.removeLightMap = function (lightMap) {
+            for (var i = 0, len = this.lightMaps.length; i < len; i++) {
+                if (this.lightMaps[i].id === lightMap.id) {
+                    this.lightMaps.splice(i, 1);
+                    hash = null;
+                    return;
+                }
+            }
+        };
+    })();
+
+
     this.webglRestored = function (gl) {
         // gl = gl;
         // this._programFactory.webglRestored(gl);
@@ -105,14 +226,14 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
     };
 
     function setAmbientLights(state) {
-        var lights = state.lights;
-        var light;
-        for (var i = 0, len = lights.length; i < len; i++) {
-            light = lights[i];
-            if (light.type === "ambient") {
-                ambient = light;
-            }
-        }
+        // var lights = state.lights;
+        // var light;
+        // for (var i = 0, len = lights.length; i < len; i++) {
+        //     light = lights[i];
+        //     if (light.type === "ambient") {
+        //         ambient = light;
+        //     }
+        // }
     }
 
     this.destroyObject = function (objectId) {

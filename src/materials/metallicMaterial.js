@@ -102,17 +102,17 @@
  var scene = hydrant.scene;
 
  scene.lights.lights = [
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [0.8, -0.6, -0.8],
          color: [0.8, 0.8, 0.8],
          space: "view"
      }),
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [-0.8, -0.4, -0.4],
          color: [0.4, 0.4, 0.5],
          space: "view"
      }),
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [0.2, -0.8, 0.8],
          color: [0.8, 0.8, 0.8],
          space: "view"
@@ -334,17 +334,6 @@
                 hash: null
             });
 
-            this._hashDirty = true;
-
-            this.on("dirty", function () {
-
-                // This MetallicMaterial is flagged dirty when a
-                // child component fires "dirty", which always
-                // means that a shader recompile will be needed.
-
-                this._hashDirty = true;
-            }, this);
-
             this.baseColor = cfg.baseColor;
             this.metallic = cfg.metallic;
             this.roughness = cfg.roughness;
@@ -353,50 +342,109 @@
             this.alpha = cfg.alpha;
 
             if (cfg.baseColorMap) {
-                this.baseColorMap = cfg.baseColorMap;
+                this._baseColorMap = this._checkComponent("xeogl.Texture", cfg.baseColorMap);
+                this._state.baseColorMap = this._baseColorMap ? this._baseColorMap._state : null;
             }
-
             if (cfg.metallicMap) {
-                this.metallicMap = cfg.metallicMap;
-            }
+                this._metallicMap = this._checkComponent("xeogl.Texture", cfg.metallicMap);
+                this._state.metallicMap = this._metallicMap ? this._metallicMap._state : null;
 
+            }
             if (cfg.roughnessMap) {
-                this.roughnessMap = cfg.roughnessMap;
+                this._roughnessMap = this._checkComponent("xeogl.Texture", cfg.roughnessMap);
+                this._state.roughnessMap = this._roughnessMap ? this._roughnessMap._state : null;
             }
-
             if (cfg.metallicRoughnessMap) {
-                this.metallicRoughnessMap = cfg.metallicRoughnessMap;
+                this._metallicRoughnessMap = this._checkComponent("xeogl.Texture", cfg.metallicRoughnessMap);
+                this._state.metallicRoughnessMap = this._metallicRoughnessMap ? this._metallicRoughnessMap._state : null;
             }
-
             if (cfg.emissiveMap) {
-                this.emissiveMap = cfg.emissiveMap;
+                this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
+                this._state.emissiveMap = this._emissiveMap ? this._emissiveMap._state : null;
             }
-
             if (cfg.occlusionMap) {
-                this.occlusionMap = cfg.occlusionMap;
+                this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
+                this._state.occlusionMap = this._occlusionMap ? this._occlusionMap._state : null;
             }
-
             if (cfg.alphaMap) {
-                this.alphaMap = cfg.alphaMap;
+                this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
+                this._state.alphaMap = this._alphaMap ? this._alphaMap._state : null;
             }
-
             if (cfg.normalMap) {
-                this.normalMap = cfg.normalMap;
+                this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
+                this._state.normalMap = this._normalMap ? this._normalMap._state : null;
             }
 
             this.alphaMode = cfg.alphaMode;
             this.alphaCutoff = cfg.alphaCutoff;
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
-
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
+
+            this._makeHash();
+        },
+
+        _makeHash: function () {
+            var state = this._state;
+            var hash = ["/met"];
+            if (state.baseColorMap) {
+                hash.push("/bm");
+                if (state.baseColorMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+                hash.push("/" + state.baseColorMap.encoding);
+            }
+            if (state.metallicMap) {
+                hash.push("/mm");
+                if (state.metallicMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.roughnessMap) {
+                hash.push("/rm");
+                if (state.roughnessMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.metallicRoughnessMap) {
+                hash.push("/mrm");
+                if (state.metallicRoughnessMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.emissiveMap) {
+                hash.push("/em");
+                if (state.emissiveMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.occlusionMap) {
+                hash.push("/ocm");
+                if (state.occlusionMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.alphaMap) {
+                hash.push("/am");
+                if (state.alphaMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.normalMap) {
+                hash.push("/nm");
+                if (state.normalMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            hash.push(";");
+            state.hash = hash.join("");
         },
 
         _props: {
 
             /**
-             RGB diffuse color of this MetallicMaterial.
+             RGB diffuse color.
 
              Multiplies by the RGB components of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}.
 
@@ -405,32 +453,24 @@
              @type Float32Array
              */
             baseColor: {
-
                 set: function (value) {
-
                     var baseColor = this._state.baseColor;
-
                     if (!baseColor) {
                         baseColor = this._state.baseColor = new Float32Array(3);
-
                     } else if (value && baseColor[0] === value[0] && baseColor[1] === value[1] && baseColor[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         baseColor[0] = value[0];
                         baseColor[1] = value[1];
                         baseColor[2] = value[2];
-
                     } else {
                         baseColor[0] = 1;
                         baseColor[1] = 1;
                         baseColor[2] = 1;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.baseColor;
                 }
@@ -442,20 +482,14 @@
              The RGB components multiply by the {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property,
              while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
-
              @property baseColorMap
              @default undefined
              @type {Texture}
+             @final
              */
             baseColorMap: {
-
-                set: function (texture) {
-                    this._attachComponent("xeogl.Texture", "baseColorMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.baseColorMap;
+                    return this._baseColorMap;
                 }
             },
 
@@ -472,20 +506,14 @@
              @type Number
              */
             metallic: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 1.0;
-
                     if (this._state.metallic === value) {
                         return;
                     }
-
                     this._state.metallic = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.metallic;
                 }
@@ -496,18 +524,12 @@
 
              The *R* component multiplies by the {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} property.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
-
              @property metallicMap
              @default undefined
              @type {Texture}
+             @final
              */
             metallicMap: {
-
-                set: function (texture) {
-                    this._attachComponent("xeogl.Texture", "metallicMap", texture);
-                },
-
                 get: function () {
                     return this._attached.metallicMap;
                 }
@@ -525,20 +547,14 @@
              @type Number
              */
             roughness: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 1.0;
-
                     if (this._state.roughness === value) {
                         return;
                     }
-
                     this._state.roughness = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.roughness;
                 }
@@ -554,13 +570,9 @@
              @property roughnessMap
              @default undefined
              @type {Texture}
+             @final
              */
             roughnessMap: {
-
-                set: function (texture) {
-                    this._attachComponent("xeogl.Texture", "roughnessMap", texture);
-                },
-
                 get: function () {
                     return this._attached.roughnessMap;
                 }
@@ -577,13 +589,9 @@
              @property metallicRoughnessMap
              @default undefined
              @type {Texture}
+             @final
              */
             metallicRoughnessMap: {
-
-                set: function (texture) {
-                    this._attachComponent("xeogl.Texture", "metallicRoughnessMap", texture);
-                },
-
                 get: function () {
                     return this._attached.metallicRoughnessMap;
                 }
@@ -597,118 +605,79 @@
              @type Number
              */
             specularF0: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 0.0;
-
                     if (this._state.specularF0 === value) {
                         return;
                     }
-
                     this._state.specularF0 = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.specularF0;
                 }
             },
 
             /**
-             RGB emissive color of this MetallicMaterial.
+             RGB emissive color.
 
              Multiplies by {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}}.
+
              @property emissive
              @default [0.0, 0.0, 0.0]
              @type Float32Array
              */
             emissive: {
-
                 set: function (value) {
-
                     var emissive = this._state.emissive;
-
                     if (!emissive) {
                         emissive = this._state.emissive = new Float32Array(3);
-
                     } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         emissive[0] = value[0];
                         emissive[1] = value[1];
                         emissive[2] = value[2];
-
                     } else {
                         emissive[0] = 0;
                         emissive[1] = 0;
                         emissive[2] = 0;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.emissive;
                 }
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the emissive color of this MetallicMaterial.
+             RGB emissive map.
 
-             Multiplies by the {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}} property.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+             Multiplies by {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}}.
 
              @property emissiveMap
              @default undefined
              @type {Texture}
+             @final
              */
             emissiveMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}} property changes.
-
-                     @event emissiveMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "emissiveMap", texture);
-                },
-
                 get: function () {
                     return this._attached.emissiveMap;
                 }
             },
 
             /**
-             RGB ambient occlusion {{#crossLink "Texture"}}{{/crossLink}} attached to this MetallicMaterial.
+             RGB ambient occlusion map.
 
              Within objectRenderers, multiplies by the specular and diffuse light reflected by surfaces.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
              @property occlusionMap
              @default undefined
              @type {Texture}
+             @final
              */
             occlusionMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/occlusionMap:property"}}{{/crossLink}} property changes.
-
-                     @event occlusionMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "occlusionMap", texture);
-                },
-
                 get: function () {
                     return this._attached.occlusionMap;
                 }
@@ -728,20 +697,14 @@
              @type Number
              */
             alpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 1.0;
-
                     if (this._state.alpha === value) {
                         return;
                     }
-
                     this._state.alpha = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.alpha;
                 }
@@ -752,25 +715,12 @@
 
              The *R* component multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
-
              @property alphaMap
              @default undefined
              @type {Texture}
+             @final
              */
             alphaMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} property changes.
-
-                     @event alphaMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
-                },
-
                 get: function () {
                     return this._attached.alphaMap;
                 }
@@ -784,20 +734,9 @@
              @property normalMap
              @default undefined
              @type {Texture}
+             @final
              */
             normalMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/normalMap:property"}}{{/crossLink}} property changes.
-
-                     @event normalMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "normalMap", texture);
-                },
-
                 get: function () {
                     return this._attached.normalMap;
                 }
@@ -823,22 +762,16 @@
                 var modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
-
                         alphaMode = alphaMode || "opaque";
-
                         var value = modes[alphaMode];
-
                         if (value === undefined) {
                             this.error("Unsupported value for 'alphaMode': " + alphaMode + " defaulting to 'opaque'");
                             value = "opaque";
                         }
-
                         if (this._state.alphaMode === value) {
                             return;
                         }
-
                         this._state.alphaMode = value;
-
                         this._renderer.imageDirty();
                     },
                     get: function () {
@@ -865,15 +798,12 @@
              */
             alphaCutoff: {
                 set: function (alphaCutoff) {
-
                     if (alphaCutoff === null || alphaCutoff === undefined) {
                         alphaCutoff = 0.5;
                     }
-
                     if (this._state.alphaCutoff === alphaCutoff) {
                         return;
                     }
-
                     this._state.alphaCutoff = alphaCutoff;
                 },
                 get: function () {
@@ -892,20 +822,14 @@
              @type Boolean
              */
             backfaces: {
-
                 set: function (value) {
-
                     value = !!value;
-
                     if (this._state.backfaces === value) {
                         return;
                     }
-
                     this._state.backfaces = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.backfaces;
                 }
@@ -922,20 +846,14 @@
              @type String
              */
             frontface: {
-
                 set: function (value) {
-
                     value = value !== "cw";
-
                     if (this._state.frontface === value) {
                         return;
                     }
-
                     this._state.frontface = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.frontface ? "ccw" : "cw";
                 }
@@ -949,14 +867,10 @@
              @type Number
              */
             lineWidth: {
-
                 set: function (value) {
-
                     this._state.lineWidth = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.lineWidth;
                 }
@@ -970,114 +884,14 @@
              @type Number
              */
             pointSize: {
-
                 set: function (value) {
-
                     this._state.pointSize = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.pointSize;
                 }
             }
-        },
-
-        _attachComponent: function (expectedType, name, component) {
-            component = this._attach({
-                name: name,
-                type: expectedType,
-                component: component,
-                sceneDefault: false,
-                on: {
-                    destroyed: {
-                        callback: function () {
-                            this._state[name] = null;
-                            this._hashDirty = true;
-                        },
-                        scope: this
-                    }
-                }
-            });
-            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
-            this._hashDirty = true;
-        },
-
-        _getState: function () {
-            if (this._hashDirty) {
-                this._makeHash();
-                this._hashDirty = false;
-            }
-            return this._state;
-        },
-
-        _makeHash: function () {
-
-            var state = this._state;
-
-            var hash = ["/met"];
-
-            if (state.baseColorMap) {
-                hash.push("/bm");
-                if (state.baseColorMap.matrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + state.baseColorMap.encoding);
-            }
-
-            if (state.metallicMap) {
-                hash.push("/mm");
-                if (state.metallicMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.roughnessMap) {
-                hash.push("/rm");
-                if (state.roughnessMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.metallicRoughnessMap) {
-                hash.push("/mrm");
-                if (state.metallicRoughnessMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.emissiveMap) {
-                hash.push("/em");
-                if (state.emissiveMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.occlusionMap) {
-                hash.push("/ocm");
-                if (state.occlusionMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.alphaMap) {
-                hash.push("/am");
-                if (state.alphaMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.normalMap) {
-                hash.push("/nm");
-                if (state.normalMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            hash.push(";");
-
-            state.hash = hash.join("");
         },
 
         _destroy: function () {

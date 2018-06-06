@@ -397,7 +397,7 @@
             src.push("varying vec4 vWorldPosition;");
         }
 
-        if (scene.lights.lightMap) {
+        if (scene.lights.lightMaps.length > 0) {
             src.push("varying    vec3 vWorldNormal;");
         }
 
@@ -551,7 +551,7 @@
         if (cfg.normals) {
 
             src.push("vec3 worldNormal = (modelNormalMatrix2 * localNormal).xyz; ");
-            if (scene.lights.lightMap) {
+            if (scene.lights.lightMaps.length > 0) {
                 src.push("vWorldNormal = worldNormal;");
             }
             src.push("vViewNormal = normalize((viewNormalMatrix2 * vec4(worldNormal, 1.0)).xyz);");
@@ -703,16 +703,16 @@
             // Define here so available globally to shader functions
             //--------------------------------------------------------------------------------
 
-            if (scene.lights.lightMap) {
+            if (scene.lights.lightMaps.length > 0) {
                 src.push("uniform samplerCube lightMap;");
                 src.push("uniform mat4 viewNormalMatrix;");
             }
 
-            if (scene.lights.reflectionMap) {
+            if (scene.lights.reflectionMaps.length > 0) {
                 src.push("uniform samplerCube reflectionMap;");
             }
 
-            if (scene.lights.lightMap || scene.lights.reflectionMap) {
+            if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
                 src.push("uniform mat4 viewMatrix;");
             }
 
@@ -765,18 +765,18 @@
 
             if (cfg.phongMaterial) {
 
-                if (scene.lights.lightMap || scene.lights.reflectionMap) {
+                if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
 
                     src.push("void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
 
-                    if (scene.lights.lightMap) {
-                        src.push("   vec3 irradiance = " + TEXTURE_DECODE_FUNCS[scene.lights.lightMap.encoding] + "(textureCube(lightMap, geometry.worldNormal)).rgb;");
+                    if (scene.lights.lightMaps.length > 0) {
+                        src.push("   vec3 irradiance = " + TEXTURE_DECODE_FUNCS[scene.lights.lightMaps[0].encoding] + "(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
                         src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                     }
 
-                    if (scene.lights.reflectionMap) {
+                    if (scene.lights.reflectionMaps.length > 0) {
                         src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
                         src.push("   vec3 radiance               = textureCube(reflectionMap, reflectVec).rgb * 0.2;");
                   //      src.push("   radiance *= PI;");
@@ -809,10 +809,10 @@
                 src.push("   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );");
                 src.push("}");
 
-                if (scene.lights.reflectionMap) {
+                if (scene.lights.reflectionMaps.length > 0) {
                     src.push("vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {");
                     src.push("   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);"); //TODO: a random factor - fix this
-                    src.push("   vec3 envMapColor = " + TEXTURE_DECODE_FUNCS[scene.lights.reflectionMap.encoding] + "(textureCube(reflectionMap, reflectVec, mipLevel)).rgb;");
+                    src.push("   vec3 envMapColor = " + TEXTURE_DECODE_FUNCS[scene.lights.reflectionMaps[0].encoding] + "(textureCube(reflectionMap, reflectVec, mipLevel)).rgb;");
                     src.push("  return envMapColor;");
                     src.push("}");
                 }
@@ -868,11 +868,11 @@
                 src.push("}");
 
 
-                if (scene.lights.lightMap || scene.lights.reflectionMap) {
+                if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
 
                     src.push("void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
 
-                    if (scene.lights.lightMap) {
+                    if (scene.lights.lightMaps.length > 0) {
                         src.push("   vec3 irradiance = sRGBToLinear(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
                         src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
@@ -880,7 +880,7 @@
                         //   src.push("   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);");
                     }
 
-                    if (scene.lights.reflectionMap) {
+                    if (scene.lights.reflectionMaps.length > 0) {
                         src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
                         src.push("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
                         src.push("   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);");
@@ -932,7 +932,7 @@
         }
 
         if (geometry.normals) {
-            if (scene.lights.lightMap) {
+            if (scene.lights.lightMaps.length > 0) {
                 src.push("varying vec3 vWorldNormal;");
             }
             src.push("varying vec3 vViewNormal;");
@@ -1395,7 +1395,7 @@
             src.push("occlusion *= texture2D(occlusionMap, textureCoord).r;");
         }
 
-        if (geometry.normals && ((lights.length > 0) || scene.lights.lightMap || scene.lights.reflectionMap)) {
+        if (geometry.normals && ((lights.length > 0) || scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
 
             //--------------------------------------------------------------------------------
             // SHADING
@@ -1524,7 +1524,7 @@
             }
 
             src.push("geometry.position      = vViewPosition;");
-            if (scene.lights.lightMap) {
+            if (scene.lights.lightMaps.length > 0) {
                 src.push("geometry.worldNormal   = normalize(vWorldNormal);");
             }
             src.push("geometry.viewNormal    = viewNormal;");
@@ -1532,11 +1532,11 @@
 
             // ENVIRONMENT AND REFLECTION MAP SHADING
 
-            if ((cfg.phongMaterial) && (scene.lights.lightMap || scene.lights.reflectionMap)) {
+            if ((cfg.phongMaterial) && (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
                 src.push("computePhongLightMapping(geometry, material, reflectedLight);");
             }
 
-            if ((cfg.specularMaterial || cfg.metallicMaterial) && (scene.lights.lightMap || scene.lights.reflectionMap)) {
+            if ((cfg.specularMaterial || cfg.metallicMaterial) && (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
                 src.push("computePBRLightMapping(geometry, material, reflectedLight);");
             }
 

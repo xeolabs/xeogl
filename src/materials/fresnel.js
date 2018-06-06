@@ -91,14 +91,10 @@
              @type Float32Array
              */
             edgeColor: {
-
                 set: function (value) {
-
                     this._state.edgeColor.set(value || [0.0, 0.0, 0.0]);
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeColor;
                 }
@@ -112,14 +108,10 @@
              @type Float32Array
              */
             centerColor: {
-
                 set: function (value) {
-
                     this._state.centerColor.set(value || [1.0, 1.0, 1.0]);
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.centerColor;
                 }
@@ -133,14 +125,10 @@
              * @type Number
              */
             edgeBias: {
-
                 set: function (value) {
-
                     this._state.edgeBias = value || 0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeBias;
                 }
@@ -154,14 +142,10 @@
              * @type Number
              */
             centerBias: {
-
                 set: function (value) {
-
                     this._state.centerBias = (value !== undefined && value !== null) ? value : 1;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.centerBias;
                 }
@@ -175,14 +159,10 @@
              * @type Number
              */
             power: {
-
                 set: function (value) {
-
                     this._state.power = (value !== undefined && value !== null) ? value : 1;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.power;
                 }

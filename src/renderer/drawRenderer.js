@@ -107,11 +107,11 @@
             }
         }
 
-        if (scene.lights.lightMap) {
+        if (scene.lights.lightMaps.length > 0) {
             this._uLightMap = "lightMap";
         }
 
-        if (scene.lights.reflectionMap) {
+        if (scene.lights.reflectionMaps.length > 0) {
             this._uReflectionMap = "reflectionMap";
         }
 
@@ -392,14 +392,14 @@
             }
         }
 
-        if (lights.lightMap && lights.lightMap.texture && this._uLightMap) {
-            program.bindTexture(this._uLightMap, lights.lightMap.texture, frame.textureUnit);
+        if (lights.lightMaps.length > 0 && lights.lightMaps[0].texture && this._uLightMap) {
+            program.bindTexture(this._uLightMap, lights.lightMaps[0].texture, frame.textureUnit);
             frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
             frame.bindTexture++;
         }
 
-        if (lights.reflectionMap && lights.reflectionMap.texture && this._uReflectionMap) {
-            program.bindTexture(this._uReflectionMap, lights.reflectionMap.texture, frame.textureUnit);
+        if (lights.reflectionMaps.length > 0 && lights.reflectionMaps[0].texture && this._uReflectionMap) {
+            program.bindTexture(this._uReflectionMap, lights.reflectionMaps[0].texture, frame.textureUnit);
             frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
             frame.bindTexture++;
         }

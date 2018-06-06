@@ -27,18 +27,13 @@
         type: "xeogl.OutlineMaterial",
 
         _init: function (cfg) {
-
             this._super(cfg);
-
             this._state = new xeogl.renderer.OutlineMaterial({
-
                 type: "OutlineMaterial",
-
                 color: null,
                 alpha: null,
                 width: null
             });
-
             this.color = cfg.color;
             this.alpha = cfg.alpha;
             this.width = cfg.width;
@@ -54,32 +49,24 @@
              @type Float32Array
              */
             color: {
-
                 set: function (value) {
-
                     var color = this._state.color;
-
                     if (!color) {
                         color = this._state.color = new Float32Array(3);
-
                     } else if (value && color[0] === value[0] && color[1] === value[1] && color[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         color[0] = value[0];
                         color[1] = value[1];
                         color[2] = value[2];
-
                     } else {
                         color[0] = 1.0;
                         color[1] = 0.2;
                         color[2] = 0.2;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.color;
                 }
@@ -95,20 +82,14 @@
              @type Number
              */
             alpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 1.0;
-
                     if (this._state.alpha === value) {
                         return;
                     }
-
                     this._state.alpha = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.alpha;
                 }
@@ -122,22 +103,14 @@
              @type Number
              */
             width: {
-
                 set: function (value) {
-
                     this._state.width = value || 4.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.width;
                 }
             }
-        },
-
-        _getState: function () {
-            return this._state;
         },
 
         _destroy: function () {

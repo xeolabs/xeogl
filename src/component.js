@@ -911,6 +911,19 @@
             return component;
         },
 
+        _checkComponent: function (expectedType, component) {
+            if (component.scene.id !== this.scene.id) {
+                this.error("Not in same scene: " + component.type + " " + xeogl._inQuotes(component.id));
+                return;
+            }
+            if (!component.isType(expectedType)) {
+                this.error("Expected a " + expectedType + " type or subtype: " + component.type + " " + xeogl._inQuotes(component.id));
+                return;
+            }
+            return component;
+        },
+
+
         /**
          * Convenience method for creating a Component within this Component's {{#crossLink "Scene"}}{{/crossLink}}.
          *
@@ -1094,6 +1107,17 @@
          * @protected
          */
         _destroy: function () {
+            // Memory leak avoidance
+            this._attached = {};
+            this._attachments = null;
+            this._handleMap = null;
+            this._handleEvents = null;
+            this._eventSubs = null;
+            this._events = null;
+            this._eventCallDepth = 0;
+            this._adoptees = null;
+            this._updateScheduled = false;
+
         }
     });
 })();

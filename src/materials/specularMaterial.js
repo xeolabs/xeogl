@@ -24,11 +24,11 @@
 
  | Property | Type | Range | Default Value | Space | Description |
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
- |  {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse color of the material. |
- |  {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular color of the material. |
+ | {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse color of the material. |
+ | {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular color of the material. |
  | {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The glossiness the material. |
  | {{#crossLink "SpecularMaterial/specularF0:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specularF0 of the material surface. |
- |  {{#crossLink "SpecularMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
+ | {{#crossLink "SpecularMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
  | {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
  | {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
@@ -347,35 +347,43 @@
             this.alpha = cfg.alpha;
 
             if (cfg.diffuseMap) {
-                this.diffuseMap = cfg.diffuseMap;
+                this._diffuseMap = this._checkComponent("xeogl.Texture", cfg.diffuseMap);
+                this._state.diffuseMap = this._diffuseMap ? this._diffuseMap._state : null;
             }
 
             if (cfg.emissiveMap) {
-                this.emissiveMap = cfg.emissiveMap;
+                this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
+                this._state.emissiveMap = this._emissiveMap ? this._emissiveMap._state : null;
             }
 
             if (cfg.specularMap) {
-                this.specularMap = cfg.specularMap;
+                this._specularMap = this._checkComponent("xeogl.Texture", cfg.specularMap);
+                this._state.specularMap = this._specularMap ? this._specularMap._state : null;
             }
 
             if (cfg.glossinessMap) {
-                this.glossinessMap = cfg.glossinessMap;
+                this._glossinessMap = this._checkComponent("xeogl.Texture", cfg.glossinessMap);
+                this._state.glossinessMap = this._glossinessMap ? this._glossinessMap._state : null;
             }
 
             if (cfg.specularGlossinessMap) {
-                this.specularGlossinessMap = cfg.specularGlossinessMap;
+                this._specularGlossinessMap = this._checkComponent("xeogl.Texture", cfg.specularGlossinessMap);
+                this._state.specularGlossinessMap = this._specularGlossinessMap ? this._specularGlossinessMap._state : null;
             }
 
             if (cfg.occlusionMap) {
-                this.occlusionMap = cfg.occlusionMap;
+                this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
+                this._state.occlusionMap = this._occlusionMap ? this._occlusionMap._state : null;
             }
 
             if (cfg.alphaMap) {
-                this.alphaMap = cfg.alphaMap;
+                this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
+                this._state.alphaMap = this._alphaMap ? this._alphaMap._state : null;
             }
 
             if (cfg.normalMap) {
-                this.normalMap = cfg.normalMap;
+                this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
+                this._state.normalMap = this._normalMap ? this._normalMap._state : null;
             }
 
             this.alphaMode = cfg.alphaMode;
@@ -385,6 +393,64 @@
 
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
+
+            this._makeHash();
+        },
+
+        _makeHash: function () {
+            var state = this._state;
+            var hash = ["/spe"];
+            if (state.diffuseMap) {
+                hash.push("/dm");
+                if (state.diffuseMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+                hash.push("/" + state.diffuseMap.encoding);
+            }
+            if (state.emissiveMap) {
+                hash.push("/em");
+                if (state.emissiveMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.glossinessMap) {
+                hash.push("/gm");
+                if (state.glossinessMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.specularMap) {
+                hash.push("/sm");
+                if (state.specularMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.specularGlossinessMap) {
+                hash.push("/sgm");
+                if (state.specularGlossinessMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.occlusionMap) {
+                hash.push("/ocm");
+                if (state.occlusionMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.normalMap) {
+                hash.push("/nm");
+                if (state.normalMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (state.alphaMap) {
+                hash.push("/opm");
+                if (state.alphaMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            hash.push(";");
+            state.hash = hash.join("");
         },
 
         _props: {
@@ -400,32 +466,24 @@
              @type Float32Array
              */
             diffuse: {
-
                 set: function (value) {
-
-                    var diffuse = this._state.diffuse;
-
+                    var diffuse = this._state.diffuse
                     if (!diffuse) {
                         diffuse = this._state.diffuse = new Float32Array(3);
-
                     } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         diffuse[0] = value[0];
                         diffuse[1] = value[1];
                         diffuse[2] = value[2];
-
                     } else {
                         diffuse[0] = 1;
                         diffuse[1] = 1;
                         diffuse[2] = 1;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.diffuse;
                 }
@@ -437,27 +495,14 @@
              The *RGB* components multiply by the {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} property,
              while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
-
              @property diffuseMap
              @default undefined
              @type {Texture}
+             @final
              */
             diffuseMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}} property changes.
-
-                     @event diffuseMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "diffuseMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.diffuseMap;
+                    return this._diffuseMap;
                 }
             },
 
@@ -472,32 +517,24 @@
              @type Float32Array
              */
             specular: {
-
                 set: function (value) {
-
                     var specular = this._state.specular;
-
                     if (!specular) {
                         specular = this._state.specular = new Float32Array(3);
-
                     } else if (value && specular[0] === value[0] && specular[1] === value[1] && specular[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         specular[0] = value[0];
                         specular[1] = value[1];
                         specular[2] = value[2];
-
                     } else {
                         specular[0] = 1;
                         specular[1] = 1;
                         specular[2] = 1;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.specular;
                 }
@@ -508,27 +545,14 @@
 
              Multiplies by the {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} property.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
-
              @property specularMap
              @default undefined
              @type {Texture}
+             @final
              */
             specularMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/specularGlossinessMap:property"}}{{/crossLink}} property changes.
-
-                     @event specularMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "specularMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.specularMap;
+                    return this._specularMap;
                 }
             },
 
@@ -538,27 +562,14 @@
              The *RGB* components multiply by the {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} property, while
              the *A* component multiplies by the {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}} property.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
-
              @property specularGlossinessMap
              @default undefined
              @type {Texture}
+             @final
              */
             specularGlossinessMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/specularGlossinessMap:property"}}{{/crossLink}} property changes.
-
-                     @event specularGlossinessMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "specularGlossinessMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.specularGlossinessMap;
+                    return this._specularGlossinessMap;
                 }
             },
 
@@ -573,22 +584,9 @@
              @property glossiness
              @default 1.0
              @type Number
+             @final
              */
             glossiness: {
-
-                set: function (value) {
-
-                    value = (value !== undefined && value !== null) ? value : 1.0;
-
-                    if (this._state.glossiness === value) {
-                        return;
-                    }
-
-                    this._state.glossiness = value;
-
-                    this._renderer.imageDirty();
-                },
-
                 get: function () {
                     return this._state.glossiness;
                 }
@@ -604,22 +602,11 @@
              @property glossinessMap
              @default undefined
              @type {Texture}
+             @final
              */
             glossinessMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/glossinessMap:property"}}{{/crossLink}} property changes.
-
-                     @event glossinessMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "glossinessMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.glossinessMap;
+                    return this._glossinessMap;
                 }
             },
 
@@ -631,20 +618,14 @@
              @type Number
              */
             specularF0: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 0.0;
-
                     if (this._state.specularF0 === value) {
                         return;
                     }
-
                     this._state.specularF0 = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.specularF0;
                 }
@@ -660,32 +641,24 @@
              @type Float32Array
              */
             emissive: {
-
                 set: function (value) {
-
                     var emissive = this._state.emissive;
-
                     if (!emissive) {
                         emissive = this._state.emissive = new Float32Array(3);
-
                     } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         emissive[0] = value[0];
                         emissive[1] = value[1];
                         emissive[2] = value[2];
-
                     } else {
                         emissive[0] = 0;
                         emissive[1] = 0;
                         emissive[2] = 0;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.emissive;
                 }
@@ -696,27 +669,14 @@
 
              Multiplies by the {{#crossLink "SpecularMaterial/emissive:property"}}{{/crossLink}} property.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
-
              @property emissiveMap
              @default undefined
              @type {Texture}
+             @final
              */
             emissiveMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/emissiveMap:property"}}{{/crossLink}} property changes.
-
-                     @event emissiveMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "emissiveMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.emissiveMap;
+                    return this._emissiveMap;
                 }
             },
 
@@ -733,20 +693,14 @@
              @type Number
              */
             alpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 1.0;
-
                     if (this._state.alpha === value) {
                         return;
                     }
-
                     this._state.alpha = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.alpha;
                 }
@@ -757,40 +711,28 @@
 
              The *R* component multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
-
              @property alphaMap
              @default undefined
              @type {Texture}
+             @final
              */
             alphaMap: {
-
-                set: function (texture) {
-                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.alphaMap;
+                    return this._alphaMap;
                 }
             },
 
             /**
              RGB tangent-space normal {{#crossLink "Texture"}}{{/crossLink}} attached to this SpecularMaterial.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
-
              @property normalMap
              @default undefined
              @type {Texture}
+             @final
              */
             normalMap: {
-
-                set: function (texture) {
-                    this._attachComponent("xeogl.Texture", "normalMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.normalMap;
+                    return this._normalMap;
                 }
             },
 
@@ -799,20 +741,14 @@
 
              Within objectRenderers, multiplies by the specular and diffuse light reflected by surfaces.
 
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
-
              @property occlusionMap
              @default undefined
              @type {Texture}
+             @final
              */
             occlusionMap: {
-
-                set: function (texture) {
-                    this._attachComponent("xeogl.Texture", "occlusionMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.occlusionMap;
+                    return this._occlusionMap;
                 }
             },
 
@@ -836,22 +772,16 @@
                 var modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
-
                         alphaMode = alphaMode || "opaque";
-
                         var value = modes[alphaMode];
-
                         if (value === undefined) {
                             this.error("Unsupported value for 'alphaMode': " + alphaMode + " defaulting to 'opaque'");
                             value = "opaque";
                         }
-
                         if (this._state.alphaMode === value) {
                             return;
                         }
-
                         this._state.alphaMode = value;
-
                         this._renderer.imageDirty();
                     },
                     get: function () {
@@ -878,15 +808,12 @@
              */
             alphaCutoff: {
                 set: function (alphaCutoff) {
-
                     if (alphaCutoff === null || alphaCutoff === undefined) {
                         alphaCutoff = 0.5;
                     }
-
                     if (this._state.alphaCutoff === alphaCutoff) {
                         return;
                     }
-
                     this._state.alphaCutoff = alphaCutoff;
                 },
                 get: function () {
@@ -906,20 +833,14 @@
              @type Boolean
              */
             backfaces: {
-
                 set: function (value) {
-
                     value = !!value;
-
                     if (this._state.backfaces === value) {
                         return;
                     }
-
                     this._state.backfaces = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.backfaces;
                 }
@@ -936,20 +857,14 @@
              @type String
              */
             frontface: {
-
                 set: function (value) {
-
                     value = value !== "cw";
-
                     if (this._state.frontface === value) {
                         return;
                     }
-
                     this._state.frontface = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.frontface ? "ccw" : "cw";
                 }
@@ -963,14 +878,10 @@
              @type Number
              */
             lineWidth: {
-
                 set: function (value) {
-
                     this._state.lineWidth = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.lineWidth;
                 }
@@ -984,114 +895,14 @@
              @type Number
              */
             pointSize: {
-
                 set: function (value) {
-
                     this._state.pointSize = value || 1;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.pointSize;
                 }
             }
-        },
-
-        _attachComponent: function (expectedType, name, component) {
-            component = this._attach({
-                name: name,
-                type: expectedType,
-                component: component,
-                sceneDefault: false,
-                on: {
-                    destroyed: {
-                        callback: function () {
-                            this._state[name] = null;
-                            this._hashDirty = true;
-                        },
-                        scope: this
-                    }
-                }
-            });
-            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
-            this._hashDirty = true;
-        },
-
-        _getState: function () {
-            if (this._hashDirty) {
-                this._makeHash();
-                this._hashDirty = false;
-            }
-            return this._state;
-        },
-
-        _makeHash: function () {
-
-            var state = this._state;
-
-            var hash = ["/spe"];
-
-            if (state.diffuseMap) {
-                hash.push("/dm");
-                if (state.diffuseMap.matrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + state.diffuseMap.encoding);
-            }
-
-            if (state.emissiveMap) {
-                hash.push("/em");
-                if (state.emissiveMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.glossinessMap) {
-                hash.push("/gm");
-                if (state.glossinessMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.specularMap) {
-                hash.push("/sm");
-                if (state.specularMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.specularGlossinessMap) {
-                hash.push("/sgm");
-                if (state.specularGlossinessMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.occlusionMap) {
-                hash.push("/ocm");
-                if (state.occlusionMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.normalMap) {
-                hash.push("/nm");
-                if (state.normalMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.alphaMap) {
-                hash.push("/opm");
-                if (state.alphaMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            hash.push(";");
-
-            state.hash = hash.join("");
         },
 
         _destroy: function () {

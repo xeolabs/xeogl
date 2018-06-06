@@ -244,19 +244,15 @@
             this._super(cfg);
 
             this._state = new xeogl.renderer.EmphasisMaterial({
-
                 type: "EmphasisMaterial",
-
                 edges: null,
                 edgeColor: null,
                 edgeAlpha: null,
                 edgeWidth: null,
-
                 vertices: null,
                 vertexColor: null,
                 vertexAlpha: null,
                 vertexSize: null,
-
                 fill: null,
                 fillColor: null,
                 fillAlpha: null
@@ -304,7 +300,6 @@
              @type Boolean
              */
             edges: {
-
                 set: function (value) {
                     value = value !== false;
                     if (this._state.edges === value) {
@@ -313,7 +308,6 @@
                     this._state.edges = value;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edges;
                 }
@@ -327,32 +321,24 @@
              @type Float32Array
              */
             edgeColor: {
-
                 set: function (value) {
-
                     var edgeColor = this._state.edgeColor;
-
                     if (!edgeColor) {
                         edgeColor = this._state.edgeColor = new Float32Array(3);
-
                     } else if (value && edgeColor[0] === value[0] && edgeColor[1] === value[1] && edgeColor[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         edgeColor[0] = value[0];
                         edgeColor[1] = value[1];
                         edgeColor[2] = value[2];
-
                     } else {
                         edgeColor[0] = 0.2;
                         edgeColor[1] = 0.2;
                         edgeColor[2] = 0.2;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeColor;
                 }
@@ -368,20 +354,14 @@
              @type Number
              */
             edgeAlpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 0.5;
-
                     if (this._state.edgeAlpha === value) {
                         return;
                     }
-
                     this._state.edgeAlpha = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeAlpha;
                 }
@@ -395,14 +375,10 @@
              @type Number
              */
             edgeWidth: {
-
                 set: function (value) {
-
                     this._state.edgeWidth = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeWidth;
                 }
@@ -416,7 +392,6 @@
              @type Boolean
              */
             vertices: {
-
                 set: function (value) {
                     value = !!value;
                     if (this._state.vertices === value) {
@@ -425,7 +400,6 @@
                     this._state.vertices = value;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.vertices;
                 }
@@ -439,7 +413,6 @@
              @type Float32Array
              */
             vertexColor: {
-
                 set: function (value) {
                     var vertexColor = this._state.vertexColor;
                     if (!vertexColor) {
@@ -458,7 +431,6 @@
                     }
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.vertexColor;
                 }
@@ -474,7 +446,6 @@
              @type Number
              */
             vertexAlpha: {
-
                 set: function (value) {
                     value = (value !== undefined && value !== null) ? value : 0.7;
                     if (this._state.vertexAlpha === value) {
@@ -483,7 +454,6 @@
                     this._state.vertexAlpha = value;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.vertexAlpha;
                 }
@@ -501,7 +471,6 @@
                     this._state.vertexSize = value || 4.0;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.vertexSize;
                 }
@@ -515,7 +484,6 @@
              @type Boolean
              */
             fill: {
-
                 set: function (value) {
                     value = value !== false;
                     if (this._state.fill === value) {
@@ -524,7 +492,6 @@
                     this._state.fill = value;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.fill;
                 }
@@ -538,32 +505,24 @@
              @type Float32Array
              */
             fillColor: {
-
                 set: function (value) {
-
                     var fillColor = this._state.fillColor;
-
                     if (!fillColor) {
                         fillColor = this._state.fillColor = new Float32Array(3);
-
                     } else if (value && fillColor[0] === value[0] && fillColor[1] === value[1] && fillColor[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         fillColor[0] = value[0];
                         fillColor[1] = value[1];
                         fillColor[2] = value[2];
-
                     } else {
                         fillColor[0] = 0.4;
                         fillColor[1] = 0.4;
                         fillColor[2] = 0.4;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.fillColor;
                 }
@@ -579,20 +538,14 @@
              @type Number
              */
             fillAlpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 0.2;
-
                     if (this._state.fillAlpha === value) {
                         return;
                     }
-
                     this._state.fillAlpha = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.fillAlpha;
                 }
@@ -618,7 +571,6 @@
              @type String
              */
             preset: {
-
                 set: function (value) {
                     value = value || "default";
                     if (this._preset === value) {
@@ -642,15 +594,10 @@
                     this.fillAlpha = preset.fillAlpha;
                     this._preset = value;
                 },
-
                 get: function () {
                     return this._preset;
                 }
             }
-        },
-
-        _getState: function () {
-            return this._state;
         },
 
         _destroy: function () {

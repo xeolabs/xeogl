@@ -208,7 +208,7 @@
  ### Ghosting
 
  Ghost a Mesh by setting its {{#crossLink "Mesh/ghosted:property"}}{{/crossLink}} property true. The Mesh's
- {{#crossLink "Mesh/ghostMaterial:property"}}{{/crossLink}} property holds the {{#crossLink "EmphasisMaterial"}}{{/crossLink}} 
+ {{#crossLink "Mesh/ghostMaterial:property"}}{{/crossLink}} property holds the {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
  that controls its appearance while ghosted.
 
  When we don't provide it with a EmphasisMaterial, it will automatically get the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
@@ -506,17 +506,17 @@
  @param [cfg.rotation=[0,0,0]] {Float32Array} The Mesh's local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The Mesh's local modelling transform matrix. Overrides the position, scale and rotation parameters.
 
- @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Mesh to define its shape. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.geometry] {Geometry} Defines shape. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
- @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Mesh. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.material] {Material} Defines normal rendered appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
- @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Mesh to specify its appearance when outlined. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.outlineMaterial] {OutlineMaterial} Defines appearance when outlined. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to specify its appearance when ghosted. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.ghostMaterial] Defines appearance when ghosted. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlightMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to specify its appearance when highlighted. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.highlightMaterial] Defines appearance when highlighted. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
- @param [cfg.selectedMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Mesh to define its appearance when selected. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
+ @param [cfg.selectedMaterial] Defines appearance when selected. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array} RGB colorize color, multiplies by the rendered fragment colors.
  @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
@@ -578,7 +578,8 @@
                 highlighted: false,
                 selected: false,
                 layer: null,
-                billboard: null,
+                billboard: this._checkBillboard(cfg.billboard),
+                stationary: !!cfg.stationary,
                 hash: ""
             });
 
@@ -596,13 +597,22 @@
             this._worldPositions = null;
             this._worldPositionsDirty = true;
 
-            this.geometry = cfg.geometry;
-            this.material = cfg.material;
-            this.transform = cfg.transform;
-            this.ghostMaterial = cfg.ghostMaterial;
-            this.outlineMaterial = cfg.outlineMaterial;
-            this.highlightMaterial = cfg.highlightMaterial;
-            this.selectedMaterial = cfg.selectedMaterial;
+            // TODO check in same Scene:
+
+            if (cfg.baseColorMap) {
+                this._baseColorMap = this._checkComponent("xeogl.Texture", cfg.baseColorMap);
+                this._state.baseColorMap = this._baseColorMap ? this._baseColorMap._state : null;
+            }
+
+            this._geometry = cfg.geometry ? this._checkComponent("xeogl.Geometry", cfg.geometry) : this.scene.geometry;
+            this._material = cfg.material ? this._checkComponent("xeogl.Material", cfg.material) : this.scene.material;
+            this._ghostMaterial = cfg.ghostMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.ghostMaterial) : this.scene.ghostMaterial;
+            this._outlineMaterial = cfg.outlineMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.outlineMaterial) : this.scene.outlineMaterial;
+            this._highlightMaterial = cfg.highlightMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.highlightMaterial) : this.scene.highlightMaterial;
+            this._selectedMaterial = cfg.selectedMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.selectedMaterial) : this.scene.selectedMaterial;
+
+            this._makeHash(); // Mesh is immutable, only make once
+            this._compile();
 
             // xeogl.Mesh overrides xeogl.Object's state properties, (eg. visible, ghosted etc)
             // and those redefined properties are being set here through the super constructor.
@@ -610,10 +620,68 @@
             this._super(cfg); // Call xeogl.Object._init()
         },
 
+        _checkBillboard: function (value) {
+            value = value || "none";
+            if (value !== "spherical" && value !== "cylindrical" && value !== "none") {
+                this.error("Unsupported value for 'billboard': " + value + " - accepted values are " +
+                    "'spherical', 'cylindrical' and 'none' - defaulting to 'none'.");
+                value = "none";
+            }
+            return value;
+        },
+
+        _makeHash: function () {
+            var hash = [];
+            var state = this._state;
+            if (state.stationary) {
+                hash.push("/s");
+            }
+            if (state.billboard === "none") {
+                hash.push("/n");
+            } else if (state.billboard === "spherical") {
+                hash.push("/s");
+            } else if (state.billboard === "cylindrical") {
+                hash.push("/c");
+            }
+            if (state.receiveShadow) {
+                hash.push("/rs");
+            }
+            hash.push(";");
+            this._state.hash = hash.join("");
+        },
+
+        _compile: function () {
+            if (this._objectId) { // Support recompile when global scene state changes
+                this._renderer.destroyObject(this._objectId);
+                this._objectId = null;
+            }
+            var result = this._renderer.createObject(this.id,
+                this._material._state,
+                this._ghostMaterial._state,
+                this._outlineMaterial._state,
+                this._highlightMaterial._state,
+                this._selectedMaterial._state,
+                this._geometry._getVertexBufs(),
+                this._geometry._state,
+                this._modelTransformState,
+                this._state);
+            if (this._loading) {
+                this._loading = false;
+                this.fire("loaded", true);
+            }
+            if (result.objectId) {
+                this._objectId = result.objectId;
+            } else if (result.errors) {
+                var errors = result.errors.join("\n");
+                this.error(errors);
+                this.fire("error", errors);
+            }
+        },
+
         _updateAABB: function () { // Overrides xeogl.Object._updateAABB
             if (this._aabbDirty) {
                 var math = xeogl.math;
-                var geometry = this._attached.geometry;
+                var geometry = this._geometry;
                 if (!this._aabb) {
                     this._aabb = math.AABB3();
                 }
@@ -628,7 +696,7 @@
 
         _updateOBB: function () { // Overrides xeogl.Object._updateOBB
             if (this._obbDirty) {
-                var geometry = this._attached.geometry;
+                var geometry = this._geometry;
                 if (!this._obb) {
                     this._obb = xeogl.math.OBB3();
                 }
@@ -652,7 +720,7 @@
             worldPositions: {
                 get: function () {
                     if (this._worldPositionsDirty) {
-                        var positions = this.geometry.positions;
+                        var positions = this._geometry.positions;
                         if (!this._worldPositions) {
                             this._worldPositions = new Float32Array(positions.length);
                         }
@@ -672,163 +740,76 @@
             /**
              Defines the shape of this Mesh.
 
-             This {{#crossLink "Geometry"}}{{/crossLink}} must be within the same {{#crossLink "Scene"}}{{/crossLink}}
-             as this Mesh and defaults to the {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}
-             (a simple box) when set to a null or undefined value.
-
-             Updates {{#crossLink "Mesh/boundary"}}{{/crossLink}},
-             {{#crossLink "Mesh/worldObb"}}{{/crossLink}} and
-             {{#crossLink "Mesh/center"}}{{/crossLink}}
-
              @property geometry
              @type Geometry
+             @final
              */
             geometry: {
-                set: function (value) {
-                    this._attach({
-                        name: "geometry",
-                        type: "xeogl.Component",  // HACK
-                        component: value,
-                        sceneDefault: true,
-                        on: {
-                            "boundary": {
-                                callback: this._setBoundaryDirty,
-                                scope: this
-                            },
-                            "destroyed": {
-                                callback: this._setBoundaryDirty,
-                                scope: this
-                            }
-                        }
-                    });
-                    this._setBoundaryDirty();
-                },
                 get: function () {
-                    return this._attached.geometry;
+                    return this._geometry;
                 }
             },
 
             /**
              Defines appearance when rendering normally, ie. when not ghosted, highlighted or selected.
 
-             This {{#crossLink "Material"}}{{/crossLink}} must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Mesh and defaults to the parent
-             {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/material:property"}}material{{/crossLink}} when set to
-             a null or undefined value.
-
              @property material
              @type Material
+             @final
              */
             material: {
-                set: function (value) {
-                    this._attach({
-                        name: "material",
-                        type: "xeogl.Material",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
                 get: function () {
-                    return this._attached.material;
+                    return this._material;
                 }
             },
 
             /**
              Defines surface appearance when ghosted.
 
-             This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
-             same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
-             {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}} when set to
-             a null or undefined value.
-
              @property ghostMaterial
              @type EmphasisMaterial
+             @final
              */
             ghostMaterial: {
-                set: function (value) {
-                    this._attach({
-                        name: "ghostMaterial",
-                        type: "xeogl.EmphasisMaterial",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
                 get: function () {
-                    return this._attached.ghostMaterial;
+                    return this._ghostMaterial;
                 }
             },
 
             /**
              Defines surface appearance when highlighted.
 
-             This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
-             same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
-             {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}} when set to
-             a null or undefined value.
-
              @property highlightMaterial
              @type EmphasisMaterial
+             @final
              */
             highlightMaterial: {
-                set: function (value) {
-                    this._attach({
-                        name: "highlightMaterial",
-                        type: "xeogl.EmphasisMaterial",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
                 get: function () {
-                    return this._attached.highlightMaterial;
+                    return this._highlightMaterial;
                 }
             },
 
             /**
              Defines surface appearance when selected.
 
-             This {{#crossLink "EmphasisMaterial"}}{{/crossLink}} must be within the
-             same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Mesh, and defaults to the
-             {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}} when set to
-             a null or undefined value.
-
              @property selectedMaterial
              @type EmphasisMaterial
              */
             selectedMaterial: {
-                set: function (value) {
-                    this._attach({
-                        name: "selectedMaterial",
-                        type: "xeogl.EmphasisMaterial",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
                 get: function () {
-                    return this._attached.selectedMaterial;
+                    return this._selectedMaterial;
                 }
             },
 
             /**
              Defines surface appearance when outlined.
 
-             This {{#crossLink "OutlineMaterial"}}{{/crossLink}} must be within the
-             same {{#crossLink "Scene"}}{{/crossLink}} as this Mesh, and defaults to the
-             {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}} when set to
-             a null or undefined value.
-
              @property outlineMaterial
              @type OutlineMaterial
              */
             outlineMaterial: {
-                set: function (value) {
-                    this._attach({
-                        name: "outlineMaterial",
-                        type: "xeogl.OutlineMaterial",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
                 get: function () {
-                    return this._attached.outlineMaterial;
+                    return this._outlineMaterial;
                 }
             },
 
@@ -1049,12 +1030,12 @@
              */
             castShadow: {
                 set: function (value) {
-                    value = value !== false;
-                    if (value === this._state.castShadow) {
-                        return;
-                    }
-                    this._state.castShadow = value;
-                    this._renderer.imageDirty(); // Re-render in next shadow map generation pass
+                    // value = value !== false;
+                    // if (value === this._state.castShadow) {
+                    //     return;
+                    // }
+                    // this._state.castShadow = value;
+                    // this._renderer.imageDirty(); // Re-render in next shadow map generation pass
                 },
                 get: function () {
                     return this._state.castShadow;
@@ -1070,13 +1051,13 @@
              */
             receiveShadow: {
                 set: function (value) {
-                    value = value !== false;
-                    if (value === this._state.receiveShadow) {
-                        return;
-                    }
-                    this._state.receiveShadow = value;
-                    this._state.hash = value ? "/mod/rs;" : "/mod;";
-                    this.fire("dirty", this); // Now need to (re)compile objectRenderers to include/exclude shadow mapping
+                    // value = value !== false;
+                    // if (value === this._state.receiveShadow) {
+                    //     return;
+                    // }
+                    // this._state.receiveShadow = value;
+                    // this._state.hash = value ? "/mod/rs;" : "/mod;";
+                    // this.fire("dirty", this); // Now need to (re)compile objectRenderers to include/exclude shadow mapping
                 },
                 get: function () {
                     return this._state.receiveShadow;
@@ -1191,22 +1172,15 @@
             /**
              Indicates if the position is stationary.
 
-             Setting this true will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
+             When true, will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
              translations for this Mesh, while still allowing it to rotate. This is useful for skybox Meshes.
 
              @property stationary
              @default false
              @type Boolean
+             @final
              */
             stationary: {
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.stationary === value) {
-                        return;
-                    }
-                    this._state.stationary = value;
-                    this.fire("dirty", this);
-                },
                 get: function () {
                     return this._state.stationary;
                 }
@@ -1225,97 +1199,13 @@
              @property billboard
              @default "none"
              @type String
+             @final
              */
             billboard: {
-                set: function (value) {
-                    value = value || "none";
-                    if (value !== "spherical" && value !== "cylindrical" && value !== "none") {
-                        this.error("Unsupported value for 'billboard': " + value + " - accepted values are " +
-                            "'spherical', 'cylindrical' and 'none' - defaulting to 'none'.");
-                        value = "none";
-                    }
-                    if (this._state.billboard === value) {
-                        return;
-                    }
-                    this._state.billboard = value;
-                    this.fire("dirty", this);
-                },
                 get: function () {
                     return this._state.billboard;
                 }
             }
-        },
-
-        //----------------------------------------------------------------------------------------------------------
-        //
-        //----------------------------------------------------------------------------------------------------------
-
-        _valid: function () { // Returns true if there is enough on this Mesh to render something.
-            if (this.destroyed) {
-                return false;
-            }
-            var geometry = this._attached.geometry;
-            if (!geometry) {
-                return false;
-            }
-            if (!geometry.created) {
-                return false;
-            }
-            return true;
-        },
-
-        _compile: function () {
-            if (this._objectId) {
-                this._renderer.destroyObject(this._objectId);
-                this._objectId = null;
-            }
-            var material = this.material._getState();
-            var ghostMaterial = this.ghostMaterial._state;
-            var outlineMaterial = this.outlineMaterial._state;
-            var highlightMaterial = this.highlightMaterial._state;
-            var selectedMaterial = this.selectedMaterial._state;
-            var vertexBufs = this.geometry._getVertexBufs();
-            var geometry = this.geometry._state;
-            //var modelTransform = this.transform._state;
-            var modelTransform = this._modelTransformState;
-            var modes = this._getState();
-            var result = this._renderer.createObject(this.id, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
-            if (this._loading) {
-                this._loading = false;
-                this.fire("loaded", true);
-            }
-            if (result.objectId) {
-                this._objectId = result.objectId;
-            } else if (result.errors) {
-                var errors = result.errors.join("\n");
-                this.error(errors);
-                this.fire("error", errors);
-            }
-        },
-
-        _getState: function () {
-            this._makeHash();
-            return this._state;
-        },
-
-        _makeHash: function () {
-            var hash = [];
-            var state = this._state;
-            if (state.stationary) {
-                hash.push("/s");
-            }
-            if (state.billboard === "none") {
-                hash.push("/n");
-            } else if (state.billboard === "spherical") {
-                hash.push("/s");
-            } else if (state.billboard === "cylindrical") {
-                hash.push("/c");
-            }
-            if (state.receiveShadow) {
-                hash.push("/rs");
-            }
-            hash.push(";");
-            this._state.hash = hash.join("");
         },
 
         _destroy: function () {

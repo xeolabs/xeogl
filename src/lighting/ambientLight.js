@@ -82,13 +82,11 @@
         type: "xeogl.AmbientLight",
 
         _init: function (cfg) {
-
             this._state = {
                 type: "ambient",
                 color: xeogl.math.vec3([0.7, 0.7, 0.7]),
                 intensity: 1.0
             };
-
             this.color = cfg.color;
             this.intensity = cfg.intensity;
         },
@@ -98,29 +96,15 @@
             /**
              The color of this AmbientLight.
 
-             Fires an {{#crossLink "AmbientLight/color:event"}}{{/crossLink}} event on change.
-
              @property color
              @default [0.7, 0.7, 0.8]
              @type Float32Array
              */
             color: {
-
                 set: function (value) {
-
                     this._state.color.set(value ||  [ 0.7, 0.7, 0.8 ]);
-
                     this._renderer.setImageForceDirty();
-
-                    /**
-                     Fired whenever this AmbientLight's {{#crossLink "AmbientLight/color:property"}}{{/crossLink}} property changes.
-
-                     @event color
-                     @param value The property's new value
-                     */
-                    this.fire("color", this._state.color);
                 },
-
                 get: function () {
                     return this._state.color;
                 }
@@ -129,28 +113,15 @@
             /**
              The intensity of this AmbientLight.
 
-             Fires a {{#crossLink "AmbientLight/intensity:event"}}{{/crossLink}} event on change.
-
              @property intensity
              @default 1.0
              @type Number
              */
             intensity: {
-
                 set: function (value) {
-
                     this._state.intensity = value !== undefined ? value :  1.0;
-
                     this._renderer.setImageForceDirty();
-
-                    /**
-                     * Fired whenever this AmbientLight's  {{#crossLink "AmbientLight/intensity:property"}}{{/crossLink}} property changes.
-                     * @event intensity
-                     * @param value The property's new value
-                     */
-                    this.fire("intensity", this._state.intensity);
                 },
-
                 get: function () {
                     return this._state.intensity;
                 }

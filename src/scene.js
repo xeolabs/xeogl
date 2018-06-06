@@ -151,17 +151,17 @@
  ````javascript
  var clips = scene.clips;
  clips.clips = [
-    new xeogl.Clip({  // Clip plane on negative diagonal
+ new xeogl.Clip({  // Clip plane on negative diagonal
         pos: [1.0, 1.0, 1.0],
         dir: [-1.0, -1.0, -1.0],
         active: true
     }),
-    new xeogl.Clip({ // Clip plane on positive diagonal
+ new xeogl.Clip({ // Clip plane on positive diagonal
         pos: [-1.0, -1.0, -1.0],
         dir: [1.0, 1.0, 1.0],
         active: true
     }),
-    //...
+ //...
  ];
  ````
 
@@ -541,6 +541,8 @@
              */
             this.meshes = {};
 
+            this._needRecompileMeshes = false;
+
             /**
              For each {{#crossLink "Component"}}{{/crossLink}} type, a map of
              IDs to {{#crossLink "Component"}}Components{{/crossLink}} instances of that type.
@@ -569,8 +571,42 @@
              */
             this.rootObjects = {};
 
-            // Contains xeogl.Meshes that need to be recompiled back into this._renderer
-            this._dirtyMeshes = {};
+            /**
+             The {{#crossLink "Clip"}}Clip{{/crossLink}} components in this Scene, mapped to their IDs.
+
+             @property clips
+             @final
+             @type {{String:Clip}}
+             */
+            this.clips = {};
+
+            /**
+             The {{#crossLink "PointLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+             {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "AmbientLight"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+
+             @property lights
+             @final
+             @type {{String:Object}}
+             */
+            this.lights = {};
+
+            /**
+             The {{#crossLink "LightMap"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+
+             @property lightMaps
+             @final
+             @type {{String:LightMap}}
+             */
+            this.lightMaps = {};
+
+            /**
+             The {{#crossLink "ReflectionMap"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+
+             @property reflectionMaps
+             @final
+             @type {{String:ReflectionMap}}
+             */
+            this.reflectionMaps = {};
 
             /**
              Manages the HTML5 canvas for this Scene.
@@ -588,15 +624,13 @@
             });
 
             // Redraw as canvas resized
-            this.canvas.on("boundary",
-                function () {
-                    self._renderer.imageDirty();
-                });
+            this.canvas.on("boundary", function () {
+                self._renderer.imageDirty();
+            });
 
-            this.canvas.on("webglContextFailed",
-                function () {
-                    alert("xeogl failed to find WebGL!");
-                });
+            this.canvas.on("webglContextFailed", function () {
+                alert("xeogl failed to find WebGL!");
+            });
 
             this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this.canvas.canvas, this.canvas.gl, {
                 transparent: transparent
@@ -653,34 +687,27 @@
                 id: "default.camera"
             });
 
-            this._clips = new xeogl.Clips(this, {
-                id: "default.clips"
+            // Default lights
+
+            new xeogl.DirLight(this, {
+                dir: [0.8, -0.6, -0.8],
+                color: [1.0, 1.0, 1.0],
+                intensity: 1.0,
+                space: "view"
             });
 
-            this._lights = new xeogl.Lights(this, {
-                id: "default.lights",
-                lights: [
-                    new xeogl.DirLight(this, {
-                        dir: [0.8, -0.6, -0.8],
-                        color: [1.0, 1.0, 1.0],
-                        intensity: 1.0,
-                        space: "view"
-                    }),
+            new xeogl.DirLight(this, {
+                dir: [-0.8, -0.4, -0.4],
+                color: [1.0, 1.0, 1.0],
+                intensity: 1.0,
+                space: "view"
+            });
 
-                    new xeogl.DirLight(this, {
-                        dir: [-0.8, -0.4, -0.4],
-                        color: [1.0, 1.0, 1.0],
-                        intensity: 1.0,
-                        space: "view"
-                    }),
-
-                    new xeogl.DirLight(this, {
-                        dir: [0.2, -0.8, 0.8],
-                        color: [0.6, 0.6, 0.6],
-                        intensity: 1.0,
-                        space: "view"
-                    })
-                ]
+            new xeogl.DirLight(this, {
+                dir: [0.2, -0.8, 0.8],
+                color: [0.6, 0.6, 0.6],
+                intensity: 1.0,
+                space: "view"
             });
 
             // Plug global components into renderer
@@ -688,42 +715,15 @@
             var viewport = this._viewport;
             var renderer = this._renderer;
             var camera = this._camera;
-            var clips = this._clips;
-            var lights = this._lights;
 
             renderer.viewport = viewport._state;
             renderer.projTransform = camera[camera.projection]._state;
             renderer.viewTransform = camera._state;
-            renderer.lights = lights._getState();
-            renderer.clips = clips._getState();
 
             camera.on("dirty", function () {
                 renderer.projTransform = camera.project._state;
                 renderer.viewTransform = camera._state;
                 renderer.imageDirty();
-            });
-
-            clips.on("dirty", function () { // TODO: Buffer so we're not doing for every light
-                renderer.clips = clips._getState();
-                for (var meshId in self.meshes) {
-                    if (self.meshes.hasOwnProperty(meshId)) {
-                        self._meshDirty(self.meshes[meshId]);
-                    }
-                }
-            });
-
-            lights.on("dirty", function () {
-                renderer.lights = lights._getState();
-                var updated = false;
-                for (var meshId in self.meshes) {
-                    if (self.meshes.hasOwnProperty(meshId)) {
-                        self._meshDirty(self.meshes[meshId]);
-                        updated = true;
-                    }
-                }
-                // if (!updated || self.loading > 0 || self.canvas.spinner.processes > 0) {
-                //     renderer.clear({}); // TODO: multiple passes
-                // }
             });
 
             this.ticksPerRender = cfg.ticksPerRender;
@@ -793,27 +793,45 @@
                 this._componentDestroyed(c);
             }, this);
 
-            if (c.isType("xeogl.Mesh")) {
-                c.on("dirty", this._meshDirty, this);
-                c.on("boundary", this._setBoundaryDirty, this);
-                this.meshes[c.id] = c;
-                xeogl.stats.components.meshes++;
-            }
+            if (c.isType("xeogl.Clip")) {
+                this._needRecompileMeshes = true;
+                this.clips[c.id] = c;
 
-            if (c.isType("xeogl.Model")) {
-                this.models[c.id] = c;
-                xeogl.stats.components.models++;
-            }
-            if (c.isType("xeogl.Object")) {
-                this.objects[c.id] = c;
-                if (c.guid) {
-                    this.guidObjects[c.id] = c;
-                    this._objectGUIDs = null; // To lazy-rebuild
+            } else if (c.isType("xeogl.PointLight") || c.isType("xeogl.DirLight") || c.isType("xeogl.SpotLight")) {
+                this._needRecompileMeshes = true;
+                this.lights[c.id] = c;
+
+            } else if (c.isType("xeogl.LightLight")) {
+                this._needRecompileMeshes = true;
+                this.lightMaps[c.id] = c;
+
+            } else if (c.isType("xeogl.ReflectionLight")) {
+                this._needRecompileMeshes = true;
+                this.reflectionMaps[c.id] = c;
+
+            } else {
+
+                if (c.isType("xeogl.Mesh")) {
+                    c.on("boundary", this._setBoundaryDirty, this);
+                    this.meshes[c.id] = c;
+                    xeogl.stats.components.meshes++;
                 }
-                if (!c.parent) {
-                    this.rootObjects[c.id] = c; // TODO: What about when a root Object is added as child to another?
+
+                if (c.isType("xeogl.Model")) {
+                    this.models[c.id] = c;
+                    xeogl.stats.components.models++;
                 }
-                xeogl.stats.components.objects++;
+                if (c.isType("xeogl.Object")) {
+                    this.objects[c.id] = c;
+                    if (c.guid) {
+                        this.guidObjects[c.id] = c;
+                        this._objectGUIDs = null; // To lazy-rebuild
+                    }
+                    if (!c.parent) {
+                        this.rootObjects[c.id] = c; // TODO: What about when a root Object is added as child to another?
+                    }
+                    xeogl.stats.components.objects++;
+                }
             }
         },
 
@@ -891,35 +909,49 @@
                 }
             }
 
-            if (c.isType("xeogl.Mesh")) {
-                xeogl.stats.components.meshes--;
-                delete this.meshes[c.id];
-                delete this._dirtyMeshes[c.id]; // Unschedule any pending recompilation
-                xeogl.stats.components.meshes--;
-            }
+            if (c.isType("xeogl.Clip")) {
+                delete this.clips[c.id];
+                this._needRecompileMeshes = true;
 
-            if (c.isType("xeogl.Object")) {
-                delete this.objects[c.id];
-                if (c.guid) {
-                    delete this.guidObjects[c.guid];
-                    this._objectGUIDs = null; // To lazy-rebuild
-                }
-                if (!c.parent) {
-                    delete this.rootObjects[c.id];
-                }
-                xeogl.stats.components.objects--;
-            }
+            } else if (c.isType("xeogl.PointLight") || c.isType("xeogl.DirLight") || c.isType("xeogl.SpotLight")) {
+                delete this.lights[c.id];
+                this._needRecompileMeshes = true;
 
-            if (c.isType("xeogl.Model")) {
-                delete this.models[c.id];
-                xeogl.stats.components.models--;
+            } else if (c.isType("xeogl.LightLight")) {
+                delete this.lightMaps[c.id];
+                this._needRecompileMeshes = true;
+
+            } else if (c.isType("xeogl.ReflectionLight")) {
+                delete this.reflectionMaps[c.id];
+                this._needRecompileMeshes = true;
+
+            } else {
+
+                if (c.isType("xeogl.Mesh")) {
+                    xeogl.stats.components.meshes--;
+                    delete this.meshes[c.id];
+                    xeogl.stats.components.meshes--;
+                }
+
+                if (c.isType("xeogl.Object")) {
+                    delete this.objects[c.id];
+                    if (c.guid) {
+                        delete this.guidObjects[c.guid];
+                        this._objectGUIDs = null; // To lazy-rebuild
+                    }
+                    if (!c.parent) {
+                        delete this.rootObjects[c.id];
+                    }
+                    xeogl.stats.components.objects--;
+                }
+
+                if (c.isType("xeogl.Model")) {
+                    delete this.models[c.id];
+                    xeogl.stats.components.models--;
+                }
             }
 
             //this.log("Destroyed " + c.type + " " + xeogl._inQuotes(c.id));
-        },
-
-        _meshDirty: function (mesh) {
-            this._dirtyMeshes[mesh.id] = mesh;
         },
 
         /**
@@ -948,19 +980,14 @@
                 // we have a special imageForceDirty flag that bypasses the suspension, which lights set when
                 // their properties are updated.
 
-                var imageForceDirty = this._renderer.imageForceDirty;
-
-                if (this.loading > 0 && !forceRender && !imageForceDirty) {
-                    this._compileDirtyMeshes(100);
-                    return;
+                if (this._needRecompileMeshes) {
+                    this._recompileMeshes();
+                    this._needRecompileMeshes = false;
                 }
 
-                if (this.canvas.spinner.processes > 0 && !imageForceDirty) {
-                    this._compileDirtyMeshes(100);
+                if (this.loading > 0) {
                     return;
                 }
-
-                this._compileDirtyMeshes(15);
 
                 renderEvent.sceneId = this.id;
 
@@ -1000,23 +1027,14 @@
             }
         })(),
 
-        _compileDirtyMeshes: function (timeBudget) {
-            var time1 = (new Date()).getTime();
-            var mesh;
-            for (var id in this._dirtyMeshes) {
-                if (this._dirtyMeshes.hasOwnProperty(id)) {
-                    mesh = this._dirtyMeshes[id];
-                    if (mesh._valid()) {
-                        mesh._compile();
-                        delete this._dirtyMeshes[id];
-                    }
-                    var time2 = (new Date()).getTime();
-                    if (time2 - time1 > timeBudget) {
-                        return;
-                    }
+        _recompileMeshes: function () {
+            for (var id in this.meshes) {
+                if (this.meshes.hasOwnProperty(id)) {
+                    this.meshes[id]._compile();
                 }
             }
         },
+
 
         _saveAmbientColor: function () {
             var canvas = this.canvas;
@@ -1262,11 +1280,7 @@
 
                     this._renderer.gammaInput = value;
 
-                    for (var meshId in this.meshes) { // Needs all shaders recompiled
-                        if (this.meshes.hasOwnProperty(meshId)) {
-                            this._meshDirty(this.meshes[meshId]);
-                        }
-                    }
+                    this._needRecompileMeshes = true;
                 },
 
                 get: function () {
@@ -1293,11 +1307,7 @@
 
                     this._renderer.gammaOutput = value;
 
-                    for (var meshId in this.meshes) { // Needs all shaders recompiled
-                        if (this.meshes.hasOwnProperty(meshId)) {
-                            this._meshDirty(this.meshes[meshId]);
-                        }
-                    }
+                    this._needRecompileMeshes = true;
                 },
 
                 get: function () {
@@ -1486,19 +1496,6 @@
             },
 
             /**
-             The {{#crossLink "Lights"}}Lights{{/crossLink}} belonging to this Scene.
-
-             @property lights
-             @final
-             @type Lights
-             */
-            lights: {
-                get: function () {
-                    return this._lights;
-                }
-            },
-
-            /**
              The {{#crossLink "Camera"}}Camera{{/crossLink}} belonging to this Scene.
 
              @property camera
@@ -1508,19 +1505,6 @@
             camera: {
                 get: function () {
                     return this._camera;
-                }
-            },
-
-            /**
-             The {{#crossLink "Clips"}}Clips{{/crossLink}} belonging to this Scene.
-
-             @property clips
-             @final
-             @type Clips
-             */
-            clips: {
-                get: function () {
-                    return this._clips;
                 }
             },
 
@@ -2170,7 +2154,6 @@
             }
             // Reinitialise defaults
             this._initDefaults();
-            this._dirtyMeshes = {};
         },
 
         /**
@@ -2315,6 +2298,35 @@
         })(),
 
         /**
+         Shows or hides an outline around a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         Each Object indicates its outlined status in its {{#crossLink "Object/outlined:property"}}{{/crossLink}} property.
+
+         Each outlined Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/outlinedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is assigned a value.
+
+         @method setOutlined
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param outlined {Float32Array} Whether to show or hide the outline.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed outlined state, else false if all updates were redundant and not applied.
+         */
+        setOutlined: (function () {
+            // var newValue;
+            //
+            // function callback(object) {
+            //     var changed = (object.outlined != newValue);
+            //     object.outlined = newValue;
+            //     return changed;
+            // }
+            //
+            // return function (ids, outlined) {
+            //     newValue = outlined;
+            //     return this.withObjects(ids, callback);
+            // };
+        })(),
+
+        /**
          Colorizes a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          @method setColorize
@@ -2388,7 +2400,40 @@
         },
 
         _destroy: function () {
+
             this.clear();
+
+            this.canvas.gl = null;
+
+            // Memory leak prevention
+            this.models = null;
+            this.objects = null;
+            this.guidObjects = null;
+            this.entityTypes = null;
+            this.entities = null;
+            this.visibleEntities = null;
+            this.ghostedEntities = null;
+            this.highlightedEntities = null;
+            this.selectedEntities = null;
+            this.clips = null;
+            this.lights = null;
+            this.lightMaps = null;
+            this.reflectionMaps = null;
+            this._objectGUIDs = null;
+            this._entityIds = null;
+            this._visibleEntityIds = null;
+            this._ghostedEntityIds = null;
+            this._highlightedEntityIds = null;
+            this._selectedEntityIds = null;
+            this.meshes = null;
+            this.types = null;
+            this.components = null;
+            this.rootObjects = null;
+            this.canvas = null;
+            this._renderer = null;
+            this.input = null;
+            this._viewport = null;
+            this._camera = null;
         }
     });
 
