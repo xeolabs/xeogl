@@ -86,7 +86,7 @@
  indices, if those are supplied.
  @param [cfg.quantized=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
  for reduced memory footprint and GPU bus usage.
- @param [cfg.combined=false] {Boolean} Combines positions, colors, normals and UVs into the same WebGL vertex buffers
+ @param [cfg.combined=true] {Boolean} Combines positions, colors, normals and UVs into the same WebGL vertex buffers
  with other Geometries, in order to reduce the number of buffer binds performed per frame.
  @param [cfg.ghostEdgeThreshold=2] {Number} When a {{#crossLink "Mesh"}}{{/crossLink}} renders this Geometry as wireframe,
  this indicates the threshold angle (in degrees) between the face normals of adjacent triangles below which the edge is discarded.
@@ -388,8 +388,8 @@
 
             this._state = new xeogl.renderer.Geometry({
 
-                combined: !!cfg.combined,
-                quantized: !!cfg.quantized,
+                combined: cfg.combined !== false,
+                quantized: cfg.quantized !== false,
                 autoVertexNormals: !!cfg.autoVertexNormals,
 
                 primitive: null, // WebGL enum
@@ -419,28 +419,24 @@
                     }
                     return self._edgesIndicesBuf;
                 },
-
                 getPickTrianglePositions: function () {
                     if (!self._pickTrianglePositionsBuf) {
                         self._buildPickTriangleVBOs();
                     }
                     return self._pickTrianglePositionsBuf;
                 },
-
                 getPickTriangleColors: function () {
                     if (!self._pickTriangleColorsBuf) {
                         self._buildPickTriangleVBOs();
                     }
                     return self._pickTriangleColorsBuf;
                 },
-
                 getPickVertexPositions: function () {
                     if (!self._pickVertexPositionsBuf) {
                         self._buildPickTriangleVBOs();
                     }
                     return self._pickVertexPositionsBuf;
                 },
-
                 getPickVertexColors: function () {
                     if (!self._pickVertexColorsBuf) {
                         self._buildPickTriangleVBOs();
@@ -679,7 +675,6 @@
              @type String
              */
             primitive: {
-
                 get: function () {
                     return this._state.primitiveName;
                 }
@@ -699,7 +694,6 @@
              @final
              */
             quantized: {
-
                 get: function () {
                     return this._state.quantized;
                 }
@@ -718,7 +712,6 @@
              @final
              */
             combined: {
-
                 get: function () {
                     return this._state.combined;
                 }
@@ -733,7 +726,6 @@
              @type Float32Array
              */
             positions: {
-
                 get: function () {
                     if (!this._state.positions) {
                         return;
@@ -783,7 +775,6 @@
              @type Float32Array
              */
             normals: {
-
                 get: function () {
                     if (!this._state.normals) {
                         return;
@@ -834,7 +825,6 @@
              @type Float32Array
              */
             uv: {
-
                 get: function () {
                     if (!this._state.uv) {
                         return;
@@ -883,7 +873,6 @@
              @type Float32Array
              */
             colors: {
-
                 get: function () {
                     return this._state.colors;
                 },
@@ -1028,48 +1017,36 @@
         },
 
         _destroy: function () {
-
             this.scene.canvas.off(this._webglContextRestored);
             var state = this._state;
-
             if (state.indicesBuf) {
                 state.indicesBuf.destroy();
             }
-
             if (this._edgesIndicesBuf) {
                 this._edgesIndicesBuf.destroy();
             }
-
             if (state.indicesBufCombined) {
                 state.indicesBufCombined.destroy();
             }
-
             if (this._pickTrianglePositionsBuf) {
                 this._pickTrianglePositionsBuf.destroy();
             }
-
             if (this._pickTriangleColorsBuf) {
                 this._pickTriangleColorsBuf.destroy();
             }
-
             if (this._pickVertexPositionsBuf) {
                 this._pickVertexPositionsBuf.destroy();
             }
-
             if (this._pickVertexColorsBuf) {
                 this._pickVertexColorsBuf.destroy();
             }
-
             if (this._localBoundary) {
                 this._localBoundary.destroy();
             }
-
             if (this._state.combined) {
                 this._sceneVertexBufs.removeGeometry(state);
             }
-
             state.destroy();
-
             memoryStats.meshes--;
         }
     });
@@ -1241,80 +1218,114 @@
 
         var math = xeogl.math;
 
-        /*
-         * Checks for duplicate vertices with hashmap.
-         * Duplicated vertices are removed
-         * and faces' vertices are updated.
-         */
-
-        // // Should return { positions:  newPositions, indices: newIndices };
-        // var mergeVertices = function (positions, indices) {
+        // function mergeVertices(positions, indices) {
         //
-        //     var verticesMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-        //     var unique = [], changes = [];
-        //
-        //     var v, key;
+        //     var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+        //     var uniquePositions = [];
+        //     var changes = [];
+        //     var vx;
+        //     var vy;
+        //     var vz;
+        //     var key;
         //     var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
         //     var precision = Math.pow(10, precisionPoints);
-        //     var i, il, face;
-        //     var indices, j, jl;
+        //     var i;
+        //     var len;
         //
-        //     for (i = 0, il = this.vertices.length; i < il; i++) {
+        //     for (i = 0, len = positions.length; i < len; i += 3) {
         //
-        //         v = this.vertices[i];
-        //         key = Math.round(v.x * precision) + '_' + Math.round(v.y * precision) + '_' + Math.round(v.z * precision);
+        //         vx = positions[i];
+        //         vy = positions[i + 1];
+        //         vz = positions[i + 2];
         //
-        //         if (verticesMap[key] === undefined) {
+        //         key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
         //
-        //             verticesMap[key] = i;
-        //             unique.push(this.vertices[i]);
-        //             changes[i] = unique.length - 1;
+        //         if (positionsMap[key] === undefined) {
+        //
+        //             positionsMap[key] = i / 3;
+        //
+        //             uniquePositions.push(vx);
+        //             uniquePositions.push(vy);
+        //             uniquePositions.push(vz);
+        //
+        //             changes[i / 3] = (uniquePositions.length - 3) / 3;
         //
         //         } else {
         //
-        //             //console.log('Duplicate vertex found. ', i, ' could be using ', verticesMap[key]);
-        //             changes[i] = changes[verticesMap[key]];
+        //             changes[i / 3] = changes[positionsMap[key]];
         //         }
         //     }
         //
-        //     // if faces are completely degenerate after merging vertices, we
-        //     // have to remove them from the geometry.
         //     var faceIndicesToRemove = [];
         //
-        //     for (i = 0, il = this.faces.length; i < il; i++) {
+        //     for (i = 0, len = indices.length; i < len; i += 3) {
         //
-        //         face = this.faces[i];
+        //         indices[i + 0] = changes[indices[i + 0]];
+        //         indices[i + 1] = changes[indices[i + 1]];
+        //         indices[i + 2] = changes[indices[i + 2]];
         //
-        //         face.a = changes[face.a];
-        //         face.b = changes[face.b];
-        //         face.c = changes[face.c];
+        //         var indicesDup = [indices[i + 0], indices[i + 1], indices[i + 2]];
         //
-        //         indices = [face.a, face.b, face.c];
-        //
-        //         // if any duplicate vertices are found in a Face3
-        //         // we have to remove the face as nothing can be saved
         //         for (var n = 0; n < 3; n++) {
-        //             if (indices[n] === indices[( n + 1 ) % 3]) {
+        //             if (indicesDup[n] === indicesDup[( n + 1 ) % 3]) {
         //                 faceIndicesToRemove.push(i);
         //                 break;
         //             }
         //         }
         //     }
         //
-        //     for (i = faceIndicesToRemove.length - 1; i >= 0; i--) {
-        //         var idx = faceIndicesToRemove[i];
-        //         this.faces.splice(idx, 1);
-        //         for (j = 0, jl = this.faceVertexUvs.length; j < jl; j++) {
-        //             this.faceVertexUvs[j].splice(idx, 1);
+        //     if (faceIndicesToRemove.length > 0) {
+        //         indices = Array.prototype.slice.call(indices); // splice is not available on typed arrays
+        //         for (i = faceIndicesToRemove.length - 1; i >= 0; i--) {
+        //             var idx = faceIndicesToRemove[i];
+        //             indices.splice(idx, 3);
         //         }
         //     }
         //
-        //     // Use unique set of vertices
-        //
-        //     var diff = this.vertices.length - unique.length;
-        //     this.vertices = unique;
-        //     return diff;
-        // };
+        //     return {
+        //         positions: uniquePositions,
+        //         indices: indices
+        //     };
+        // }
+
+        function mergeVertices(positions, indices) {
+
+            var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+            var indicesLookup = [];
+            var uniquePositions = [];
+            var indices2 = [];
+            var vx;
+            var vy;
+            var vz;
+            var key;
+            var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+            var precision = Math.pow(10, precisionPoints);
+            var i;
+            var len;
+
+            for (i = 0, len = positions.length; i < len; i += 3) {
+                vx = positions[i];
+                vy = positions[i + 1];
+                vz = positions[i + 2];
+                key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
+                if (positionsMap[key] === undefined) {
+                    positionsMap[key] = i / 3;
+                    uniquePositions.push(vx);
+                    uniquePositions.push(vy);
+                    uniquePositions.push(vz);
+                }
+                indicesLookup[i / 3] = positionsMap[key];
+            }
+
+            for (i = 0, len = indices.length; i < len; i++) {
+                indices2[i] = indicesLookup[indices[i]];
+            }
+
+            return {
+                positions: uniquePositions,
+                indices: indices2
+            };
+        }
 
         var faces = [];
         var numFaces = 0;
@@ -1392,6 +1403,11 @@
         return function (positions, indices, positionsDecodeMatrix, indicesOffset, ghostEdgeThreshold) {
 
             var math = xeogl.math;
+
+            // var merged = mergeVertices(positions, indices);
+            //
+            // positions = merged.positions;
+            // indices = merged.indices;
 
             buildFaces(positions, indices, positionsDecodeMatrix);
 
