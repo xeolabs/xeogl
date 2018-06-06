@@ -542,29 +542,6 @@
  var isYellowLegHighlighted = scene.highlightedEntities["yellowLeg"];
  ````
 
- We can also update or remove entity classes dynamically, for example:
-
- ````javascript
- var tableTop = scene.entities["tableTop"];
- tableTop.entityType = "workSurface";
- ````
-
- Now our table top Mesh can be found with its new class:
-
- ````javascript
- var workSurfaceEntities = scene.entityTypes["workSurface"];
- var tableTop = workSurfaceEntities["tableTop"];
- ````
-
- And we can remove its class altogether:
-
- ````javascript
- tableTop.entityType = null;
- ````
-
- That will remove this entity Mesh from the {{#crossLink "Scene"}}Scene{{/crossLink}}'s visibility and
- highlighted maps. Restoring a class will register it with those maps again, since the Mesh is currently visible and highlighted.
-
  * [Example](../../examples/#objects_entities)
 
  #### Limitations with state inheritance
@@ -666,7 +643,6 @@ xeogl.Object = xeogl.Component.extend({
         this._worldNormalMatrixDirty = true;
 
         this._guid = cfg.guid;
-        this.entityType = cfg.entityType;
 
         if (cfg.matrix) {
             this.matrix = cfg.matrix;
@@ -715,6 +691,23 @@ xeogl.Object = xeogl.Component.extend({
 
         if (cfg.parent) {
             cfg.parent.addChild(this);
+        }
+
+        this._entityType = cfg.entityType;
+        if (this._entityType) {
+            this.scene._entityTypeAssigned(this, this._entityType);
+            if (this._visible) {
+                this.scene._entityVisibilityUpdated(this, true);
+            }
+            if (this._ghosted) {
+                this.scene._entityGhostedUpdated(this, true);
+            }
+            if (this._selected) {
+                this.scene._entitySelectedUpdated(this, true);
+            }
+            if (this._highlighted) {
+                this.scene._entityHighlightedUpdated(this, true);
+            }
         }
     },
 
@@ -861,7 +854,7 @@ xeogl.Object = xeogl.Component.extend({
      Does nothing if already a child.
 
      @param {Object|String} object Instance or ID of the child to add.
-     @param [inheritStates=true] Indicates if the child should inherit state from this parent as it is added. State includes
+     @param [inheritStates=false] Indicates if the child should inherit state from this parent as it is added. State includes
      {{#crossLink "Object/visible:property"}}{{/crossLink}}, {{#crossLink "Object/culled:property"}}{{/crossLink}}, {{#crossLink "Object/pickable:property"}}{{/crossLink}},
      {{#crossLink "Object/clippable:property"}}{{/crossLink}}, {{#crossLink "Object/castShadow:property"}}{{/crossLink}}, {{#crossLink "Object/receiveShadow:property"}}{{/crossLink}},
      {{#crossLink "Object/outlined:property"}}{{/crossLink}}, {{#crossLink "Object/ghosted:property"}}{{/crossLink}}, {{#crossLink "Object/highlighted:property"}}{{/crossLink}},
@@ -905,7 +898,7 @@ xeogl.Object = xeogl.Component.extend({
         this._childMap[id] = object;
         this._childIDs = null;
         object._parent = this;
-        if (inheritStates !== false) {
+        if (!!inheritStates) {
             object.visible = this.visible;
             object.culled = this.culled;
             object.ghosted = this.ghosted;
@@ -1142,37 +1135,9 @@ xeogl.Object = xeogl.Component.extend({
          @property entityType
          @default null
          @type String
+         @final
          */
         entityType: {
-            set: function (newEntityType) {
-                if (this._entityType !== newEntityType) {
-                    var scene = this.scene;
-                    if (this._entityType) {
-                        scene._entityTypeRemoved(this, this._entityType);
-                    }
-                    this._entityType = newEntityType;
-                    if (newEntityType) {
-                        scene._entityTypeAssigned(this, this._entityType);
-                        if (this._visible) {
-                            scene._entityVisibilityUpdated(this, true);
-                        }
-                        if (this._ghosted) {
-                            scene._entityGhostedUpdated(this, true);
-                        }
-                        if (this._selected) {
-                            scene._entitySelectedUpdated(this, true);
-                        }
-                        if (this._highlighted) {
-                            scene._entityHighlightedUpdated(this, true);
-                        }
-                    } else {
-                        scene._entityVisibilityUpdated(this, false);
-                        scene._entityGhostedUpdated(this, false);
-                        scene._entitySelectedUpdated(this, false);
-                        scene._entityHighlightedUpdated(this, false);
-                    }
-                }
-            },
             get: function () {
                 return this._entityType;
             }
@@ -1913,26 +1878,18 @@ xeogl.Object = xeogl.Component.extend({
         }
         if (this._entityType) {
             var scene = this.scene;
-            var id = this.id;
-            var objectsOfType = scene.entityTypes[this._entityType];
-            if (objectsOfType) {
-                delete objectsOfType[id];
-                // TODO remove submap if now empty
+            scene._entityTypeRemoved(this, this._entityType);
+            if (this._visible) {
+                scene._entityVisibilityUpdated(this, false);
             }
-            if (this._entityType) {
-                scene._entityTypeRemoved(this, this._entityType);
-                if (this._visible) {
-                    scene._entityVisibilityUpdated(this, false);
-                }
-                if (this._ghosted) {
-                    scene._entityGhostedUpdated(this, false);
-                }
-                if (this._selected) {
-                    scene._entitySelectedUpdated(this, false);
-                }
-                if (this._highlighted) {
-                    scene._entityHighlightedUpdated(this, false);
-                }
+            if (this._ghosted) {
+                scene._entityGhostedUpdated(this, false);
+            }
+            if (this._selected) {
+                scene._entitySelectedUpdated(this, false);
+            }
+            if (this._highlighted) {
+                scene._entityHighlightedUpdated(this, false);
             }
         }
     }
