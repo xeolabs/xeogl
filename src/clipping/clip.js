@@ -93,6 +93,8 @@
             this.active = cfg.active;
             this.pos = cfg.pos;
             this.dir = cfg.dir;
+
+            this._renderer.clips.addClip(this._state);
         },
 
         _props: {
@@ -100,16 +102,12 @@
             /**
              Indicates whether this Clip is active or not.
 
-             Fires a {{#crossLink "Clip/active:event"}}{{/crossLink}} event on change.
-
              @property active
              @default true
              @type Boolean
              */
             active: {
-
                 set: function (value) {
-
                     this._state.active = value !== false;
 
                     /**
@@ -120,7 +118,6 @@
                      */
                     this.fire("active", this._state.active);
                 },
-
                 get: function () {
                     return this._state.active;
                 }
@@ -129,18 +126,13 @@
             /**
              The World-space position of this Clip's plane.
 
-             Fires a {{#crossLink "Clip/pos:event"}}{{/crossLink}} event on change.
-
              @property pos
              @default [0, 0, 0]
              @type Float32Array
              */
             pos: {
-
                 set: function (value) {
-
                     this._state.pos.set(value || [0, 0, 0]);
-
                     this._renderer.imageDirty();
 
                     /**
@@ -151,7 +143,6 @@
                      */
                     this.fire("pos", this._state.pos);
                 },
-
                 get: function () {
                     return this._state.pos;
                 }
@@ -163,18 +154,13 @@
              The vector originates at {{#crossLink "Clip/pos:property"}}{{/crossLink}}. Elements on the
              same side of the vector are clipped.
 
-             Fires a {{#crossLink "Clip/dir:event"}}{{/crossLink}} event on change.
-
              @property dir
              @default [0, 0, -1]
              @type Float32Array
              */
             dir: {
-
                 set: function (value) {
-
                     this._state.dir.set(value || [0, 0, -1]);
-
                     this._renderer.imageDirty();
 
                     /**
@@ -190,6 +176,10 @@
                     return this._state.dir;
                 }
             }
+        },
+
+        _destroy: function () {
+            this._renderer.clips.removeClip(this._state);
         }
     });
 })();
