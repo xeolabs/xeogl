@@ -22,8 +22,9 @@ module.exports = function (grunt) {
             engine: {
                 src: devScripts.engine,
 
+                dest: "/home/lindsay/viewer.js/src/lib/xeogl/xeogl.js"
                 //dest: "/home/lindsay/xeolabs/xeogl-3dxml-viewer/lib/xeogl/xeogl.js"
-                dest: 'build/<%= PROJECT_NAME %>.js'
+                //dest: 'build/<%= PROJECT_NAME %>.js'
             }
         },
 

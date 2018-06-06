@@ -86,6 +86,7 @@
             this._super(xeogl._apply(cfg, {
 
                 // combined: true,
+                quantized: false, // Quantized geometry is immutable
 
                 primitive: cfg.primitive || "lines",
                 indices: [
