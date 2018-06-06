@@ -2367,6 +2367,31 @@
         })(),
 
         /**
+         Sets a batch of {{#crossLink "Object"}}Objects{{/crossLink}} pickable or unpickable, specified by their IDs, GUIDs and/or entity types.
+
+         Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+         @method setPickable
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param pickable {Float32Array} Whether to ghost or un-ghost.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed pickable state, else false if all updates were redundant and not applied.
+         */
+        setPickable: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.pickable != newValue);
+                object.pickable = newValue;
+                return changed;
+            }
+
+            return function (ids, pickable) {
+                newValue = pickable;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+        
+        /**
          Iterates with a callback over {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          @method withObjects
