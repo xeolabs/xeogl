@@ -252,8 +252,7 @@
 
             var self = this;
 
-            this.canvas.addEventListener("webglcontextlost",
-                function () {
+            this.canvas.addEventListener("webglcontextlost", this._webglcontextlostListener = function () {
 
                     /**
                      * Fired whenever the WebGL context has been lost
@@ -263,8 +262,7 @@
                 },
                 false);
 
-            this.canvas.addEventListener("webglcontextrestored",
-                function () {
+            this.canvas.addEventListener("webglcontextrestored", this._webglcontextrestoredListener = function () {
                     self._initWebGL();
                     if (self.gl) {
 
@@ -483,7 +481,7 @@
             if (this.gl) {
                 if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping
                     this.gl.getExtension("OES_standard_derivatives");
-                  //  this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
+                    //  this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
                 }
             }
         },
@@ -686,6 +684,11 @@
 
         _destroy: function () {
             this.scene.off(this._tick);
+            // Memory leak avoidance
+            this.canvas.removeEventListener("webglcontextlost", this._webglcontextlostListener);
+            this.canvas.removeEventListener("webglcontextrestored", this._webglcontextrestoredListener);
+            this.canvas = null;
+            //this.gl = null;
         }
     });
 

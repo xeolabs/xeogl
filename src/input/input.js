@@ -103,6 +103,8 @@
 
             var self = this;
 
+            this._element = cfg.element;
+
             // True when ALT down
             this.altDown = false;
 
@@ -1403,8 +1405,25 @@
 
 
         _destroy: function () {
+            // Prevent memory leak when destroying canvas/WebGL context
             document.removeEventListener("keydown", this._keyDownListener);
             document.removeEventListener("keyup", this._keyUpListener);
+            this._element.removeEventListener("mouseenter", this._mouseEnterListener);
+            this._element.removeEventListener("mouseleave", this._mouseLeaveListener);
+            this._element.removeEventListener("mousedown", this._mouseDownListener);
+            document.removeEventListener("mouseup", this._mouseDownListener);
+            document.removeEventListener("dblclick", this._dblClickListener);
+            this._element.removeEventListener("mousemove", this._mouseMoveListener);
+            this._element.removeEventListener("wheel", this._mouseWheelListener);
+            if (window.OrientationChangeEvent) {
+                window.removeEventListener('orientationchange', this._orientationchangedListener);
+            }
+            if (window.DeviceMotionEvent) {
+                window.removeEventListener('devicemotion', this._deviceMotionListener);
+            }
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener("deviceorientation", this._deviceOrientListener);
+            }
         }
     });
 
