@@ -129,7 +129,7 @@
  @param [cfg.ghosted=false] {Boolean} When true, sets all the OBJModel's Meshes initially ghosted.
  @param [cfg.highlighted=false] {Boolean} When true, sets all the OBJModel's Meshes initially highlighted.
  @param [cfg.outline=false] {Boolean} When true, sets all the OBJModel's Meshes initially outlined.
- @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
+ @param [cfg.edgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this OBJModel.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this STLModel. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}

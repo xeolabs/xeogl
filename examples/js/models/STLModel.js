@@ -117,7 +117,9 @@
  | ghosted | Boolean |  | false | When true, ghosts all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
  | outlined | Boolean |  | false | When true, outlines all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
  | highlighted | Boolean |  | false | When true, highlights all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
- | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ | selected | Boolean |  | false | When true, renders all the model's Meshes as selected (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
+ | edges | Boolean |  | false | When true, emphasizes the edges on all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EdgeMaterial"}}{{/crossLink}}). |
+ | edgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  | splitMeshes | Boolean |  | true | When true, creates a separate {{#crossLink "Mesh"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
 
  ### Smoothing Normals
@@ -250,7 +252,7 @@
  @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Meshes initially ghosted.
  @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Meshes initially highlighted.
  @param [cfg.outline=false] {Boolean} When true, sets all the Model's Meshes initially outlined.
- @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
+ @param [cfg.edgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this STLModel.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this STLModel. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
@@ -276,7 +278,7 @@
             this._options = {
                 combineGeometry: cfg.combineGeometry !== false,
                 quantizeGeometry: cfg.quantizeGeometry !== false,
-                ghostEdgeThreshold: cfg.ghostEdgeThreshold,
+                edgeThreshold: cfg.edgeThreshold,
                 splitMeshes: cfg.splitMeshes,
                 smoothNormals: cfg.smoothNormals,
                 smoothNormalsAngleThreshold:cfg.smoothNormalsAngleThreshold
