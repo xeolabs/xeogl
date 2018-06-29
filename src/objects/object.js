@@ -1793,7 +1793,6 @@ xeogl.Object = xeogl.Component.extend({
 
     _destroy: function () {
         this._super();
-        this.removeChildren();
         if (this._parent) {
             this._parent.removeChild(this);
         }
@@ -1813,6 +1812,15 @@ xeogl.Object = xeogl.Component.extend({
                 scene._entityHighlightedUpdated(this, false);
             }
         }
+        var object;
+        for (var i = 0, len = this._childList.length; i < len; i++) {
+            object = this._childList[i];
+            object.destroy();
+        }
+        this._childList = [];
+        this._childMap = {};
+        this._childIDs = null;
+        this._setAABBDirty();
         this.scene._aabbDirty = true;
         this.scene._objectDestroyed(this);
     }
