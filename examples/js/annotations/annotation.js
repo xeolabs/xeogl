@@ -555,7 +555,7 @@ xeogl.Annotation = xeogl.Pin.extend({
         }
     },
 
-    _getJSON: function () {
+    getJSON: function () {
         var math = xeogl.math;
         var json = {
             primIndex: this.primIndex,

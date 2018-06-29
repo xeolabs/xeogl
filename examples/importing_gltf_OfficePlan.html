@@ -48,8 +48,7 @@
         id: "office",
         src: "models/gltf/office/scene.gltf",
         scale: [.01, .01, .01],
-        ghostEdgeThreshold: 20,
-        lambertMaterials: false
+        edgeThreshold: 20
     });
 
     var scene = model.scene;
@@ -72,7 +71,10 @@
         });
     });
 
-    var cameraControl = new xeogl.CameraControl();
+    var cameraControl = new xeogl.CameraControl({
+        panToPointer: true,
+        pivoting: true
+    });
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
@@ -96,28 +98,6 @@
         cameraFlight.flyTo(model);
     });
 
-    //-----------------------------------------------------------------------------------------------------
-    // Customize lighting
-    //-----------------------------------------------------------------------------------------------------
-
-    var lights = scene.lights;
-    //
-    lights.lights = [
-
-        new xeogl.DirLight({
-            dir: [0.4, -0.7, -.7],
-            color: [1.0, 1.0, 0.9],
-            intensity: 1.0,
-            space: "world"
-        }),
-
-        new xeogl.DirLight({
-            dir: [-0.5, -0.6, 0.5],
-            color: [0.9, 0.9, 1.0],
-            intensity: 1.0,
-            space: "world"
-        })
-    ];
 
     cameraControl.on("picked", function (e) {
         console.log(e.mesh.id)

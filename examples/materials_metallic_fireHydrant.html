@@ -9,7 +9,7 @@
 
     <script src="js/geometry/k3d.js"></script>
     <script src="js/skyboxes/skybox.js"></script>
-    <script src="js/geometry/objGeometry.js"></script>
+    <script src="js/geometry/objGeometryLoader.js"></script>
 
     <script src="js/libs/dat.gui.min.js"></script>
 
@@ -121,36 +121,31 @@
         src: "textures/diffuse/crossGridColorMap.jpg"
     });
 
+    xeogl.loadOBJGeometry(skybox.scene, "models/obj/fireHydrant/FireHydrantMesh.obj", function (geometry) {
 
-    var hydrant = new xeogl.Mesh({
+        var hydrant = new xeogl.Mesh({
 
-        geometry: new xeogl.OBJGeometry({
-            src: "models/obj/fireHydrant/FireHydrantMesh.obj",
-            combineVBOs: true
-        }),
+            geometry: geometry,
 
-        material: new xeogl.MetallicMaterial({
-            baseColor: [1, 1, 1],
-            metallic: 1.0,
-            roughness: 1.0,
-            baseColorMap: baseColorMap,
-            normalMap: normalMap,
-            roughnessMap: roughnessMap,
-            metallicMap: metallicMap,
-            //metallicRoughnessMap: metallicRoughnessMap,
-            occlusionMap: occlusionMap,
-            specularF0: 0.7
-        }),
+            material: new xeogl.MetallicMaterial({
+                baseColor: [1, 1, 1],
+                metallic: 1.0,
+                roughness: 1.0,
+                baseColorMap: baseColorMap,
+                normalMap: normalMap,
+                roughnessMap: roughnessMap,
+                metallicMap: metallicMap,
+                //metallicRoughnessMap: metallicRoughnessMap,
+                occlusionMap: occlusionMap,
+                specularF0: 0.7
+            }),
+            scale: [40, 40, 40]
+        });
 
-        scale: [40, 40, 40]
-    });
+        xeogl.scene.camera.orbitPitch(20); // Orbit camera a bit
+        xeogl.scene.camera.orbitYaw(300); // Orbit camera a bit
 
-    xeogl.scene.camera.orbitPitch(20); // Orbit camera a bit
-    xeogl.scene.camera.orbitYaw(300); // Orbit camera a bit
-
-    var spinning = true;
-
-    hydrant.geometry.on("loaded", function () { // Fit to view as soon as OBJ is loaded
+        var spinning = true;
 
         (new xeogl.CameraFlightAnimation()).jumpTo({
             aabb: hydrant.aabb,
@@ -166,175 +161,175 @@
                 //    hydrant.scene.camera.zoom(-.05);
             }
         });
-    });
 
-    var cameraControl = new xeogl.CameraControl(); // Allow user camera control
+        var cameraControl = new xeogl.CameraControl(); // Allow user camera control
 
-    //------------------ GUI ---------------------------------
+        //------------------ GUI ---------------------------------
 
-    var Menu = function () {
+        var Menu = function () {
 
-        this.message = "xeogl.MetallicMaterial";
+            this.message = "xeogl.MetallicMaterial";
 
-        var material = hydrant.material;
+            var material = hydrant.material;
 
-        this["baseColor"] = typedToJS(material.baseColor);
-        this["emissive"] = typedToJS(material.emissive);
-        this["metallic"] = material.metallic;
-        this["roughness"] = material.roughness;
-        this["specularF0"] = material.specularF0;
-        this["alpha"] = material.alpha;
+            this["baseColor"] = typedToJS(material.baseColor);
+            this["emissive"] = typedToJS(material.emissive);
+            this["metallic"] = material.metallic;
+            this["roughness"] = material.roughness;
+            this["specularF0"] = material.specularF0;
+            this["alpha"] = material.alpha;
 
 
-        this["baseColorMap"] = !!material.baseColorMap;
-        this["metallicMap"] = !!material.metallicMap;
-        this["roughnessMap"] = !!material.roughnessMap;
-        this["normalMap"] = !!material.normalMap;
-        this["occlusionMap"] = !!material.occlusionMap;
-        this["alphaMap"] = !!material.alphaMap;
-        this["ghosted"] = hydrant.ghosted;
-        this["lightMap"] = !!lights.lightMap;
-        this["reflectionMap"] = !!lights.reflectionMap;
-        this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
-        this["skybox"] = !!skybox.active;
-        this["spinning"] = true;
+            this["baseColorMap"] = !!material.baseColorMap;
+            this["metallicMap"] = !!material.metallicMap;
+            this["roughnessMap"] = !!material.roughnessMap;
+            this["normalMap"] = !!material.normalMap;
+            this["occlusionMap"] = !!material.occlusionMap;
+            this["alphaMap"] = !!material.alphaMap;
+            this["ghosted"] = hydrant.ghosted;
+            this["lightMap"] = !!lights.lightMap;
+            this["reflectionMap"] = !!lights.reflectionMap;
+            this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
+            this["skybox"] = !!skybox.active;
+            this["spinning"] = true;
 
-        this["scene.gammaOutput"] = hydrant.scene.gammaOutput;
-        this["scene.gammaFactor"] = hydrant.scene.gammaFactor;
+            this["scene.gammaOutput"] = hydrant.scene.gammaOutput;
+            this["scene.gammaFactor"] = hydrant.scene.gammaFactor;
 
-        var self = this;
+            var self = this;
 
-        // This is actually quite inefficient because it continually updates
-        // the scene graph, forcing frames to continually re-render.
-        // Your GPU's not going to like it, but it's just for a quick and dirty demo.
+            // This is actually quite inefficient because it continually updates
+            // the scene graph, forcing frames to continually re-render.
+            // Your GPU's not going to like it, but it's just for a quick and dirty demo.
 
-        var textured = true;
+            var textured = true;
 
-        var update = function () {
+            var update = function () {
 
-            material.baseColor = JSToTyped(self["baseColor"]);
-            material.emissive = JSToTyped(self["emissive"]);
-            material.metallic = self["metallic"];
-            material.roughness = self["roughness"];
-            material.specularF0 = self["specularF0"];
+                material.baseColor = JSToTyped(self["baseColor"]);
+                material.emissive = JSToTyped(self["emissive"]);
+                material.metallic = self["metallic"];
+                material.roughness = self["roughness"];
+                material.specularF0 = self["specularF0"];
 
-            if (self["baseColorMap"] !== !!material.baseColorMap) {
-                material.baseColorMap = self["baseColorMap"] ? baseColorMap : null;
-            }
-
-            if (self["metallicMap"] !== !!material.metallicMap) {
-                material.metallicMap = self["metallicMap"] ? metallicMap : null;
-            }
-
-            if (self["roughnessMap"] !== !!material.roughnessMap) {
-                material.roughnessMap = self["roughnessMap"] ? roughnessMap : null;
-            }
-
-            if (self["normalMap"] !== !!material.normalMap) {
-                material.normalMap = self["normalMap"] ? normalMap : null;
-            }
-
-            if (self["occlusionMap"] !== !!material.occlusionMap) {
-                material.occlusionMap = self["occlusionMap"] ? occlusionMap : null;
-            }
-
-            if (self["lightMap"] !== !!lights.lightMap) {
-                lights.lightMap = self["lightMap"] ? lightMap : null;
-            }
-
-            if (self["reflectionMap"] !== !!lights.reflectionMap) {
-                lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
-            }
-
-            if (self["ghosted"] !== !!hydrant.ghosted) {
-                hydrant.ghosted = self["ghosted"];
-            }
-
-            if (self["alphaMap"] !== !!material.alphaMap) {
-                if (self["alphaMap"]) {
-                    material.alphaMap = alphaMap;
-                    material.alphaMode = "mask";
-                    material.alphaCutoff = 0.1;
-                } else {
-                    material.alphaMap = null;
-                    material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
+                if (self["baseColorMap"] !== !!material.baseColorMap) {
+                    material.baseColorMap = self["baseColorMap"] ? baseColorMap : null;
                 }
-            }
 
-            material.alpha = self["alpha"];
+                if (self["metallicMap"] !== !!material.metallicMap) {
+                    material.metallicMap = self["metallicMap"] ? metallicMap : null;
+                }
 
-            if (material.alphaMap) {
-                material.alphaMode = "mask";
-            } else if (material.alpha < 1.0) {
-                material.alphaMode = "blend";
-            } else {
-                material.alphaMode = "opaque";
-            }
+                if (self["roughnessMap"] !== !!material.roughnessMap) {
+                    material.roughnessMap = self["roughnessMap"] ? roughnessMap : null;
+                }
 
-            if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
-                lights.lights = self["dirLights"] ? dirLights : [];
-            }
+                if (self["normalMap"] !== !!material.normalMap) {
+                    material.normalMap = self["normalMap"] ? normalMap : null;
+                }
 
-            if (self["skybox"] !== skybox.active) {
-                skybox.active = self["skybox"];
-            }
+                if (self["occlusionMap"] !== !!material.occlusionMap) {
+                    material.occlusionMap = self["occlusionMap"] ? occlusionMap : null;
+                }
 
-            if (self["spinning"] !== spinning) {
-                spinning = self["spinning"];
-            }
+                if (self["lightMap"] !== !!lights.lightMap) {
+                    lights.lightMap = self["lightMap"] ? lightMap : null;
+                }
 
-            hydrant.scene.gammaOutput = self["scene.gammaOutput"];
-            hydrant.scene.gammaFactor = self["scene.gammaFactor"];
+                if (self["reflectionMap"] !== !!lights.reflectionMap) {
+                    lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
+                }
 
-            requestAnimationFrame(update);
+                if (self["ghosted"] !== !!hydrant.ghosted) {
+                    hydrant.ghosted = self["ghosted"];
+                }
+
+                if (self["alphaMap"] !== !!material.alphaMap) {
+                    if (self["alphaMap"]) {
+                        material.alphaMap = alphaMap;
+                        material.alphaMode = "mask";
+                        material.alphaCutoff = 0.1;
+                    } else {
+                        material.alphaMap = null;
+                        material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
+                    }
+                }
+
+                material.alpha = self["alpha"];
+
+                if (material.alphaMap) {
+                    material.alphaMode = "mask";
+                } else if (material.alpha < 1.0) {
+                    material.alphaMode = "blend";
+                } else {
+                    material.alphaMode = "opaque";
+                }
+
+                if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
+                    lights.lights = self["dirLights"] ? dirLights : [];
+                }
+
+                if (self["skybox"] !== skybox.active) {
+                    skybox.active = self["skybox"];
+                }
+
+                if (self["spinning"] !== spinning) {
+                    spinning = self["spinning"];
+                }
+
+                hydrant.scene.gammaOutput = self["scene.gammaOutput"];
+                hydrant.scene.gammaFactor = self["scene.gammaFactor"];
+
+                requestAnimationFrame(update);
+            };
+
+            update();
         };
 
-        update();
-    };
+        var gui = new dat.GUI({autoPlace: false, top: 0, width: 300});
 
-    var gui = new dat.GUI({autoPlace: false, top: 0, width: 300});
+        document.getElementById('dat-gui-container').appendChild(gui.domElement);
 
-    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+        var menu = new Menu();
 
-    var menu = new Menu();
+        var materialFolder = gui.addFolder('MetallicMaterial');
+        materialFolder.addColor(menu, 'baseColor', [255, 255, 255]);
+        materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
+        materialFolder.add(menu, 'metallic', 0.0, 1.0);
+        materialFolder.add(menu, 'roughness', 0.0, 1.0);
+        materialFolder.add(menu, 'specularF0', 0.0, 1.0);
+        materialFolder.add(menu, 'alpha', 0.0, 1.0);
+        materialFolder.add(menu, 'baseColorMap', true);
+        materialFolder.add(menu, 'metallicMap', true);
+        materialFolder.add(menu, 'roughnessMap', true);
+        materialFolder.add(menu, 'normalMap', true);
+        materialFolder.add(menu, 'occlusionMap', true);
+        materialFolder.add(menu, 'alphaMap', true);
+        materialFolder.add(menu, 'ghosted', false);
+        materialFolder.open();
 
-    var materialFolder = gui.addFolder('MetallicMaterial');
-    materialFolder.addColor(menu, 'baseColor', [255, 255, 255]);
-    materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
-    materialFolder.add(menu, 'metallic', 0.0, 1.0);
-    materialFolder.add(menu, 'roughness', 0.0, 1.0);
-    materialFolder.add(menu, 'specularF0', 0.0, 1.0);
-    materialFolder.add(menu, 'alpha', 0.0, 1.0);
-    materialFolder.add(menu, 'baseColorMap', true);
-    materialFolder.add(menu, 'metallicMap', true);
-    materialFolder.add(menu, 'roughnessMap', true);
-    materialFolder.add(menu, 'normalMap', true);
-    materialFolder.add(menu, 'occlusionMap', true);
-    materialFolder.add(menu, 'alphaMap', true);
-    materialFolder.add(menu, 'ghosted', false);
-    materialFolder.open();
+        var lightsFolder = gui.addFolder('Lights');
+        lightsFolder.add(menu, 'lightMap', true);
+        lightsFolder.add(menu, 'reflectionMap', true);
+        lightsFolder.add(menu, 'dirLights', true);
+        lightsFolder.add(menu, 'skybox', true);
+        lightsFolder.add(menu, 'spinning', true);
+        lightsFolder.open();
 
-    var lightsFolder = gui.addFolder('Lights');
-    lightsFolder.add(menu, 'lightMap', true);
-    lightsFolder.add(menu, 'reflectionMap', true);
-    lightsFolder.add(menu, 'dirLights', true);
-    lightsFolder.add(menu, 'skybox', true);
-    lightsFolder.add(menu, 'spinning', true);
-    lightsFolder.open();
+        var gammaFolder = gui.addFolder('gamma');
+        gammaFolder.add(menu, 'scene.gammaOutput', true).listen();
+        gammaFolder.add(menu, 'scene.gammaFactor', 0.0, 3.0).listen();
+        gammaFolder.open();
 
-    var gammaFolder = gui.addFolder('gamma');
-    gammaFolder.add(menu, 'scene.gammaOutput', true).listen();
-    gammaFolder.add(menu, 'scene.gammaFactor', 0.0, 3.0).listen();
-    gammaFolder.open();
+        function typedToJS(arry) {
+            return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
+        }
 
-    function typedToJS(arry) {
-        return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
-    }
+        function JSToTyped(arry) {
+            return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
+        }
 
-    function JSToTyped(arry) {
-        return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
-    }
-
+    });
 </script>
 </body>
 </html>

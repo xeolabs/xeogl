@@ -19,26 +19,22 @@
 
 <script>
 
-    var geometry = new xeogl.TorusGeometry({
-        radius: 1.0,
-        tube: 0.3,
-        radialSegments: 120,
-        tubeSegments: 60
-    });
-
-    var material = new xeogl.MetallicMaterial({
-        baseColorMap: new xeogl.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
-        }),
-        roughnessMap: new xeogl.Texture({
-            src: "textures/roughness/goldRoughness.jpg",
-            encoding: "sRGB"
-        })
-    });
-
     var mesh = new xeogl.Mesh({
-        geometry: geometry,
-        material: material
+        geometry: new xeogl.TorusGeometry({
+            radius: 1.0,
+            tube: 0.3,
+            radialSegments: 120,
+            tubeSegments: 60
+        }),
+        material: new xeogl.MetallicMaterial({
+            baseColorMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            roughnessMap: new xeogl.Texture({
+                src: "textures/roughness/goldRoughness.jpg",
+                encoding: "sRGB"
+            })
+        })
     });
 
     mesh.scene.camera.eye = [0, 0, -4];

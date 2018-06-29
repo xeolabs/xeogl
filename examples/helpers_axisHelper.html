@@ -66,12 +66,11 @@
     });
 
     var scene = mesh.scene;
-    var camera = scene.camera;
 
     new xeogl.AxisHelper({
-        lookat: camera,
-        visible: true,
-        size: [200, 200]
+        camera: scene.camera,
+        size: [200, 200],
+        visible: true
     });
 
     new xeogl.CameraControl();

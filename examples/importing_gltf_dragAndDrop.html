@@ -10,6 +10,14 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
+    <style>
+        #drop_zone {
+            border: 5px solid blue;
+            width: 200px;
+            height: 100px;
+        }
+    </style>
+
 <body>
 
 <div id="info">
@@ -19,14 +27,16 @@
             target="_parent">model info</a>]</pre>
 </div>
 
+
+<div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+    <p>Drag one or more files to this Drop Zone ...</p>
+</div>
+
 <script>
 
     var model = new xeogl.GLTFModel({
         id: "gearbox",
-        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf",
-//        opacity: 0.5,
-        edges: true,
-        edgeThreshold: 20
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
 
     var camera = xeogl.scene.camera;

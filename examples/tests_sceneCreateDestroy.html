@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/buildableModel.js"></script>
+    <script src="js/models/testModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        canvas {
+            width: 150px;
+            height: 150px;
+            border: 2px solid white;
+        }
+    </style>
+
+<body>
+
+<div id="info">
+    <h1>robustness test: repeated Scene creation and deletion</h1>
+
+    <p><a href="javascript:startTest()">START</a></p>
+    <p><a href="javascript:stopTest()">STOP</a></p>
+    <pre id="log">
+    </pre>
+    <div id="myDiv0"></div>
+    <div id="myDiv1"></div>
+    <div id="myDiv2"></div>
+    <div id="myDiv3"></div>
+    <div id="myDiv4"></div>
+    <div id="myDiv5"></div>
+</div>
+<br>
+
+
+<script>
+
+    const NUM_SCENES = 6;
+    const INTERVAL = 500;
+    var scenes = [];
+    var interval;
+    var count = 0;
+    var i = 0;
+    var j = 0;
+    var testRuns = 0;
+
+    function createScene(idx) {
+        console.log("Creating scene and canvas in DIV " + idx);
+        var canvas = document.getElementById("myCanvas" + idx);
+        if (!canvas) {
+            var div = document.getElementById("myDiv" + idx);
+            canvas = document.createElement('canvas');
+            canvas.id = "myCanvas" + idx;
+            div.appendChild(canvas);
+        }
+        var scene = new xeogl.Scene({
+            canvas: "myCanvas" + idx
+        });
+        var mesh = new xeogl.Mesh(scene, {
+            geometry: new xeogl.TorusGeometry(scene, {
+                radius: 2.0,
+                tube: 0.6,
+                radialSegments: 32,
+                tubeSegments: 24,
+                arc: Math.PI * 2.0
+            }),
+            material: new xeogl.PhongMaterial(scene, {
+                ambient: [0.9, 0.3, 0.9],
+                shininess: 30,
+                diffuseMap: new xeogl.Texture(scene, {
+                    src: "textures/diffuse/uvGrid2.jpg"
+                })
+            })
+        });
+        scenes[idx] = scene;
+    }
+
+    function destroyScene(idx) {
+        console.log("Destroying scene and canvas " + idx);
+        var scene = scenes[idx];
+        if (scene) {
+            scene.destroy();
+            delete scenes[idx];
+            var canvas = document.getElementById("myCanvas" + idx);
+            canvas.parentNode.removeChild(canvas);
+        }
+    }
+
+    function startTest() {
+        console.log("Starting test with " + NUM_SCENES + " scenes");
+        console.log("New scene every  " + (INTERVAL / 1000) + " seconds");
+        i = 0;
+        j = 0;
+        interval = window.setInterval(function () {
+            console.log("-------------------------------------------------------------");
+            console.log("Iteration #" + count);
+            if (count > 4) {
+                destroyScene(j);
+            }
+            createScene(i);
+            if (++i >= NUM_SCENES) {
+                i = 0;
+            }
+            if (++j >= NUM_SCENES) {
+                j = 0;
+            }
+            count++;
+        }, INTERVAL);
+        testRuns++;
+    }
+
+    function stopTest() {
+        window.clearInterval(interval);
+    }
+
+
+    function logJSON(json) {
+        json.client.browser = json.client.browser.substring(0, 10) + "...";
+        document.getElementById("log").innerHTML = "xeogl.stats = " + JSON.stringify(json, null, 4);
+    }
+
+</script>
+</body>
+</html>

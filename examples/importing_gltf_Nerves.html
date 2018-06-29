@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/annotations/pin.js"></script>
+    <script src="js/annotations/annotation.js"></script>
+    <link href="js/annotations/annotation-style.css" rel="stylesheet"/>
+
+
+<body>
+
+<div id="info" style="padding-left: 15px;">
+    <h1><a href="../docs/classes/AnnotationStory.html"
+           target="_parent">AnnotationStory</a> demo
+    </h1>
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    // https://sketchfab.com/models/4829e2c6226b4c0b86a09c5304048c7a
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/nerves/scene.gltf",
+        entities: true,
+        edgeThreshold: 10
+    });
+
+    var scene = model.scene;
+
+    scene.gammaInput = true;
+    scene.gammaOutput = true;
+
+    scene.clearLights();
+
+    //    new xeogl.AmbientLight({
+    //        id: "ambientLight",
+    //        color: [1.0, 0.95, 0.95],
+    //        intensity: 1.0
+    //    });
+    //
+    new xeogl.DirLight({
+        id: "keyLight",
+        dir: [-0.4, -0.0, -1.0],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.3,
+        space: "view"
+    });
+    //
+    //    new xeogl.DirLight({
+    //        id: "fillLight",
+    //        dir: [0.5, 0.8, -0.4],
+    //        color: [0.4, 0.4, 1.0],
+    //        intensity: 0.4,
+    //        space: "view"
+    //    });
+    //
+    new xeogl.DirLight({
+        id: "rimLight",
+        dir: [0.3, 0.0, 0.5],
+        color: [0.9, 0.9, 1.0],
+        intensity: 1.5,
+        space: "view"
+    });
+
+    scene.gammaInput = false;
+    scene.gammaOutput = false;
+
+    var camera = scene.camera;
+
+    camera.eye = [0, 0, -3.0];
+    camera.look = [0, 0, 0];
+    camera.up = [0, 1, 0];
+
+    var spinning = true;
+
+    model.on("loaded", function () {
+        (new xeogl.CameraFlightAnimation()).flyTo(model);
+        scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                //    camera.orbitYaw(-0.7);
+            }
+        });
+
+
+        new xeogl.Annotation({
+            "primIndex": 10701,
+            "bary": [
+                0.39854,
+                0.01132,
+                0.59014
+            ],
+            "offset": 0.2,
+            "occludable": false,
+            "glyph": "2",
+            "title": "Annotation 2",
+            "desc": "Foo",
+            "eye": [
+                50.64533,
+                1.18247,
+                -42.73478
+            ],
+            "look": [
+                51.7571,
+                0.36053,
+                -51.04353
+            ],
+            "up": [
+                0.01294,
+                0.99523,
+                -0.09672
+            ],
+            "pinShown": true,
+            "labelShown": true,
+            "mesh": "_44"
+        });
+
+        new xeogl.Annotation({
+            "primIndex": 20883,
+            "bary": [
+                0.35149,
+                0.22252,
+                0.42599
+            ],
+            "offset": 0.2,
+            "occludable": false,
+            "glyph": "2",
+            "title": "Annotation 2",
+            "desc": "Foo",
+            "eye": [
+                47.37959,
+                -3.24611,
+                -50.8873
+            ],
+            "look": [
+                49.70179,
+                -3.3168,
+                -52.74637
+            ],
+            "up": [
+                0.01855,
+                0.99972,
+                -0.01485
+            ],
+            "pinShown": true,
+            "labelShown": true,
+            "mesh": "_44"
+        });
+    });
+
+    new xeogl.CameraControl(); // User camera control
+
+
+    //
+    new xeogl.ReflectionMap({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ],
+        encoding: "sRGB"
+    });
+
+
+    var i = 0;
+
+    scene.input.on("mouseclicked", function (coords) {
+
+        var hit = self.scene.pick({
+            canvasPos: coords,
+            pickSurface: true
+        });
+
+        if (hit) {
+
+            var mesh = hit.mesh;
+            var camera = mesh.scene.camera;
+
+            i++;
+            var num = i + 1;
+            var glyph = "" + num;
+
+
+            var annotation = new xeogl.Annotation({
+                mesh: hit.mesh.id,
+                primIndex: hit.primIndex,
+                bary: hit.bary,
+                glyph: glyph,
+                title: "Annotation " + num,
+                desc: "Foo",
+                eye: camera.eye,
+                look: camera.look,
+                up: camera.up,
+                pinShown: true,
+                labelShown: true
+            });
+
+            console.log(JSON.stringify(annotation.getJSON(), null, "\t"));
+        }
+    });
+
+</script>
+</body>
+</html>

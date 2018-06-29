@@ -63,8 +63,13 @@
     var model = new xeogl.GLTFModel({
         id: "adam",
         src: "models/gltf/adamHead/adamHead.gltf",
-        lambertMaterials: true,
-        ghostEdgeThreshold: 15
+        edgeThreshold: 15,
+        handleNode: function (nodeInfo, actions) {
+            actions.createObject = {
+                id: "adam" + "#" + nodeInfo.name
+            };
+            return true;
+        }
     });
 
     // Customize the default ghost material
@@ -90,23 +95,12 @@
 
         // Customize ghost materials on a couple of objects
 
-        var maskObject = model.meshes["adam#node_mesh_Adam_mask_-4108.0"];
-        var guardObject = model.meshes["adam#node_Object001_-4112.5"];
+        var maskObject = model.objects["adam#node_mesh_Adam_mask_-4108"];
+        var guardObject = model.objects["adam#node_Object001_-4112.2"];
 
-        maskObject.ghostMaterial = new xeogl.EmphasisMaterial({
-            edgeColor: [0.5, 0.1, 0.1],
-            edgeWidth: 2,
-            fill: true,
-            fillAlpha: 0.6,
-            fillColor: [1.0, 0.0, 0.0]
-        });
+        maskObject.ghosted = false;
 
-        guardObject.ghostMaterial = new xeogl.EmphasisMaterial({
-            edgeColor: [.1, 0.4, 0.1],
-            fill: true,
-            fillAlpha: 0.6,
-            fillColor: [0.0, 1.0, 0.0]
-        });
+        guardObject.ghosted = false;
     });
 
     // Handle user input

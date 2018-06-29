@@ -784,7 +784,7 @@
             this.fire("visible", this._visible);
         },
 
-        _getJSON: function () {
+        getJSON: function () {
             var json = {
                 primIndex: this._primIndex,
                 bary: xeogl.math.vecToArray(this._bary),

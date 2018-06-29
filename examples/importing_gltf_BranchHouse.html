@@ -14,8 +14,6 @@
     <script src="js/animation/cameraPathAnimation.js"></script>
     <script src="js/skyboxes/skybox.js"></script>
 
-    <script src="js/libs/dat.gui.min.js"></script>
-
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -29,9 +27,6 @@
 
 </div>
 
-<div id="dat-gui-container">
-</div>
-
 
 <script>
 
@@ -42,7 +37,9 @@
     var model = new xeogl.GLTFModel({
         id: "house",
         src: "models/gltf/the_branch_house/scene.gltf",
-        ghostEdgeThreshold: 20
+        edgeThreshold: 20,
+        combineGeometry: true,
+        quantizeGeometry: true
     });
 
     //-----------------------------------------------------------------------------------------------------
@@ -84,40 +81,31 @@
         colorize: [0.5, 1, 0.5, 1]
     });
 
-    //-----------------------------------------------------------------------------------------------------
-    // Lighting
-    //-----------------------------------------------------------------------------------------------------
+    var spinning = true;
 
-    var dirLights = [
-        new xeogl.AmbientLight({
-            color: [0.8, 0.8, 1.0]
-        }),
+    model.on("loaded", function () {
+        scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                camera.orbitYaw(-0.1);
+            }
+        });
+    });
 
-        new xeogl.DirLight({
-            dir: [0.8, -0.6, -0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 0.75,
-            space: "world"
-        }),
+    new xeogl.CameraControl(); // User camera control
 
-        new xeogl.DirLight({
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
-            intensity: 0.5,
-            space: "world"
-        }),
+//    new xeogl.LightMap({
+//        src: [
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+//        ],
+//        encoding: "linear"
+//    });
 
-        new xeogl.DirLight({
-            dir: [0.2, -0.8, 0.8],
-            color: [0.99, 0.99, 0.99],
-            intensity: 0.75,
-            space: "world"
-        })
-    ];
-
-    var lights = scene.lights;
-    lights.lights = dirLights;
-    lights.reflectionMap = new xeogl.CubeTexture({
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
@@ -127,24 +115,6 @@
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
         ],
         encoding: "sRGB"
-    });
-    cameraControl.on("picked", function (e) {
-        console.log(e.mesh.id)
-    });
-
-    var skybox = new xeogl.Skybox({
-        src: "textures/skybox/cloudySkyBox.jpg",
-        encoding: "sRGB"
-    });
-
-    var spinning = true;
-
-    model.on("loaded", function () {
-        scene.on("tick", function () { // Slowly orbit the camera
-            if (spinning) {
-                camera.orbitYaw(-0.1);
-            }
-        });
     });
 
 

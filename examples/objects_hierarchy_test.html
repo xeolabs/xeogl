@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>a simple <a href="../docs/classes/Object.html" target="_parent">Object</a> hierarchy, demonstrating different
+        ways to find Objects and Meshes within the hierarchy
+</div>
+
+<script>
+
+    var mesh1 = new xeogl.Mesh({
+        position: [0, 0, 0],
+        scale: [1, 1, 1],
+        rotation: [0, 0, 0],
+        geometry: new xeogl.BoxGeometry()
+    });
+
+    assertBoundary("untransformed mesh boundary", mesh1, [-1, -1, -1, 1, 1, 1]);
+
+    mesh1.position = [10, 0, 0];
+
+    assertBoundary("translated mesh boundary", mesh1, [9, -1, -1, 11, 1, 1]);
+
+    mesh1.scale = [2, 2, 2];
+
+    assertBoundary("scaled mesh boundary", mesh1, [8, -2, -2, 12, 2, 2]); // Scaled THEN translated
+
+    function assertBoundary(msg, object, aabb) {
+        console.log("Test " + msg + " : aabb === " + aabb);
+        var aabb1 = object.aabb;
+        for (var i = 0; i < 6; i++) {
+            if (aabb1[i] !== aabb[i]) {
+                console.error("FAILED - boundary is: " + aabb1);
+                return;
+            }
+        }
+        console.log("PASSED");
+    }
+
+
+    var group = new xeogl.Group();
+    group.addChild(mesh1);
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

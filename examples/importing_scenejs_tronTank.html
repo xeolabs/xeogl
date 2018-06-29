@@ -75,7 +75,8 @@
             }
             return xeogl.scene;
         }
-    })(window);
+    })
+    (window);
 
     // Redefine default lights
     scene.lights.lights = [
@@ -138,18 +139,16 @@
     // Add a shadow under the tank
     // insert it into the SceneJSModel so it rotates with the tank
     tankModel.addChild(new xeogl.Mesh({
-        geometry: {
-            type: "xeogl.PlaneGeometry",
+        geometry: new xeogl.PlaneGeometry({
             xSize: 22,
             zSize: 16
-        },
-        material: {
-            type: "xeogl.PhongMaterial",
+        }),
+        material: new xeogl.PhongMaterial({
             diffuse: [0.0, 0.0, 0.0],
             specular: [0, 0, 0],
             alpha: 0.3,
             alphaMode: "blend"
-        },
+        }),
         position: [-1, 0.1, -2]
     }));
 
@@ -182,15 +181,14 @@
     // Helper to show the tank animation path
     // leave it here and set visible whenever we need to edit the path in future
     new xeogl.Mesh({
-        geometry: {
+        geometry: new xeogl.Geometry({
             positions: xeogl.math.flatten(path.getPoints(100))
-        },
-        material: {
-            type: "xeogl.PhongMaterial",
+        }),
+        material: new xeogl.PhongMaterial({
             diffuse: [0.3, 1, 0.3],
             emissive: [0.4, 1, 0.4],
             lineWidth: 6
-        },
+        }),
         visible: false,
         pickable: false, // Can't be picked
         collidable: false // Does not contribute to overall scene boundary
@@ -200,7 +198,7 @@
     // keep it pointing along the path
     path.on("t", function () {
         tankModel.position = this.point;
-        tankModel.rotation = [0, 360 - ((Math.atan2(this.tangent[2], this.tangent[0]) /xeogl.math.DEGTORAD)-180) , 0];
+        tankModel.rotation = [0, 360 - ((Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) - 180), 0];
     });
 
 
@@ -254,21 +252,20 @@
 
         new xeogl.Mesh({
             geometry: new xeogl.Geometry(geometryBuilder.build()),
-            material: {
-                type: "xeogl.SpecularMaterial",
+            material: new xeogl.SpecularMaterial({
                 diffuse: [0.7, 0.7, 0.7],
                 specular: [0.3, 0.3, 0.2],
                 glossiness: 0.1,
                 emissive: [0.1, 0.1, 0.1],
-                diffuseMap: {
+                diffuseMap: new xeogl.Texture({
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [1, 1],
                     format: "gamma"
-                },
+                }),
                 backfaces: false // Don't show backfaces, so that if camera gets buried in a box we can still see out
-            },
+            }),
             pickable: false, // Can't be picked
             collidable: false // Does not contribute to overall scene boundary
         });
@@ -278,26 +275,24 @@
         //---------------------------------------------------------------------------------
 
         new xeogl.Mesh({
-            geometry: {
-                type: "xeogl.PlaneGeometry",
+            geometry: new xeogl.PlaneGeometry({
                 xSize: 3000,
                 zSize: 3000
-            },
-            material: {
-                type: "xeogl.SpecularMaterial",
+            }),
+            material: new xeogl.SpecularMaterial({
                 diffuse: [0.5, 0.5, 0.5],
                 specular: [0.2, 0.2, 0.2],
                 glossiness: 0.0,
 //                emissive: [0.1, 0.1, 0.1],
-                diffuseMap: {
+                diffuseMap: new xeogl.Texture({
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [30, 30],
                     format: "gamma"
-                },
+                }),
                 backfaces: true // Show backfaces
-            },
+            }),
             pickable: false, // Can't be picked
             collidable: false // Does not contribute to overall scene boundary
         });

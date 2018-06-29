@@ -173,18 +173,16 @@
 
         model.addChild(new xeogl.Mesh({
             type: "xeogl.Mesh",
-            geometry: {
-                type: "xeogl.PlaneGeometry",
+            geometry: new xeogl.PlaneGeometry({
                 xSize: 16,
                 zSize: 22
-            },
-            material: {
-                type: "xeogl.PhongMaterial",
+            }),
+            material: xeogl.PhongMaterial({
                 diffuse: [0.0, 0.0, 0.0],
                 specular: [0, 0, 0],
                 alpha: 0.3,
                 alphaMode: "blend"
-            },
+            }),
             position: [-1, 0.1, -4]
         }));
 
@@ -193,7 +191,7 @@
         //----------------------------------
 
         new xeogl.AnnotationStory({
-            speaking: true,
+            speaking: false,
             authoring: true,
             text: [
                 "This is a Light Tank from the 1982 Disney movie *Tron*.",

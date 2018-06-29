@@ -25,6 +25,10 @@
         src: "models/gltf/schependomlaan/schependomlaan.gltf"
     });
 
+    model.on("loaded", function() {
+        model.edges = true;
+    });
+
     var scene = model.scene;
     var camera = scene.camera;
     var input = scene.input;
@@ -33,7 +37,7 @@
     camera.look = [10.98, 5.82, -11.23];
     camera.up = [0.35, 0.88, -0.29];
 
-    var cameraControl = new xeogl.CameraControl();
+    var cameraControl = new xeogl.CameraControl({ pivoting: true });
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 

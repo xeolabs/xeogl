@@ -39,7 +39,7 @@
                 scale: [.2, .2, .2],
                 position: [-110, 0, 0],
                 rotation: [0, 90, 0],
-                XobjectTree: true
+                entities: true
             }),
 
             new xeogl.GLTFModel({
@@ -71,8 +71,7 @@
                         rotation: [0, 0, 0],
                         material: new xeogl.PhongMaterial({
                             diffuse: [1, 0.3, 0.3]
-                        }),
-                        published: false
+                        })
                     }),
                     new xeogl.Mesh({ // Green table leg
                         id: "greenLeg",
@@ -81,8 +80,7 @@
                         rotation: [0, 0, 0],
                         material: new xeogl.PhongMaterial({
                             diffuse: [0.3, 1.0, 0.3]
-                        }),
-                        published: false
+                        })
                     }),
                     new xeogl.Mesh({// Blue table leg
                         id: "blueLeg",
