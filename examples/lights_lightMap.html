@@ -13,7 +13,7 @@
 
 <div id="info">
     <h1>image-based lighting using <a href="../docs/classes/CubeTexture.html"
-                                                               target="_parent">CubeTexture</a> light and reflection maps</h1>
+                                      target="_parent">CubeTexture</a> light and reflection maps</h1>
 </div>
 
 <div id="dat-gui-container">
@@ -21,47 +21,36 @@
 
 <script>
 
+    new xeogl.LightMap({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ]
+    });
+
+    new xeogl.ReflectionMap({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
     var mesh = new xeogl.Mesh({
-
-        lights: new xeogl.Lights({
-
-            lights: [],
-
-            lightMap: new xeogl.CubeTexture({
-                src: [
-                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-                ]
-            }),
-
-            reflectionMap: new xeogl.CubeTexture({
-                src: [
-                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-                ]
-            })
-        }),
 
         geometry: new xeogl.TorusGeometry(),
 
         material: new xeogl.MetallicMaterial({
             baseColor: [1.0, 1.0, 1.0],
             metallic: 0.5,
-            roughness: 0.5,
-            XbaseColorMap: new xeogl.Texture({
-                src: "textures/diffuse/chesterfieldDiffuseMap.png"
-            }),
-            XnormalMap: new xeogl.Texture({
-                src: "textures/normal/chesterfieldNormalMap.png"
-            })
+            roughness: 0.5
         })
     });
 
