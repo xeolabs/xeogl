@@ -109,7 +109,7 @@
 
         return function (mesh, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
 
-            var modelMat = mesh.worldMatrix || mesh.transform.leafMatrix;
+            var modelMat = mesh.worldMatrix || mesh.matrix;
             var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
 
             tempVec4a[0] = worldRayOrigin[0];

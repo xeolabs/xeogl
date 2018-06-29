@@ -82,7 +82,7 @@
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.Texture({
+            this._state = new xeogl.renderer.State({
                 texture: new xeogl.renderer.Texture2D(this.scene.canvas.gl),
                 matrix: null,   // Float32Array
                 hasMatrix: (cfg.translate && (cfg.translate[0] !== 0 || cfg.translate[1] !== 0)) || (!!cfg.rotate) || (cfg.scale && (cfg.scale[0] !== 0 || cfg.scale[1] !== 0)),
@@ -230,13 +230,13 @@
         _props: {
 
             /**
-              Indicates an HTML DOM Image object to source this Texture from.
+             Indicates an HTML DOM Image object to source this Texture from.
 
-              Sets the {{#crossLink "Texture/src:property"}}{{/crossLink}} property to null.
+             Sets the {{#crossLink "Texture/src:property"}}{{/crossLink}} property to null.
 
-              @property image
-              @default null
-              @type {HTMLImageElement}
+             @property image
+             @default null
+             @type {HTMLImageElement}
              */
             image: {
                 set: function (value) {
@@ -245,6 +245,7 @@
                     this._state.texture.setImage(this._image, this._state);
                     this._state.texture.setProps(this._state); // Generate mipmaps
                     this._src = null;
+                    this._renderer.imageDirty();
                 },
                 get: function () {
                     return this._image;
@@ -252,13 +253,13 @@
             },
 
             /**
-              Indicates a path to an image file to source this Texture from.
+             Indicates a path to an image file to source this Texture from.
 
-              Sets the {{#crossLink "Texture/image:property"}}{{/crossLink}} property to null.
+             Sets the {{#crossLink "Texture/image:property"}}{{/crossLink}} property to null.
 
-              @property src
-              @default null
-              @type String
+             @property src
+             @default null
+             @type String
              */
             src: {
                 set: function (src) {
@@ -272,6 +273,7 @@
                         self._state.texture.setProps(self._state); // Generate mipmaps
                         self.scene.loading--;
                         self.scene.canvas.spinner.processes--;
+                        self._renderer.imageDirty();
                     };
                     image.src = src;
                     this._src = src;
@@ -283,11 +285,11 @@
             },
 
             /**
-              2D translation vector that will be added to this Texture's *S* and *T* coordinates.
+             2D translation vector that will be added to this Texture's *S* and *T* coordinates.
 
-              @property translate
-              @default [0, 0]
-              @type Array(Number)
+             @property translate
+             @default [0, 0]
+             @type Array(Number)
              */
             translate: {
                 set: function (value) {
@@ -301,11 +303,11 @@
             },
 
             /**
-              2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.
+             2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.
 
-              @property scale
-              @default [1, 1]
-              @type Array(Number)
+             @property scale
+             @default [1, 1]
+             @type Array(Number)
              */
             scale: {
                 set: function (value) {
@@ -319,11 +321,11 @@
             },
 
             /**
-              Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.
+             Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.
 
-              @property rotate
-              @default 0
-              @type Number
+             @property rotate
+             @default 0
+             @type Number
              */
             rotate: {
                 set: function (value) {

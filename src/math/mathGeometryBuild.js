@@ -183,12 +183,12 @@
     math.buildPickTriangles = function (positions, indices, quantized) {
 
         var numIndices = indices.length;
-        var pickPositions = quantized ? new Uint16Array(numIndices * 30) : new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
-        var pickColors = new Uint8Array(numIndices * 40);
+        var pickPositions = quantized ? new Uint16Array(numIndices * 9) : new Float32Array(numIndices * 9);
+        var pickColors = new Uint8Array(numIndices  * 12);
         var primIndex = 0;
         var vi;// Positions array index
-        var pvi;// Picking positions array index
-        var pci; // Picking color array index
+        var pvi = 0;// Picking positions array index
+        var pci = 0; // Picking color array index
 
         // Triangle indices
         var i;
@@ -198,9 +198,6 @@
         var a;
 
         for (var location = 0; location < numIndices; location += 3) {
-
-            pvi = location * 3;
-            pci = location * 4;
 
             // Primitive-indexed triangle pick color
 
@@ -214,42 +211,42 @@
             i = indices[location];
             vi = i * 3;
 
-            pickPositions[pvi] = positions[vi];
-            pickPositions[pvi + 1] = positions[vi + 1];
-            pickPositions[pvi + 2] = positions[vi + 2];
+            pickPositions[pvi++] = positions[vi];
+            pickPositions[pvi++] = positions[vi + 1];
+            pickPositions[pvi++] = positions[vi + 2];
 
-            pickColors[pci + 0] = r;
-            pickColors[pci + 1] = g;
-            pickColors[pci + 2] = b;
-            pickColors[pci + 3] = a;
+            pickColors[pci++] = r;
+            pickColors[pci++] = g;
+            pickColors[pci++] = b;
+            pickColors[pci++] = a;
 
             // B
 
             i = indices[location + 1];
             vi = i * 3;
 
-            pickPositions[pvi + 3] = positions[vi];
-            pickPositions[pvi + 4] = positions[vi + 1];
-            pickPositions[pvi + 5] = positions[vi + 2];
+            pickPositions[pvi++] = positions[vi];
+            pickPositions[pvi++] = positions[vi + 1];
+            pickPositions[pvi++] = positions[vi + 2];
 
-            pickColors[pci + 4] = r;
-            pickColors[pci + 5] = g;
-            pickColors[pci + 6] = b;
-            pickColors[pci + 7] = a;
+            pickColors[pci++] = r;
+            pickColors[pci++] = g;
+            pickColors[pci++] = b;
+            pickColors[pci++] = a;
 
             // C
 
             i = indices[location + 2];
             vi = i * 3;
 
-            pickPositions[pvi + 6] = positions[vi];
-            pickPositions[pvi + 7] = positions[vi + 1];
-            pickPositions[pvi + 8] = positions[vi + 2];
+            pickPositions[pvi++] = positions[vi];
+            pickPositions[pvi++] = positions[vi + 1];
+            pickPositions[pvi++] = positions[vi + 2];
 
-            pickColors[pci + 8] = r;
-            pickColors[pci + 9] = g;
-            pickColors[pci + 10] = b;
-            pickColors[pci + 11] = a;
+            pickColors[pci++] = r;
+            pickColors[pci++] = g;
+            pickColors[pci++] = b;
+            pickColors[pci++] = a;
 
             primIndex++;
         }
@@ -258,104 +255,6 @@
             positions: pickPositions,
             colors: pickColors
         };
-    };
-
-    /**
-     * Removes duplicate vertices from a triangle mesh.
-     * @returns {{positions: Array, uv: *, normals: *,indices: *}}
-     */
-    math.mergeVertices = function (positions, uv, normals, colors, indices) {
-
-        var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-        var uniquePositions = [];
-        var uniqueUV = uv ? [] : null;
-        var uniqueNormals = normals ? [] : null;
-        var changes = [];
-        var vx;
-        var vy;
-        var vz;
-        var key;
-        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-        var precision = Math.pow(10, precisionPoints);
-        var i;
-        var il;
-
-        for (i = 0, il = positions.length; i < il; i += 3) {
-
-            vx = positions[i];
-            vy = positions[i + 1];
-            vz = positions[i + 2];
-
-            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
-
-            if (positionsMap[key] === undefined) {
-
-                positionsMap[key] = i / 3;
-
-                uniquePositions.push(vx);
-                uniquePositions.push(vy);
-                uniquePositions.push(vz);
-
-                if (uv) {
-                    // uniqueUV.push(uv[i]);
-                    // uniqueUV.push(uv[i + 1]);
-                    // uniqueUV.push(uv[i + 2]);
-                }
-
-                if (normals) {
-                    uniqueNormals.push(normals[i]);
-                    uniqueNormals.push(normals[i + 1]);
-                    uniqueNormals.push(normals[i + 2]);
-                }
-
-                changes[i / 3] = (uniquePositions.length - 3) / 3;
-
-            } else {
-
-                changes[i / 3] = changes[positionsMap[key]];
-            }
-        }
-
-        var faceIndicesToRemove = [];
-
-        for (i = 0, il = indices.length; i < il; i += 3) {
-
-            indices[i + 0] = changes[indices[i + 0]];
-            indices[i + 1] = changes[indices[i + 1]];
-            indices[i + 2] = changes[indices[i + 2]];
-
-            var indicesDup = [indices[i + 0], indices[i + 1], indices[i + 2]];
-
-            for (var n = 0; n < 3; n++) {
-                if (indicesDup[n] === indicesDup[( n + 1 ) % 3]) {
-                    faceIndicesToRemove.push(i);
-                    break;
-                }
-            }
-        }
-
-        if (faceIndicesToRemove.length > 0) {
-            indices = Array.prototype.slice.call(indices); // splice is not available on typed arrays
-            for (i = faceIndicesToRemove.length - 1; i >= 0; i--) {
-                var idx = faceIndicesToRemove[i];
-                indices.splice(idx, 3);
-            }
-        }
-
-        var result = {
-            positions: uniquePositions,
-            indices: indices
-        };
-
-        if (uv) {
-            result.uv = uniqueUV;
-        }
-
-        if (normals) {
-            result.normals = uniqueNormals;
-        }
-
-        return result;
     };
 
     /**

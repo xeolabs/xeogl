@@ -47,7 +47,7 @@
      *
      * @private
      */
-    math.rayTriangleIntersect = (function() {
+    math.rayTriangleIntersect = (function () {
 
         var tempVec3 = new Float32Array(3);
         var tempVec3b = new Float32Array(3);
@@ -96,7 +96,7 @@
      *
      * @private
      */
-    math.rayPlaneIntersect = (function() {
+    math.rayPlaneIntersect = (function () {
 
         var tempVec3 = new Float32Array(3);
         var tempVec3b = new Float32Array(3);
@@ -133,7 +133,7 @@
      *
      * @private
      */
-    math.cartesianToBarycentric = (function() {
+    math.cartesianToBarycentric = (function () {
 
         var tempVec3 = new Float32Array(3);
         var tempVec3b = new Float32Array(3);
@@ -207,5 +207,75 @@
 
         return cartesian;
     };
+
+    /**
+     * Given geometry defined as an array of positions, optional normals, option uv and an array of indices, returns
+     * modified arrays that have duplicate vertices removed.
+     *
+     * Note: does not work well when co-incident vertices have same positions but different normals and UVs.
+     *
+     * @param positions
+     * @param normals
+     * @param uv
+     * @param indices
+     * @returns {{positions: Array, indices: Array}}
+     * @private
+     */
+    math.mergeVertices = function (positions, normals, uv, indices) {
+        var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+        var indicesLookup = [];
+        var uniquePositions = [];
+        var uniqueNormals = normals ? [] : null;
+        var uniqueUV = uv ? [] : null;
+        var indices2 = [];
+        var vx;
+        var vy;
+        var vz;
+        var key;
+        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+        var precision = Math.pow(10, precisionPoints);
+        var i;
+        var len;
+        var uvi = 0;
+        for (i = 0, len = positions.length; i < len; i += 3) {
+            vx = positions[i];
+            vy = positions[i + 1];
+            vz = positions[i + 2];
+            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
+            if (positionsMap[key] === undefined) {
+                positionsMap[key] = uniquePositions.length / 3;
+                uniquePositions.push(vx);
+                uniquePositions.push(vy);
+                uniquePositions.push(vz);
+                if (normals) {
+                    uniqueNormals.push(normals[i]);
+                    uniqueNormals.push(normals[i + 1]);
+                    uniqueNormals.push(normals[i + 2]);
+                }
+                if (uv) {
+                    uniqueUV.push(uv[uvi]);
+                    uniqueUV.push(uv[uvi + 1]);
+                }
+            }
+            indicesLookup[i / 3] = positionsMap[key];
+            uvi += 2;
+        }
+        for (i = 0, len = indices.length; i < len; i++) {
+            indices2[i] = indicesLookup[indices[i]];
+        }
+        var result = {
+            positions: uniquePositions,
+            indices: indices2
+        };
+        if (uniqueNormals) {
+            result.normals = uniqueNormals;
+        }
+        if (uniqueUV) {
+            result.uv = uniqueUV;
+
+        }
+        return result;
+    }
+
 
 })();

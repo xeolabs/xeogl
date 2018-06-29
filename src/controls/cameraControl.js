@@ -297,7 +297,7 @@
 
             /**
              When true, mouse wheel when mouse is over a {{#crossLink "Mesh"}}{{/crossLink}} will zoom
-             the {{#crossLink "Camera"}}{{/crossLink}} towards the hoveredd point on the Mesh's surface.
+             the {{#crossLink "Camera"}}{{/crossLink}} towards the hovered point on the Mesh's surface.
 
              @property panToPointer
              @default false
@@ -306,6 +306,9 @@
             panToPointer: {
                 set: function (value) {
                     this._panToPointer = !!value;
+                    if (this._panToPointer) {
+                        this._panToPivot = false;
+                    }
                 },
                 get: function () {
                     return this._panToPointer;
@@ -323,6 +326,9 @@
             panToPivot: {
                 set: function (value) {
                     this._panToPivot = !!value;
+                    if (this._panToPivot) {
+                        this._panToPointer = false;
+                    }
                 },
                 get: function () {
                     return this._panToPivot;
@@ -897,9 +903,7 @@
                         if (!self._active) {
                             return;
                         }
-                        if (!over) {
-                            return;
-                        }
+                        over = true;
                         switch (e.which) {
                             case 1: // Left button
                                 mouseDownLeft = true;

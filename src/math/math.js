@@ -23,8 +23,8 @@
      */
     var math = xeogl.math = {
 
-        MAX_DOUBLE: +100000000,
-        MIN_DOUBLE: -100000000,
+        MAX_DOUBLE: Number.MAX_VALUE,
+        MIN_DOUBLE: Number.MIN_VALUE,
 
         /**
          * The number of radiians in a degree (0.0174532925).
@@ -1906,8 +1906,8 @@
         composeMat4: function (position, quaternion, scale, mat) {
             mat = mat || math.mat4();
             math.quaternionToRotationMat4(quaternion, mat);
-            math.translateMat4v(position, mat);
             math.scaleMat4v(scale, mat);
+            math.translateMat4v(position, mat);
 
             return mat;
         },

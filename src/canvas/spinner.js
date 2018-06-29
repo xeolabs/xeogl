@@ -214,9 +214,10 @@
         },
 
         _spinnerCSS: ".sk-fading-circle {\
-        margin: 100px auto;\
-        width: 100px;\
-        height:100px;\
+        background: transparent;\
+        margin: 20px auto;\
+        width: 50px;\
+        height:50px;\
         position: relative;\
         }\
         .sk-fading-circle .sk-circle {\

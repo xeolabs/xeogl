@@ -135,7 +135,7 @@
                 for (i = 0; i <= radialSegments; i++) {
 
                     u = i / radialSegments * arc;
-                    v = j / tubeSegments * Math.PI * 2;
+                    v = 0.785398 + (j / tubeSegments * Math.PI * 2);
 
                     centerX = radius * Math.cos(u);
                     centerY = radius * Math.sin(u);
