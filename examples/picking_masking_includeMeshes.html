@@ -16,12 +16,9 @@
     <h1>pick masking - using the "includeMeshes" option to restrict picking to a given list of <a href="../docs/classes/GLTFModel.html" target="_parent">Meshes</a></h1>
     <br>
     <ul>
-        <li>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
-        <li>un-ghost <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a> "gearbox#83.0" and "gearbox#81.0"
-        </li>
-        <li>attempt to pick and highlight Meshes on mouse-over</li>
-        <li>using the <em>include</em> option, only allow "gearbox#83.0" and "gearbox#81.0" to be picked</li>
-        <li>those meshes are then pickable <em>through</em> the other Meshes</li>
+        <li>from model, build random list of meshes to be included in picking</li>
+        <li>ghost the excluded meshes, color the rest green</li>
+        <li>pick and highlight only the included meshes on mouse-over, don't attempt to pick the rest</li>
         <li>model by <a href="https://sketchfab.com/tflexcad" target="_parent">https://sketchfab.com/tflexcad</a></li>
     </ul>
 </div>
@@ -43,25 +40,43 @@
         scale: [100, 100, 100]
     });
 
-    model.on("loaded", function () {
-        model.ghosted = true;
-        scene.ghostMaterial.preset = "gamegrid";
-        model.meshes["gearbox#83.0"].ghosted = false;
-        model.meshes["gearbox#81.0"].ghosted = false;
-    });
-
     // Position the camera
 
-    camera.eye = [13.55, 8.24, 17.84];
+    camera.eye = [14.70, 5.30, 15.27];
     camera.look = [-2.54, -4.90, -0.10];
-    camera.up = [-0.31, 0.87, -0.35];
-    camera.zoom(-10);
+    camera.up = [-0.28, 0.90, -0.26];
 
     // Camera interaction
 
-    new xeogl.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
 
-    // Highlight only the included Meshes on mouse over
+    cameraControl.on("picked", function (e) {
+        console.log(e.mesh.id)
+    });
+
+    // Build random list of meshes included in picking;
+    // Ghost the non-pickable meshes and colorize and emphasise edges on the pickable ones
+
+    var includeMeshes = [];
+
+    model.on("loaded", function () {
+        for (var meshId in model.meshes) {
+            var mesh = model.meshes[meshId];
+            var pickable = Math.random() < 0.2;
+            mesh.pickable = pickable;
+            mesh.ghosted = !pickable;
+            mesh.edges = pickable;
+            if (pickable) {
+                mesh.colorize = [0.2, 1.0, 0.2];
+            }
+
+            if (pickable) {
+                includeMeshes.push(meshId);
+            }
+        }
+    });
+
+    // Highlight everything but the excluded Meshes on mouseover
 
     var lastEntity = null;
 
@@ -69,26 +84,23 @@
 
         var hit = scene.pick({
             canvasPos: coords,
-            includeMeshes: [
-                "gearbox#83.0",
-                "gearbox#81.0"
-            ]
+            includeMeshes: includeMeshes
         });
 
         if (hit) {
             if (lastEntity) {
                 if (lastEntity.id !== hit.mesh.id) {
-                    lastEntity.highlighted = false;
+                    lastEntity.colorize = [0.2, 1.0, 0.2];
                 } else {
                     return;
                 }
             }
-            hit.mesh.highlighted = true;
+            hit.mesh.colorize = [1.0, 1.0, 0.2];
             lastEntity = hit.mesh;
 
         } else if (lastEntity) {
 
-            lastEntity.highlighted = false;
+            lastEntity.colorize = [0.2, 1.0, 0.2];
             lastEntity = null;
         }
     });

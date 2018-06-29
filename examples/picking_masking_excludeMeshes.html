@@ -16,9 +16,9 @@
     <h1>pick masking - using the "excludeMeshes" option to exclude meshes from being picked</h1>
     <br>
     <ul>
-        <li>load a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
-        <li>pick and highlight Meshes on mouse-over, except "gearbox#74.0" and "gearbox#84.0"</li>
-        <li>other meshes are pickable <em>through</em> those two Meshes</li>
+        <li>from model, build random list of meshes to be excluded from picking</li>
+        <li>ghost the excluded meshes, color the rest green</li>
+        <li>pick and highlight only the non-excluded meshes on mouse-over</li>
         <li>model by <a href="https://sketchfab.com/tflexcad" target="_parent">https://sketchfab.com/tflexcad</a></li>
     </ul>
 </div>
@@ -42,16 +42,36 @@
 
     // Position the camera
 
-    camera.eye = [-13.78, -1.52, -13.00];
-    camera.look = [-2.53, -4.90, -0.10];
-    camera.up = [0.11, 0.97, 0.14];
+    camera.eye = [14.70, 5.30, 15.27];
+    camera.look = [-2.54, -4.90, -0.10];
+    camera.up = [-0.28, 0.90, -0.26];
 
     // Camera interaction
 
-   var cameraControl =  new xeogl.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
 
-    cameraControl.on("picked", function (e) {
-        console.log(e.mesh.id)
+    // Build random list of meshes excluded from picking;
+    // Ghost the non-pickable meshes and colorize and emphasise edges on the pickable ones
+
+    var excludeMeshes = [];
+
+    model.on("loaded", function () {
+        for (var meshId in model.meshes) {
+
+            var mesh = model.meshes[meshId];
+            var pickable = Math.random() < 0.2;
+
+            mesh.pickable = pickable;
+            mesh.ghosted = !pickable;
+            mesh.edges = pickable;
+            if (pickable) {
+                mesh.colorize = [0.2, 1.0, 0.2];
+            }
+
+            if (!pickable) {
+                excludeMeshes.push(meshId);
+            }
+        }
     });
 
     // Highlight everything but the excluded Meshes on mouseover
@@ -62,26 +82,23 @@
 
         var hit = scene.pick({
             canvasPos: coords,
-            excludeMeshes: [
-                "gearbox#74.0",
-                "gearbox#84.0"
-            ]
+            excludeMeshes: excludeMeshes
         });
 
         if (hit) {
             if (lastEntity) {
                 if (lastEntity.id !== hit.mesh.id) {
-                    lastEntity.highlighted = false;
+                    lastEntity.colorize = [0.2, 1.0, 0.2];
                 } else {
                     return;
                 }
             }
-            hit.mesh.highlighted = true;
+            hit.mesh.colorize = [1.0, 1.0, 0.2];
             lastEntity = hit.mesh;
 
         } else if (lastEntity) {
 
-            lastEntity.highlighted = false;
+            lastEntity.colorize = [0.2, 1.0, 0.2];
             lastEntity = null;
         }
     });
