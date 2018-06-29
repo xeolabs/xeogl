@@ -35,6 +35,9 @@
     var scene = model.scene;
     var camera = scene.camera;
 
+    scene.gammaInput = false;
+    scene.gammaOutput = false;
+
     // Position camera with "up" pointing along World +Z axis
 
     camera.eye = [1.8160498142242432, -251.0963897705078, 37.38420486450195];
@@ -59,35 +62,7 @@
 
     // Customize lighting
 
-    scene.lights.lights = [
-
-        new xeogl.DirLight({
-            dir: [-1116.85791015625, -1726.414306640625, -4015.44873046875],
-            color: [1, 1, 1],
-            intensity: 0.8,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [0.6, -0.2, -0.4],
-            color: [0.90, 0.90, 0.90],
-            intensity: 0.6,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [-0.4, -0.6, -0.1],
-            color: [0.75, 0.75, 0.7],
-            intensity: 0.6,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [0.6, 0.6, -0.6],
-            color: [0.70, 0.70, 0.93],
-            intensity: 0.6,
-            space: "world"
-        })
-    ];
-
-    scene.lights.reflectionMap = new xeogl.CubeTexture({
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
