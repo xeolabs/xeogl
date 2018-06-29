@@ -11,37 +11,32 @@ var gltfExplorer = function (menuId, files) {
 
     var file = files[0];
 
-    var lights = xeogl.scene.lights;
+    new xeogl.AmbientLight({
+        color: [.7, .9, 1.0],
+        intensity: 0.5
+    });
+    new xeogl.DirLight({
+        dir: [0.8, -0.6, -0.8],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "view"
+    });
 
-    lights.lights = [
-        new xeogl.AmbientLight({
-            color: [.7, .9, 1.0],
-            intensity: 0.8
-        }),
-        new xeogl.DirLight({
-            dir: [0.8, -0.6, -0.8],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        })
-        ,
+    new xeogl.DirLight({
+        dir: [-0.8, -0.4, -0.4],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "view"
+    });
 
-        new xeogl.DirLight({
-            dir: [-0.8, -0.4, -0.4],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        }),
+    new xeogl.DirLight({
+        dir: [0.2, -0.8, 0.8],
+        color: [0.6, 0.6, 0.6],
+        intensity: 1.0,
+        space: "view"
+    });
 
-        new xeogl.DirLight({
-            dir: [0.2, -0.8, 0.8],
-            color: [0.6, 0.6, 0.6],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
-
-    lights.reflectionMap = new xeogl.CubeTexture({
+    new xeogl.CubeTexture({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
@@ -52,7 +47,7 @@ var gltfExplorer = function (menuId, files) {
         ]
     });
 
-    lights.lightMap = new xeogl.CubeTexture({
+    new xeogl.CubeTexture({
         src: [
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
@@ -67,7 +62,7 @@ var gltfExplorer = function (menuId, files) {
         id: "turbine",
         src: file.src,
         ghosted: true,
-        ghostEdgeThreshold: 20,
+        edgeThreshold: 20,
         lambertMaterials: true,
         objects: true,
         scale: [100, 100, 100]
