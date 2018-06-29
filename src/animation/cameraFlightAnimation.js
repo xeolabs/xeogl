@@ -284,7 +284,7 @@
                     aabb = component.aabb || this.scene.aabb;
                 }
 
-                var offset = params.offset;
+                var poi = params.poi;
 
                 if (aabb) {
 
@@ -308,19 +308,14 @@
                         //this._aabbHelper.visible = true;
                     }
 
+                    aabb = aabb.slice();
+
                     var aabbCenter = math.getAABB3Center(aabb);
-
-                    this._look2 = params.look || aabbCenter;
-
-                    if (offset) {
-                        this._look2[0] += offset[0];
-                        this._look2[1] += offset[1];
-                        this._look2[2] += offset[2];
-                    }
+                    this._look2 = poi ||  aabbCenter;
 
                     var eyeLookVec = math.subVec3(this._eye1, this._look1, tempVec3);
                     var eyeLookVecNorm = math.normalizeVec3(eyeLookVec);
-                    var diag = (params.look && false) ? math.getAABB3DiagPoint(aabb, params.look) : math.getAABB3Diag(aabb);
+                    var diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
                     var fitFOV = params.fitFOV || this._fitFOV;
                     var sca = Math.abs(diag / Math.tan(fitFOV * xeogl.math.DEGTORAD));
 
@@ -455,7 +450,7 @@
                     aabb = component.aabb || this.scene.aabb;
                 }
 
-                var offset = params.offset;
+                var poi = params.poi;
 
                 if (aabb) {
 
@@ -467,8 +462,8 @@
                         return;
                     }
 
-                    diag = math.getAABB3Diag(aabb);
-                    math.getAABB3Center(aabb, newLook);
+                    var diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
+                    newLook = poi || math.getAABB3Center(aabb, newLook);
 
                     if (this._trail) {
                         math.subVec3(camera.look, newLook, newLookEyeVec);
