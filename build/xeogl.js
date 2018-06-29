@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-06-06
+ * Built on 2018-06-29
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -471,8 +471,6 @@
          * @param {Object} [scope] Scope for the callback.
          */
         scheduleTask: function (callback, scope) {
-            // callback.call(scope);
-            // return;
             this._taskQueue.push(callback);
             this._taskQueue.push(scope);
         },
@@ -1227,8 +1225,8 @@ xeogl.utils.Map = function (items, baseId) {
      */
     var math = xeogl.math = {
 
-        MAX_DOUBLE: +100000000,
-        MIN_DOUBLE: -100000000,
+        MAX_DOUBLE: Number.MAX_VALUE,
+        MIN_DOUBLE: Number.MIN_VALUE,
 
         /**
          * The number of radiians in a degree (0.0174532925).
@@ -3110,8 +3108,8 @@ xeogl.utils.Map = function (items, baseId) {
         composeMat4: function (position, quaternion, scale, mat) {
             mat = mat || math.mat4();
             math.quaternionToRotationMat4(quaternion, mat);
-            math.translateMat4v(position, mat);
             math.scaleMat4v(scale, mat);
+            math.translateMat4v(position, mat);
 
             return mat;
         },
@@ -5061,7 +5059,7 @@ xeogl.utils.Map = function (items, baseId) {
      *
      * @private
      */
-    math.rayTriangleIntersect = (function() {
+    math.rayTriangleIntersect = (function () {
 
         var tempVec3 = new Float32Array(3);
         var tempVec3b = new Float32Array(3);
@@ -5110,7 +5108,7 @@ xeogl.utils.Map = function (items, baseId) {
      *
      * @private
      */
-    math.rayPlaneIntersect = (function() {
+    math.rayPlaneIntersect = (function () {
 
         var tempVec3 = new Float32Array(3);
         var tempVec3b = new Float32Array(3);
@@ -5147,7 +5145,7 @@ xeogl.utils.Map = function (items, baseId) {
      *
      * @private
      */
-    math.cartesianToBarycentric = (function() {
+    math.cartesianToBarycentric = (function () {
 
         var tempVec3 = new Float32Array(3);
         var tempVec3b = new Float32Array(3);
@@ -5221,6 +5219,76 @@ xeogl.utils.Map = function (items, baseId) {
 
         return cartesian;
     };
+
+    /**
+     * Given geometry defined as an array of positions, optional normals, option uv and an array of indices, returns
+     * modified arrays that have duplicate vertices removed.
+     *
+     * Note: does not work well when co-incident vertices have same positions but different normals and UVs.
+     *
+     * @param positions
+     * @param normals
+     * @param uv
+     * @param indices
+     * @returns {{positions: Array, indices: Array}}
+     * @private
+     */
+    math.mergeVertices = function (positions, normals, uv, indices) {
+        var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+        var indicesLookup = [];
+        var uniquePositions = [];
+        var uniqueNormals = normals ? [] : null;
+        var uniqueUV = uv ? [] : null;
+        var indices2 = [];
+        var vx;
+        var vy;
+        var vz;
+        var key;
+        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+        var precision = Math.pow(10, precisionPoints);
+        var i;
+        var len;
+        var uvi = 0;
+        for (i = 0, len = positions.length; i < len; i += 3) {
+            vx = positions[i];
+            vy = positions[i + 1];
+            vz = positions[i + 2];
+            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
+            if (positionsMap[key] === undefined) {
+                positionsMap[key] = uniquePositions.length / 3;
+                uniquePositions.push(vx);
+                uniquePositions.push(vy);
+                uniquePositions.push(vz);
+                if (normals) {
+                    uniqueNormals.push(normals[i]);
+                    uniqueNormals.push(normals[i + 1]);
+                    uniqueNormals.push(normals[i + 2]);
+                }
+                if (uv) {
+                    uniqueUV.push(uv[uvi]);
+                    uniqueUV.push(uv[uvi + 1]);
+                }
+            }
+            indicesLookup[i / 3] = positionsMap[key];
+            uvi += 2;
+        }
+        for (i = 0, len = indices.length; i < len; i++) {
+            indices2[i] = indicesLookup[indices[i]];
+        }
+        var result = {
+            positions: uniquePositions,
+            indices: indices2
+        };
+        if (uniqueNormals) {
+            result.normals = uniqueNormals;
+        }
+        if (uniqueUV) {
+            result.uv = uniqueUV;
+
+        }
+        return result;
+    }
+
 
 })();;/**
  * Boundary math functions.
@@ -5407,12 +5475,12 @@ xeogl.utils.Map = function (items, baseId) {
     math.buildPickTriangles = function (positions, indices, quantized) {
 
         var numIndices = indices.length;
-        var pickPositions = quantized ? new Uint16Array(numIndices * 30) : new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
-        var pickColors = new Uint8Array(numIndices * 40);
+        var pickPositions = quantized ? new Uint16Array(numIndices * 9) : new Float32Array(numIndices * 9);
+        var pickColors = new Uint8Array(numIndices  * 12);
         var primIndex = 0;
         var vi;// Positions array index
-        var pvi;// Picking positions array index
-        var pci; // Picking color array index
+        var pvi = 0;// Picking positions array index
+        var pci = 0; // Picking color array index
 
         // Triangle indices
         var i;
@@ -5422,9 +5490,6 @@ xeogl.utils.Map = function (items, baseId) {
         var a;
 
         for (var location = 0; location < numIndices; location += 3) {
-
-            pvi = location * 3;
-            pci = location * 4;
 
             // Primitive-indexed triangle pick color
 
@@ -5438,42 +5503,42 @@ xeogl.utils.Map = function (items, baseId) {
             i = indices[location];
             vi = i * 3;
 
-            pickPositions[pvi] = positions[vi];
-            pickPositions[pvi + 1] = positions[vi + 1];
-            pickPositions[pvi + 2] = positions[vi + 2];
+            pickPositions[pvi++] = positions[vi];
+            pickPositions[pvi++] = positions[vi + 1];
+            pickPositions[pvi++] = positions[vi + 2];
 
-            pickColors[pci + 0] = r;
-            pickColors[pci + 1] = g;
-            pickColors[pci + 2] = b;
-            pickColors[pci + 3] = a;
+            pickColors[pci++] = r;
+            pickColors[pci++] = g;
+            pickColors[pci++] = b;
+            pickColors[pci++] = a;
 
             // B
 
             i = indices[location + 1];
             vi = i * 3;
 
-            pickPositions[pvi + 3] = positions[vi];
-            pickPositions[pvi + 4] = positions[vi + 1];
-            pickPositions[pvi + 5] = positions[vi + 2];
+            pickPositions[pvi++] = positions[vi];
+            pickPositions[pvi++] = positions[vi + 1];
+            pickPositions[pvi++] = positions[vi + 2];
 
-            pickColors[pci + 4] = r;
-            pickColors[pci + 5] = g;
-            pickColors[pci + 6] = b;
-            pickColors[pci + 7] = a;
+            pickColors[pci++] = r;
+            pickColors[pci++] = g;
+            pickColors[pci++] = b;
+            pickColors[pci++] = a;
 
             // C
 
             i = indices[location + 2];
             vi = i * 3;
 
-            pickPositions[pvi + 6] = positions[vi];
-            pickPositions[pvi + 7] = positions[vi + 1];
-            pickPositions[pvi + 8] = positions[vi + 2];
+            pickPositions[pvi++] = positions[vi];
+            pickPositions[pvi++] = positions[vi + 1];
+            pickPositions[pvi++] = positions[vi + 2];
 
-            pickColors[pci + 8] = r;
-            pickColors[pci + 9] = g;
-            pickColors[pci + 10] = b;
-            pickColors[pci + 11] = a;
+            pickColors[pci++] = r;
+            pickColors[pci++] = g;
+            pickColors[pci++] = b;
+            pickColors[pci++] = a;
 
             primIndex++;
         }
@@ -5482,104 +5547,6 @@ xeogl.utils.Map = function (items, baseId) {
             positions: pickPositions,
             colors: pickColors
         };
-    };
-
-    /**
-     * Removes duplicate vertices from a triangle mesh.
-     * @returns {{positions: Array, uv: *, normals: *,indices: *}}
-     */
-    math.mergeVertices = function (positions, uv, normals, colors, indices) {
-
-        var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-        var uniquePositions = [];
-        var uniqueUV = uv ? [] : null;
-        var uniqueNormals = normals ? [] : null;
-        var changes = [];
-        var vx;
-        var vy;
-        var vz;
-        var key;
-        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-        var precision = Math.pow(10, precisionPoints);
-        var i;
-        var il;
-
-        for (i = 0, il = positions.length; i < il; i += 3) {
-
-            vx = positions[i];
-            vy = positions[i + 1];
-            vz = positions[i + 2];
-
-            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
-
-            if (positionsMap[key] === undefined) {
-
-                positionsMap[key] = i / 3;
-
-                uniquePositions.push(vx);
-                uniquePositions.push(vy);
-                uniquePositions.push(vz);
-
-                if (uv) {
-                    // uniqueUV.push(uv[i]);
-                    // uniqueUV.push(uv[i + 1]);
-                    // uniqueUV.push(uv[i + 2]);
-                }
-
-                if (normals) {
-                    uniqueNormals.push(normals[i]);
-                    uniqueNormals.push(normals[i + 1]);
-                    uniqueNormals.push(normals[i + 2]);
-                }
-
-                changes[i / 3] = (uniquePositions.length - 3) / 3;
-
-            } else {
-
-                changes[i / 3] = changes[positionsMap[key]];
-            }
-        }
-
-        var faceIndicesToRemove = [];
-
-        for (i = 0, il = indices.length; i < il; i += 3) {
-
-            indices[i + 0] = changes[indices[i + 0]];
-            indices[i + 1] = changes[indices[i + 1]];
-            indices[i + 2] = changes[indices[i + 2]];
-
-            var indicesDup = [indices[i + 0], indices[i + 1], indices[i + 2]];
-
-            for (var n = 0; n < 3; n++) {
-                if (indicesDup[n] === indicesDup[( n + 1 ) % 3]) {
-                    faceIndicesToRemove.push(i);
-                    break;
-                }
-            }
-        }
-
-        if (faceIndicesToRemove.length > 0) {
-            indices = Array.prototype.slice.call(indices); // splice is not available on typed arrays
-            for (i = faceIndicesToRemove.length - 1; i >= 0; i--) {
-                var idx = faceIndicesToRemove[i];
-                indices.splice(idx, 3);
-            }
-        }
-
-        var result = {
-            positions: uniquePositions,
-            indices: indices
-        };
-
-        if (uv) {
-            result.uv = uniqueUV;
-        }
-
-        if (normals) {
-            result.normals = uniqueNormals;
-        }
-
-        return result;
     };
 
     /**
@@ -5876,7 +5843,7 @@ xeogl.utils.Map = function (items, baseId) {
 
         return function (mesh, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
 
-            var modelMat = mesh.worldMatrix || mesh.transform.leafMatrix;
+            var modelMat = mesh.worldMatrix || mesh.matrix;
             var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
 
             tempVec4a[0] = worldRayOrigin[0];
@@ -6025,41 +5992,30 @@ xeogl.utils.Map = function (items, baseId) {
 
 xeogl.renderer = xeogl.renderer || {};
 
-xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
+
+xeogl.renderer.Renderer = function (stats, scene, options) {
 
     "use strict";
-
-    var self = this;
 
     options = options || {};
     stats = stats || {};
 
-    var ids = new xeogl.utils.Map({});
     var frame = new xeogl.renderer.Frame();
-
-    this.gammaOutput = true; // Set true to format output as premultiplied gamma
-
-    this.viewport = null;
-    this.viewTransform = null;
-    this.projTransform = null;
-
-    this.indicesBufs = [];
-
-    var objects = {};
-    var shadowLightObjects = {};
+    var canvas = scene.canvas.canvas;
+    var gl = scene.canvas.gl;
+    var shadowLightMeshes = {};
     var canvasTransparent = options.transparent === true;
-    var ambient = null; // The current ambient light, if available
-    var ambientColor = xeogl.math.vec4([0, 0, 0, 1]);
-    var objectList = [];
-    var objectListLen = 0;
-    var objectPickList = [];
-    var objectPickListLen = 0;
-    var shadowObjectLists = {};
+    var meshList = [];
+    var meshListLen = 0;
+    var meshPickList = [];
+    var meshPickListLen = 0;
+    var shadowMeshLists = {};
 
-    var objectListDirty = true;
+    var meshListDirty = true;
     var stateSortDirty = true;
     var imageDirty = true;
     var shadowsDirty = true;
+
     this.imageForceDirty = true;
 
     var blendOneMinusSrcAlpha = true;
@@ -6069,6 +6025,11 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
     var bindOutputFrameBuffer = null;
     var unbindOutputFrameBuffer = null;
+
+    this.meshListDirty = function () {
+        meshListDirty = true;
+        stateSortDirty = true;
+    };
 
     this.needStateSort = function () {
         stateSortDirty = true;
@@ -6086,136 +6047,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         this.imageForceDirty = true;
     };
 
-    this.getAmbientColor = function () {
-        return ambientColor;
-    };
-
     this.setBlendOneMinusSrcAlpha = function (value) {
         blendOneMinusSrcAlpha = value;
     };
-
-    this.clips = new (function () {
-
-        this.clips = [];
-
-        var hash = null;
-
-        this.getHash = function () {
-            if (hash) {
-                return hash;
-            }
-            var clips = this.clips;
-            if (clips.length === 0) {
-                return this.hash = ";";
-            }
-            var clip;
-            var hashParts = [];
-            for (var i = 0, len = clips.length; i < len; i++) {
-                clip = clips[i];
-                hashParts.push("cp");
-            }
-            hashParts.push(";");
-            hash = hashParts.join("");
-            return hash;
-        };
-
-        this.addClip = function (clip) {
-            this.clips.push(clip);
-            hash = null;
-        };
-
-        this.removeClip = function (clip) {
-            for (var i = 0, len = this.clips.length; i < len; i++) {
-                if (this.clips[i].id === clip.id) {
-                    this.clips.splice(i, 1);
-                    hash = null;
-                    return;
-                }
-            }
-        };
-    })();
-
-    this.lights = new (function () {
-
-        this.lights = [];
-        this.reflectionMaps = [];
-        this.lightMaps = [];
-
-        var hash = null;
-
-        this.getHash = function () {
-            if (hash) {
-                return hash;
-            }
-            var hashParts = [];
-            var lights = this.lights;
-            var light;
-            for (var i = 0, len = lights.length; i < len; i++) {
-                light = lights[i];
-                hashParts.push("/");
-                hashParts.push(light.type);
-                hashParts.push((light.space === "world") ? "w" : "v");
-                if (light.shadow) {
-                    hashParts.push("sh");
-                }
-            }
-            if (this.lightMaps.length > 0) {
-                hashParts.push("/lm");
-            }
-            if (this.reflectionMaps.length > 0) {
-                hashParts.push("/rm");
-            }
-            hashParts.push(";");
-            hash = hashParts.join("");
-            return hash;
-        };
-
-        this.addLight = function (light) {
-            this.lights.push(light);
-            hash = null;
-        };
-
-        this.removeLight = function (light) {
-            for (var i = 0, len = this.lights.length; i < len; i++) {
-                if (this.lights[i].id === light.id) {
-                    this.lights.splice(i, 1);
-                    hash = null;
-                    return;
-                }
-            }
-        };
-
-        this.addReflectionMap = function (reflectionMap) {
-            this.reflectionMaps.push(reflectionMap);
-            hash = null;
-        };
-
-        this.removeReflectionMap = function (reflectionMap) {
-            for (var i = 0, len = this.reflectionMaps.length; i < len; i++) {
-                if (this.reflectionMaps[i].id === reflectionMap.id) {
-                    this.reflectionMaps.splice(i, 1);
-                    hash = null;
-                    return;
-                }
-            }
-        };
-
-        this.addLightMap = function (lightMap) {
-            this.lightMaps.push(lightMap);
-            hash = null;
-        };
-
-        this.removeLightMap = function (lightMap) {
-            for (var i = 0, len = this.lightMaps.length; i < len; i++) {
-                if (this.lightMaps[i].id === lightMap.id) {
-                    this.lightMaps.splice(i, 1);
-                    hash = null;
-                    return;
-                }
-            }
-        };
-    })();
-
 
     this.webglRestored = function (gl) {
         // gl = gl;
@@ -6227,96 +6061,39 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         // imageDirty = true;
     };
 
-    this.createObject = function (meshId, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
-        var objectId = ids.addItem({});
-        var object = new xeogl.renderer.Object(objectId, meshId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
-        if (object.errors) {
-            object.destroy();
-            ids.removeItem(objectId);
-            return {
-                errors: object.errors
-            };
-        }
-        objects[objectId] = object;
-        objectListDirty = true;
-        stateSortDirty = true;
-        setAmbientLights(this.lights); // TODO: Is self the best place for self?
-        return {
-            objectId: objectId
-        };
-    };
 
-    function setAmbientLights(state) {
-        // var lights = state.lights;
-        // var light;
-        // for (var i = 0, len = lights.length; i < len; i++) {
-        //     light = lights[i];
-        //     if (light.type === "ambient") {
-        //         ambient = light;
-        //     }
-        // }
-    }
-
-    this.destroyObject = function (objectId) {
-        var object = objects[objectId];
-        if (!object) {
-            return;
-        }
-        object.destroy();
-        delete objects[objectId];
-        ids.removeItem(objectId);
-        objectListDirty = true;
-    };
-
+    /**
+     * Clears the canvas.
+     * @param params
+     */
     this.clear = function (params) {
-
         params = params || {};
-
-        if (self.viewport) {
-            var boundary = self.viewport.boundary;
-            gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
-        } else {
-            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        }
-
+        var boundary = scene.viewport.boundary;
+        gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
         if (canvasTransparent) { // Canvas is transparent
             gl.clearColor(0, 0, 0, 0);
         } else {
-            var color = params.ambientColor || ambientColor;
+            var color = params.ambientColor || this.lights.getAmbientColor();
             gl.clearColor(color[0], color[1], color[2], 1.0);
         }
-
         if (bindOutputFrameBuffer) {
             bindOutputFrameBuffer(params.pass);
         }
-
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
         if (unbindOutputFrameBuffer) {
             unbindOutputFrameBuffer(params.pass);
         }
     };
 
-    //this._renderer.render({pass: pass, clear: clear, force: forceRender});
+    /**
+     * Renders the scene.
+     * @param params
+     */
     this.render = function (params) {
         params = params || {};
-
         update();
-
         if (imageDirty || this.imageForceDirty || params.force) {
-
-            // In case context lost/recovered
-
-            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
-                gl.getExtension("OES_element_index_uint");
-            }
-
-            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping w/o precomputed tangents
-                gl.getExtension("OES_standard_derivatives");
-            }
-
-            drawObjects(params);
-
+            drawMeshes(params);
             stats.frame.frameCount++;
             imageDirty = false;
             this.imageForceDirty = false;
@@ -6324,52 +6101,51 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
     };
 
     function update() {
-        if (objectListDirty) {
-            buildObjectList();
-            objectListDirty = false;
+        if (meshListDirty) {
+            buildMeshList();
+            meshListDirty = false;
             stateSortDirty = true;
         }
         if (stateSortDirty) {
-            stateSort();
+            meshList.sort(xeogl.Mesh._compareState);
             stateSortDirty = false;
             imageDirty = true;
         }
         //  if (shadowsDirty) {
-        drawShadowMaps();
+    //    drawShadowMaps();
         // shadowsDirty = false;
         // }
     }
 
-    function buildObjectList() {
-        objectListLen = 0;
-        for (var objectId in objects) {
-            if (objects.hasOwnProperty(objectId)) {
-                objectList[objectListLen++] = objects[objectId];
+    function buildMeshList() {
+        meshListLen = 0;
+        for (var meshId in scene.meshes) {
+            if (scene.meshes.hasOwnProperty(meshId)) {
+                meshList[meshListLen++] = scene.meshes[meshId];
             }
         }
-        for (var i = objectListLen, len = objectList.length; i < len; i++) {
-            objectList[i] = null; // Release memory
+        for (var i = meshListLen, len = meshList.length; i < len; i++) {
+            meshList[i] = null; // Release memory
         }
-        objectList.length = objectListLen;
+        meshList.length = meshListLen;
     }
 
     function stateSort() {
-        objectList.length = objectListLen;
-        objectList.sort(xeogl.renderer.Object.compareState);
+        meshList.sort(xeogl.Mesh._compareState);
     }
 
     function drawShadowMaps() {
-        var lights = self.lights.lights;
-        var light;
-        var i;
-        var len;
-        for (i = 0, len = lights.length; i < len; i++) {
-            light = lights[i];
-            if (!light.shadow) {
-                continue;
-            }
-            drawShadowMap(light);
-        }
+        // var lights = self.lights.lights;
+        // var light;
+        // var i;
+        // var len;
+        // for (i = 0, len = lights.length; i < len; i++) {
+        //     light = lights[i];
+        //     if (!light.shadow) {
+        //         continue;
+        //     }
+        //     drawShadowMap(light);
+        // }
     }
 
     function drawShadowMap(light) {
@@ -6396,12 +6172,8 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         frame.shadowViewMatrix = light.getShadowViewMatrix();
         frame.shadowProjMatrix = light.getShadowProjMatrix();
 
-        if (self.viewport) {
-            var boundary = self.viewport.boundary;
-            gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
-        } else {
-            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        }
+        var boundary = scene.viewport.boundary;
+        gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
 
         gl.clearColor(0, 0, 0, 1);
         gl.enable(gl.DEPTH_TEST);
@@ -6409,74 +6181,70 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         var i;
-        var object;
+        var mesh;
 
-        for (i = 0; i < objectListLen; i++) {
-            object = objectList[i];
-            if (!object.modes.visible || !object.modes.castShadow) {
-                continue; // For now, culled objects still cast shadows because they are just out of view
+        for (i = 0; i < meshListLen; i++) {
+            mesh = meshList[i];
+            if (!mesh._state.visible || !mesh._state.castShadow) {
+                continue; // For now, culled meshes still cast shadows because they are just out of view
             }
-            if (object.material.alpha === 0) {
+            if (mesh._material._state.alpha === 0) {
                 continue;
             }
-            object.drawShadow(frame, light);
+            mesh.drawShadow(frame, light);
         }
 
         renderBuf.unbind();
     }
 
-    var drawObjects = (function () {
+    var drawMeshes = (function () {
 
-        var opaqueGhostFillObjects = [];
-        var opaqueGhostVerticesObjects = [];
-        var opaqueGhostEdgesObjects = [];
-        var transparentGhostFillObjects = [];
-        var transparentGhostVerticesObjects = [];
-        var transparentGhostEdgesObjects = [];
+        var opaqueGhostFillMeshes = [];
+        var opaqueGhostVerticesMeshes = [];
+        var opaqueGhostEdgesMeshes = [];
+        var transparentGhostFillMeshes = [];
+        var transparentGhostVerticesMeshes = [];
+        var transparentGhostEdgesMeshes = [];
 
-        var opaqueHighlightFillObjects = [];
-        var opaqueHighlightVerticesObjects = [];
-        var opaqueHighlightEdgesObjects = [];
-        var transparentHighlightFillObjects = [];
-        var transparentHighlightVerticesObjects = [];
-        var transparentHighlightEdgesObjects = [];
+        var opaqueHighlightFillMeshes = [];
+        var opaqueHighlightVerticesMeshes = [];
+        var opaqueHighlightEdgesMeshes = [];
+        var transparentHighlightFillMeshes = [];
+        var transparentHighlightVerticesMeshes = [];
+        var transparentHighlightEdgesMeshes = [];
 
-        var opaqueSelectedFillObjects = [];
-        var opaqueSelectedVerticesObjects = [];
-        var opaqueSelectedEdgesObjects = [];
-        var transparentSelectedFillObjects = [];
-        var transparentSelectedVerticesObjects = [];
-        var transparentSelectedEdgesObjects = [];
+        var opaqueSelectedFillMeshes = [];
+        var opaqueSelectedVerticesMeshes = [];
+        var opaqueSelectedEdgesMeshes = [];
+        var transparentSelectedFillMeshes = [];
+        var transparentSelectedVerticesMeshes = [];
+        var transparentSelectedEdgesMeshes = [];
 
-        var outlinedObjects = [];
-        var highlightObjects = [];
-        var selectedObjects = [];
-        var transparentObjects = [];
-        var numTransparentObjects = 0;
+        var opaqueEdgesMeshes = [];
+        var transparentEdgesMeshes = [];
+
+        var outlinedMeshes = [];
+        var highlightMeshes = [];
+        var selectedMeshes = [];
+        var transparentMeshes = [];
+        var numTransparentMeshes = 0;
 
         return function (params) {
 
-            if (ambient) {
-                var color = ambient.color;
-                var intensity = ambient.intensity;
-                ambientColor[0] = color[0] * intensity;
-                ambientColor[1] = color[1] * intensity;
-                ambientColor[2] = color[2] * intensity;
-            } else {
-                ambientColor[0] = 0;
-                ambientColor[1] = 0;
-                ambientColor[2] = 0;
+            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {  // In case context lost/recovered
+                gl.getExtension("OES_element_index_uint");
             }
+            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping w/o precomputed tangents
+                gl.getExtension("OES_standard_derivatives");
+            }
+
+            var ambientColor = scene._lightsState.getAmbientColor();
 
             frame.reset();
             frame.pass = params.pass;
 
-            if (self.viewport) {
-                var boundary = self.viewport.boundary;
-                gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
-            } else {
-                gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-            }
+            var boundary = scene.viewport.boundary;
+            gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
 
             if (canvasTransparent) { // Canvas is transparent
                 gl.clearColor(0, 0, 0, 0);
@@ -6491,9 +6259,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
             var i;
             var len;
-            var object;
-            var modes;
-            var material;
+            var mesh;
+            var meshState;
+            var materialState;
             var transparent;
 
             var startTime = Date.now();
@@ -6506,69 +6274,73 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
 
-            var numOpaqueGhostFillObjects = 0;
-            var numOpaqueGhostVerticesObjects = 0;
-            var numOpaqueGhostEdgesObjects = 0;
-            var numTransparentGhostFillObjects = 0;
-            var numTransparentGhostVerticesObjects = 0;
-            var numTransparentGhostEdgesObjects = 0;
-            var numOutlinedObjects = 0;
-            var numHighlightObjects = 0;
-            var numSelectedObjects = 0;
+            var numOpaqueGhostFillMeshes = 0;
+            var numOpaqueGhostVerticesMeshes = 0;
+            var numOpaqueGhostEdgesMeshes = 0;
+            var numTransparentGhostFillMeshes = 0;
+            var numTransparentGhostVerticesMeshes = 0;
+            var numTransparentGhostEdgesMeshes = 0;
 
-            var numOpaqueHighlightFillObjects = 0;
-            var numOpaqueHighlightVerticesObjects = 0;
-            var numOpaqueHighlightEdgesObjects = 0;
-            var numTransparentHighlightFillObjects = 0;
-            var numTransparentHighlightVerticesObjects = 0;
-            var numTransparentHighlightEdgesObjects = 0;
+            var numOutlinedMeshes = 0;
+            var numHighlightMeshes = 0;
+            var numSelectedMeshes = 0;
 
-            var numOpaqueSelectedFillObjects = 0;
-            var numOpaqueSelectedVerticesObjects = 0;
-            var numOpaqueSelectedEdgesObjects = 0;
-            var numTransparentSelectedFillObjects = 0;
-            var numTransparentSelectedVerticesObjects = 0;
-            var numTransparentSelectedEdgesObjects = 0;
+            var numOpaqueHighlightFillMeshes = 0;
+            var numOpaqueHighlightVerticesMeshes = 0;
+            var numOpaqueHighlightEdgesMeshes = 0;
+            var numTransparentHighlightFillMeshes = 0;
+            var numTransparentHighlightVerticesMeshes = 0;
+            var numTransparentHighlightEdgesMeshes = 0;
 
-            numTransparentObjects = 0;
+            var numOpaqueSelectedFillMeshes = 0;
+            var numOpaqueSelectedVerticesMeshes = 0;
+            var numOpaqueSelectedEdgesMeshes = 0;
+            var numTransparentSelectedFillMeshes = 0;
+            var numTransparentSelectedVerticesMeshes = 0;
+            var numTransparentSelectedEdgesMeshes = 0;
+
+            var numOpaqueEdgesMeshes = 0;
+            var numTransparentEdgesMeshes = 0;
+
+            numTransparentMeshes = 0;
 
             // Build draw lists
 
-            for (i = 0, len = objectListLen; i < len; i++) {
+            for (i = 0, len = meshListLen; i < len; i++) {
 
-                object = objectList[i];
-                modes = object.modes;
-                material = object.material;
+                mesh = meshList[i];
+                meshState = mesh._state;
+                materialState = mesh._material._state;
 
-                if (modes.culled === true || modes.visible === false) {
+                if (meshState.culled === true || meshState.visible === false) {
                     continue;
                 }
 
-                if (material.alpha === 0) {
+                if (materialState.alpha === 0) {
                     continue;
                 }
 
-                if (modes.ghosted) {
-                    var ghostMaterial = object.ghostMaterial;
-                    if (ghostMaterial.edges) {
-                        if (ghostMaterial.edgeAlpha < 1.0) {
-                            transparentGhostEdgesObjects[numTransparentGhostEdgesObjects++] = object;
+                if (meshState.ghosted) {
+                    var ghostMaterialState = mesh._ghostMaterial._state;
+                    if (ghostMaterialState.edges) {
+                        if (ghostMaterialState.edgeAlpha < 1.0) {
+                            transparentGhostEdgesMeshes[numTransparentGhostEdgesMeshes++] = mesh;
                         } else {
-                            opaqueGhostEdgesObjects[numOpaqueGhostEdgesObjects++] = object;
+                            opaqueGhostEdgesMeshes[numOpaqueGhostEdgesMeshes++] = mesh;
                         }
                     }
-                    if (ghostMaterial.vertices) {
-                        if (ghostMaterial.vertexAlpha < 1.0) {
-                            transparentGhostVerticesObjects[numTransparentGhostVerticesObjects++] = object;
+                    if (ghostMaterialState.vertices) {
+                        if (ghostMaterialState.vertexAlpha < 1.0) {
+                            transparentGhostVerticesMeshes[numTransparentGhostVerticesMeshes++] = mesh;
                         } else {
-                            opaqueGhostVerticesObjects[numOpaqueGhostVerticesObjects++] = object;
+                            opaqueGhostVerticesMeshes[numOpaqueGhostVerticesMeshes++] = mesh;
                         }
                     }
-                    if (ghostMaterial.fill) {
-                        if (ghostMaterial.fillAlpha < 1.0) {
-                            transparentGhostFillObjects[numTransparentGhostFillObjects++] = object;
+                    if (ghostMaterialState.fill) {
+                        if (ghostMaterialState.fillAlpha < 1.0) {
+                            transparentGhostFillMeshes[numTransparentGhostFillMeshes++] = mesh;
                         } else {
-                            opaqueGhostFillObjects[numOpaqueGhostFillObjects++] = object;
+                            opaqueGhostFillMeshes[numOpaqueGhostFillMeshes++] = mesh;
                         }
                     }
 
@@ -6576,80 +6348,89 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                     // Normal render
 
-                    transparent = object.material.alphaMode === 2 /* blend */ || modes.xray || modes.colorize[3] < 1;
+                    transparent = materialState.alphaMode === 2 /* blend */ || meshState.xray || meshState.colorize[3] < 1;
                     if (transparent) {
-                        transparentObjects[numTransparentObjects++] = object;
+                        transparentMeshes[numTransparentMeshes++] = mesh;
                     } else {
-                        if (modes.outlined) {
-                            outlinedObjects[numOutlinedObjects++] = object;
+                        if (meshState.outlined) {
+                            outlinedMeshes[numOutlinedMeshes++] = mesh;
                         } else {
-                            object.draw(frame);
+                            mesh._draw(frame);
                         }
                     }
                 }
 
-                if (modes.selected) {
-                    var selectedMaterial = object.selectedMaterial;
-                    if (selectedMaterial.edges) {
-                        if (selectedMaterial.edgeAlpha < 1.0) {
-                            transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
+                if (meshState.selected) {
+                    var selectedMaterialState = mesh._selectedMaterial._state;
+                    if (selectedMaterialState.edges) {
+                        if (selectedMaterialState.edgeAlpha < 1.0) {
+                            transparentSelectedEdgesMeshes[numTransparentSelectedEdgesMeshes++] = mesh;
                         } else {
-                            opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
+                            opaqueSelectedEdgesMeshes[numOpaqueSelectedEdgesMeshes++] = mesh;
                         }
                     }
-                    if (selectedMaterial.vertices) {
-                        if (selectedMaterial.vertexAlpha < 1.0) {
-                            transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
+                    if (selectedMaterialState.vertices) {
+                        if (selectedMaterialState.vertexAlpha < 1.0) {
+                            transparentSelectedVerticesMeshes[numTransparentSelectedVerticesMeshes++] = mesh;
                         } else {
-                            opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
+                            opaqueSelectedVerticesMeshes[numOpaqueSelectedVerticesMeshes++] = mesh;
                         }
                     }
-                    if (selectedMaterial.fill) {
-                        if (selectedMaterial.fillAlpha < 1.0) {
-                            transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
+                    if (selectedMaterialState.fill) {
+                        if (selectedMaterialState.fillAlpha < 1.0) {
+                            transparentSelectedFillMeshes[numTransparentSelectedFillMeshes++] = mesh;
                         } else {
-                            opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
+                            opaqueSelectedFillMeshes[numOpaqueSelectedFillMeshes++] = mesh;
                         }
                     }
-                    if (modes.selected) {
-                        selectedObjects[numSelectedObjects++] = object;
+                    if (meshState.selected) {
+                        selectedMeshes[numSelectedMeshes++] = mesh;
                     }
                 }
 
-                if (modes.highlighted) {
-                    var highlightMaterial = object.highlightMaterial;
-                    if (highlightMaterial.edges) {
-                        if (highlightMaterial.edgeAlpha < 1.0) {
-                            transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
+                if (meshState.highlighted) {
+                    var highlightMaterialState = mesh._highlightMaterial._state;
+                    if (highlightMaterialState.edges) {
+                        if (highlightMaterialState.edgeAlpha < 1.0) {
+                            transparentHighlightEdgesMeshes[numTransparentHighlightEdgesMeshes++] = mesh;
                         } else {
-                            opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
+                            opaqueHighlightEdgesMeshes[numOpaqueHighlightEdgesMeshes++] = mesh;
                         }
                     }
-                    if (highlightMaterial.vertices) {
-                        if (highlightMaterial.vertexAlpha < 1.0) {
-                            transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
+                    if (highlightMaterialState.vertices) {
+                        if (highlightMaterialState.vertexAlpha < 1.0) {
+                            transparentHighlightVerticesMeshes[numTransparentHighlightVerticesMeshes++] = mesh;
                         } else {
-                            opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
+                            opaqueHighlightVerticesMeshes[numOpaqueHighlightVerticesMeshes++] = mesh;
                         }
                     }
-                    if (highlightMaterial.fill) {
-                        if (highlightMaterial.fillAlpha < 1.0) {
-                            transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
+                    if (highlightMaterialState.fill) {
+                        if (highlightMaterialState.fillAlpha < 1.0) {
+                            transparentHighlightFillMeshes[numTransparentHighlightFillMeshes++] = mesh;
                         } else {
-                            opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
+                            opaqueHighlightFillMeshes[numOpaqueHighlightFillMeshes++] = mesh;
                         }
                     }
-                    if (modes.highlighted) {
-                        highlightObjects[numHighlightObjects++] = object;
+                    if (meshState.highlighted) {
+                        highlightMeshes[numHighlightMeshes++] = mesh;
+                    }
+                }
+
+                if (meshState.edges) {
+                    var edgeMaterial = mesh._edgeMaterial._state;
+                    if (edgeMaterial.edgeAlpha < 1.0) {
+                        transparentEdgesMeshes[numTransparentEdgesMeshes++] = mesh;
+                    } else {
+                        opaqueEdgesMeshes[numOpaqueEdgesMeshes++] = mesh;
                     }
                 }
             }
 
-            // Render opaque outlined objects
+            // Render opaque outlined meshes
 
-            if (numOutlinedObjects > 0) {
+            if (numOutlinedMeshes > 0) {
 
-                // Render objects
+                // Render meshes
 
                 gl.enable(gl.STENCIL_TEST);
                 gl.stencilFunc(gl.ALWAYS, 1, 1);
@@ -6658,8 +6439,8 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.clearStencil(0);
                 gl.clear(gl.STENCIL_BUFFER_BIT);
 
-                for (i = 0; i < numOutlinedObjects; i++) {
-                    outlinedObjects[i].draw(frame);
+                for (i = 0; i < numOutlinedMeshes; i++) {
+                    outlinedMeshes[i]._draw(frame);
                 }
 
                 // Render outlines
@@ -6669,38 +6450,46 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.stencilMask(0x00);
                 gl.disable(gl.CULL_FACE); // Need both faces for better corners with face-aligned normals
 
-                for (i = 0; i < numOutlinedObjects; i++) {
-                    outlinedObjects[i].drawOutline(frame);
+                for (i = 0; i < numOutlinedMeshes; i++) {
+                    outlinedMeshes[i]._drawOutline(frame);
                 }
 
                 gl.disable(gl.STENCIL_TEST);
             }
 
-            // Render opaque ghosted objects
+            // Render opaque edges meshes
 
-            if (numOpaqueGhostFillObjects > 0) {
-                for (i = 0; i < numOpaqueGhostFillObjects; i++) {
-                    opaqueGhostFillObjects[i].drawGhostFill(frame);
+            if (numOpaqueEdgesMeshes > 0) {
+                for (i = 0; i < numOpaqueEdgesMeshes; i++) {
+                    opaqueEdgesMeshes[i]._drawEdges(frame);
                 }
             }
 
-            if (numOpaqueGhostEdgesObjects > 0) {
-                for (i = 0; i < numOpaqueGhostEdgesObjects; i++) {
-                    opaqueGhostEdgesObjects[i].drawGhostEdges(frame);
+            // Render opaque ghosted meshes
+
+            if (numOpaqueGhostFillMeshes > 0) {
+                for (i = 0; i < numOpaqueGhostFillMeshes; i++) {
+                    opaqueGhostFillMeshes[i]._drawGhostFill(frame);
                 }
             }
 
-            if (numOpaqueGhostVerticesObjects > 0) {
-                for (i = 0; i < numOpaqueGhostVerticesObjects; i++) {
-                    opaqueGhostVerticesObjects[i].drawGhostVertices(frame);
+            if (numOpaqueGhostEdgesMeshes > 0) {
+                for (i = 0; i < numOpaqueGhostEdgesMeshes; i++) {
+                    opaqueGhostEdgesMeshes[i]._drawGhostEdges(frame);
+                }
+            }
+
+            if (numOpaqueGhostVerticesMeshes > 0) {
+                for (i = 0; i < numOpaqueGhostVerticesMeshes; i++) {
+                    opaqueGhostVerticesMeshes[i]._drawGhostVertices(frame);
                 }
             }
 
             var transparentDepthMask = true;
 
-            if (numTransparentGhostFillObjects > 0 || numTransparentGhostEdgesObjects > 0 || numTransparentGhostVerticesObjects > 0 || numTransparentObjects > 0) {
+            if (numTransparentGhostFillMeshes > 0 || numTransparentGhostEdgesMeshes > 0 || numTransparentGhostVerticesMeshes > 0 || numTransparentMeshes > 0) {
 
-                // Draw transparent objects
+                // Draw transparent meshes
 
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
@@ -6726,74 +6515,74 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                     gl.depthMask(false);
                 }
 
-                // Render transparent ghosted objects
+                // Render transparent ghosted meshes
 
-                if (numTransparentGhostVerticesObjects > 0) {
-                    for (i = 0; i < numTransparentGhostVerticesObjects; i++) {
-                        transparentGhostVerticesObjects[i].drawGhostVertices(frame);
+                if (numTransparentGhostVerticesMeshes > 0) {
+                    for (i = 0; i < numTransparentGhostVerticesMeshes; i++) {
+                        transparentGhostVerticesMeshes[i]._drawGhostVertices(frame);
                     }
                 }
 
-                if (numTransparentGhostEdgesObjects > 0) {
-                    for (i = 0; i < numTransparentGhostEdgesObjects; i++) {
-                        transparentGhostEdgesObjects[i].drawGhostEdges(frame);
+                if (numTransparentGhostEdgesMeshes > 0) {
+                    for (i = 0; i < numTransparentGhostEdgesMeshes; i++) {
+                        transparentGhostEdgesMeshes[i]._drawGhostEdges(frame);
                     }
                 }
 
-                if (numTransparentGhostFillObjects > 0) {
-                    for (i = 0; i < numTransparentGhostFillObjects; i++) {
-                        transparentGhostFillObjects[i].drawGhostFill(frame);
+                if (numTransparentGhostFillMeshes > 0) {
+                    for (i = 0; i < numTransparentGhostFillMeshes; i++) {
+                        transparentGhostFillMeshes[i]._drawGhostFill(frame);
                     }
                 }
 
-                numOutlinedObjects = 0;
+                numOutlinedMeshes = 0;
 
-                for (i = 0; i < numTransparentObjects; i++) {
-                    object = transparentObjects[i];
-                    if (object.modes.outlined) {
-                        outlinedObjects[numOutlinedObjects++] = object; // Build outlined list
+                for (i = 0; i < numTransparentMeshes; i++) {
+                    mesh = transparentMeshes[i];
+                    if (mesh._state.outlined) {
+                        outlinedMeshes[numOutlinedMeshes++] = mesh; // Build outlined list
                         continue;
                     }
 
-                    object.draw(frame);
+                    mesh._draw(frame);
                 }
 
-                // Transparent outlined objects are not supported yet
+                // Transparent outlined meshes are not supported yet
 
                 gl.disable(gl.BLEND);
             }
 
             // Highlighting
 
-            if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
+            if (numOpaqueHighlightFillMeshes > 0 || numOpaqueHighlightEdgesMeshes > 0 || numOpaqueHighlightVerticesMeshes > 0) {
 
-                // Render opaque highlighted objects
+                // Render opaque highlighted meshes
 
                 frame.lastProgramId = null;
                 gl.clear(gl.DEPTH_BUFFER_BIT);
 
-                if (numOpaqueHighlightVerticesObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightVerticesObjects; i++) {
-                        opaqueHighlightVerticesObjects[i].drawHighlightVertices(frame);
+                if (numOpaqueHighlightVerticesMeshes > 0) {
+                    for (i = 0; i < numOpaqueHighlightVerticesMeshes; i++) {
+                        opaqueHighlightVerticesMeshes[i]._drawHighlightVertices(frame);
                     }
                 }
 
-                if (numOpaqueHighlightEdgesObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightEdgesObjects; i++) {
-                        opaqueHighlightEdgesObjects[i].drawHighlightEdges(frame);
+                if (numOpaqueHighlightEdgesMeshes > 0) {
+                    for (i = 0; i < numOpaqueHighlightEdgesMeshes; i++) {
+                        opaqueHighlightEdgesMeshes[i]._drawHighlightEdges(frame);
                     }
                 }
 
-                if (numOpaqueHighlightFillObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightFillObjects; i++) {
-                        opaqueHighlightFillObjects[i].drawHighlightFill(frame);
+                if (numOpaqueHighlightFillMeshes > 0) {
+                    for (i = 0; i < numOpaqueHighlightFillMeshes; i++) {
+                        opaqueHighlightFillMeshes[i]._drawHighlightFill(frame);
                     }
                 }
             }
 
-            if (numTransparentHighlightFillObjects > 0 || numTransparentHighlightEdgesObjects > 0 || numTransparentHighlightVerticesObjects > 0) {
+            if (numTransparentHighlightFillMeshes > 0 || numTransparentHighlightEdgesMeshes > 0 || numTransparentHighlightVerticesMeshes > 0) {
 
-                // Render transparent highlighted objects
+                // Render transparent highlighted meshes
 
                 frame.lastProgramId = null;
 
@@ -6803,21 +6592,21 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
                 //          gl.disable(gl.DEPTH_TEST);
 
-                if (numTransparentHighlightVerticesObjects > 0) {
-                    for (i = 0; i < numTransparentHighlightVerticesObjects; i++) {
-                        transparentHighlightVerticesObjects[i].drawHighlightVertices(frame);
+                if (numTransparentHighlightVerticesMeshes > 0) {
+                    for (i = 0; i < numTransparentHighlightVerticesMeshes; i++) {
+                        transparentHighlightVerticesMeshes[i]._drawHighlightVertices(frame);
                     }
                 }
 
-                if (numTransparentHighlightEdgesObjects > 0) {
-                    for (i = 0; i < numTransparentHighlightEdgesObjects; i++) {
-                        transparentHighlightEdgesObjects[i].drawHighlightEdges(frame);
+                if (numTransparentHighlightEdgesMeshes > 0) {
+                    for (i = 0; i < numTransparentHighlightEdgesMeshes; i++) {
+                        transparentHighlightEdgesMeshes[i]._drawHighlightEdges(frame);
                     }
                 }
 
-                if (numTransparentHighlightFillObjects > 0) {
-                    for (i = 0; i < numTransparentHighlightFillObjects; i++) {
-                        transparentHighlightFillObjects[i].drawHighlightFill(frame);
+                if (numTransparentHighlightFillMeshes > 0) {
+                    for (i = 0; i < numTransparentHighlightFillMeshes; i++) {
+                        transparentHighlightFillMeshes[i]._drawHighlightFill(frame);
                     }
                 }
 
@@ -6827,35 +6616,35 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
             // Selection
 
-            if (numOpaqueSelectedFillObjects > 0 || numOpaqueSelectedEdgesObjects > 0 || numOpaqueSelectedVerticesObjects > 0) {
+            if (numOpaqueSelectedFillMeshes > 0 || numOpaqueSelectedEdgesMeshes > 0 || numOpaqueSelectedVerticesMeshes > 0) {
 
-                // Render opaque selected objects
+                // Render opaque selected meshes
 
                 frame.lastProgramId = null;
                 gl.clear(gl.DEPTH_BUFFER_BIT);
 
-                if (numOpaqueSelectedVerticesObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedVerticesObjects; i++) {
-                        opaqueSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                if (numOpaqueSelectedVerticesMeshes > 0) {
+                    for (i = 0; i < numOpaqueSelectedVerticesMeshes; i++) {
+                        opaqueSelectedVerticesMeshes[i]._drawSelectedVertices(frame);
                     }
                 }
 
-                if (numOpaqueSelectedEdgesObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedEdgesObjects; i++) {
-                        opaqueSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                if (numOpaqueSelectedEdgesMeshes > 0) {
+                    for (i = 0; i < numOpaqueSelectedEdgesMeshes; i++) {
+                        opaqueSelectedEdgesMeshes[i]._drawSelectedEdges(frame);
                     }
                 }
 
-                if (numOpaqueSelectedFillObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedFillObjects; i++) {
-                        opaqueSelectedFillObjects[i].drawSelectedFill(frame);
+                if (numOpaqueSelectedFillMeshes > 0) {
+                    for (i = 0; i < numOpaqueSelectedFillMeshes; i++) {
+                        opaqueSelectedFillMeshes[i]._drawSelectedFill(frame);
                     }
                 }
             }
 
-            if (numTransparentSelectedFillObjects > 0 || numTransparentSelectedEdgesObjects > 0 || numTransparentSelectedVerticesObjects > 0) {
+            if (numTransparentSelectedFillMeshes > 0 || numTransparentSelectedEdgesMeshes > 0 || numTransparentSelectedVerticesMeshes > 0) {
 
-                // Render transparent selected objects
+                // Render transparent selected meshes
 
                 frame.lastProgramId = null;
 
@@ -6865,21 +6654,21 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
                 //          gl.disable(gl.DEPTH_TEST);
 
-                if (numTransparentSelectedVerticesObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedVerticesObjects; i++) {
-                        transparentSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                if (numTransparentSelectedVerticesMeshes > 0) {
+                    for (i = 0; i < numTransparentSelectedVerticesMeshes; i++) {
+                        transparentSelectedVerticesMeshes[i]._drawSelectedVertices(frame);
                     }
                 }
 
-                if (numTransparentSelectedEdgesObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedEdgesObjects; i++) {
-                        transparentSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                if (numTransparentSelectedEdgesMeshes > 0) {
+                    for (i = 0; i < numTransparentSelectedEdgesMeshes; i++) {
+                        transparentSelectedEdgesMeshes[i]._drawSelectedEdges(frame);
                     }
                 }
 
-                if (numTransparentSelectedFillObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedFillObjects; i++) {
-                        transparentSelectedFillObjects[i].drawSelectedFill(frame);
+                if (numTransparentSelectedFillMeshes > 0) {
+                    for (i = 0; i < numTransparentSelectedFillMeshes; i++) {
+                        transparentSelectedFillMeshes[i]._drawSelectedFill(frame);
                     }
                 }
 
@@ -6916,6 +6705,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         };
     })();
 
+    /**
+     * Picks a mesh in the scene.
+     */
     this.pick = (function () {
 
         var math = xeogl.math;
@@ -6957,26 +6749,26 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
                 pickProjMatrix = pickFrustumMatrix;
 
-                canvasX = canvas.clientWidth * 0.5;
-                canvasY = canvas.clientHeight * 0.5;
+                canvasX = Math.floor(canvas.clientWidth * 0.5);
+                canvasY = Math.floor(canvas.clientHeight * 0.5);
             }
 
             pickBuf = pickBuf || new xeogl.renderer.RenderBuffer(canvas, gl);
             pickBuf.bind();
 
-            var object = pickObject(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params);
+            var mesh = pickMesh(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params);
 
-            if (!object) {
+            if (!mesh) {
                 pickBuf.unbind();
                 return null;
             }
 
             var hit = {
-                mesh: object.meshId
+                mesh: mesh
             };
 
             if (params.pickSurface) {
-                hit.primIndex = pickTriangle(object, canvasX, canvasY, pickViewMatrix, pickProjMatrix);
+                hit.primIndex = pickTriangle(mesh, canvasX, canvasY, pickViewMatrix, pickProjMatrix);
             }
 
             if (pickViewMatrix) {
@@ -6990,20 +6782,16 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         };
     })();
 
-    function pickObject(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params) {
+    function pickMesh(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params) {
 
         frame.reset();
         frame.backfaces = true;
         frame.pickViewMatrix = pickViewMatrix;
         frame.pickProjMatrix = pickProjMatrix;
-        frame.pickObjectIndex = 1;
+        frame.pickMeshIndex = 1;
 
-        if (self.viewport) {
-            var boundary = self.viewport.boundary;
-            gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
-        } else {
-            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        }
+        var boundary = scene.viewport.boundary;
+        gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
 
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
@@ -7011,53 +6799,47 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        objectPickListLen = 0;
+        meshPickListLen = 0;
 
         var i;
         var len;
-        var object;
-        var includeObjects = params.includeObjects;
-        var excludeObjects = params.excludeObjects;
+        var mesh;
+        var includeMeshIds = params.includeMeshIds;
+        var excludeMeshIds = params.excludeMeshIds;
 
-        for (i = 0, len = objectListLen; i < len; i++) {
-            object = objectList[i];
-            if (object.modes.culled === true || object.modes.visible === false || object.modes.pickable === false) {
+        for (i = 0, len = meshListLen; i < len; i++) {
+            mesh = meshList[i];
+            if (mesh._state.culled === true || mesh._state.visible === false || mesh._state.pickable === false) {
                 continue;
             }
-            if (includeObjects && !includeObjects[object.id]) {
+            if (includeMeshIds && !includeMeshIds[mesh.id]) {
                 continue;
             }
-            if (excludeObjects && excludeObjects[object.id]) {
+            if (excludeMeshIds && excludeMeshIds[mesh.id]) {
                 continue;
             }
-            objectPickList[objectPickListLen++] = object;
-            object.pickObject(frame);
+            meshPickList[meshPickListLen++] = mesh;
+            mesh._pickMesh(frame);
         }
 
         var pix = pickBuf.read(canvasX, canvasY);
-        var pickedObjectIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+        var pickedMeshIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
 
-        pickedObjectIndex--;
+        pickedMeshIndex--;
 
-        //pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
-
-        return pickedObjectIndex >= 0 ? objectPickList[pickedObjectIndex] : null;
+        return pickedMeshIndex >= 0 ? meshPickList[pickedMeshIndex] : null;
     }
 
-    function pickTriangle(object, canvasX, canvasY, pickViewMatrix, pickProjMatrix) {
+    function pickTriangle(mesh, canvasX, canvasY, pickViewMatrix, pickProjMatrix) {
 
         frame.reset();
         frame.backfaces = true;
-        frame.frontface = true; // "ccw" 
+        frame.frontface = true; // "ccw"
         frame.pickViewMatrix = pickViewMatrix; // Can be null
         frame.pickProjMatrix = pickProjMatrix; // Can be null
 
-        if (self.viewport) {
-            var boundary = self.viewport.boundary;
-            gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
-        } else {
-            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        }
+        var boundary = scene.viewport.boundary;
+        gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
 
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
@@ -7065,7 +6847,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        object.pickTriangle(frame);
+        mesh._pickTriangle(frame);
 
         var pix = pickBuf.read(canvasX, canvasY);
 
@@ -7076,14 +6858,18 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         return primIndex;
     }
 
+    /**
+     * Read pixels from the frame buffer. Performse a force-render first
+     * @param pixels
+     * @param colors
+     * @param len
+     * @param opaqueOnly
+     */
     this.readPixels = function (pixels, colors, len, opaqueOnly) {
-
         readPixelBuf = readPixelBuf || (readPixelBuf = new xeogl.renderer.RenderBuffer(canvas, gl));
         readPixelBuf.bind();
         readPixelBuf.clear();
-
         this.render({force: true, opaqueOnly: opaqueOnly});
-
         var color;
         var i;
         var j;
@@ -7097,12 +6883,13 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             colors[k + 2] = color[2];
             colors[k + 3] = color[3];
         }
-
         readPixelBuf.unbind();
-
         imageDirty = true;
     };
 
+    /**
+     * Destroys this renderer.
+     */
     this.destroy = function () {
         if (pickBuf) {
             pickBuf.destroy();
@@ -7173,276 +6960,6 @@ xeogl.renderer.webgl = {
  * @author xeolabs / https://github.com/xeolabs
  */
 
-xeogl.renderer.Object = function (id, meshId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
-
-    this.id = id;
-    this.meshId = meshId;
-    this.gl = gl;
-    this.scene = scene;
-
-    this.material = material;
-    this.ghostMaterial = ghostMaterial;
-    this.outlineMaterial = outlineMaterial;
-    this.highlightMaterial = highlightMaterial;
-    this.selectedMaterial = selectedMaterial;
-    this.vertexBufs = vertexBufs;
-    this.geometry = geometry;
-    this.modelTransform = modelTransform;
-    this.modes = modes;
-
-    this.scene = scene;
-    this.gl = gl;
-
-    this._draw = null;
-    this._ghostFill = null;
-    this._ghostEdges = null;
-    this._ghostVertices = null;
-    this._shadow = null;
-    this._outline = null;
-    this._pickObject = null;
-    this._pickTriangle = null;
-    this._pickVertex = null;
-
-    this._draw = xeogl.renderer.DrawRenderer.create(this.gl, [this.gl.canvas.id, (this.scene.gammaOutput ? "gam" : ""), this.scene.lights.getHash(),
-        this.scene.clips.getHash(), this.geometry.hash, this.material.hash, this.modes.hash].join(";"), this.scene, this);
-    if (this._draw.errors) {
-        this.errors = (this.errors || []).concat(this._draw.errors);
-        console.error(this._draw.errors.join("\n"));
-    }
-};
-
-xeogl.renderer.Object.compareState = function (a, b) {
-    return (a.modes.layer - b.modes.layer)
-        || (a._draw.id - b._draw.id)
-        || (a.material.id - b.material.id)  // TODO: verify which of material and vertexBufs should be highest order
-        || (a.vertexBufs.id - b.vertexBufs.id)
-        || (a.geometry.id - b.geometry.id);
-};
-
-xeogl.renderer.Object.prototype._getSceneHash = function () {
-    return (this.scene.gammaInput ? "gi;" : ";") + (this.scene.gammaOutput ? "go" : "");
-};
-
-xeogl.renderer.Object.prototype.draw = function (frame) {
-    if (!this._draw) {
-        this._draw = xeogl.renderer.DrawRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.lights.getHash(), this.scene.clips.getHash(), this.geometry.hash, this.material.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._draw.errors) {
-            this.errors = (this.errors || []).concat(this._draw.errors);
-            console.error(this._draw.errors.join("\n"));
-            return;
-        }
-    }
-    this._draw.drawObject(frame, this);
-};
-
-xeogl.renderer.Object.prototype.drawGhostFill = function (frame) {
-    if (!this._ghostFill) {
-        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostFill.errors) {
-            this.errors = (this.errors || []).concat(this._ghostFill.errors);
-            console.error(this._ghostFill.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostFill.drawObject(frame, this, 0); // 0 == ghost
-};
-
-xeogl.renderer.Object.prototype.drawGhostEdges = function (frame) {
-    if (!this._ghostEdges) {
-        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostEdges.errors) {
-            this.errors = (this.errors || []).concat(this._ghostEdges.errors);
-            console.error(this._ghostEdges.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostEdges.drawObject(frame, this, 0); // 0 == ghost
-};
-
-xeogl.renderer.Object.prototype.drawGhostVertices = function (frame) {
-    if (!this._ghostVertices) {
-        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostVertices.errors) {
-            this.errors = (this.errors || []).concat(this._ghostVertices.errors);
-            console.error(this._ghostVertices.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostVertices.drawObject(frame, this, 0); // 0 == ghost
-};
-
-xeogl.renderer.Object.prototype.drawHighlightFill = function (frame) {
-    if (!this._ghostFill) {
-        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostFill.errors) {
-            this.errors = (this.errors || []).concat(this._ghostFill.errors);
-            console.error(this._ghostFill.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostFill.drawObject(frame, this, 1); // 1 == highlight
-};
-
-xeogl.renderer.Object.prototype.drawHighlightEdges = function (frame) {
-    if (!this._ghostEdges) {
-        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostEdges.errors) {
-            this.errors = (this.errors || []).concat(this._ghostEdges.errors);
-            console.error(this._ghostEdges.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostEdges.drawObject(frame, this, 1); // 1 == highlight
-};
-
-xeogl.renderer.Object.prototype.drawHighlightVertices = function (frame) {
-    if (!this._ghostVertices) {
-        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostVertices.errors) {
-            this.errors = (this.errors || []).concat(this._ghostVertices.errors);
-            console.error(this._ghostVertices.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostVertices.drawObject(frame, this, 1); // 1 == highlight
-};
-
-xeogl.renderer.Object.prototype.drawSelectedFill = function (frame) {
-    if (!this._ghostFill) {
-        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostFill.errors) {
-            this.errors = (this.errors || []).concat(this._ghostFill.errors);
-            console.error(this._ghostFill.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostFill.drawObject(frame, this, 2); // 2 == selected
-};
-
-xeogl.renderer.Object.prototype.drawSelectedEdges = function (frame) {
-    if (!this._ghostEdges) {
-        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostEdges.errors) {
-            this.errors = (this.errors || []).concat(this._ghostEdges.errors);
-            console.error(this._ghostEdges.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostEdges.drawObject(frame, this, 2); // 2 == selected
-};
-
-xeogl.renderer.Object.prototype.drawSelectedVertices = function (frame) {
-    if (!this._ghostVertices) {
-        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._ghostVertices.errors) {
-            this.errors = (this.errors || []).concat(this._ghostVertices.errors);
-            console.error(this._ghostVertices.errors.join("\n"));
-            return;
-        }
-    }
-    this._ghostVertices.drawObject(frame, this, 2); // 2 == selected
-};
-
-xeogl.renderer.Object.prototype.drawShadow = function (frame, light) {
-    if (!this._shadow) {
-        this._shadow = xeogl.renderer.ShadowRenderer.create(this.gl, [this.gl.canvas.id, this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._shadow.errors) {
-            this.errors = (this.errors || []).concat(this._shadow.errors);
-            console.error(this._shadow.errors.join("\n"));
-            return;
-        }
-    }
-    this._shadow.drawObject(frame, this, light);
-};
-
-xeogl.renderer.Object.prototype.drawOutline = function (frame) {
-    if (!this._outline) {
-        this._outline = xeogl.renderer.OutlineRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._outline.errors) {
-            this.errors = (this.errors || []).concat(this._outline.errors);
-            console.error(this._outline.errors.join("\n"));
-            return;
-        }
-    }
-    this._outline.drawObject(frame, this);
-};
-
-xeogl.renderer.Object.prototype.pickObject = function (frame) {
-    if (!this._pickObject) {
-        this._pickObject = xeogl.renderer.PickObjectRenderer.create(this.gl, [this.gl.canvas.id, this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._pickObject.errors) {
-            this.errors = (this.errors || []).concat(this._pickObject.errors);
-            return;
-        }
-    }
-    this._pickObject.drawObject(frame, this);
-};
-
-xeogl.renderer.Object.prototype.pickTriangle = function (frame) {
-    if (!this._pickTriangle) {
-        this._pickTriangle = xeogl.renderer.PickTriangleRenderer.create(this.gl, [this.gl.canvas.id, this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._pickTriangle.errors) {
-            this.errors = (this.errors || []).concat(this._pickTriangle.errors);
-            console.error(this._pickTriangle.errors.join("\n"));
-            return;
-        }
-    }
-    this._pickTriangle.drawObject(frame, this);
-};
-
-xeogl.renderer.Object.prototype.pickVertex = function (frame) {
-    if (!this._pickVertex) {
-        this._pickVertex = xeogl.renderer.PickVertexRenderer.create(this.gl, [this.gl.canvas.id, this.scene.clips.getHash(), this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
-        if (this._pickVertex.errors) {
-            this.errors = (this.errors || []).concat(this._pickVertex.errors);
-            console.error(this._pickVertex.errors.join("\n"));
-            return;
-        }
-    }
-    this._pickVertex.drawObject(frame, this);
-};
-
-xeogl.renderer.Object.prototype.destroy = function () {
-    if (this._draw) {
-        this._draw.destroy();
-        this._draw = null;
-    }
-    if (this._ghostFill) {
-        this._ghostFill.destroy();
-        this._ghostFill = null;
-    }
-    if (this._ghostEdges) {
-        this._ghostEdges.destroy();
-        this._ghostEdges = null;
-    }
-    if (this._ghostVertices) {
-        this._ghostVertices.destroy();
-        this._ghostVertices = null;
-    }
-    if (this._outline) {
-        this._outline.destroy();
-        this._outline = null;
-    }
-    if (this._shadow) {
-        this._shadow.destroy();
-        this._shadow = null;
-    }
-    if (this._pickObject) {
-        this._pickObject.destroy();
-        this._pickObject = null;
-    }
-    if (this._pickTriangle) {
-        this._pickTriangle.destroy();
-        this._pickTriangle = null;
-    }
-    if (this._pickVertex) {
-        this._pickVertex.destroy();
-        this._pickVertex = null;
-    }
-};;/**
- * @author xeolabs / https://github.com/xeolabs
- */
-
 xeogl.renderer = xeogl.renderer || {};
 
 /**
@@ -7468,7 +6985,7 @@ xeogl.renderer.Frame.prototype.reset = function () {
     this.shadowProjMatrix = null;
     this.pickViewMatrix = null;
     this.pickProjMatrix = null;
-    this.pickObjectIndex = 1;
+    this.pickmeshIndex = 1;
 };;/**
  * @author xeolabs / https://github.com/xeolabs
  */
@@ -7704,49 +7221,20 @@ xeogl.renderer.Shader = function (gl, type, source) {
 
 xeogl.renderer.Shader.prototype.destroy = function () {
 
-};;/**
- * @author xeolabs / https://github.com/xeolabs
- */
-
-xeogl.renderer.State = Class.extend({
-    __init: function (cfg) {
-        this.id = this._ids.addItem({});
-        this.hash = cfg.hash || "" + this.id; // Not used by all sub-classes
+};;(function () {
+    var ids = new xeogl.utils.Map({});
+    xeogl.renderer.State = function (cfg) {
+        this.id = ids.addItem({});
         for (var key in cfg) {
             if (cfg.hasOwnProperty(key)) {
                 this[key] = cfg[key];
             }
         }
-    },
-    destroy: function () {
-        this._ids.removeItem(this.id);
-    }
-});
-
-xeogl.renderer.Visibility = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Cull = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Modes = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Lights = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Light = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.LambertMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.PhongMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.SpecularMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.MetallicMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.VerticesMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.EmphasisMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.OutlineMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.HighlightMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.ViewTransform = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.ProjTransform = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Transform = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Clips = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Texture = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.CubeTexture = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Fresnel = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.VertexBufs = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Geometry = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.Viewport = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-;/**
+    };
+    xeogl.renderer.State.prototype.destroy = function () {
+        ids.removeItem(this.id);
+    };
+})();;/**
  * @author xeolabs / https://github.com/xeolabs
  */
 
@@ -8298,16 +7786,30 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     var ids = new xeogl.utils.Map({});
 
-    xeogl.renderer.DrawRenderer = function (gl, hash, scene, object) {
-        this._init(gl, hash, scene, object);
+    xeogl.renderer.DrawRenderer = function (hash, mesh) {
+        this._init(hash, mesh);
     };
 
     var drawRenderers = {};
 
-    xeogl.renderer.DrawRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.DrawRenderer.get = function (mesh) {
+        var scene = mesh.scene;
+        var hash = [
+            scene.canvas.canvas.id,
+            (scene.gammaInput ? "gi;" : ";") + (scene.gammaOutput ? "go" : ""),
+            scene._lightsState.getHash(),
+            scene._clipsState.getHash(),
+            mesh._geometry._state.hash,
+            mesh._material._state.hash,
+            mesh._state.hash
+        ].join(";");
         var renderer = drawRenderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.DrawRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.DrawRenderer(hash, mesh);
+            if (renderer.errors) {
+                console.log(renderer.errors.join("\n"));
+                return null;
+            }
             drawRenderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -8315,7 +7817,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return renderer;
     };
 
-    xeogl.renderer.DrawRenderer.prototype.destroy = function () {
+    xeogl.renderer.DrawRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
             this._program.destroy();
@@ -8324,33 +7826,31 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.DrawRenderer.prototype._init = function (gl, hash, scene, object) {
-
+    xeogl.renderer.DrawRenderer.prototype._init = function (hash, mesh) {
+        var gl = mesh.scene.canvas.gl;
+        var material = mesh._material;
+        var lightsState = mesh.scene._lightsState;
+        var clipsState = mesh.scene._clipsState;
+        var materialState = mesh._material._state;
         this.id = ids.addItem({});
-        this._gl = gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.DrawShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.DrawShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
         this._uUVDecodeMatrix = program.getLocation("uvDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uModelNormalMatrix = program.getLocation("modelNormalMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uViewNormalMatrix = program.getLocation("viewNormalMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
         this._uGammaFactor = program.getLocation("gammaFactor");
-
         this._uLightAmbient = [];
         this._uLightColor = [];
         this._uLightDir = [];
@@ -8359,7 +7859,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         this._uShadowViewMatrix = [];
         this._uShadowProjMatrix = [];
 
-        var lights = scene.lights.lights;
+        var lights = lightsState.lights;
         var light;
 
         for (var i = 0, len = lights.length; i < len; i++) {
@@ -8397,16 +7897,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         }
 
-        if (scene.lights.lightMaps.length > 0) {
+        if (lightsState.lightMaps.length > 0) {
             this._uLightMap = "lightMap";
         }
 
-        if (scene.lights.reflectionMaps.length > 0) {
+        if (lightsState.reflectionMaps.length > 0) {
             this._uReflectionMap = "reflectionMap";
         }
 
         this._uClips = [];
-        var clips = scene.clips.clips;
+        var clips = clipsState.clips;
         for (var i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
@@ -8415,90 +7915,83 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             });
         }
 
-        var material = object.material;
-
         this._uPointSize = program.getLocation("pointSize");
 
-        switch (material.type) {
-
+        switch (materialState.type) {
             case "LambertMaterial":
-
                 this._uMaterialColor = program.getLocation("materialColor");
                 this._uMaterialEmissive = program.getLocation("materialEmissive");
                 this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-
                 break;
 
             case "PhongMaterial":
-
                 this._uMaterialAmbient = program.getLocation("materialAmbient");
                 this._uMaterialDiffuse = program.getLocation("materialDiffuse");
                 this._uMaterialSpecular = program.getLocation("materialSpecular");
                 this._uMaterialEmissive = program.getLocation("materialEmissive");
                 this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
                 this._uMaterialShininess = program.getLocation("materialShininess");
-
-                if (material.ambientMap) {
+                if (material._ambientMap) {
                     this._uMaterialAmbientMap = "ambientMap";
                     this._uMaterialAmbientMapMatrix = program.getLocation("ambientMapMatrix");
                 }
-                if (material.diffuseMap) {
+                if (material._diffuseMap) {
                     this._uDiffuseMap = "diffuseMap";
                     this._uDiffuseMapMatrix = program.getLocation("diffuseMapMatrix");
                 }
-                if (material.specularMap) {
+                if (material._specularMap) {
                     this._uSpecularMap = "specularMap";
                     this._uSpecularMapMatrix = program.getLocation("specularMapMatrix");
                 }
-                if (material.emissiveMap) {
+                if (material._emissiveMap) {
                     this._uEmissiveMap = "emissiveMap";
                     this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
                 }
-                if (material.alphaMap) {
+                if (material._alphaMap) {
                     this._uAlphaMap = "alphaMap";
                     this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
                 }
-                if (material.reflectivityMap) {
+                if (material._reflectivityMap) {
                     this._uReflectivityMap = "reflectivityMap";
                     this._uReflectivityMapMatrix = program.getLocation("reflectivityMapMatrix");
                 }
-                if (material.normalMap) {
+                if (material._normalMap) {
                     this._uNormalMap = "normalMap";
                     this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
                 }
-                if (material.occlusionMap) {
+                if (material._occlusionMap) {
                     this._uOcclusionMap = "occlusionMap";
                     this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
                 }
-                if (material.diffuseFresnel) {
+                if (material._diffuseFresnel) {
                     this._uDiffuseFresnelEdgeBias = program.getLocation("diffuseFresnelEdgeBias");
                     this._uDiffuseFresnelCenterBias = program.getLocation("diffuseFresnelCenterBias");
                     this._uDiffuseFresnelEdgeColor = program.getLocation("diffuseFresnelEdgeColor");
                     this._uDiffuseFresnelCenterColor = program.getLocation("diffuseFresnelCenterColor");
                     this._uDiffuseFresnelPower = program.getLocation("diffuseFresnelPower");
                 }
-                if (material.specularFresnel) {
+                if (material._specularFresnel) {
                     this._uSpecularFresnelEdgeBias = program.getLocation("specularFresnelEdgeBias");
                     this._uSpecularFresnelCenterBias = program.getLocation("specularFresnelCenterBias");
                     this._uSpecularFresnelEdgeColor = program.getLocation("specularFresnelEdgeColor");
                     this._uSpecularFresnelCenterColor = program.getLocation("specularFresnelCenterColor");
                     this._uSpecularFresnelPower = program.getLocation("specularFresnelPower");
                 }
-                if (material.alphaFresnel) {
+                if (material._alphaFresnel) {
                     this._uAlphaFresnelEdgeBias = program.getLocation("alphaFresnelEdgeBias");
                     this._uAlphaFresnelCenterBias = program.getLocation("alphaFresnelCenterBias");
                     this._uAlphaFresnelEdgeColor = program.getLocation("alphaFresnelEdgeColor");
                     this._uAlphaFresnelCenterColor = program.getLocation("alphaFresnelCenterColor");
                     this._uAlphaFresnelPower = program.getLocation("alphaFresnelPower");
                 }
-                if (material.reflectivityFresnel) {
+                if (material._reflectivityFresnel) {
                     this._uReflectivityFresnelEdgeBias = program.getLocation("reflectivityFresnelEdgeBias");
                     this._uReflectivityFresnelCenterBias = program.getLocation("reflectivityFresnelCenterBias");
                     this._uReflectivityFresnelEdgeColor = program.getLocation("reflectivityFresnelEdgeColor");
                     this._uReflectivityFresnelCenterColor = program.getLocation("reflectivityFresnelCenterColor");
                     this._uReflectivityFresnelPower = program.getLocation("reflectivityFresnelPower");
                 }
-                if (material.emissiveFresnel) {
+                if (material._emissiveFresnel) {
                     this._uEmissiveFresnelEdgeBias = program.getLocation("emissiveFresnelEdgeBias");
                     this._uEmissiveFresnelCenterBias = program.getLocation("emissiveFresnelCenterBias");
                     this._uEmissiveFresnelEdgeColor = program.getLocation("emissiveFresnelEdgeColor");
@@ -8508,84 +8001,82 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 break;
 
             case "MetallicMaterial":
-
                 this._uBaseColor = program.getLocation("materialBaseColor");
                 this._uMaterialMetallic = program.getLocation("materialMetallic");
                 this._uMaterialRoughness = program.getLocation("materialRoughness");
                 this._uMaterialSpecularF0 = program.getLocation("materialSpecularF0");
                 this._uMaterialEmissive = program.getLocation("materialEmissive");
                 this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-                if (material.baseColorMap) {
+                if (material._baseColorMap) {
                     this._uBaseColorMap = "baseColorMap";
                     this._uBaseColorMapMatrix = program.getLocation("baseColorMapMatrix");
                 }
-                if (material.metallicMap) {
+                if (material._metallicMap) {
                     this._uMetallicMap = "metallicMap";
                     this._uMetallicMapMatrix = program.getLocation("metallicMapMatrix");
                 }
-                if (material.roughnessMap) {
+                if (material._roughnessMap) {
                     this._uRoughnessMap = "roughnessMap";
                     this._uRoughnessMapMatrix = program.getLocation("roughnessMapMatrix");
                 }
-                if (material.metallicRoughnessMap) {
+                if (material._metallicRoughnessMap) {
                     this._uMetallicRoughnessMap = "metallicRoughnessMap";
                     this._uMetallicRoughnessMapMatrix = program.getLocation("metallicRoughnessMapMatrix");
                 }
-                if (material.emissiveMap) {
+                if (material._emissiveMap) {
                     this._uEmissiveMap = "emissiveMap";
                     this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
                 }
-                if (material.occlusionMap) {
+                if (material._occlusionMap) {
                     this._uOcclusionMap = "occlusionMap";
                     this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
                 }
-                if (material.alphaMap) {
+                if (material._alphaMap) {
                     this._uAlphaMap = "alphaMap";
                     this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
                 }
-                if (material.normalMap) {
+                if (material._normalMap) {
                     this._uNormalMap = "normalMap";
                     this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
                 }
                 break;
 
             case "SpecularMaterial":
-
                 this._uMaterialDiffuse = program.getLocation("materialDiffuse");
                 this._uMaterialSpecular = program.getLocation("materialSpecular");
                 this._uMaterialGlossiness = program.getLocation("materialGlossiness");
                 this._uMaterialReflectivity = program.getLocation("reflectivityFresnel");
                 this._uMaterialEmissive = program.getLocation("materialEmissive");
                 this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-                if (material.diffuseMap) {
+                if (material._diffuseMap) {
                     this._uDiffuseMap = "diffuseMap";
                     this._uDiffuseMapMatrix = program.getLocation("diffuseMapMatrix");
                 }
-                if (material.specularMap) {
+                if (material._specularMap) {
                     this._uSpecularMap = "specularMap";
                     this._uSpecularMapMatrix = program.getLocation("specularMapMatrix");
                 }
-                if (material.glossinessMap) {
+                if (material._glossinessMap) {
                     this._uGlossinessMap = "glossinessMap";
                     this._uGlossinessMapMatrix = program.getLocation("glossinessMapMatrix");
                 }
-                if (material.specularGlossinessMap) {
+                if (material._specularGlossinessMap) {
                     this._uSpecularGlossinessMap = "materialSpecularGlossinessMap";
                     this._uSpecularGlossinessMapMatrix = program.getLocation("materialSpecularGlossinessMapMatrix");
                 }
-                if (material.emissiveMap) {
+                if (material._emissiveMap) {
                     this._uEmissiveMap = "emissiveMap";
                     this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
                 }
-                if (material.occlusionMap) {
+                if (material._occlusionMap) {
                     this._uOcclusionMap = "occlusionMap";
                     this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
                 }
-                if (material.alphaMap) {
+                if (material._alphaMap) {
                     this._uAlphaMap = "alphaMap";
                     this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
                 }
-                if (material.normalMap) {
+                if (material._normalMap) {
                     this._uNormalMap = "normalMap";
                     this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
                 }
@@ -8602,7 +8093,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         this._uColorize = program.getLocation("colorize");
 
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
 
@@ -8614,6 +8104,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     xeogl.renderer.DrawRenderer.prototype._bindProgram = function (frame) {
 
+        var math = xeogl.math;
+        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var lightsState = scene._lightsState;
+        var clipsState = scene._clipsState;
+        var lights = lightsState.lights;
+        var light;
+
         var program = this._program;
 
         program.bind();
@@ -8621,14 +8120,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         frame.useProgram++;
         frame.textureUnit = 0;
 
-        var gl = this._gl;
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-        var scene = this._scene;
-        var lights = scene.lights;
-        var light;
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
 
@@ -8637,13 +8129,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         this._lastColorize[2] = -1;
         this._lastColorize[3] = -1;
 
-        gl.uniformMatrix4fv(this._uViewMatrix, false, scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, scene.viewTransform.normalMatrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, scene.projTransform.matrix);
+        var camera = scene.camera;
+        var cameraState = camera._state;
 
-        for (var i = 0, len = lights.lights.length; i < len; i++) {
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera._project._state.matrix);
 
-            light = lights.lights[i];
+        for (var i = 0, len = lightsState.lights.length; i < len; i++) {
+
+            light = lightsState.lights[i];
 
             if (this._uLightAmbient[i]) {
                 gl.uniform4f(this._uLightAmbient[i], light.color[0], light.color[1], light.color[2], light.intensity);
@@ -8682,20 +8177,20 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         }
 
-        if (lights.lightMaps.length > 0 && lights.lightMaps[0].texture && this._uLightMap) {
-            program.bindTexture(this._uLightMap, lights.lightMaps[0].texture, frame.textureUnit);
+        if (lightsState.lightMaps.length > 0 && lightsState.lightMaps[0].texture && this._uLightMap) {
+            program.bindTexture(this._uLightMap, lightsState.lightMaps[0].texture, frame.textureUnit);
             frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
             frame.bindTexture++;
         }
 
-        if (lights.reflectionMaps.length > 0 && lights.reflectionMaps[0].texture && this._uReflectionMap) {
-            program.bindTexture(this._uReflectionMap, lights.reflectionMaps[0].texture, frame.textureUnit);
+        if (lightsState.reflectionMaps.length > 0 && lightsState.reflectionMaps[0].texture && this._uReflectionMap) {
+            program.bindTexture(this._uReflectionMap, lightsState.reflectionMaps[0].texture, frame.textureUnit);
             frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
             frame.bindTexture++;
         }
 
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        if (clipsState.clips.length > 0) {
+            var clips = scene._clipsState.clips;
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -8726,25 +8221,27 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         this._baseTextureUnit = frame.textureUnit;
     };
 
-    xeogl.renderer.DrawRenderer.prototype.drawObject = function (frame, object) {
+    xeogl.renderer.DrawRenderer.prototype.drawMesh = function (frame, mesh) {
+
+        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+        var scene = mesh.scene;
+        var material = mesh._material;
+        var gl = scene.canvas.gl;
+        var program = this._program;
+        var meshState = mesh._state;
+        var materialState = mesh._material._state;
+        var geometryState = mesh._geometry._state;
 
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
 
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-        var gl = this._gl;
-        var program = this._program;
-        var material = object.material;
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        if (material.id !== this._lastMaterialId) {
+        if (materialState.id !== this._lastMaterialId) {
 
             frame.textureUnit = this._baseTextureUnit;
 
-            var backfaces = material.backfaces;
+            var backfaces = materialState.backfaces;
             if (frame.backfaces !== backfaces) {
                 if (backfaces) {
                     gl.disable(gl.CULL_FACE);
@@ -8754,7 +8251,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 frame.backfaces = backfaces;
             }
 
-            var frontface = material.frontface;
+            var frontface = materialState.frontface;
             if (frame.frontface !== frontface) {
                 if (frontface) {
                     gl.frontFace(gl.CCW);
@@ -8764,409 +8261,412 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 frame.frontface = frontface;
             }
 
-            if (frame.lineWidth !== material.lineWidth) {
-                gl.lineWidth(material.lineWidth);
-                frame.lineWidth = material.lineWidth;
+            if (frame.lineWidth !== materialState.lineWidth) {
+                gl.lineWidth(materialState.lineWidth);
+                frame.lineWidth = materialState.lineWidth;
             }
 
             if (this._uPointSize) {
-                gl.uniform1f(this._uPointSize, material.pointSize);
+                gl.uniform1f(this._uPointSize, materialState.pointSize);
             }
 
-            switch (material.type) {
-
+            switch (materialState.type) {
                 case "LambertMaterial":
-
                     if (this._uMaterialAmbient) {
-                        gl.uniform3fv(this._uMaterialAmbient, material.ambient);
+                        gl.uniform3fv(this._uMaterialAmbient, materialState.ambient);
                     }
                     if (this._uMaterialColor) {
-                        gl.uniform4f(this._uMaterialColor, material.color[0], material.color[1], material.color[2], material.alpha);
+                        gl.uniform4f(this._uMaterialColor, materialState.color[0], materialState.color[1], materialState.color[2], materialState.alpha);
                     }
                     if (this._uMaterialEmissive) {
-                        gl.uniform3fv(this._uMaterialEmissive, material.emissive);
+                        gl.uniform3fv(this._uMaterialEmissive, materialState.emissive);
                     }
-
                     break;
 
                 case "PhongMaterial":
-
                     if (this._uMaterialShininess) {
-                        gl.uniform1f(this._uMaterialShininess, material.shininess);
+                        gl.uniform1f(this._uMaterialShininess, materialState.shininess);
                     }
                     if (this._uMaterialAmbient) {
-                        gl.uniform3fv(this._uMaterialAmbient, material.ambient);
+                        gl.uniform3fv(this._uMaterialAmbient, materialState.ambient);
                     }
                     if (this._uMaterialDiffuse) {
-                        gl.uniform3fv(this._uMaterialDiffuse, material.diffuse);
+                        gl.uniform3fv(this._uMaterialDiffuse, materialState.diffuse);
                     }
                     if (this._uMaterialSpecular) {
-                        gl.uniform3fv(this._uMaterialSpecular, material.specular);
+                        gl.uniform3fv(this._uMaterialSpecular, materialState.specular);
                     }
                     if (this._uMaterialEmissive) {
-                        gl.uniform3fv(this._uMaterialEmissive, material.emissive);
+                        gl.uniform3fv(this._uMaterialEmissive, materialState.emissive);
                     }
                     if (this._uAlphaModeCutoff) {
                         gl.uniform4f(
                             this._uAlphaModeCutoff,
-                            1.0 * material.alpha,
-                            material.alphaMode === 1 ? 1.0 : 0.0,
-                            material.alphaCutoff,
+                            1.0 * materialState.alpha,
+                            materialState.alphaMode === 1 ? 1.0 : 0.0,
+                            materialState.alphaCutoff,
                             0);
                     }
-                    if (material.ambientMap && material.ambientMap.texture && this._uMaterialAmbientMap) {
-                        program.bindTexture(this._uMaterialAmbientMap, material.ambientMap.texture, frame.textureUnit);
+                    if (material._ambientMap && material._ambientMap._state.texture && this._uMaterialAmbientMap) {
+                        program.bindTexture(this._uMaterialAmbientMap, material._ambientMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uMaterialAmbientMapMatrix) {
-                            gl.uniformMatrix4fv(this._uMaterialAmbientMapMatrix, false, material.ambientMap.matrix);
+                            gl.uniformMatrix4fv(this._uMaterialAmbientMapMatrix, false, material._ambientMap._state.matrix);
                         }
                     }
-                    if (material.diffuseMap && material.diffuseMap.texture && this._uDiffuseMap) {
-                        program.bindTexture(this._uDiffuseMap, material.diffuseMap.texture, frame.textureUnit);
+                    if (material._diffuseMap && material._diffuseMap._state.texture && this._uDiffuseMap) {
+                        program.bindTexture(this._uDiffuseMap, material._diffuseMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uDiffuseMapMatrix) {
-                            gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, material.diffuseMap.matrix);
+                            gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, material._diffuseMap._state.matrix);
                         }
                     }
-                    if (material.specularMap && material.specularMap.texture && this._uSpecularMap) {
-                        program.bindTexture(this._uSpecularMap, material.specularMap.texture, frame.textureUnit);
+                    if (material._specularMap && material._specularMap._state.texture && this._uSpecularMap) {
+                        program.bindTexture(this._uSpecularMap, material._specularMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uSpecularMapMatrix) {
-                            gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, material.specularMap.matrix);
+                            gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, material._specularMap._state.matrix);
                         }
                     }
-                    if (material.emissiveMap && material.emissiveMap.texture && this._uEmissiveMap) {
-                        program.bindTexture(this._uEmissiveMap, material.emissiveMap.texture, frame.textureUnit);
+                    if (material._emissiveMap && material._emissiveMap._state.texture && this._uEmissiveMap) {
+                        program.bindTexture(this._uEmissiveMap, material._emissiveMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uEmissiveMapMatrix) {
-                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, material.emissiveMap.matrix);
+                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, material._emissiveMap._state.matrix);
                         }
                     }
-                    if (material.alphaMap && material.alphaMap.texture && this._uAlphaMap) {
-                        program.bindTexture(this._uAlphaMap, material.alphaMap.texture, frame.textureUnit);
+                    if (material._alphaMap && material._alphaMap._state.texture && this._uAlphaMap) {
+                        program.bindTexture(this._uAlphaMap, material._alphaMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uAlphaMapMatrix) {
-                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, material.alphaMap.matrix);
+                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, material._alphaMap._state.matrix);
                         }
                     }
-                    if (material.reflectivityMap && material.reflectivityMap.texture && this._uReflectivityMap) {
-                        program.bindTexture(this._uReflectivityMap, material.reflectivityMap.texture, frame.textureUnit);
+                    if (material._reflectivityMap && material._reflectivityMap._state.texture && this._uReflectivityMap) {
+                        program.bindTexture(this._uReflectivityMap, material._reflectivityMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         if (this._uReflectivityMapMatrix) {
-                            gl.uniformMatrix4fv(this._uReflectivityMapMatrix, false, material.reflectivityMap.matrix);
+                            gl.uniformMatrix4fv(this._uReflectivityMapMatrix, false, material._reflectivityMap._state.matrix);
                         }
                     }
-                    if (material.normalMap && material.normalMap.texture && this._uNormalMap) {
-                        program.bindTexture(this._uNormalMap, material.normalMap.texture, frame.textureUnit);
+                    if (material._normalMap && material._normalMap._state.texture && this._uNormalMap) {
+                        program.bindTexture(this._uNormalMap, material._normalMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uNormalMapMatrix) {
-                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, material.normalMap.matrix);
+                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, material._normalMap._state.matrix);
                         }
                     }
-                    if (material.occlusionMap && material.occlusionMap.texture && this._uOcclusionMap) {
-                        program.bindTexture(this._uOcclusionMap, material.occlusionMap.texture, frame.textureUnit);
+                    if (material._occlusionMap && material._occlusionMap._state.texture && this._uOcclusionMap) {
+                        program.bindTexture(this._uOcclusionMap, material._occlusionMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uOcclusionMapMatrix) {
-                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, material.occlusionMap.matrix);
+                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, material._occlusionMap._state.matrix);
                         }
                     }
-                    if (material.diffuseFresnel) {
+                    if (material._diffuseFresnel) {
                         if (this._uDiffuseFresnelEdgeBias) {
-                            gl.uniform1f(this._uDiffuseFresnelEdgeBias, material.diffuseFresnel.edgeBias);
+                            gl.uniform1f(this._uDiffuseFresnelEdgeBias, material._diffuseFresnel.edgeBias);
                         }
                         if (this._uDiffuseFresnelCenterBias) {
-                            gl.uniform1f(this._uDiffuseFresnelCenterBias, material.diffuseFresnel.centerBias);
+                            gl.uniform1f(this._uDiffuseFresnelCenterBias, material._diffuseFresnel.centerBias);
                         }
                         if (this._uDiffuseFresnelEdgeColor) {
-                            gl.uniform3fv(this._uDiffuseFresnelEdgeColor, material.diffuseFresnel.edgeColor);
+                            gl.uniform3fv(this._uDiffuseFresnelEdgeColor, material._diffuseFresnel.edgeColor);
                         }
                         if (this._uDiffuseFresnelCenterColor) {
-                            gl.uniform3fv(this._uDiffuseFresnelCenterColor, material.diffuseFresnel.centerColor);
+                            gl.uniform3fv(this._uDiffuseFresnelCenterColor, material._diffuseFresnel.centerColor);
                         }
                         if (this._uDiffuseFresnelPower) {
-                            gl.uniform1f(this._uDiffuseFresnelPower, material.diffuseFresnel.power);
+                            gl.uniform1f(this._uDiffuseFresnelPower, material._diffuseFresnel.power);
                         }
                     }
-                    if (material.specularFresnel) {
+                    if (material._specularFresnel) {
                         if (this._uSpecularFresnelEdgeBias) {
-                            gl.uniform1f(this._uSpecularFresnelEdgeBias, material.specularFresnel.edgeBias);
+                            gl.uniform1f(this._uSpecularFresnelEdgeBias, material._specularFresnel.edgeBias);
                         }
                         if (this._uSpecularFresnelCenterBias) {
-                            gl.uniform1f(this._uSpecularFresnelCenterBias, material.specularFresnel.centerBias);
+                            gl.uniform1f(this._uSpecularFresnelCenterBias, material._specularFresnel.centerBias);
                         }
                         if (this._uSpecularFresnelEdgeColor) {
-                            gl.uniform3fv(this._uSpecularFresnelEdgeColor, material.specularFresnel.edgeColor);
+                            gl.uniform3fv(this._uSpecularFresnelEdgeColor, material._specularFresnel.edgeColor);
                         }
                         if (this._uSpecularFresnelCenterColor) {
-                            gl.uniform3fv(this._uSpecularFresnelCenterColor, material.specularFresnel.centerColor);
+                            gl.uniform3fv(this._uSpecularFresnelCenterColor, material._specularFresnel.centerColor);
                         }
                         if (this._uSpecularFresnelPower) {
-                            gl.uniform1f(this._uSpecularFresnelPower, material.specularFresnel.power);
+                            gl.uniform1f(this._uSpecularFresnelPower, material._specularFresnel.power);
                         }
                     }
-                    if (material.alphaFresnel) {
+                    if (material._alphaFresnel) {
                         if (this._uAlphaFresnelEdgeBias) {
-                            gl.uniform1f(this._uAlphaFresnelEdgeBias, material.alphaFresnel.edgeBias);
+                            gl.uniform1f(this._uAlphaFresnelEdgeBias, material._alphaFresnel.edgeBias);
                         }
                         if (this._uAlphaFresnelCenterBias) {
-                            gl.uniform1f(this._uAlphaFresnelCenterBias, material.alphaFresnel.centerBias);
+                            gl.uniform1f(this._uAlphaFresnelCenterBias, material._alphaFresnel.centerBias);
                         }
                         if (this._uAlphaFresnelEdgeColor) {
-                            gl.uniform3fv(this._uAlphaFresnelEdgeColor, material.alphaFresnel.edgeColor);
+                            gl.uniform3fv(this._uAlphaFresnelEdgeColor, material._alphaFresnel.edgeColor);
                         }
                         if (this._uAlphaFresnelCenterColor) {
-                            gl.uniform3fv(this._uAlphaFresnelCenterColor, material.alphaFresnel.centerColor);
+                            gl.uniform3fv(this._uAlphaFresnelCenterColor, material._alphaFresnel.centerColor);
                         }
                         if (this._uAlphaFresnelPower) {
-                            gl.uniform1f(this._uAlphaFresnelPower, material.alphaFresnel.power);
+                            gl.uniform1f(this._uAlphaFresnelPower, material._alphaFresnel.power);
                         }
                     }
-                    if (material.reflectivityFresnel) {
+                    if (material._reflectivityFresnel) {
                         if (this._uReflectivityFresnelEdgeBias) {
-                            gl.uniform1f(this._uReflectivityFresnelEdgeBias, material.reflectivityFresnel.edgeBias);
+                            gl.uniform1f(this._uReflectivityFresnelEdgeBias, material._reflectivityFresnel.edgeBias);
                         }
                         if (this._uReflectivityFresnelCenterBias) {
-                            gl.uniform1f(this._uReflectivityFresnelCenterBias, material.reflectivityFresnel.centerBias);
+                            gl.uniform1f(this._uReflectivityFresnelCenterBias, material._reflectivityFresnel.centerBias);
                         }
                         if (this._uReflectivityFresnelEdgeColor) {
-                            gl.uniform3fv(this._uReflectivityFresnelEdgeColor, material.reflectivityFresnel.edgeColor);
+                            gl.uniform3fv(this._uReflectivityFresnelEdgeColor, material._reflectivityFresnel.edgeColor);
                         }
                         if (this._uReflectivityFresnelCenterColor) {
-                            gl.uniform3fv(this._uReflectivityFresnelCenterColor, material.reflectivityFresnel.centerColor);
+                            gl.uniform3fv(this._uReflectivityFresnelCenterColor, material._reflectivityFresnel.centerColor);
                         }
                         if (this._uReflectivityFresnelPower) {
-                            gl.uniform1f(this._uReflectivityFresnelPower, material.reflectivityFresnel.power);
+                            gl.uniform1f(this._uReflectivityFresnelPower, material._reflectivityFresnel.power);
                         }
                     }
-                    if (material.emissiveFresnel) {
+                    if (material._emissiveFresnel) {
                         if (this._uEmissiveFresnelEdgeBias) {
-                            gl.uniform1f(this._uEmissiveFresnelEdgeBias, material.emissiveFresnel.edgeBias);
+                            gl.uniform1f(this._uEmissiveFresnelEdgeBias, material._emissiveFresnel.edgeBias);
                         }
                         if (this._uEmissiveFresnelCenterBias) {
-                            gl.uniform1f(this._uEmissiveFresnelCenterBias, material.emissiveFresnel.centerBias);
+                            gl.uniform1f(this._uEmissiveFresnelCenterBias, material._emissiveFresnel.centerBias);
                         }
                         if (this._uEmissiveFresnelEdgeColor) {
-                            gl.uniform3fv(this._uEmissiveFresnelEdgeColor, material.emissiveFresnel.edgeColor);
+                            gl.uniform3fv(this._uEmissiveFresnelEdgeColor, material._emissiveFresnel.edgeColor);
                         }
                         if (this._uEmissiveFresnelCenterColor) {
-                            gl.uniform3fv(this._uEmissiveFresnelCenterColor, material.emissiveFresnel.centerColor);
+                            gl.uniform3fv(this._uEmissiveFresnelCenterColor, material._emissiveFresnel.centerColor);
                         }
                         if (this._uEmissiveFresnelPower) {
-                            gl.uniform1f(this._uEmissiveFresnelPower, material.emissiveFresnel.power);
+                            gl.uniform1f(this._uEmissiveFresnelPower, material._emissiveFresnel.power);
                         }
                     }
                     break;
 
-
                 case "MetallicMaterial":
-
                     if (this._uBaseColor) {
-                        gl.uniform3fv(this._uBaseColor, material.baseColor);
+                        gl.uniform3fv(this._uBaseColor, materialState.baseColor);
                     }
                     if (this._uMaterialMetallic) {
-                        gl.uniform1f(this._uMaterialMetallic, material.metallic);
+                        gl.uniform1f(this._uMaterialMetallic, materialState.metallic);
                     }
                     if (this._uMaterialRoughness) {
-                        gl.uniform1f(this._uMaterialRoughness, material.roughness);
+                        gl.uniform1f(this._uMaterialRoughness, materialState.roughness);
                     }
                     if (this._uMaterialSpecularF0) {
-                        gl.uniform1f(this._uMaterialSpecularF0, material.specularF0);
+                        gl.uniform1f(this._uMaterialSpecularF0, materialState.specularF0);
                     }
                     if (this._uMaterialEmissive) {
-                        gl.uniform3fv(this._uMaterialEmissive, material.emissive);
+                        gl.uniform3fv(this._uMaterialEmissive, materialState.emissive);
                     }
                     if (this._uAlphaModeCutoff) {
                         gl.uniform4f(
                             this._uAlphaModeCutoff,
-                            1.0 * material.alpha,
-                            material.alphaMode === 1 ? 1.0 : 0.0,
-                            material.alphaCutoff,
+                            1.0 * materialState.alpha,
+                            materialState.alphaMode === 1 ? 1.0 : 0.0,
+                            materialState.alphaCutoff,
                             0.0);
                     }
-                    if (material.baseColorMap && material.baseColorMap.texture && this._uBaseColorMap) {
-                        program.bindTexture(this._uBaseColorMap, material.baseColorMap.texture, frame.textureUnit);
+                    var baseColorMap = material._baseColorMap;
+                    if (baseColorMap && baseColorMap._state.texture && this._uBaseColorMap) {
+                        program.bindTexture(this._uBaseColorMap, baseColorMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uBaseColorMapMatrix) {
-                            gl.uniformMatrix4fv(this._uBaseColorMapMatrix, false, material.baseColorMap.matrix);
+                            gl.uniformMatrix4fv(this._uBaseColorMapMatrix, false, baseColorMap._state.matrix);
                         }
                     }
-                    if (material.metallicMap && material.metallicMap.texture && this._uMetallicMap) {
-                        program.bindTexture(this._uMetallicMap, material.metallicMap.texture, frame.textureUnit);
+                    var metallicMap = material._metallicMap;
+                    if (metallicMap && metallicMap._state.texture && this._uMetallicMap) {
+                        program.bindTexture(this._uMetallicMap, metallicMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uMetallicMapMatrix) {
-                            gl.uniformMatrix4fv(this._uMetallicMapMatrix, false, material.metallicMap.matrix);
+                            gl.uniformMatrix4fv(this._uMetallicMapMatrix, false, metallicMap._state.matrix);
                         }
                     }
-                    if (material.roughnessMap && material.roughnessMap.texture && this._uRoughnessMap) {
-                        program.bindTexture(this._uRoughnessMap, material.roughnessMap.texture, frame.textureUnit);
+                    var roughnessMap = material._roughnessMap;
+                    if (roughnessMap && roughnessMap._state.texture && this._uRoughnessMap) {
+                        program.bindTexture(this._uRoughnessMap, roughnessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uRoughnessMapMatrix) {
-                            gl.uniformMatrix4fv(this._uRoughnessMapMatrix, false, material.roughnessMap.matrix);
+                            gl.uniformMatrix4fv(this._uRoughnessMapMatrix, false, roughnessMap._state.matrix);
                         }
                     }
-                    if (material.metallicRoughnessMap && material.metallicRoughnessMap.texture && this._uMetallicRoughnessMap) {
-                        program.bindTexture(this._uMetallicRoughnessMap, material.metallicRoughnessMap.texture, frame.textureUnit);
+                    var metallicRoughnessMap = material._metallicRoughnessMap;
+                    if (metallicRoughnessMap && metallicRoughnessMap._state.texture && this._uMetallicRoughnessMap) {
+                        program.bindTexture(this._uMetallicRoughnessMap, metallicRoughnessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uMetallicRoughnessMapMatrix) {
-                            gl.uniformMatrix4fv(this._uMetallicRoughnessMapMatrix, false, material.metallicRoughnessMap.matrix);
+                            gl.uniformMatrix4fv(this._uMetallicRoughnessMapMatrix, false, metallicRoughnessMap._state.matrix);
                         }
                     }
-                    if (material.emissiveMap && material.emissiveMap.texture && this._uEmissiveMap) {
-                        program.bindTexture(this._uEmissiveMap, material.emissiveMap.texture, frame.textureUnit);
+                    var emissiveMap = material._emissiveMap;
+                    if (emissiveMap && emissiveMap._state.texture && this._uEmissiveMap) {
+                        program.bindTexture(this._uEmissiveMap, emissiveMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uEmissiveMapMatrix) {
-                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, material.emissiveMap.matrix);
+                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, emissiveMap._state.matrix);
                         }
                     }
-                    if (material.occlusionMap && material.occlusionMap.texture && this._uOcclusionMap) {
-                        program.bindTexture(this._uOcclusionMap, material.occlusionMap.texture, frame.textureUnit);
+                    var occlusionMap = material._occlusionMap;
+                    if (occlusionMap && material._occlusionMap._state.texture && this._uOcclusionMap) {
+                        program.bindTexture(this._uOcclusionMap, occlusionMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uOcclusionMapMatrix) {
-                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, material.occlusionMap.matrix);
+                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, occlusionMap._state.matrix);
                         }
                     }
-                    if (material.alphaMap && material.alphaMap.texture && this._uAlphaMap) {
-                        program.bindTexture(this._uAlphaMap, material.alphaMap.texture, frame.textureUnit);
+                    var alphaMap = material._alphaMap;
+                    if (alphaMap && alphaMap._state.texture && this._uAlphaMap) {
+                        program.bindTexture(this._uAlphaMap, alphaMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uAlphaMapMatrix) {
-                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, material.alphaMap.matrix);
+                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, alphaMap._state.matrix);
                         }
                     }
-                    if (material.normalMap && material.normalMap.texture && this._uNormalMap) {
-                        program.bindTexture(this._uNormalMap, material.normalMap.texture, frame.textureUnit);
+                    var normalMap = material._normalMap;
+                    if (normalMap && normalMap._state.texture && this._uNormalMap) {
+                        program.bindTexture(this._uNormalMap, normalMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uNormalMapMatrix) {
-                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, material.normalMap.matrix);
+                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, normalMap._state.matrix);
                         }
                     }
                     break;
 
                 case "SpecularMaterial":
-
                     if (this._uMaterialDiffuse) {
-                        gl.uniform3fv(this._uMaterialDiffuse, material.diffuse);
+                        gl.uniform3fv(this._uMaterialDiffuse, materialState.diffuse);
                     }
                     if (this._uMaterialSpecular) {
-                        gl.uniform3fv(this._uMaterialSpecular, material.specular);
+                        gl.uniform3fv(this._uMaterialSpecular, materialState.specular);
                     }
                     if (this._uMaterialGlossiness) {
-                        gl.uniform1f(this._uMaterialGlossiness, material.glossiness);
+                        gl.uniform1f(this._uMaterialGlossiness, materialState.glossiness);
                     }
                     if (this._uMaterialReflectivity) {
-                        gl.uniform1f(this._uMaterialReflectivity, material.reflectivity);
+                        gl.uniform1f(this._uMaterialReflectivity, materialState.reflectivity);
                     }
                     if (this._uMaterialEmissive) {
-                        gl.uniform3fv(this._uMaterialEmissive, material.emissive);
+                        gl.uniform3fv(this._uMaterialEmissive, materialState.emissive);
                     }
                     if (this._uAlphaModeCutoff) {
                         gl.uniform4f(
                             this._uAlphaModeCutoff,
-                            1.0 * material.alpha,
-                            material.alphaMode === 1 ? 1.0 : 0.0,
-                            material.alphaCutoff,
+                            1.0 * materialState.alpha,
+                            materialState.alphaMode === 1 ? 1.0 : 0.0,
+                            materialState.alphaCutoff,
                             0.0);
                     }
-                    if (material.diffuseMap && material.diffuseMap.texture && this._uDiffuseMap) {
-                        program.bindTexture(this._uDiffuseMap, material.diffuseMap.texture, frame.textureUnit);
+                    var diffuseMap = material._diffuseMap;
+                    if (diffuseMap && diffuseMap._state.texture && this._uDiffuseMap) {
+                        program.bindTexture(this._uDiffuseMap, diffuseMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uDiffuseMapMatrix) {
-                            gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, material.diffuseMap.matrix);
+                            gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, diffuseMap._state.matrix);
                         }
                     }
-                    if (material.specularMap && material.specularMap.texture && this._uSpecularMap) {
-                        program.bindTexture(this._uSpecularMap, material.specularMap.texture, frame.textureUnit);
+                    var specularMap = material._specularMap;
+                    if (specularMap && specularMap._state.texture && this._uSpecularMap) {
+                        program.bindTexture(this._uSpecularMap, specularMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uSpecularMapMatrix) {
-                            gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, material.specularMap.matrix);
+                            gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, specularMap._state.matrix);
                         }
                     }
-                    if (material.glossinessMap && material.glossinessMap.texture && this._uGlossinessMap) {
-                        program.bindTexture(this._uGlossinessMap, material.glossinessMap.texture, frame.textureUnit);
+                    var glossinessMap = material._glossinessMap;
+                    if (glossinessMap && glossinessMap._state.texture && this._uGlossinessMap) {
+                        program.bindTexture(this._uGlossinessMap, glossinessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uGlossinessMapMatrix) {
-                            gl.uniformMatrix4fv(this._uGlossinessMapMatrix, false, material.glossinessMap.matrix);
+                            gl.uniformMatrix4fv(this._uGlossinessMapMatrix, false, glossinessMap._state.matrix);
                         }
                     }
-                    if (material.specularGlossinessMap && material.specularGlossinessMap.texture && this._uSpecularGlossinessMap) {
-                        program.bindTexture(this._uSpecularGlossinessMap, material.specularGlossinessMap.texture, frame.textureUnit);
+                    var specularGlossinessMap = material._specularGlossinessMap;
+                    if (specularGlossinessMap && specularGlossinessMap._state.texture && this._uSpecularGlossinessMap) {
+                        program.bindTexture(this._uSpecularGlossinessMap, specularGlossinessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uSpecularGlossinessMapMatrix) {
-                            gl.uniformMatrix4fv(this._uSpecularGlossinessMapMatrix, false, material.specularGlossinessMap.matrix);
+                            gl.uniformMatrix4fv(this._uSpecularGlossinessMapMatrix, false, specularGlossinessMap._state.matrix);
                         }
                     }
-                    if (material.emissiveMap && material.emissiveMap.texture && this._uEmissiveMap) {
-                        program.bindTexture(this._uEmissiveMap, material.emissiveMap.texture, frame.textureUnit);
+                    var emissiveMap = material._emissiveMap;
+                    if (emissiveMap && emissiveMap._state.texture && this._uEmissiveMap) {
+                        program.bindTexture(this._uEmissiveMap, emissiveMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uEmissiveMapMatrix) {
-                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, material.emissiveMap.matrix);
+                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, emissiveMap._state.matrix);
                         }
                     }
-                    if (material.occlusionMap && material.occlusionMap.texture && this._uOcclusionMap) {
-                        program.bindTexture(this._uOcclusionMap, material.occlusionMap.texture, frame.textureUnit);
+                    var occlusionMap = material._occlusionMap;
+                    if (occlusionMap && occlusionMap._state.texture && this._uOcclusionMap) {
+                        program.bindTexture(this._uOcclusionMap, occlusionMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uOcclusionMapMatrix) {
-                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, material.occlusionMap.matrix);
+                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, occlusionMap._state.matrix);
                         }
                     }
-                    if (material.alphaMap && material.alphaMap.texture && this._uAlphaMap) {
-                        program.bindTexture(this._uAlphaMap, material.alphaMap.texture, frame.textureUnit);
+                    var alphaMap = material._alphaMap;
+                    if (alphaMap && alphaMap._state.texture && this._uAlphaMap) {
+                        program.bindTexture(this._uAlphaMap, alphaMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uAlphaMapMatrix) {
-                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, material.alphaMap.matrix);
+                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, alphaMap._state.matrix);
                         }
                     }
-                    if (material.normalMap && material.normalMap.texture && this._uNormalMap) {
-                        program.bindTexture(this._uNormalMap, material.normalMap.texture, frame.textureUnit);
+                    var normalMap = material._normalMap;
+                    if (normalMap && normalMap._state.texture && this._uNormalMap) {
+                        program.bindTexture(this._uNormalMap, normalMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uNormalMapMatrix) {
-                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, material.normalMap.matrix);
+                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, normalMap._state.matrix);
                         }
                     }
                     break;
             }
-
-            this._lastMaterialId = material.id;
+            this._lastMaterialId = materialState.id;
         }
 
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            if (this._uModelNormalMatrix) {
-                gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, modelTransform.getNormalMatrix());
-            }
-            this._lastModelTransformId = modelTransform.id;
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+        if (this._uModelNormalMatrix) {
+            gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, mesh.worldNormalMatrix);
         }
-
-        var modes = object.modes;
 
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, modes.clippable);
+            gl.uniform1i(this._uClippable, meshState.clippable);
         }
 
         if (this._uColorize) {
-            var colorize = modes.colorize;
+            var colorize = meshState.colorize;
             var lastColorize = this._lastColorize;
             if (lastColorize[0] !== colorize[0] ||
                 lastColorize[1] !== colorize[1] ||
@@ -9180,8 +8680,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         }
 
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        if (geometryState.combined) {
+            var vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -9192,7 +8692,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     frame.bindArray++;
                 }
                 if (vertexBufs.uvBuf && this._aUV) {
-                    this._aUV.bindArrayBuffer(vertexBufs.uvBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aUV.bindArrayBuffer(vertexBufs.uvBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.colorsBuf && this._aColor) {
@@ -9209,70 +8709,67 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         // Bind VBOs
 
-        if (geometry.id !== this._lastGeometryId) {
-
+        if (geometryState.id !== this._lastGeometryId) {
             if (this._uPositionsDecodeMatrix) {
-                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
             }
-
             if (this._uUVDecodeMatrix) {
-                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometry.uvDecodeMatrix);
+                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometryState.uvDecodeMatrix);
             }
-
-            if (geometry.combined) { // VBOs were bound by the VertexBufs logic above
-                if (geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined.bind();
+            if (geometryState.combined) { // VBOs were bound by the VertexBufs logic above
+                if (geometryState.indicesBufCombined) {
+                    geometryState.indicesBufCombined.bind();
                     frame.bindArray++;
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometryState.normalsBuf, geometryState.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aUV) {
-                    this._aUV.bindArrayBuffer(geometry.uvBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aUV.bindArrayBuffer(geometryState.uvBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aColor) {
-                    this._aColor.bindArrayBuffer(geometry.colorsBuf);
+                    this._aColor.bindArrayBuffer(geometryState.colorsBuf);
                     frame.bindArray++;
                 }
                 if (this._aFlags) {
-                    this._aFlags.bindArrayBuffer(geometry.flagsBuf);
+                    this._aFlags.bindArrayBuffer(geometryState.flagsBuf);
                     frame.bindArray++;
                 }
-                if (geometry.indicesBuf) {
-                    geometry.indicesBuf.bind();
+                if (geometryState.indicesBuf) {
+                    geometryState.indicesBuf.bind();
                     frame.bindArray++;
-                    // gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+                    // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                     // frame.drawElements++;
-                } else if (geometry.positions) {
-                    // gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+                } else if (geometryState.positions) {
+                    // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                     //  frame.drawArrays++;
                 }
             }
-            this._lastGeometryId = geometry.id;
+            this._lastGeometryId = geometryState.id;
         }
 
         // Draw (indices bound in prev step)
 
-        if (geometry.combined) {
-            if (geometry.indicesBufCombined) { // Geometry indices into portion of uber-array
-                gl.drawElements(geometry.primitive, geometry.indicesBufCombined.numItems, geometry.indicesBufCombined.itemType, 0);
+        if (geometryState.combined) {
+            if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
+                gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
                 frame.drawElements++;
             } else {
                 // TODO: drawArrays() with VertexBufs positions
             }
         } else {
-            if (geometry.indicesBuf) {
-                gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+            if (geometryState.indicesBuf) {
+                gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 frame.drawElements++;
-            } else if (geometry.positions) {
-                gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+            } else if (geometryState.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                 frame.drawArrays++;
             }
         }
@@ -9286,33 +8783,28 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.DrawShaderSource = function (gl, scene, object) {
-        var cfg = {
-            texturing: hasTextures(object),
-            normals: hasNormals(object),
-            normalMapping: hasNormalMap(object),
-            clipping: scene.clips.clips.length > 0,
-            solid: false && object.material.backfaces,
-            lambertMaterial: (object.material.type === "LambertMaterial"),
-            phongMaterial: (object.material.type === "PhongMaterial"),
-            metallicMaterial: (object.material.type === "MetallicMaterial"),
-            specularMaterial: (object.material.type === "SpecularMaterial"),
-            reflection: hasReflection(scene),
-            receiveShadow: receivesShadow(scene, object),
-            quantizedGeometry: !!object.geometry.quantized,
-            gammaInput: scene.gammaInput, // If set, then it expects that all textures and colors are premultiplied gamma. Default is false.
-            gammaOutput: scene.gammaOutput // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
-        };
-        this.vertex = cfg.lambertMaterial ? buildVertexLambert(gl, cfg, scene, object) : buildVertexDraw(gl, cfg, scene, object);
-        this.fragment = cfg.lambertMaterial ? buildFragmentLambert(gl, cfg, scene, object) : buildFragmentDraw(gl, cfg, scene, object);
+    xeogl.renderer.DrawShaderSource = function (mesh) {
+        if (mesh._material._state.type === "LambertMaterial") {
+            this.vertex = buildVertexLambert(mesh);
+            this.fragment = buildFragmentLambert(mesh);
+        } else {
+            this.vertex = buildVertexDraw(mesh);
+            this.fragment = buildFragmentDraw(mesh);
+        }
     };
 
-    function receivesShadow(scene, object) {
-        if (!object.modes.receiveShadow) {
+    const TEXTURE_DECODE_FUNCS = {
+        "linear": "linearToLinear",
+        "sRGB": "sRGBToLinear",
+        "gamma": "gammaToLinear"
+    };
+
+    function receivesShadow(mesh) {
+        if (!mesh._state.receiveShadow) {
             return false;
         }
-        var lights = scene.lights.lights;
-        if (!lights) {
+        var lights = mesh.scene._lightsState.lights;
+        if (!lights || lights.length === 0) {
             return false;
         }
         for (var i = 0, len = lights.length; i < len; i++) {
@@ -9323,44 +8815,33 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return false;
     }
 
-    function hasTextures(object) {
-        if (!object.geometry.uv) {
+    function hasTextures(mesh) {
+        if (!mesh._geometry._state.uv) {
             return false;
         }
-        var material = object.material;
-        return !!(material.ambientMap ||
-        material.occlusionMap ||
-        material.baseColorMap ||
-        material.diffuseMap ||
-        material.alphaMap ||
-        material.specularMap ||
-        material.glossinessMap ||
-        material.specularGlossinessMap ||
-        material.emissiveMap ||
-        material.metallicMap ||
-        material.roughnessMap ||
-        material.metallicRoughnessMap ||
-        material.reflectivityMap ||
-        object.material.normalMap);
+        var material = mesh._material;
+        return !!(material._ambientMap ||
+        material._occlusionMap ||
+        material._baseColorMap ||
+        material._diffuseMap ||
+        material._alphaMap ||
+        material._specularMap ||
+        material._glossinessMap ||
+        material._specularGlossinessMap ||
+        material._emissiveMap ||
+        material._metallicMap ||
+        material._roughnessMap ||
+        material._metallicRoughnessMap ||
+        material._reflectivityMap ||
+        material._normalMap);
     }
 
-    function hasReflection(scene) {
-        return false;
-        //return (object.cubemap.layers && object.cubemap.layers.length > 0 && object.geometry.normalBuf);
-    }
-
-    function hasNormals(object) {
-        var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+    function hasNormals(mesh) {
+        var primitive = mesh._geometry._state.primitiveName;
+        if ((mesh._geometry._state.autoVertexNormals || mesh._geometry._state.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
-    }
-
-    function hasNormalMap(object) {
-        var geometry = object.geometry;
-        var result = (!!geometry.positions && !!geometry.indices && !!geometry.normals && !!geometry.uv && !!object.material.normalMap);
-        return result;
     }
 
     function getFragmentFloatPrecision(gl) {
@@ -9376,57 +8857,42 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return "lowp";
     }
 
-    const TEXTURE_DECODE_FUNCS = {
-        "linear": "linearToLinear",
-        "sRGB": "sRGBToLinear",
-        "gamma": "gammaToLinear"
-    };
-
-    function buildVertexLambert(gl, cfg, scene, object) {
-
+    function buildVertexLambert(mesh) {
+        var clipsState = mesh.scene._clipsState;
+        var lightsState = mesh.scene._lightsState;
+        var geometryState = mesh._geometry._state;
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
+        var clipping = clipsState.clips.length > 0;
+        var quantizedGeometry = !!geometryState.quantized;
         var i;
         var len;
-        var lights = scene.lights.lights;
         var light;
-        var billboard = object.modes.billboard;
-
         var src = [];
-
         src.push("// Lambertian drawing vertex shader");
-
         src.push("attribute vec3 position;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
         src.push("uniform vec4 colorize;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        src.push("uniform vec4   lightAmbient;");
-        src.push("uniform vec4   materialColor;");
-
-        if (cfg.normals) {
-
+        src.push("uniform vec4 lightAmbient;");
+        src.push("uniform vec4 materialColor;");
+        if (geometryState.normals) {
             src.push("attribute vec3 normal;");
             src.push("uniform mat4 modelNormalMatrix;");
             src.push("uniform mat4 viewNormalMatrix;");
-
-            for (i = 0, len = lights.length; i < len; i++) {
-                light = lights[i];
-
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 src.push("uniform vec4 lightColor" + i + ";");
-
                 if (light.type === "dir") {
                     src.push("uniform vec3 lightDir" + i + ";");
                 }
@@ -9438,8 +8904,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     src.push("uniform vec3 lightDir" + i + ";");
                 }
             }
-
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -9449,13 +8914,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("}");
             }
         }
-
         src.push("varying vec4 vColor;");
-
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("uniform float pointSize;");
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
@@ -9471,18 +8933,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
+        if (geometryState.normals) {
+            if (quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -9490,139 +8948,118 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("mat4 modelNormalMatrix2 = modelNormalMatrix;");
             src.push("mat4 viewNormalMatrix2 = viewNormalMatrix;");
         }
-
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
-
-            if (cfg.normals) {
+            if (geometryState.normals) {
                 src.push("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
                 src.push("billboard(modelNormalMatrix2);");
                 src.push("billboard(viewNormalMatrix2);");
                 src.push("billboard(modelViewNormalMatrix);");
             }
-
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
         } else {
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
-        if (cfg.normals) {
+        if (geometryState.normals) {
             src.push("vec3 viewNormal = normalize((viewNormalMatrix2 * modelNormalMatrix2 * localNormal).xyz);");
         }
-
         src.push("vec3 reflectedColor = vec3(0.0, 0.0, 0.0);");
         src.push("vec3 viewLightDir = vec3(0.0, 0.0, -1.0);");
         src.push("float lambertian = 1.0;");
-
-        if (cfg.normals) {
-            for (i = 0, len = lights.length; i < len; i++) {
-
-                light = lights[i];
-
+        if (geometryState.normals) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 if (light.type === "dir") {
                     if (light.space === "view") {
                         src.push("viewLightDir = normalize(lightDir" + i + ");");
                     } else {
                         src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightDir" + i + ", 0.0)).xyz);");
                     }
-
                 } else if (light.type === "point") {
                     if (light.space === "view") {
                         src.push("viewLightDir = normalize(lightPos" + i + " - viewPosition.xyz);");
                     } else {
                         src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightPos" + i + ", 0.0)).xyz);");
                     }
-
                 } else if (light.type === "spot") {
                     if (light.space === "view") {
                         src.push("viewLightDir = normalize(lightDir" + i + ");");
                     } else {
                         src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightDir" + i + ", 0.0)).xyz);");
                     }
-
                 } else {
                     continue;
                 }
-
                 src.push("lambertian = max(dot(-viewNormal, viewLightDir), 0.0);");
                 src.push("reflectedColor += lambertian * (lightColor" + i + ".rgb * lightColor" + i + ".a);");
             }
         }
-
         //src.push("vColor = vec4((reflectedColor * materialColor) + (lightAmbient.rgb * lightAmbient.a), 1.0) * colorize;");
         src.push("vColor = vec4((reflectedColor * materialColor.rgb), materialColor.a) * colorize;"); // TODO: How to have ambient bright enough for canvas BG but not too bright for scene?
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("gl_PointSize = pointSize;");
         }
-
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("}");
-
         return src;
     }
 
-    function buildFragmentLambert(gl, cfg, scene, object) {
-
+    function buildFragmentLambert(mesh) {
+        var scene = mesh.scene;
+        var clipsState = scene._clipsState;
+        var materialState = mesh._material._state;
+        var geometryState = mesh._geometry._state;
         var i;
         var len;
+        var clipping = clipsState.clips.length > 0;
+        var solid = false && materialState.backfaces;
+        var gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
         var src = [];
-
         src.push("// Lambertian drawing fragment shader");
-
-        //src.push("precision " + getFragmentFloatPrecision(gl) + " float;");
         src.push("precision lowp float;");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
             src.push("uniform bool clippable;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
             }
         }
         src.push("varying vec4 vColor;");
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("uniform float gammaFactor;");
             src.push("    vec4 linearToGamma( in vec4 value, in float gammaFactor ) {");
             src.push("    return vec4( pow( value.xyz, vec3( 1.0 / gammaFactor ) ), value.w );");
             src.push("}");
         }
         src.push("void main(void) {");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
             }
             src.push("  if (dist > 0.0) { discard; }");
-            if (cfg.solid) {
+            if (solid) {
                 src.push("  if (gl_FrontFacing == false) {");
                 src.push("     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);");
                 src.push("     return;");
@@ -9630,7 +9067,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
             src.push("}");
         }
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
             src.push("float r = dot(cxy, cxy);");
             src.push("if (r > 1.0) {");
@@ -9638,7 +9075,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("}");
 
         }
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("gl_FragColor = linearToGamma(vColor, gammaFactor);");
         } else {
             src.push("gl_FragColor = vColor;");
@@ -9647,53 +9084,51 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return src;
     }
 
-    function buildVertexDraw(gl, cfg, scene, object) {
-
-        var material = object.material;
-        var geometry = object.geometry;
+    function buildVertexDraw(mesh) {
+        var scene = mesh.scene;
+        var material = mesh._material;
+        var meshState = mesh._state;
+        var clipsState = scene._clipsState;
+        var geometryState = mesh._geometry._state;
+        var materialState = mesh._material._state;
+        var lightsState = scene._lightsState;
         var i;
         var len;
-        var lights = scene.lights.lights;
         var light;
-
+        var billboard = meshState.billboard;
+        var stationary = meshState.stationary;
+        var texturing = hasTextures(mesh);
+        var normals = hasNormals(mesh);
+        var clipping = clipsState.clips.length > 0;
+        var receiveShadow = receivesShadow(mesh);
+        var quantizedGeometry = !!geometryState.quantized;
         var src = [];
-
-        // src.push("#extension GL_OES_standard_derivatives : enable");
-
+        if (normals && material._normalMap) {
+            src.push("#extension GL_OES_standard_derivatives : enable");
+        }
         src.push("// Drawing vertex shader");
         src.push("attribute  vec3 position;");
 
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        src.push("uniform    mat4 modelMatrix;");
-        src.push("uniform    mat4 viewMatrix;");
-        src.push("uniform    mat4 projMatrix;");
-
-        src.push("varying    vec3 vViewPosition;");
-
-        if (cfg.clipping) {
+        src.push("uniform  mat4 modelMatrix;");
+        src.push("uniform  mat4 viewMatrix;");
+        src.push("uniform  mat4 projMatrix;");
+        src.push("varying  vec3 vViewPosition;");
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        if (scene.lights.lightMaps.length > 0) {
+        if (lightsState.lightMaps.length > 0) {
             src.push("varying    vec3 vWorldNormal;");
         }
-
-        if (cfg.normals) {
-
+        if (normals) {
             src.push("attribute  vec3 normal;");
-
             src.push("uniform    mat4 modelNormalMatrix;");
             src.push("uniform    mat4 viewNormalMatrix;");
-
-            //src.push("varying    vec3 vLocalNormal;");
-
             src.push("varying    vec3 vViewNormal;");
-
-            for (i = 0, len = scene.lights.lights.length; i < len; i++) {
-                light = scene.lights.lights[i];
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
@@ -9708,12 +9143,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     src.push("uniform vec3 lightDir" + i + ";");
                 }
                 if (!(light.type === "dir" && light.space === "view")) {
-                    // World-space dir lights don't need these varyings
                     src.push("varying vec4 vViewLightReverseDirAndDist" + i + ";");
                 }
             }
-
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -9723,70 +9156,53 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("}");
             }
         }
-
-        if (cfg.texturing) {
+        if (texturing) {
             src.push("attribute vec2 uv;");
             src.push("varying vec2 vUV;");
-
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("uniform mat3 uvDecodeMatrix;")
             }
         }
-
-        if (object.geometry.colors) {
+        if (geometryState.colors) {
             src.push("attribute vec4 color;");
             src.push("varying vec4 vColor;");
         }
-
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("uniform float pointSize;");
         }
-
-        var billboard = object.modes.billboard;
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
             src.push("   mat[0][1] = 0.0;");
             src.push("   mat[0][2] = 0.0;");
-
             if (billboard === "spherical") {
                 src.push("   mat[1][0] = 0.0;");
                 src.push("   mat[1][1] = 1.0;");
                 src.push("   mat[1][2] = 0.0;");
             }
-
             src.push("   mat[2][0] = 0.0;");
             src.push("   mat[2][1] = 0.0;");
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
-        if (cfg.receiveShadow) {
-
+        if (receiveShadow) {
             src.push("const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);");
-
-            for (i = 0, len = lights.length; i < len; i++) { // Light sources
-                if (lights[i].shadow) {
-                    src.push("uniform mat4 shadowViewMatrix" + i + ";");
-                    src.push("uniform mat4 shadowProjMatrix" + i + ";");
-                    src.push("varying vec4 vShadowPosFromLight" + i + ";");
-                }
-            }
+            // for (i = 0, len = lights.length; i < len; i++) { // Light sources
+            //     if (lights[i].shadow) {
+            //         src.push("uniform mat4 shadowViewMatrix" + i + ";");
+            //         src.push("uniform mat4 shadowProjMatrix" + i + ";");
+            //         src.push("varying vec4 vShadowPosFromLight" + i + ";");
+            //     }
+            // }
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
+        if (normals) {
+            if (quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -9794,144 +9210,123 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("mat4 modelNormalMatrix2    = modelNormalMatrix;");
             src.push("mat4 viewNormalMatrix2     = viewNormalMatrix;");
         }
-
         src.push("mat4 viewMatrix2           = viewMatrix;");
         src.push("mat4 modelMatrix2          = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
-
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
-
-            if (cfg.normals) {
-
+            if (normals) {
                 src.push("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
-
                 src.push("billboard(modelNormalMatrix2);");
                 src.push("billboard(viewNormalMatrix2);");
                 src.push("billboard(modelViewNormalMatrix);");
             }
-
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
         } else {
-
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
-        if (cfg.normals) {
-
+        if (normals) {
             src.push("vec3 worldNormal = (modelNormalMatrix2 * localNormal).xyz; ");
-            if (scene.lights.lightMaps.length > 0) {
+            if (lightsState.lightMaps.length > 0) {
                 src.push("vWorldNormal = worldNormal;");
             }
             src.push("vViewNormal = normalize((viewNormalMatrix2 * vec4(worldNormal, 1.0)).xyz);");
-
             src.push("vec3 tmpVec3;");
             src.push("float lightDist;");
-
-            for (i = 0, len = scene.lights.lights.length; i < len; i++) { // Lights
-
-                light = scene.lights.lights[i];
-
+            for (i = 0, len = lightsState.lights.length; i < len; i++) { // Lights
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 if (light.type === "dir") {
-
                     if (light.space === "world") {
                         src.push("tmpVec3 = vec3(viewMatrix2 * vec4(lightDir" + i + ", 0.0) ).xyz;");
                         src.push("vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
                 }
-
                 if (light.type === "point") {
-
                     if (light.space === "world") {
                         src.push("tmpVec3 = (viewMatrix2 * vec4(lightPos" + i + ", 1.0)).xyz - viewPosition.xyz;");
                         src.push("lightDist = abs(length(tmpVec3));");
-
                     } else {
                         src.push("tmpVec3 = lightPos" + i + ".xyz - viewPosition.xyz;");
                         src.push("lightDist = abs(length(tmpVec3));");
                     }
-
                     src.push("vViewLightReverseDirAndDist" + i + " = vec4(tmpVec3, lightDist);");
                 }
             }
         }
-
-        if (cfg.texturing) {
-            if (cfg.quantizedGeometry) {
+        if (texturing) {
+            if (quantizedGeometry) {
                 src.push("vUV = (uvDecodeMatrix * vec3(uv, 1.0)).xy;");
             } else {
                 src.push("vUV = uv;");
             }
         }
-
-        if (object.geometry.colors) {
+        if (geometryState.colors) {
             src.push("vColor = color;");
         }
-
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("gl_PointSize = pointSize;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-
         src.push("   vViewPosition = viewPosition.xyz;");
-
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);");
-
-        if (cfg.receiveShadow) {
+        if (receiveShadow) {
             src.push("vec4 tempx; ");
-            for (i = 0, len = lights.length; i < len; i++) { // Light sources
-                if (lights[i].shadow) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) { // Light sources
+                if (lightsState.lights[i].shadow) {
                     src.push("vShadowPosFromLight" + i + " = texUnitConverter * shadowProjMatrix" + i + " * (shadowViewMatrix" + i + " * worldPosition); ");
                 }
             }
         }
-
         src.push("}");
-
         return src;
     }
 
-    function buildFragmentDraw(gl, cfg, scene, object) {
+    function buildFragmentDraw(mesh) {
 
-        var material = object.material;
-        var geometry = object.geometry;
-
+        var scene = mesh.scene;
+        var gl = scene.canvas.gl;
+        var material = mesh._material;
+        var geometryState = mesh._geometry._state;
+        var clipsState = mesh.scene._clipsState;
+        var lightsState = mesh.scene._lightsState;
+        var materialState = mesh._material._state;
+        var clipping = clipsState.clips.length > 0;
+        var normals = hasNormals(mesh);
+        var uvs = geometryState.uv;
+        var solid = false && materialState.backfaces;
+        var phongMaterial = (materialState.type === "PhongMaterial");
+        var metallicMaterial = (materialState.type === "MetallicMaterial");
+        var specularMaterial = (materialState.type === "SpecularMaterial");
+        var receiveShadow = receivesShadow(mesh);
+        var gammaInput = scene.gammaInput; // If set, then it expects that all textures and colors are premultiplied gamma. Default is false.
+        var gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
         var i;
         var len;
-        var lights = scene.lights.lights;
         var light;
-
         var src = [];
 
         src.push("// Fragment vertex shader");
 
-        if (geometry.normals && material.normalMap) {
+        if (normals && material._normalMap) {
             src.push("#extension GL_OES_standard_derivatives : enable");
         }
 
         src.push("precision " + getFragmentFloatPrecision(gl) + " float;");
 
-        if (cfg.receiveShadow) {
+        if (receiveShadow) {
             src.push("float unpackDepth (vec4 color) {");
             src.push("  const vec4 bitShift = vec4(1.0, 1.0/256.0, 1.0/(256.0 * 256.0), 1.0/(256.0*256.0*256.0));");
             src.push("  return dot(color, bitShift);");
@@ -9943,20 +9338,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         //--------------------------------------------------------------------------------
 
         src.push("uniform float gammaFactor;");
-
         src.push("vec4 linearToLinear( in vec4 value ) {");
         src.push("  return value;");
         src.push("}");
-
         src.push("vec4 sRGBToLinear( in vec4 value ) {");
         src.push("  return vec4( mix( pow( value.rgb * 0.9478672986 + vec3( 0.0521327014 ), vec3( 2.4 ) ), value.rgb * 0.0773993808, vec3( lessThanEqual( value.rgb, vec3( 0.04045 ) ) ) ), value.w );");
         src.push("}");
-
         src.push("vec4 gammaToLinear( in vec4 value) {");
         src.push("  return vec4( pow( value.xyz, vec3( gammaFactor ) ), value.w );");
         src.push("}");
-
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("vec4 linearToGamma( in vec4 value, in float gammaFactor ) {");
             src.push("  return vec4( pow( value.xyz, vec3( 1.0 / gammaFactor ) ), value.w );");
             src.push("}");
@@ -9966,33 +9357,31 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         // USER CLIP PLANES
         //--------------------------------------------------------------------------------
 
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
             src.push("uniform bool clippable;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
             }
         }
 
-        if (geometry.normals) {
+        if (normals) {
 
             //--------------------------------------------------------------------------------
             // LIGHT AND REFLECTION MAP INPUTS
             // Define here so available globally to shader functions
             //--------------------------------------------------------------------------------
 
-            if (scene.lights.lightMaps.length > 0) {
+            if (lightsState.lightMaps.length > 0) {
                 src.push("uniform samplerCube lightMap;");
                 src.push("uniform mat4 viewNormalMatrix;");
             }
-
-            if (scene.lights.reflectionMaps.length > 0) {
+            if (lightsState.reflectionMaps.length > 0) {
                 src.push("uniform samplerCube reflectionMap;");
             }
-
-            if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
+            if (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0) {
                 src.push("uniform mat4 viewMatrix;");
             }
 
@@ -10043,26 +9432,23 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             // COMMON UTILS
 
-            if (cfg.phongMaterial) {
+            if (phongMaterial) {
 
-                if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
+                if (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0) {
 
                     src.push("void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
-
-                    if (scene.lights.lightMaps.length > 0) {
-                        src.push("   vec3 irradiance = " + TEXTURE_DECODE_FUNCS[scene.lights.lightMaps[0].encoding] + "(textureCube(lightMap, geometry.worldNormal)).rgb;");
+                    if (lightsState.lightMaps.length > 0) {
+                        src.push("   vec3 irradiance = " + TEXTURE_DECODE_FUNCS[lightsState.lightMaps[0].encoding] + "(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
                         src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                     }
-
-                    if (scene.lights.reflectionMaps.length > 0) {
+                    if (lightsState.reflectionMaps.length > 0) {
                         src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
                         src.push("   vec3 radiance               = textureCube(reflectionMap, reflectVec).rgb * 0.2;");
-                  //      src.push("   radiance *= PI;");
+                        //      src.push("   radiance *= PI;");
                         src.push("   reflectedLight.specular     += radiance;");
                     }
-
                     src.push("}");
                 }
 
@@ -10074,7 +9460,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("}");
             }
 
-            if (cfg.metallicMaterial || cfg.specularMaterial) {
+            if (metallicMaterial || specularMaterial) {
 
                 // IRRADIANCE EVALUATION
 
@@ -10089,10 +9475,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );");
                 src.push("}");
 
-                if (scene.lights.reflectionMaps.length > 0) {
+                if (lightsState.reflectionMaps.length > 0) {
                     src.push("vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {");
                     src.push("   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);"); //TODO: a random factor - fix this
-                    src.push("   vec3 envMapColor = " + TEXTURE_DECODE_FUNCS[scene.lights.reflectionMaps[0].encoding] + "(textureCube(reflectionMap, reflectVec, mipLevel)).rgb;");
+                    src.push("   vec3 envMapColor = " + TEXTURE_DECODE_FUNCS[lightsState.reflectionMaps[0].encoding] + "(textureCube(reflectionMap, reflectVec, mipLevel)).rgb;");
                     src.push("  return envMapColor;");
                     src.push("}");
                 }
@@ -10147,20 +9533,17 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("   return specularColor * AB.x + AB.y;");
                 src.push("}");
 
-
-                if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
+                if (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0) {
 
                     src.push("void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
-
-                    if (scene.lights.lightMaps.length > 0) {
+                    if (lightsState.lightMaps.length > 0) {
                         src.push("   vec3 irradiance = sRGBToLinear(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
                         src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                         //   src.push("   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);");
                     }
-
-                    if (scene.lights.reflectionMaps.length > 0) {
+                    if (lightsState.reflectionMaps.length > 0) {
                         src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
                         src.push("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
                         src.push("   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);");
@@ -10168,7 +9551,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         src.push("   vec3 specularBRDFContrib    = BRDF_Specular_GGX_Environment(geometry, material.specularColor, material.specularRoughness);");
                         src.push("   reflectedLight.specular     += radiance * specularBRDFContrib;");
                     }
-
                     src.push("}");
                 }
 
@@ -10181,7 +9563,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);");
                 src.push("}");
 
-            } // (cfg.metallicMaterial || cfg.specularMaterial)
+            } // (metallicMaterial || specularMaterial)
 
         } // geometry.normals
 
@@ -10191,28 +9573,29 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("varying vec3 vViewPosition;");
 
-        if (geometry.colors) {
+        if (geometryState.colors) {
             src.push("varying vec4 vColor;");
         }
 
-        if (geometry.uv && ((geometry.normals && material.normalMap)
-            || material.ambientMap
-            || material.baseColorMap
-            || material.diffuseMap
-            || material.emissiveMap
-            || material.metallicMap
-            || material.roughnessMap
-            || material.metallicRoughnessMap
-            || material.specularMap
-            || material.glossinessMap
-            || material.specularGlossinessMap
-            || material.occlusionMap
-            || material.alphaMap)) {
+        if (uvs &&
+            ((normals && material._normalMap)
+            || material._ambientMap
+            || material._baseColorMap
+            || material._diffuseMap
+            || material._emissiveMap
+            || material._metallicMap
+            || material._roughnessMap
+            || material._metallicRoughnessMap
+            || material._specularMap
+            || material._glossinessMap
+            || material._specularGlossinessMap
+            || material._occlusionMap
+            || material._alphaMap)) {
             src.push("varying vec2 vUV;");
         }
 
-        if (geometry.normals) {
-            if (scene.lights.lightMaps.length > 0) {
+        if (normals) {
+            if (lightsState.lightMaps.length > 0) {
                 src.push("varying vec3 vWorldNormal;");
             }
             src.push("varying vec3 vViewNormal;");
@@ -10222,47 +9605,37 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         // MATERIAL CHANNEL INPUTS
         //--------------------------------------------------------------------------------
 
-        if (material.ambient) {
+        if (materialState.ambient) {
             src.push("uniform vec3 materialAmbient;");
         }
-
-        if (material.baseColor) {
+        if (materialState.baseColor) {
             src.push("uniform vec3 materialBaseColor;");
         }
-
-        if (material.alpha !== undefined && material.alpha !== null) {
+        if (materialState.alpha !== undefined && materialState.alpha !== null) {
             src.push("uniform vec4 materialAlphaModeCutoff;"); // [alpha, alphaMode, alphaCutoff]
         }
-
-        if (material.emissive) {
+        if (materialState.emissive) {
             src.push("uniform vec3 materialEmissive;");
         }
-
-        if (material.diffuse) {
+        if (materialState.diffuse) {
             src.push("uniform vec3 materialDiffuse;");
         }
-
-        if (material.glossiness !== undefined && material.glossiness !== null) {
+        if (materialState.glossiness !== undefined && materialState.glossiness !== null) {
             src.push("uniform float materialGlossiness;");
         }
-
-        if (material.shininess !== undefined && material.shininess !== null) {
+        if (materialState.shininess !== undefined && materialState.shininess !== null) {
             src.push("uniform float materialShininess;");  // Phong channel
         }
-
-        if (material.specular) {
+        if (materialState.specular) {
             src.push("uniform vec3 materialSpecular;");
         }
-
-        if (material.metallic !== undefined && material.metallic !== null) {
+        if (materialState.metallic !== undefined && materialState.metallic !== null) {
             src.push("uniform float materialMetallic;");
         }
-
-        if (material.roughness !== undefined && material.roughness !== null) {
+        if (materialState.roughness !== undefined && materialState.roughness !== null) {
             src.push("uniform float materialRoughness;");
         }
-
-        if (material.specularF0 !== undefined && material.specularF0 !== null) {
+        if (materialState.specularF0 !== undefined && materialState.specularF0 !== null) {
             src.push("uniform float materialSpecularF0;");
         }
 
@@ -10270,61 +9643,53 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         // MATERIAL TEXTURE INPUTS
         //--------------------------------------------------------------------------------
 
-        if (geometry.uv && material.ambientMap) {
+        if (uvs && material._ambientMap) {
             src.push("uniform sampler2D ambientMap;");
-            if (material.ambientMap.matrix) {
+            if (material._ambientMap._state.matrix) {
                 src.push("uniform mat4 ambientMapMatrix;");
             }
         }
-
-        if (geometry.uv && material.baseColorMap) {
+        if (uvs && material._baseColorMap) {
             src.push("uniform sampler2D baseColorMap;");
-            if (material.baseColorMap.matrix) {
+            if (material._baseColorMap._state.matrix) {
                 src.push("uniform mat4 baseColorMapMatrix;");
             }
         }
-
-        if (geometry.uv && material.diffuseMap) {
+        if (uvs && material._diffuseMap) {
             src.push("uniform sampler2D diffuseMap;");
-            if (material.diffuseMap.matrix) {
+            if (material._diffuseMap._state.matrix) {
                 src.push("uniform mat4 diffuseMapMatrix;");
             }
         }
-
-        if (geometry.uv && material.emissiveMap) {
+        if (uvs && material._emissiveMap) {
             src.push("uniform sampler2D emissiveMap;");
-            if (material.emissiveMap.matrix) {
+            if (material._emissiveMap._state.matrix) {
                 src.push("uniform mat4 emissiveMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.metallicMap) {
+        if (normals && uvs && material._metallicMap) {
             src.push("uniform sampler2D metallicMap;");
-            if (material.metallicMap.matrix) {
+            if (material._metallicMap._state.matrix) {
                 src.push("uniform mat4 metallicMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.roughnessMap) {
+        if (normals && uvs && material._roughnessMap) {
             src.push("uniform sampler2D roughnessMap;");
-            if (material.roughnessMap.matrix) {
+            if (material._roughnessMap._state.matrix) {
                 src.push("uniform mat4 roughnessMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.metallicRoughnessMap) {
+        if (normals && uvs && material._metallicRoughnessMap) {
             src.push("uniform sampler2D metallicRoughnessMap;");
-            if (material.metallicRoughnessMap.matrix) {
+            if (material._metallicRoughnessMap._state.matrix) {
                 src.push("uniform mat4 metallicRoughnessMapMatrix;");
             }
         }
-
-        if (geometry.normals && material.normalMap) {
+        if (normals && material._normalMap) {
             src.push("uniform sampler2D normalMap;");
-            if (material.normalMap.matrix) {
+            if (material._normalMap._state.matrix) {
                 src.push("uniform mat4 normalMapMatrix;");
             }
-
             src.push("vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm, vec2 uv ) {");
             src.push("      vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );");
             src.push("      vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );");
@@ -10339,38 +9704,33 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("      return normalize( tsn * mapN );");
             src.push("}");
         }
-
-        if (geometry.uv && material.occlusionMap) {
+        if (uvs && material._occlusionMap) {
             src.push("uniform sampler2D occlusionMap;");
-            if (material.occlusionMap.matrix) {
+            if (material._occlusionMap._state.matrix) {
                 src.push("uniform mat4 occlusionMapMatrix;");
             }
         }
-
-        if (geometry.uv && material.alphaMap) {
+        if (uvs && material._alphaMap) {
             src.push("uniform sampler2D alphaMap;");
-            if (material.alphaMap.matrix) {
+            if (material._alphaMap._state.matrix) {
                 src.push("uniform mat4 alphaMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.specularMap) {
+        if (normals && uvs && material._specularMap) {
             src.push("uniform sampler2D specularMap;");
-            if (material.specularMap.matrix) {
+            if (material._specularMap._state.matrix) {
                 src.push("uniform mat4 specularMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.glossinessMap) {
+        if (normals && uvs && material._glossinessMap) {
             src.push("uniform sampler2D glossinessMap;");
-            if (material.glossinessMap.matrix) {
+            if (material._glossinessMap._state.matrix) {
                 src.push("uniform mat4 glossinessMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.specularGlossinessMap) {
+        if (normals && uvs && material._specularGlossinessMap) {
             src.push("uniform sampler2D materialSpecularGlossinessMap;");
-            if (material.specularGlossinessMap.matrix) {
+            if (material._specularGlossinessMap._state.matrix) {
                 src.push("uniform mat4 materialSpecularGlossinessMapMatrix;");
             }
         }
@@ -10379,51 +9739,45 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         // MATERIAL FRESNEL INPUTS
         //--------------------------------------------------------------------------------
 
-        if (geometry.normals && (material.diffuseFresnel ||
-            material.specularFresnel ||
-            material.alphaFresnel ||
-            material.emissiveFresnel ||
-            material.reflectivityFresnel)) {
-
+        if (normals && (material._diffuseFresnel ||
+            material._specularFresnel ||
+            material._alphaFresnel ||
+            material._emissiveFresnel ||
+            material._reflectivityFresnel)) {
             src.push("float fresnel(vec3 eyeDir, vec3 normal, float edgeBias, float centerBias, float power) {");
             src.push("    float fr = abs(dot(eyeDir, normal));");
             src.push("    float finalFr = clamp((fr - edgeBias) / (centerBias - edgeBias), 0.0, 1.0);");
             src.push("    return pow(finalFr, power);");
             src.push("}");
-
-            if (material.diffuseFresnel) {
+            if (material._diffuseFresnel) {
                 src.push("uniform float  diffuseFresnelCenterBias;");
                 src.push("uniform float  diffuseFresnelEdgeBias;");
                 src.push("uniform float  diffuseFresnelPower;");
                 src.push("uniform vec3   diffuseFresnelCenterColor;");
                 src.push("uniform vec3   diffuseFresnelEdgeColor;");
             }
-
-            if (material.specularFresnel) {
+            if (material._specularFresnel) {
                 src.push("uniform float  specularFresnelCenterBias;");
                 src.push("uniform float  specularFresnelEdgeBias;");
                 src.push("uniform float  specularFresnelPower;");
                 src.push("uniform vec3   specularFresnelCenterColor;");
                 src.push("uniform vec3   specularFresnelEdgeColor;");
             }
-
-            if (material.alphaFresnel) {
+            if (material._alphaFresnel) {
                 src.push("uniform float  alphaFresnelCenterBias;");
                 src.push("uniform float  alphaFresnelEdgeBias;");
                 src.push("uniform float  alphaFresnelPower;");
                 src.push("uniform vec3   alphaFresnelCenterColor;");
                 src.push("uniform vec3   alphaFresnelEdgeColor;");
             }
-
-            if (material.reflectivityFresnel) {
+            if (material._reflectivityFresnel) {
                 src.push("uniform float  materialSpecularF0FresnelCenterBias;");
                 src.push("uniform float  materialSpecularF0FresnelEdgeBias;");
                 src.push("uniform float  materialSpecularF0FresnelPower;");
                 src.push("uniform vec3   materialSpecularF0FresnelCenterColor;");
                 src.push("uniform vec3   materialSpecularF0FresnelEdgeColor;");
             }
-
-            if (material.emissiveFresnel) {
+            if (material._emissiveFresnel) {
                 src.push("uniform float  emissiveFresnelCenterBias;");
                 src.push("uniform float  emissiveFresnelEdgeBias;");
                 src.push("uniform float  emissiveFresnelPower;");
@@ -10438,18 +9792,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("uniform vec4   lightAmbient;");
 
-        if (geometry.normals) {
-
-            for (i = 0, len = lights.length; i < len; i++) { // Light sources
-
-                light = lights[i];
-
+        if (normals) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) { // Light sources
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 src.push("uniform vec4 lightColor" + i + ";");
-
                 if (light.type === "point") {
                     src.push("uniform vec3 lightAttenuation" + i + ";");
                 }
@@ -10464,7 +9813,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         }
 
-        if (cfg.receiveShadow) {
+        if (receiveShadow) {
 
             // Variance shadow mapping filter
 
@@ -10481,8 +9830,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             // src.push("      return clamp(max(p, p_max), 0.0, 1.0);");
             // src.push("}");
 
-            for (i = 0, len = lights.length; i < len; i++) { // Light sources
-                if (lights[i].shadow) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) { // Light sources
+                if (lightsState.lights[i].shadow) {
                     src.push("varying vec4 vShadowPosFromLight" + i + ";");
                     src.push("uniform sampler2D shadowMap" + i + ";");
                 }
@@ -10497,16 +9846,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("void main(void) {");
 
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
             }
             src.push("  if (dist > 0.0) { discard; }");
-            if (cfg.solid) {
+            if (solid) {
                 src.push("  if (gl_FrontFacing == false) {");
                 src.push("     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);");
                 src.push("     return;");
@@ -10515,7 +9864,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("}");
         }
 
-        if (geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
             src.push("float r = dot(cxy, cxy);");
             src.push("if (r > 1.0) {");
@@ -10525,65 +9874,65 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("float occlusion = 1.0;");
 
-        if (material.ambient) {
+        if (materialState.ambient) {
             src.push("vec3 ambientColor = materialAmbient;");
         } else {
             src.push("vec3 ambientColor = vec3(1.0, 1.0, 1.0);");
         }
 
-        if (material.diffuse) {
+        if (materialState.diffuse) {
             src.push("vec3 diffuseColor = materialDiffuse;");
-        } else if (material.baseColor) {
+        } else if (materialState.baseColor) {
             src.push("vec3 diffuseColor = materialBaseColor;");
         } else {
             src.push("vec3 diffuseColor = vec3(1.0, 1.0, 1.0);");
         }
 
-        if (geometry.colors) {
+        if (geometryState.colors) {
             src.push("diffuseColor *= vColor.rgb;");
         }
 
-        if (material.emissive) {
+        if (materialState.emissive) {
             src.push("vec3 emissiveColor = materialEmissive;"); // Emissive default is (0,0,0), so initializing here
         } else {
             src.push("vec3  emissiveColor = vec3(0.0, 0.0, 0.0);");
         }
 
-        if (material.specular) {
+        if (materialState.specular) {
             src.push("vec3 specular = materialSpecular;");
         } else {
             src.push("vec3 specular = vec3(1.0, 1.0, 1.0);");
         }
 
-        if (material.alpha !== undefined) {
+        if (materialState.alpha !== undefined) {
             src.push("float alpha = materialAlphaModeCutoff[0];");
         } else {
             src.push("float alpha = 1.0;");
         }
 
-        if (geometry.colors) {
+        if (geometryState.colors) {
             src.push("alpha *= vColor.a;");
         }
 
-        if (material.glossiness !== undefined) {
+        if (materialState.glossiness !== undefined) {
             src.push("float glossiness = materialGlossiness;");
         } else {
             src.push("float glossiness = 1.0;");
         }
 
-        if (material.metallic !== undefined) {
+        if (materialState.metallic !== undefined) {
             src.push("float metallic = materialMetallic;");
         } else {
             src.push("float metallic = 1.0;");
         }
 
-        if (material.roughness !== undefined) {
+        if (materialState.roughness !== undefined) {
             src.push("float roughness = materialRoughness;");
         } else {
             src.push("float roughness = 1.0;");
         }
 
-        if (material.specularF0 !== undefined) {
+        if (materialState.specularF0 !== undefined) {
             src.push("float specularF0 = materialSpecularF0;");
         } else {
             src.push("float specularF0 = 1.0;");
@@ -10593,72 +9942,71 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         // TEXTURING
         //--------------------------------------------------------------------------------
 
-        if (geometry.uv
-            && ((geometry.normals && material.normalMap)
-            || material.ambientMap
-            || material.baseColorMap
-            || material.diffuseMap
-            || material.occlusionMap
-            || material.emissiveMap
-            || material.metallicMap
-            || material.roughnessMap
-            || material.metallicRoughnessMap
-            || material.specularMap
-            || material.glossinessMap
-            || material.specularGlossinessMap
-            || material.alphaMap)) {
+        if (uvs && ((normals && material._normalMap)
+            || material._ambientMap
+            || material._baseColorMap
+            || material._diffuseMap
+            || material._occlusionMap
+            || material._emissiveMap
+            || material._metallicMap
+            || material._roughnessMap
+            || material._metallicRoughnessMap
+            || material._specularMap
+            || material._glossinessMap
+            || material._specularGlossinessMap
+            || material._alphaMap)) {
             src.push("vec4 texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);");
             src.push("vec2 textureCoord;");
         }
 
-        if (geometry.uv && material.ambientMap) {
-            if (material.ambientMap.matrix) {
+        if (uvs && material._ambientMap) {
+            if (material._ambientMap._state.matrix) {
                 src.push("textureCoord = (ambientMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
             }
             src.push("vec4 ambientTexel = texture2D(ambientMap, textureCoord).rgb;");
-            src.push("ambientTexel = " + TEXTURE_DECODE_FUNCS[material.ambientMap.encoding] + "(ambientTexel);");
+            src.push("ambientTexel = " + TEXTURE_DECODE_FUNCS[material._ambientMap._state.encoding] + "(ambientTexel);");
             src.push("ambientColor *= ambientTexel.rgb;");
         }
 
-        if (geometry.uv && material.diffuseMap) {
-            if (material.diffuseMap.matrix) {
+        if (uvs && material._diffuseMap) {
+            if (material._diffuseMap._state.matrix) {
                 src.push("textureCoord = (diffuseMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
             }
             src.push("vec4 diffuseTexel = texture2D(diffuseMap, textureCoord);");
-            src.push("diffuseTexel = " + TEXTURE_DECODE_FUNCS[material.diffuseMap.encoding] + "(diffuseTexel);");
+            src.push("diffuseTexel = " + TEXTURE_DECODE_FUNCS[material._diffuseMap._state.encoding] + "(diffuseTexel);");
             src.push("diffuseColor *= diffuseTexel.rgb;");
             src.push("alpha *= diffuseTexel.a;");
         }
 
-        if (geometry.uv && material.baseColorMap) {
-            if (material.baseColorMap.matrix) {
+        if (uvs && material._baseColorMap) {
+            if (material._baseColorMap._state.matrix) {
                 src.push("textureCoord = (baseColorMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
             }
             src.push("vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);");
-            src.push("baseColorTexel = " + TEXTURE_DECODE_FUNCS[material.baseColorMap.encoding] + "(baseColorTexel);");
+            src.push("baseColorTexel = " + TEXTURE_DECODE_FUNCS[material._baseColorMap._state.encoding] + "(baseColorTexel);");
             src.push("diffuseColor *= baseColorTexel.rgb;");
             src.push("alpha *= baseColorTexel.a;");
         }
 
-        if (geometry.uv && material.emissiveMap) {
-            if (material.emissiveMap.matrix) {
+        if (uvs && material._emissiveMap) {
+            if (material._emissiveMap._state.matrix) {
                 src.push("textureCoord = (emissiveMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
             }
             src.push("vec4 emissiveTexel = texture2D(emissiveMap, textureCoord);");
-            src.push("emissiveTexel = " + TEXTURE_DECODE_FUNCS[material.emissiveMap.encoding] + "(emissiveTexel);");
+            src.push("emissiveTexel = " + TEXTURE_DECODE_FUNCS[material._emissiveMap._state.encoding] + "(emissiveTexel);");
             src.push("emissiveColor *= emissiveTexel.rgb;");
         }
 
-        if (geometry.uv && material.alphaMap) {
-            if (material.alphaMap.matrix) {
+        if (uvs && material._alphaMap) {
+            if (material._alphaMap._state.matrix) {
                 src.push("textureCoord = (alphaMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
@@ -10666,8 +10014,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("alpha *= texture2D(alphaMap, textureCoord).r;");
         }
 
-        if (geometry.uv && material.occlusionMap) {
-            if (material.occlusionMap.matrix) {
+        if (uvs && material._occlusionMap) {
+            if (material._occlusionMap._state.matrix) {
                 src.push("textureCoord = (occlusionMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
@@ -10675,14 +10023,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("occlusion *= texture2D(occlusionMap, textureCoord).r;");
         }
 
-        if (geometry.normals && ((lights.length > 0) || scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
+        if (normals && ((lightsState.lights.length > 0) || lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0)) {
 
             //--------------------------------------------------------------------------------
             // SHADING
             //--------------------------------------------------------------------------------
 
-            if (geometry.uv && material.normalMap) {
-                if (material.normalMap.matrix) {
+            if (uvs && material._normalMap) {
+                if (material._normalMap._state.matrix) {
                     src.push("textureCoord = (normalMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -10692,8 +10040,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("vec3 viewNormal = normalize(vViewNormal);");
             }
 
-            if (geometry.uv && material.specularMap) {
-                if (material.specularMap.matrix) {
+            if (uvs && material._specularMap) {
+                if (material._specularMap._state.matrix) {
                     src.push("textureCoord = (specularMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -10701,8 +10049,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("specular *= texture2D(specularMap, textureCoord).rgb;");
             }
 
-            if (geometry.uv && material.glossinessMap) {
-                if (material.glossinessMap.matrix) {
+            if (uvs && material._glossinessMap) {
+                if (material._glossinessMap._state.matrix) {
                     src.push("textureCoord = (glossinessMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -10710,8 +10058,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("glossiness *= texture2D(glossinessMap, textureCoord).r;");
             }
 
-            if (geometry.uv && material.specularGlossinessMap) {
-                if (material.specularGlossinessMap.matrix) {
+            if (uvs && material._specularGlossinessMap) {
+                if (material._specularGlossinessMap._state.matrix) {
                     src.push("textureCoord = (materialSpecularGlossinessMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -10721,8 +10069,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("glossiness *= specGlossRGB.a;");
             }
 
-            if (geometry.uv && material.metallicMap) {
-                if (material.metallicMap.matrix) {
+            if (uvs && material._metallicMap) {
+                if (material._metallicMap._state.matrix) {
                     src.push("textureCoord = (metallicMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -10730,8 +10078,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("metallic *= texture2D(metallicMap, textureCoord).r;");
             }
 
-            if (geometry.uv && material.roughnessMap) {
-                if (material.roughnessMap.matrix) {
+            if (uvs && material._roughnessMap) {
+                if (material._roughnessMap._state.matrix) {
                     src.push("textureCoord = (roughnessMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -10739,8 +10087,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("roughness *= texture2D(roughnessMap, textureCoord).r;");
             }
 
-            if (geometry.uv && material.metallicRoughnessMap) {
-                if (material.metallicRoughnessMap.matrix) {
+            if (uvs && material._metallicRoughnessMap) {
+                if (material._metallicRoughnessMap._state.matrix) {
                     src.push("textureCoord = (metallicRoughnessMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -10752,23 +10100,21 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             src.push("vec3 viewEyeDir = normalize(-vViewPosition);");
 
-            if (material.diffuseFresnel || material.specularFresnel || material.alphaFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
-                if (material.diffuseFresnel) {
-                    src.push("float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);");
-                    src.push("diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);");
-                }
-                if (material.specularFresnel) {
-                    src.push("float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);");
-                    src.push("specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);");
-                }
-                if (material.alphaFresnel) {
-                    src.push("float alphaFresnel = fresnel(viewEyeDir, viewNormal, alphaFresnelEdgeBias, alphaFresnelCenterBias, alphaFresnelPower);");
-                    src.push("alpha *= mix(alphaFresnelEdgeColor.r, alphaFresnelCenterColor.r, alphaFresnel);");
-                }
-                if (material.emissiveFresnel) {
-                    src.push("float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);");
-                    src.push("emissiveColor *= mix(emissiveFresnelEdgeColor, emissiveFresnelCenterColor, emissiveFresnel);");
-                }
+            if (material._diffuseFresnel) {
+                src.push("float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);");
+                src.push("diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);");
+            }
+            if (material._specularFresnel) {
+                src.push("float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);");
+                src.push("specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);");
+            }
+            if (material._alphaFresnel) {
+                src.push("float alphaFresnel = fresnel(viewEyeDir, viewNormal, alphaFresnelEdgeBias, alphaFresnelCenterBias, alphaFresnelPower);");
+                src.push("alpha *= mix(alphaFresnelEdgeColor.r, alphaFresnelCenterColor.r, alphaFresnel);");
+            }
+            if (material._emissiveFresnel) {
+                src.push("float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);");
+                src.push("emissiveColor *= mix(emissiveFresnelEdgeColor, emissiveFresnelCenterColor, emissiveFresnel);");
             }
 
             src.push("if (materialAlphaModeCutoff[1] == 1.0 && alpha < materialAlphaModeCutoff[2]) {"); // ie. (alphaMode == "mask" && alpha < alphaCutoff)
@@ -10783,20 +10129,20 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("ReflectedLight reflectedLight = ReflectedLight(vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0));");
             src.push("vec3           viewLightDir;");
 
-            if (cfg.phongMaterial) {
+            if (phongMaterial) {
                 src.push("material.diffuseColor      = diffuseColor;");
                 src.push("material.specularColor     = specular;");
                 src.push("material.shine             = materialShininess;");
             }
 
-            if (cfg.specularMaterial) {
+            if (specularMaterial) {
                 src.push("float oneMinusSpecularStrength = 1.0 - max(max(specular.r, specular.g ),specular.b);"); // Energy conservation
                 src.push("material.diffuseColor      = diffuseColor * oneMinusSpecularStrength;");
                 src.push("material.specularRoughness = clamp( 1.0 - glossiness, 0.04, 1.0 );");
                 src.push("material.specularColor     = specular;");
             }
 
-            if (cfg.metallicMaterial) {
+            if (metallicMaterial) {
                 src.push("float dielectricSpecular = 0.16 * specularF0 * specularF0;");
                 src.push("material.diffuseColor      = diffuseColor * (1.0 - dielectricSpecular) * (1.0 - metallic);");
                 src.push("material.specularRoughness = clamp(roughness, 0.04, 1.0);");
@@ -10804,7 +10150,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
 
             src.push("geometry.position      = vViewPosition;");
-            if (scene.lights.lightMaps.length > 0) {
+            if (lightsState.lightMaps.length > 0) {
                 src.push("geometry.worldNormal   = normalize(vWorldNormal);");
             }
             src.push("geometry.viewNormal    = viewNormal;");
@@ -10812,21 +10158,19 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             // ENVIRONMENT AND REFLECTION MAP SHADING
 
-            if ((cfg.phongMaterial) && (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
+            if ((phongMaterial) && (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0)) {
                 src.push("computePhongLightMapping(geometry, material, reflectedLight);");
             }
 
-            if ((cfg.specularMaterial || cfg.metallicMaterial) && (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
+            if ((specularMaterial || metallicMaterial) && (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0)) {
                 src.push("computePBRLightMapping(geometry, material, reflectedLight);");
             }
 
             // LIGHT SOURCE SHADING
 
-            var light;
-
             src.push("float shadow = 1.0;");
 
-            // if (cfg.receiveShadow) {
+            // if (receiveShadow) {
             //
             //     src.push("float lightDepth2 = clamp(length(lightPos)/40.0, 0.0, 1.0);");
             //     src.push("float illuminated = VSM(sLightDepth, lightUV, lightDepth2);");
@@ -10841,9 +10185,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             // }
 
             var numShadows = 0;
-            for (i = 0, len = lights.length; i < len; i++) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
 
-                light = lights[i];
+                light = lightsState.lights[i];
 
                 if (light.type === "ambient") {
                     continue;
@@ -10858,7 +10202,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     src.push("viewLightDir = normalize(vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
                 }
 
-                if (cfg.receiveShadow && light.shadow) {
+                if (receiveShadow && light.shadow) {
 
                     // if (true) {
                     //     src.push('shadowCoord = (vShadowPosFromLight' + i + '.xyz/vShadowPosFromLight' + i + '.w)/2.0 + 0.5;');
@@ -10907,11 +10251,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("light.direction = viewLightDir;");
 
 
-                if (cfg.phongMaterial) {
+                if (phongMaterial) {
                     src.push("computePhongLighting(light, geometry, material, reflectedLight);");
                 }
 
-                if (cfg.specularMaterial || cfg.metallicMaterial) {
+                if (specularMaterial || metallicMaterial) {
                     src.push("computePBRLighting(light, geometry, material, reflectedLight);");
                 }
             }
@@ -10924,7 +10268,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             // COMBINE TERMS
 
-            if (cfg.phongMaterial) {
+            if (phongMaterial) {
 
                 src.push("ambientColor *= (lightAmbient.rgb * lightAmbient.a);");
 
@@ -10949,7 +10293,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("gl_FragColor = vec4(outgoingLight, alpha) * colorize;");
 
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("gl_FragColor = linearToGamma(gl_FragColor, gammaFactor);");
         }
 
@@ -10967,16 +10311,23 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     var ids = new xeogl.utils.Map({});
 
-    xeogl.renderer.OutlineRenderer = function (gl, hash, scene, object) {
-        this._init(gl, hash, scene, object);
+    xeogl.renderer.OutlineRenderer = function (hash, mesh) {
+        this._init(hash, mesh);
     };
 
     var outlineRenderers = {};
 
-    xeogl.renderer.OutlineRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.OutlineRenderer.get = function (mesh) {
+        var hash = [
+            mesh.scene.canvas.canvas.id,
+            mesh.scene.gammaOutput ? "go" : "", // Gamma input not needed
+            mesh.scene._clipsState.getHash(),
+            mesh._geometry._state.hash,
+            mesh._state.hash
+        ].join(";");
         var renderer = outlineRenderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.OutlineRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.OutlineRenderer(hash, mesh);
             outlineRenderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -10984,7 +10335,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return renderer;
     };
 
-    xeogl.renderer.OutlineRenderer.prototype.destroy = function () {
+    xeogl.renderer.OutlineRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
             this._program.destroy();
@@ -10993,32 +10344,24 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.OutlineRenderer.prototype._init = function (gl, hash, scene, object) {
-
+    xeogl.renderer.OutlineRenderer.prototype._init = function (hash, mesh) {
         this.id = ids.addItem({});
-        this._gl = gl;
+        this._scene = mesh.scene;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.OutlineShaderSource(gl, scene, object);
-        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._shaderSource = new xeogl.renderer.OutlineShaderSource(mesh);
+        this._program = new xeogl.renderer.Program(mesh.scene.canvas.gl, this._shaderSource);
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uClips = [];
-
-        var clips = scene.clips.clips;
+        var clips = mesh.scene._clipsState.clips;
         for (var i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
@@ -11026,41 +10369,30 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
         this._uColor = program.getLocation("color");
         this._uWidth = program.getLocation("width");
         this._aPosition = program.getAttribute("position");
         this._aNormal = program.getAttribute("normal");
         this._uClippable = program.getLocation("clippable");
         this._uGammaFactor = program.getLocation("gammaFactor");
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
     };
 
     xeogl.renderer.OutlineRenderer.prototype._bindProgram = function (frame) {
-
-        var program = this._program;
-
-        program.bind();
-
-        frame.useProgram++;
-
-        var gl = this._gl;
         var scene = this._scene;
-
+        var gl = scene.canvas.gl;
+        var program = this._program;
+        var clipsState = scene._clipsState;
+        program.bind();
+        frame.useProgram++;
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
-
         gl.uniformMatrix4fv(this._uViewMatrix, false, scene.viewTransform.matrix);
         gl.uniformMatrix4fv(this._uProjMatrix, false, scene.projTransform.matrix);
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        if (clipsState.clips.length > 0) {
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -11069,7 +10401,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             for (var i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;
-                clip = clips[i];
+                clip = clipsState.clips[i];
                 if (uClipActive) {
                     gl.uniform1i(uClipActive, clip.active);
                 }
@@ -11083,55 +10415,41 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             }
         }
-
         if (this._uGammaFactor) {
             gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
         }
     };
 
-    xeogl.renderer.OutlineRenderer.prototype.drawObject = function (frame, object) {
-
+    xeogl.renderer.OutlineRenderer.prototype.drawMesh = function (frame, mesh) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var materialState = mesh.outlineMaterial;
+        var meshState = mesh._state;
+        var geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
-
-        var gl = this._gl;
-        var material = object.outlineMaterial;
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        if (material.id !== this._lastMaterialId) {
-
+        if (materialState.id !== this._lastMaterialId) {
             if (this._uWidth) {
-                gl.uniform1f(this._uWidth, material.width);
+                gl.uniform1f(this._uWidth, materialState.width);
             }
-
             if (this._uColor) {
-                var color = material.color;
-                var alpha = material.alpha;
+                var color = materialState.color;
+                var alpha = materialState.alpha;
                 gl.uniform4f(this._uColor, color[0], color[1], color[2], alpha);
             }
-
-            this._lastMaterialId = material.id;
+            this._lastMaterialId = materialState.id;
         }
-
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            if (this._uModelNormalMatrix) {
-                gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, modelTransform.getNormalMatrix());
-            }
-            this._lastModelTransformId = modelTransform.id;
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+        if (this._uModelNormalMatrix) {
+            gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, mesh.worldNormalMatrix);
         }
-
-        var modes = object.modes;
-
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, modes.clippable);
+            gl.uniform1i(this._uClippable, meshState.clippable);
         }
-
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        if (geometryState.combined) {
+            var vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -11144,61 +10462,54 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this._lastVertexBufsId = vertexBufs.id;
             }
         }
-
         // Bind VBOs
-
-        if (geometry.id !== this._lastGeometryId) {
-
+        if (geometryState.id !== this._lastGeometryId) {
             if (this._uPositionsDecodeMatrix) {
-                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
             }
-
             if (this._uUVDecodeMatrix) {
-                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometry.uvDecodeMatrix);
+                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometryState.uvDecodeMatrix);
             }
-
-            if (geometry.combined) { // VBOs were bound by the VertexBufs logic above
-                if (geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined.bind();
+            if (geometryState.combined) { // VBOs were bound by the VertexBufs logic above
+                if (geometryState.indicesBufCombined) {
+                    geometryState.indicesBufCombined.bind();
                     frame.bindArray++;
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometryState.normalsBuf, geometryState.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
-                if (geometry.indicesBuf) {
-                    geometry.indicesBuf.bind();
+                if (geometryState.indicesBuf) {
+                    geometryState.indicesBuf.bind();
                     frame.bindArray++;
-                    // gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+                    // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                     // frame.drawElements++;
-                } else if (geometry.positions) {
-                    // gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+                } else if (geometryState.positions) {
+                    // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                     //  frame.drawArrays++;
                 }
             }
-            this._lastGeometryId = geometry.id;
+            this._lastGeometryId = geometryState.id;
         }
-
         // Draw (indices bound in prev step)
-
-        if (geometry.combined) {
-            if (geometry.indicesBufCombined) { // Geometry indices into portion of uber-array
-                gl.drawElements(geometry.primitive, geometry.indicesBufCombined.numItems, geometry.indicesBufCombined.itemType, 0);
+        if (geometryState.combined) {
+            if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
+                gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
                 frame.drawElements++;
             } else {
                 // TODO: drawArrays() with VertexBufs positions
             }
         } else {
-            if (geometry.indicesBuf) {
-                gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+            if (geometryState.indicesBuf) {
+                gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 frame.drawElements++;
-            } else if (geometry.positions) {
-                gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+            } else if (geometryState.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                 frame.drawArrays++;
             }
         }
@@ -11212,51 +10523,42 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.OutlineShaderSource = function (gl, scene, object) {
-        var cfg = {
-            normals: hasNormals(object),
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized
-        };
-        this.vertex = buildVertex(gl, cfg, object);
-        this.fragment = buildFragment(gl, cfg, scene);
+    xeogl.renderer.OutlineShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
 
-    function hasNormals(object) {
-        var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+    function hasNormals(mesh) {
+        var primitive = mesh._geometry._state.primitiveName;
+        if ((mesh._geometry._state.autoVertexNormals || mesh._geometry._state.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
     }
 
-    function buildVertex(gl, cfg, object) {
-
-        var billboard = object.modes.billboard;
-
+    function buildVertex(mesh) {
+        var scene = mesh.scene;
+        var clipping = scene._clipsState.clips.length > 0;
+        var quantizedGeometry = !!mesh._geometry._state.quantized;
+        var normals = hasNormals(mesh);
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
         var src = [];
-
         src.push("// Outline effect vertex shader");
-
         src.push("attribute vec3 position;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
-
         src.push("uniform float width;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        if (cfg.normals) {
+        if (normals) {
             src.push("attribute vec3 normal;");
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -11266,7 +10568,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("}");
             }
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
@@ -11282,18 +10583,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
+        if (normals) {
+            if (quantizedGeometry) {
                 src.push("vec3 localNormal = octDecode(normal.xy); ");
             } else {
                 src.push("vec3 localNormal = normal; ");
@@ -11301,57 +10598,51 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             //src.push("  localPosition.xyz += (normalize(normal) * (width * 0.0005 * (projPos.z/1.0)));");
             src.push("  localPosition.xyz += (normalize(normal) * (width * 0.0005));");
         }
-
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
         } else {
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("}");
         return src;
     }
 
-    function buildFragment(gl, cfg, scene) {
+    function buildFragment(mesh) {
+        var scene = mesh.scene;
+        var clipsState = scene._clipsState;
+        var clipping = clipsState.clips.length > 0;
         var src = [];
-        //src.push("precision " + getFragmentFloatPrecision(gl) + " float;");
         src.push("precision lowp float;");
         src.push("uniform vec4  color;");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("uniform bool clippable;");
             src.push("varying vec4 vWorldPosition;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
             }
         }
         src.push("void main(void) {");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
@@ -11364,18 +10655,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return src;
     }
 
-    function getFragmentFloatPrecision(gl) {
-        if (!gl.getShaderPrecisionFormat) {
-            return "mediump";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
-            return "highp";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
-            return "mediump";
-        }
-        return "lowp";
-    }
 
 })();;/**
  * @author xeolabs / https://github.com/xeolabs
@@ -11385,30 +10664,24 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.PickObjectRenderer = function (gl, hash, scene, object) {
-
-        this._gl = gl;
+    xeogl.renderer.PickMeshRenderer = function (hash,  mesh) {
+        var gl = mesh.scene.canvas.gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.PickObjectShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.PickMeshShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uClips = [];
-        var clips = scene.clips.clips;
+        var clips = mesh.scene._clipsState.clips;
         for (var i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
@@ -11416,23 +10689,30 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
         this._aPosition = program.getAttribute("position");
         this._uClippable = program.getLocation("clippable");
         this._uPickColor = program.getLocation("pickColor");
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
     };
 
     var renderers = {};
 
-    xeogl.renderer.PickObjectRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.PickMeshRenderer.get = function ( mesh) {
+        var hash = [
+            mesh.scene.canvas.canvas.id,
+            mesh.scene._clipsState.getHash(),
+            mesh._geometry._state.hash,
+            mesh._state.hash
+        ].join(";");
         var renderer = renderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.PickObjectRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.PickMeshRenderer(hash, mesh);
+            if (renderer.errors) {
+                console.log(renderer.errors.join("\n"));
+                return null;
+            }
             renderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -11440,7 +10720,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return renderer;
     };
 
-    xeogl.renderer.PickObjectRenderer.prototype.destroy = function () {
+    xeogl.renderer.PickMeshRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             this._program.destroy();
             delete renderers[this._hash];
@@ -11448,25 +10728,20 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.PickObjectRenderer.prototype._bindProgram = function (frame) {
-
-        var gl = this._gl;
+    xeogl.renderer.PickMeshRenderer.prototype._bindProgram = function (frame) {
         var scene = this._scene;
-
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
+        var camera = scene.camera;
+        var cameraState = camera._state;
         this._program.bind();
-
         frame.useProgram++;
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
-
-        gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || scene.projTransform.matrix);
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        if (clipsState.clips.length > 0) {
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -11475,7 +10750,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             for (var i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;
-                clip = clips[i];
+                clip = clipsState.clips[i];
                 if (uClipActive) {
                     gl.uniform1i(uClipActive, clip.active);
                 }
@@ -11491,20 +10766,18 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.PickObjectRenderer.prototype.drawObject = function (frame, object) {
-
+    xeogl.renderer.PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var materialState = mesh._material._state;
+        var meshState = mesh._state;
+        var geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
-
-        var gl = this._gl;
-        var material = object.material;
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        if (material.id !== this._lastMaterialId) {
-            var backfaces = material.backfaces;
+        if (materialState.id !== this._lastMaterialId) {
+            var backfaces = materialState.backfaces;
             if (frame.backfaces !== backfaces) {
                 if (backfaces) {
                     gl.disable(gl.CULL_FACE);
@@ -11513,7 +10786,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
                 frame.backfaces = backfaces;
             }
-            var frontface = material.frontface;
+            var frontface = materialState.frontface;
             if (frame.frontface !== frontface) {
                 if (frontface) {
                     gl.frontFace(gl.CCW);
@@ -11522,25 +10795,18 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
                 frame.frontface = frontface;
             }
-
-            if (frame.lineWidth !== material.lineWidth) {
-                gl.lineWidth(material.lineWidth);
-                frame.lineWidth = material.lineWidth;
+            if (frame.lineWidth !== materialState.lineWidth) {
+                gl.lineWidth(materialState.lineWidth);
+                frame.lineWidth = materialState.lineWidth;
             }
-
             if (this._uPointSize) {
-                gl.uniform1i(this._uPointSize, material.pointSize);
+                gl.uniform1i(this._uPointSize, materialState.pointSize);
             }
-            this._lastMaterialId = material.id;
+            this._lastMaterialId = materialState.id;
         }
-
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            this._lastModelTransformId = modelTransform.id;
-        }
-
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+        if (geometryState.combined) {
+            var vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -11549,65 +10815,53 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this._lastVertexBufsId = vertexBufs.id;
             }
         }
-
         // Mesh state
-
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, object.modes.clippable);
+            gl.uniform1i(this._uClippable, mesh._state.clippable);
         }
-
         // Bind VBOs
-
-        if (geometry.id !== this._lastGeometryId) {
-
+        if (geometryState.id !== this._lastGeometryId) {
             if (this._uPositionsDecodeMatrix) {
-                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
             }
-
-            if (geometry.combined) { // VBOs were bound by the preceding VertexBufs chunk
-                if (geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined.bind();
+            if (geometryState.combined) { // VBOs were bound by the preceding VertexBufs chunk
+                if (geometryState.indicesBufCombined) {
+                    geometryState.indicesBufCombined.bind();
                     frame.bindArray++;
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
-                if (geometry.indicesBuf) {
-                    geometry.indicesBuf.bind();
+                if (geometryState.indicesBuf) {
+                    geometryState.indicesBuf.bind();
                     frame.bindArray++;
                 }
             }
-            this._lastGeometryId = geometry.id;
+            this._lastGeometryId = geometryState.id;
         }
-
         // Mesh-indexed color
-
-        var a = frame.pickObjectIndex >> 24 & 0xFF;
-        var b = frame.pickObjectIndex >> 16 & 0xFF;
-        var g = frame.pickObjectIndex >> 8 & 0xFF;
-        var r = frame.pickObjectIndex & 0xFF;
-
-        frame.pickObjectIndex++;
-
+        var a = frame.pickmeshIndex >> 24 & 0xFF;
+        var b = frame.pickmeshIndex >> 16 & 0xFF;
+        var g = frame.pickmeshIndex >> 8 & 0xFF;
+        var r = frame.pickmeshIndex & 0xFF;
+        frame.pickmeshIndex++;
         gl.uniform4f(this._uPickColor, r / 255, g / 255, b / 255, a / 255);
-
         // Draw (indices bound in prev step)
-
-        if (geometry.combined) {
-            if (geometry.indicesBufCombined) { // Geometry indices into portion of uber-array
-                gl.drawElements(geometry.primitive, geometry.indicesBufCombined.numItems, geometry.indicesBufCombined.itemType, 0);
+        if (geometryState.combined) {
+            if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
+                gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
                 frame.drawElements++;
             } else {
                 // TODO: drawArrays() with VertexBufs positions
             }
         } else {
-            if (geometry.indicesBuf) {
-                gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+            if (geometryState.indicesBuf) {
+                gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 frame.drawElements++;
-            } else if (geometry.positions) {
-                gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+            } else if (geometryState.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
             }
         }
     };
@@ -11620,38 +10874,31 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.PickObjectShaderSource = function (gl, scene, object) {
-        var cfg = {
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized
-        };
-        this.vertex = buildVertex(gl, cfg, object);
-        this.fragment = buildFragment(gl, cfg, scene);
+    xeogl.renderer.PickMeshShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
     
-    function buildVertex(gl, cfg, object) {
+    function buildVertex(mesh) {
+        var scene = mesh.scene;
+        var clipping = scene._clipsState.clips.length > 0;
+        var quantizedGeometry = !!mesh._geometry._state.quantized;
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
         var src = [];
-
-        src.push("// Object picking vertex shader");
-
+        src.push("// mesh picking vertex shader");
         src.push("attribute vec3 position;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 viewNormalMatrix;");
         src.push("uniform mat4 projMatrix;");
-
         src.push("varying vec4 vViewPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        var billboard = object.modes.billboard;
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
@@ -11667,18 +10914,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
         if (billboard === "spherical" || billboard === "cylindrical") {
@@ -11686,38 +10929,38 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
         }
-
         src.push("   vec4 worldPosition = modelMatrix2 * localPosition;");
         src.push("   vec4 viewPosition = viewMatrix2 * worldPosition;");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("   vWorldPosition = worldPosition;");
         }
-
         src.push("   gl_Position = projMatrix * viewPosition;");
         src.push("}");
         return src;
     }
 
-    function buildFragment(gl, cfg, scene) {
+    function buildFragment(mesh) {
+        var scene = mesh.scene;
+        var clipsState = scene._clipsState;
+        var clipping = clipsState.clips.length > 0;
         var src = [];
-        src.push("// Object picking fragment shader");
+        src.push("// mesh picking fragment shader");
         src.push("precision lowp float;");
         src.push("uniform vec4 pickColor;");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("uniform bool clippable;");
             src.push("varying vec4 vWorldPosition;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
             }
         }
         src.push("void main(void) {");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
@@ -11730,19 +10973,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return src;
     }
 
-    function getFragmentFloatPrecision(gl) {
-        if (!gl.getShaderPrecisionFormat) {
-            return "mediump";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
-            return "highp";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
-            return "mediump";
-        }
-        return "lowp";
-    }
-
 })();;/**
  * @author xeolabs / https://github.com/xeolabs
  */
@@ -11751,30 +10981,24 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.PickTriangleRenderer = function (gl, hash, scene, object) {
-
-        this._gl = gl;
+    xeogl.renderer.PickTriangleRenderer = function (hash, mesh) {
+        var gl = mesh.scene.canvas.gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.PickTriangleShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.PickTriangleShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uClips = [];
-        var clips = scene.clips.clips;
+        var clips = mesh.scene._clipsState.clips;
         for (var i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
@@ -11782,7 +11006,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
         this._aPosition = program.getAttribute("position");
         this._aColor = program.getAttribute("color");
         this._uClippable = program.getLocation("clippable");
@@ -11790,10 +11013,20 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     var renderers = {};
 
-    xeogl.renderer.PickTriangleRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.PickTriangleRenderer.get = function (mesh) {
+        var hash = [
+            mesh.scene.canvas.canvas.id,
+            mesh.scene._clipsState.getHash(),
+            mesh._geometry._state.quantized ? "cp" : "",
+            mesh._state.hash
+        ].join(";");
         var renderer = renderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.PickTriangleRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.PickTriangleRenderer(hash, mesh);
+            if (renderer.errors) {
+                console.log(renderer.errors.join("\n"));
+                return null;
+            }
             renderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -11801,7 +11034,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return renderer;
     };
 
-    xeogl.renderer.PickTriangleRenderer.prototype.destroy = function () {
+    xeogl.renderer.PickTriangleRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             this._program.destroy();
             delete renderers[this._hash];
@@ -11809,22 +11042,26 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.PickTriangleRenderer.prototype.drawObject = function (frame, object) {
-
-        // Only rendering one object within a surface picking pass
-
-        var gl = this._gl;
+    xeogl.renderer.PickTriangleRenderer.prototype.drawMesh = function (frame, mesh) {
         var scene = this._scene;
-
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
+        var materialState = mesh._material._state;
+        var meshState = mesh._state;
+        var geometry = mesh._geometry;
+        var geometryState = mesh._geometry._state;
+        var backfaces = materialState.backfaces;
+        var frontface = materialState.frontface;
+        var positionsBuf = geometry._getPickTrianglePositions();
+        var pickColorsBuf = geometry._getPickTriangleColors();
+        var camera = scene.camera;
+        var cameraState = camera._state;
         this._program.bind();
-
         frame.useProgram++;
-
-        gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || scene.projTransform.matrix);
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        if (clipsState.clips.length > 0) {
+            var clips = clipsState.clips;
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -11847,12 +11084,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             }
         }
-
-        var material = object.material;
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        var backfaces = material.backfaces;
         if (frame.backfaces !== backfaces) {
             if (backfaces) {
                 gl.disable(gl.CULL_FACE);
@@ -11861,8 +11092,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
             frame.backfaces = backfaces;
         }
-
-        var frontface = material.frontface;
         if (frame.frontface !== frontface) {
             if (frontface) {
                 gl.frontFace(gl.CCW);
@@ -11871,30 +11100,21 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
             frame.frontface = frontface;
         }
-
-        this._lastMaterialId = material.id;
-
-        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-
+        this._lastMaterialId = materialState.id;
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, object.modes.clippable);
+            gl.uniform1i(this._uClippable, mesh._state.clippable);
         }
-
-        var positions = geometry.getPickTrianglePositions();
-
         if (this._uPositionsDecodeMatrix) {
-            gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
-            this._aPosition.bindArrayBuffer(positions, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+            gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
+            this._aPosition.bindArrayBuffer(positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
         } else {
-            this._aPosition.bindArrayBuffer(positions);
+            this._aPosition.bindArrayBuffer(positionsBuf);
         }
-
-        var pickColorsBuf = geometry.getPickTriangleColors();
         pickColorsBuf.bind();
         gl.enableVertexAttribArray(this._aColor.location);
-        this._gl.vertexAttribPointer(this._aColor.location, pickColorsBuf.itemSize, pickColorsBuf.itemType, true, 0, 0); // Normalize
-
-        gl.drawArrays(geometry.primitive, 0, positions.numItems / 3);
+        gl.vertexAttribPointer(this._aColor.location, pickColorsBuf.itemSize, pickColorsBuf.itemType, true, 0, 0); // Normalize
+        gl.drawArrays(geometryState.primitive, 0, positionsBuf.numItems / 3);
     };
 })();
 
@@ -11908,86 +11128,70 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.PickTriangleShaderSource = function (gl, scene, object) {
-        var cfg = {
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized
-        };
-        this.vertex = buildVertex(gl, cfg);
-        this.fragment = buildFragment(gl, cfg, scene);
+    xeogl.renderer.PickTriangleShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
 
-    function buildVertex(gl, cfg) {
-
+    function buildVertex(mesh) {
+        var scene = mesh.scene;
+        var clipping = scene._clipsState.clips.length > 0;
+        var quantizedGeometry = !!mesh._geometry._state.quantized;
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
         var src = [];
-
         src.push("// Surface picking vertex shader");
-
         src.push("attribute vec3 position;");
         src.push("attribute vec4 color;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("uniform bool clippable;");
             src.push("varying vec4 vWorldPosition;");
         }
-
         src.push("varying vec4 vColor;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
         src.push("   vec4 worldPosition = modelMatrix * localPosition; ");
         src.push("   vec4 viewPosition = viewMatrix * worldPosition;");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("   vWorldPosition = worldPosition;");
         }
-
         src.push("   vColor = color;");
         src.push("   gl_Position = projMatrix * viewPosition;");
         src.push("}");
         return src;
     }
 
-    function buildFragment(gl, cfg, scene) {
-
+    function buildFragment(mesh) {
+        var scene = mesh.scene;
+        var clipsState = scene._clipsState;
+        var clipping = clipsState.clips.length > 0;
         var src = [];
-
         src.push("// Surface picking fragment shader");
-
         src.push("precision lowp float;");
-
         src.push("varying vec4 vColor;");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("uniform bool clippable;");
             src.push("varying vec4 vWorldPosition;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
             }
         }
-
         src.push("void main(void) {");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
@@ -11995,25 +11199,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("  if (dist > 0.0) { discard; }");
             src.push("}");
         }
-
         src.push("   gl_FragColor = vColor;");
         src.push("}");
         return src;
     }
-
-    function getFragmentFloatPrecision(gl) {
-        if (!gl.getShaderPrecisionFormat) {
-            return "mediump";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
-            return "highp";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
-            return "mediump";
-        }
-        return "lowp";
-    }
-
 })();;/**
  * @author xeolabs / https://github.com/xeolabs
  */
@@ -12022,30 +11211,23 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.ShadowRenderer = function (gl, hash, scene, object) {
-
-        this._gl = gl;
+    xeogl.renderer.ShadowRenderer = function (hash, mesh) {
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.ShadowShaderSource(gl, scene,  object);
-        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
+        this._shaderSource = new xeogl.renderer.ShadowShaderSource(mesh);
+        this._program = new xeogl.renderer.Program(mesh.scene.canvas.gl, this._shaderSource);
         this._scene = scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uClips = {};
-        var clips = scene.clips;
+        var clips = mesh.scene._clipsState.clips;
         for (var i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
@@ -12053,29 +11235,31 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
         this._aPosition = program.getAttribute("position");
         this._uClippable = program.getLocation("clippable");
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
     };
 
     var renderers = {};
 
-    xeogl.renderer.ShadowRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.ShadowRenderer.get = function (mesh) {
+        var hash = [
+            mesh.scene.canvas.canvas.id,
+            mesh.scene._clipsState.getHash(),
+            mesh._geometry._state.hash,
+            mesh._state.hash].join(";");
         var renderer = renderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.ShadowRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.ShadowRenderer(hash, mesh);
             renderers[hash] = renderer;
         }
         renderer._useCount++;
         return renderer;
     };
 
-    xeogl.renderer.ShadowRenderer.prototype.destroy = function () {
+    xeogl.renderer.ShadowRenderer.prototype.put = function () {
         if (--this._useCount) {
             this._program.destroy();
             delete renderers[this._hash];
@@ -12083,22 +11267,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     };
 
     xeogl.renderer.ShadowRenderer.prototype._bindProgram = function (frame) {
-
-        var gl = this._gl;
         var scene = this._scene;
-
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
         this._program.bind();
-
         frame.useProgram++;
-
         this._lastLightId = null;
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        if (clipsState.clips.length > 0) {
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -12107,7 +11285,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             for (var i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;
-                clip = clips[i];
+                clip = clipsState.clips[i];
                 if (uClipActive) {
                     gl.uniform1i(uClipActive, clip.active);
                 }
@@ -12123,31 +11301,26 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.ShadowRenderer.prototype.drawObject = function (frame, object, light) {
-
+    xeogl.renderer.ShadowRenderer.prototype.drawMesh = function (frame, mesh, light) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var materialState = mesh._material._state;
+        var meshState = mesh._state;
+        var geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
-
-        var gl = this._gl;
-        var material = object.material;
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
         frame.textureUnit = 0;
-
         if (light.id !== this._lastLightId) {
             gl.uniformMatrix4fv(this._uViewMatrix, false, light.getShadowViewMatrix());
             gl.uniformMatrix4fv(this._uProjMatrix, false, light.getShadowProjMatrix());
             this._lastLightId = light.id;
         }
-
         // gl.uniformMatrix4fv(this._uViewMatrix, false, this._scene.viewTransform.matrix);
         // gl.uniformMatrix4fv(this._uProjMatrix, false, this._scene.projTransform.matrix);
-
-        if (material.id !== this._lastMaterialId) {
-            var backfaces = material.backfaces;
+        if (materialState.id !== this._lastMaterialId) {
+            var backfaces = materialState.backfaces;
             if (frame.backfaces !== backfaces) {
                 if (backfaces) {
                     gl.disable(gl.CULL_FACE);
@@ -12156,8 +11329,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
                 frame.backfaces = backfaces;
             }
-
-            var frontface = material.frontface;
+            var frontface = materialState.frontface;
             if (frame.frontface !== frontface) {
                 if (frontface) {
                     gl.frontFace(gl.CCW);
@@ -12166,29 +11338,21 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
                 frame.frontface = frontface;
             }
-
-            if (frame.lineWidth !== material.lineWidth) {
-                gl.lineWidth(material.lineWidth);
-                frame.lineWidth = material.lineWidth;
+            if (frame.lineWidth !== materialState.lineWidth) {
+                gl.lineWidth(materialState.lineWidth);
+                frame.lineWidth = materialState.lineWidth;
             }
-
             if (this._uPointSize) {
-                gl.uniform1i(this._uPointSize, material.pointSize);
+                gl.uniform1i(this._uPointSize, materialState.pointSize);
             }
-            this._lastMaterialId = material.id;
+            this._lastMaterialId = materialState.id;
         }
-
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            this._lastModelTransformId = modelTransform.id;
-        }
-
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, object.modes.clippable);
+            gl.uniform1i(this._uClippable, mesh._state.clippable);
         }
-
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        if (geometryState.combined) {
+            var vertexBufs = mesh.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -12197,44 +11361,40 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this._lastVertexBufsId = vertexBufs.id;
             }
         }
-
-        if (geometry.id !== this._lastGeometryId) {
-
+        if (geometryState.id !== this._lastGeometryId) {
             if (this._uPositionsDecodeMatrix) {
-                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
             }
-
-            if (geometry.combined) { // VBOs were bound by the preceding VertexBufs chunk
-                if (geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined.bind();
+            if (geometryState.combined) { // VBOs were bound by the preceding VertexBufs chunk
+                if (geometryState.indicesBufCombined) {
+                    geometryState.indicesBufCombined.bind();
                     frame.bindArray++;
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
-                if (geometry.indicesBuf) {
-                    geometry.indicesBuf.bind();
+                if (geometryState.indicesBuf) {
+                    geometryState.indicesBuf.bind();
                     frame.bindArray++;
                 }
             }
-            this._lastGeometryId = geometry.id;
+            this._lastGeometryId = geometryState.id;
         }
-
-        if (geometry.combined) {
-            if (geometry.indicesBufCombined) {
-                gl.drawElements(geometry.primitive, geometry.indicesBufCombined.numItems, geometry.indicesBufCombined.itemType, 0);
+        if (geometryState.combined) {
+            if (geometryState.indicesBufCombined) {
+                gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
                 frame.drawElements++;
             } else {
                 // TODO: drawArrays() with VertexBufs positions
             }
         } else {
-            if (geometry.indicesBuf) {
-                gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+            if (geometryState.indicesBuf) {
+                gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 frame.drawElements++;
-            } else if (geometry.positions) {
-                gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+            } else if (geometryState.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                 frame.drawArrays++;
             }
         }
@@ -12251,30 +11411,26 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.ShadowShaderSource = function (gl, scene, object) {
-        var cfg = {
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized
-        };
-        this.vertex = buildVertex(gl, cfg, scene, object);
-        this.fragment = buildFragment(gl, cfg, scene, object);
+    xeogl.renderer.ShadowShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
 
-    function hasTextures(object) {
-        if (!object.geometry.uv) {
+    function hasTextures(mesh) {
+        if (!mesh._geometry._state.uv) {
             return false;
         }
-        var material = object.material;
-        return material.alphaMap;
+        var materialState = mesh._material._state;
+        return materialState.alphaMap;
     }
     
-    function buildVertex(gl, cfg, scene, object) {
+    function buildVertex(mesh) {
 
         var i;
         var len;
         var lights = scene.lights.lights;
         var light;
-        var billboard = object.modes.billboard;
+        var billboard = mesh._state.billboard;
 
         var src = [];
 
@@ -12294,7 +11450,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("varying vec4 vWorldPosition;");
         }
 
-        if (object.geometry.primitiveName === "points") {
+        if (mesh._geometry._state.primitiveName === "points") {
             src.push("uniform float pointSize;");
         }
 
@@ -12326,7 +11482,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
 
-        if (object.modes.stationary) {
+        if (mesh._state.stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
 
@@ -12356,7 +11512,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("vWorldPosition = worldPosition;");
         }
 
-        if (object.geometry.primitiveName === "points") {
+        if (mesh._geometry._state.primitiveName === "points") {
             src.push("gl_PointSize = pointSize;");
         }
 
@@ -12367,7 +11523,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return src;
     }
 
-    function buildFragment(gl, cfg, scene, object) {
+    function buildFragment(mesh) {
 
         var i;
         var src = [];
@@ -12410,7 +11566,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
             src.push("}");
         }
-        if (object.geometry.primitiveName === "points") {
+        if (mesh._geometry._state.primitiveName === "points") {
             src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
             src.push("float r = dot(cxy, cxy);");
             src.push("if (r > 1.0) {");
@@ -12446,16 +11602,24 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     var ids = new xeogl.utils.Map({});
 
-    xeogl.renderer.GhostFillRenderer = function (gl, hash, scene, object) {
-        this._init(gl, hash, scene, object);
+    xeogl.renderer.EmphasisFillRenderer = function (hash, mesh) {
+        this._init(hash, mesh);
     };
 
     var ghostFillRenderers = {};
 
-    xeogl.renderer.GhostFillRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.EmphasisFillRenderer.get = function (mesh) {
+        var hash = [
+            mesh.scene.id,
+            mesh.scene.gammaOutput ? "go" : "", // Gamma input not needed
+            mesh.scene._clipsState.getHash(),
+            !!mesh._geometry.normals ? "n" : "",
+            mesh._geometry._state.quantized ? "cp" : "",
+            mesh._state.hash
+        ].join(";");
         var renderer = ghostFillRenderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.GhostFillRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.EmphasisFillRenderer(hash, mesh);
             ghostFillRenderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -12463,7 +11627,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return renderer;
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype.destroy = function () {
+    xeogl.renderer.EmphasisFillRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
             this._program.destroy();
@@ -12472,54 +11636,43 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype._init = function (gl, hash, scene, object) {
-
+    xeogl.renderer.EmphasisFillRenderer.prototype._init = function (hash, mesh) {
+        var lightsState = mesh.scene._lightsState;
+        var clipsState = mesh.scene._clipsState;
         this.id = ids.addItem({});
-        this._gl = gl;
+        var gl = mesh.scene.canvas.gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.GhostFillShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.EmphasisFillShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uModelNormalMatrix = program.getLocation("modelNormalMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uViewNormalMatrix = program.getLocation("viewNormalMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uLightAmbient = [];
         this._uLightColor = [];
         this._uLightDir = [];
         this._uLightPos = [];
         this._uLightAttenuation = [];
-
-        var lights = scene.lights.lights;
-        var light;
-
-        for (var i = 0, len = lights.length; i < len; i++) {
-            light = lights[i];
+        for (var i = 0, len = lightsState.lights.length; i < len; i++) {
+            var light = lightsState.lights[i];
             switch (light.type) {
-
                 case "ambient":
                     this._uLightAmbient[i] = program.getLocation("lightAmbient");
                     break;
-
                 case "dir":
                     this._uLightColor[i] = program.getLocation("lightColor" + i);
                     this._uLightPos[i] = null;
                     this._uLightDir[i] = program.getLocation("lightDir" + i);
                     break;
-
                 case "point":
                     this._uLightColor[i] = program.getLocation("lightColor" + i);
                     this._uLightPos[i] = program.getLocation("lightPos" + i);
@@ -12528,85 +11681,64 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     break;
             }
         }
-
         this._uClips = [];
-        var clips = scene.clips.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
+        for (var i = 0, len = clipsState.clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
                 pos: program.getLocation("clipPos" + i),
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
-        var material = object.material;
-
         this._uFillColor = program.getLocation("fillColor");
-
         this._aPosition = program.getAttribute("position");
         this._aNormal = program.getAttribute("normal");
-
         this._uClippable = program.getLocation("clippable");
         this._uGammaFactor = program.getLocation("gammaFactor");
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype._bindProgram = function (frame) {
-
+    xeogl.renderer.EmphasisFillRenderer.prototype._bindProgram = function (frame) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
+        var lightsState = scene._lightsState;
+        var camera = scene.camera;
+        var cameraState = camera._state;
+        var light;
         var program = this._program;
-
         program.bind();
-
         frame.useProgram++;
         frame.textureUnit = 0;
-
-        var gl = this._gl;
-        var scene = this._scene;
-        var lights = scene.lights;
-        var light;
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
         this._lastIndicesBufId = null;
-
-        gl.uniformMatrix4fv(this._uViewMatrix, false, scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, scene.viewTransform.normalMatrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, scene.projTransform.matrix);
-
-        for (var i = 0, len = lights.lights.length; i < len; i++) {
-
-            light = lights.lights[i];
-
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        for (var i = 0, len = lightsState.lights.length; i < len; i++) {
+            light = lightsState.lights[i];
             if (this._uLightAmbient[i]) {
                 gl.uniform4f(this._uLightAmbient[i], light.color[0], light.color[1], light.color[2], light.intensity);
-
             } else {
-
                 if (this._uLightColor[i]) {
                     gl.uniform4f(this._uLightColor[i], light.color[0], light.color[1], light.color[2], light.intensity);
                 }
-
                 if (this._uLightPos[i]) {
                     gl.uniform3fv(this._uLightPos[i], light.pos);
                     if (this._uLightAttenuation[i]) {
                         gl.uniform1f(this._uLightAttenuation[i], light.attenuation);
                     }
                 }
-
                 if (this._uLightDir[i]) {
                     gl.uniform3fv(this._uLightDir[i], light.dir);
                 }
             }
         }
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        if (clipsState.clips.length > 0) {
+            var clips = scene._clipsState.clips;
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -12629,46 +11761,44 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             }
         }
-
         if (this._uGammaFactor) {
             gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
         }
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype.drawObject = function (frame, object, mode) {
-
+    xeogl.renderer.EmphasisFillRenderer.prototype.drawMesh = function (frame, mesh, mode) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var materialState = mode === 0 ? mesh._ghostMaterial._state : (mode === 1 ? mesh._highlightMaterial._state : mesh._selectedMaterial._state);
+        var meshState = mesh._state;
+        var geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
-
-        var gl = this._gl;
-        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        if (material.id !== this._lastMaterialId) {
-            var fillColor = material.fillColor;
-            gl.uniform4f(this._uFillColor, fillColor[0], fillColor[1], fillColor[2], material.fillAlpha);
-            this._lastMaterialId = material.id;
-        }
-
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            if (this._uModelNormalMatrix) {
-                gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, modelTransform.getNormalMatrix());
+        if (materialState.id !== this._lastMaterialId) {
+            var fillColor = materialState.fillColor;
+            var backfaces = materialState.backfaces;
+            if (frame.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frame.backfaces = backfaces;
             }
-            this._lastModelTransformId = modelTransform.id;
+            gl.uniform4f(this._uFillColor, fillColor[0], fillColor[1], fillColor[2], materialState.fillAlpha);
+            this._lastMaterialId = materialState.id;
         }
-
-        var modes = object.modes;
-
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+        if (this._uModelNormalMatrix) {
+            gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, mesh.worldNormalMatrix);
+        }
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, modes.clippable);
+            gl.uniform1i(this._uClippable, meshState.clippable);
         }
-
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        if (geometryState.combined) {
+            var vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -12681,61 +11811,54 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this._lastVertexBufsId = vertexBufs.id;
             }
         }
-
         // Bind VBOs
-
-        if (geometry.id !== this._lastGeometryId) {
-
+        if (geometryState.id !== this._lastGeometryId) {
             if (this._uPositionsDecodeMatrix) {
-                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
             }
-
             if (this._uUVDecodeMatrix) {
-                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometry.uvDecodeMatrix);
+                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometryState.uvDecodeMatrix);
             }
-
-            if (geometry.combined) { // VBOs were bound by the VertexBufs logic above
-                if (geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined.bind();
+            if (geometryState.combined) { // VBOs were bound by the VertexBufs logic above
+                if (geometryState.indicesBufCombined) {
+                    geometryState.indicesBufCombined.bind();
                     frame.bindArray++;
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometryState.normalsBuf, geometryState.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
-                if (geometry.indicesBuf) {
-                    geometry.indicesBuf.bind();
+                if (geometryState.indicesBuf) {
+                    geometryState.indicesBuf.bind();
                     frame.bindArray++;
-                    // gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+                    // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                     // frame.drawElements++;
-                } else if (geometry.positions) {
-                    // gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+                } else if (geometryState.positions) {
+                    // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                     //  frame.drawArrays++;
                 }
             }
-            this._lastGeometryId = geometry.id;
+            this._lastGeometryId = geometryState.id;
         }
-
         // Draw (indices bound in prev step)
-
-        if (geometry.combined) {
-            if (geometry.indicesBufCombined) { // Geometry indices into portion of uber-array
-                gl.drawElements(geometry.primitive, geometry.indicesBufCombined.numItems, geometry.indicesBufCombined.itemType, 0);
+        if (geometryState.combined) {
+            if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
+                gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
                 frame.drawElements++;
             } else {
                 // TODO: drawArrays() with VertexBufs positions
             }
         } else {
-            if (geometry.indicesBuf) {
-                gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+            if (geometryState.indicesBuf) {
+                gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 frame.drawElements++;
-            } else if (geometry.positions) {
-                gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+            } else if (geometryState.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                 frame.drawArrays++;
             }
         }
@@ -12749,83 +11872,47 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.GhostFillShaderSource = function (gl, scene, object) {
-        var cfg = {
-            normals: hasNormals(object),
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized,
-            gammaOutput: scene.gammaOutput
-        };
-        this.vertex = buildVertex(gl, cfg, scene, object);
-        this.fragment = buildFragment(gl, cfg, scene, object);
+    xeogl.renderer.EmphasisFillShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
 
-    function hasNormals(object) {
-        var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
-            return true;
-        }
-        return false;
-    }
-    
-    function getFragmentFloatPrecision(gl) {
-        if (!gl.getShaderPrecisionFormat) {
-            return "mediump";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
-            return "highp";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
-            return "mediump";
-        }
-        return "lowp";
-    }
-
-    function buildVertex(gl, cfg, scene, object) {
-
+    function buildVertex(mesh) {
+        var scene = mesh.scene;
+        var lightsState = scene._lightsState;
+        var normals = hasNormals(mesh);
+        var clipping = scene._clipsState.clips.length > 0;
+        var quantizedGeometry = !!mesh._geometry._state.quantized;
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
+        var src = [];
         var i;
         var len;
-        var lights = scene.lights.lights;
         var light;
-        var billboard = object.modes.billboard;
-
-        var src = [];
-
-        src.push("// Lambertian drawing vertex shader");
-
+        src.push("// EmphasisFillShaderSource vertex shader");
         src.push("attribute vec3 position;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
         src.push("uniform vec4 colorize;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
         src.push("uniform vec4   lightAmbient;");
         src.push("uniform vec4   fillColor;");
-
-        if (cfg.normals) {
-
+        if (normals) {
             src.push("attribute vec3 normal;");
             src.push("uniform mat4 modelNormalMatrix;");
             src.push("uniform mat4 viewNormalMatrix;");
-
-            for (i = 0, len = lights.length; i < len; i++) {
-                light = lights[i];
-
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 src.push("uniform vec4 lightColor" + i + ";");
-
                 if (light.type === "dir") {
                     src.push("uniform vec3 lightDir" + i + ";");
                 }
@@ -12836,8 +11923,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     src.push("uniform vec3 lightPos" + i + ";");
                 }
             }
-
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -12847,9 +11933,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("}");
             }
         }
-
         src.push("varying vec4 vColor;");
-
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
@@ -12865,18 +11949,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
+        if (normals) {
+            if (quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -12884,53 +11964,40 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("mat4 modelNormalMatrix2 = modelNormalMatrix;");
             src.push("mat4 viewNormalMatrix2 = viewNormalMatrix;");
         }
-
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
-
-            if (cfg.normals) {
+            if (normals) {
                 src.push("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
                 src.push("billboard(modelNormalMatrix2);");
                 src.push("billboard(viewNormalMatrix2);");
                 src.push("billboard(modelViewNormalMatrix);");
             }
-
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
         } else {
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
-        if (cfg.normals) {
+        if (normals) {
             src.push("vec3 viewNormal = normalize((viewNormalMatrix2 * modelNormalMatrix2 * localNormal).xyz);");
         }
-
         src.push("vec3 reflectedColor = vec3(0.0, 0.0, 0.0);");
         src.push("vec3 viewLightDir = vec3(0.0, 0.0, -1.0);");
         src.push("float lambertian = 1.0;");
-
-        if (cfg.normals) {
-            for (i = 0, len = lights.length; i < len; i++) {
-
-                light = lights[i];
-
+        if (normals) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 if (light.type === "dir") {
                     if (light.space === "view") {
                         src.push("viewLightDir = normalize(lightDir" + i + ");");
@@ -12946,55 +12013,52 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 } else {
                     continue;
                 }
-
                 src.push("lambertian = max(dot(-viewNormal, viewLightDir), 0.0);");
                 src.push("reflectedColor += lambertian * (lightColor" + i + ".rgb * lightColor" + i + ".a);");
             }
         }
-
         // TODO: A blending mode for emphasis materials, to select add/multiply/mix
-
         //src.push("vColor = vec4((mix(reflectedColor, fillColor.rgb, 0.7)), fillColor.a);");
         src.push("vColor = vec4(reflectedColor * fillColor.rgb, fillColor.a);");
         //src.push("vColor = vec4(reflectedColor + fillColor.rgb, fillColor.a);");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-
-        if (object.geometry.primitiveName === "points") {
+        if (mesh._geometry._state.primitiveName === "points") {
             src.push("gl_PointSize = pointSize;");
         }
-
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("}");
-
         return src;
     }
 
-    function buildFragment(gl, cfg, scene, object) {
+    function hasNormals(mesh) {
+        var primitive = mesh._geometry._state.primitiveName;
+        if ((mesh._geometry._state.autoVertexNormals || mesh._geometry._state.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+            return true;
+        }
+        return false;
+    }
 
+    function buildFragment(mesh) {
+        var clipsState = mesh.scene._clipsState;
+        var gammaOutput = mesh.scene.gammaOutput;
+        var clipping = clipsState.clips.length > 0;
         var i;
         var len;
         var src = [];
-
         src.push("// Lambertian drawing fragment shader");
-
-        //src.push("precision " + getFragmentFloatPrecision(gl) + " float;");
         src.push("precision lowp float;");
-
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("uniform float gammaFactor;");
             src.push("vec4 linearToGamma( in vec4 value, in float gammaFactor ) {");
             src.push("  return vec4( pow( value.xyz, vec3( 1.0 / gammaFactor ) ), value.w );");
             src.push("}");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
             src.push("uniform bool clippable;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
@@ -13002,10 +12066,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
         src.push("varying vec4 vColor;");
         src.push("void main(void) {");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
@@ -13013,7 +12077,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("  if (dist > 0.0) { discard; }");
             src.push("}");
         }
-        if (object.geometry.primitiveName === "points") {
+        if (mesh._geometry._state.primitiveName === "points") {
             src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
             src.push("float r = dot(cxy, cxy);");
             src.push("if (r > 1.0) {");
@@ -13021,17 +12085,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("}");
         }
         src.push("gl_FragColor = vColor;");
-
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("gl_FragColor = linearToGamma(vColor, gammaFactor);");
         } else {
             src.push("gl_FragColor = vColor;");
         }
-
         src.push("}");
         return src;
     }
-
 })();;/**
  * @author xeolabs / https://github.com/xeolabs
  */
@@ -13042,16 +12103,23 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     var ids = new xeogl.utils.Map({});
 
-    xeogl.renderer.GhostVerticesRenderer = function (gl, hash, scene, object) {
-        this._init(gl, hash, scene, object);
+    xeogl.renderer.EmphasisVerticesRenderer = function (hash, mesh) {
+        this._init(hash, mesh);
     };
 
     var ghostVerticesRenderers = {};
 
-    xeogl.renderer.GhostVerticesRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.EmphasisVerticesRenderer.get = function (mesh) {
+        var hash = [
+            mesh.scene.id,
+            mesh.scene.gammaOutput ? "go" : "",
+            mesh.scene._clipsState.getHash(),
+            mesh._geometry._state.quantized ? "cp" : "",
+            mesh._state.hash
+        ].join(";");
         var renderer = ghostVerticesRenderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.GhostVerticesRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.EmphasisVerticesRenderer(hash, mesh);
             ghostVerticesRenderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -13059,7 +12127,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return renderer;
     };
 
-    xeogl.renderer.GhostVerticesRenderer.prototype.destroy = function () {
+    xeogl.renderer.EmphasisVerticesRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
             this._program.destroy();
@@ -13068,75 +12136,59 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.GhostVerticesRenderer.prototype._init = function (gl, hash, scene, object) {
-
+    xeogl.renderer.EmphasisVerticesRenderer.prototype._init = function (hash, mesh) {
+        var clipsState = mesh.scene._clipsState;
         this.id = ids.addItem({});
-        this._gl = gl;
+        var gl = mesh.scene.canvas.gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.GhostVerticesShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.EmphasisVerticesShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uClips = [];
-
-        var clips = scene.clips.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
+        for (var i = 0, len = clipsState.clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
                 pos: program.getLocation("clipPos" + i),
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
         this._uVertexColor = program.getLocation("vertexColor");
         this._uVertexSize = program.getLocation("vertexSize");
         this._aPosition = program.getAttribute("position");
-        this._aNormal = program.getAttribute("normal");
         this._uClippable = program.getLocation("clippable");
         this._uGammaFactor = program.getLocation("gammaFactor");
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
     };
 
-    xeogl.renderer.GhostVerticesRenderer.prototype._bindProgram = function (frame) {
-
+    xeogl.renderer.EmphasisVerticesRenderer.prototype._bindProgram = function (frame) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
         var program = this._program;
-
+        var camera = scene.camera;
+        var cameraState = camera._state;
         program.bind();
-
         frame.useProgram++;
         frame.textureUnit = 0;
-
-        var gl = this._gl;
-        var scene = this._scene;
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
-
-        gl.uniformMatrix4fv(this._uViewMatrix, false, scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, scene.projTransform.matrix);
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        if (clipsState.clips.length > 0) {
+            var clips = clipsState.clips;
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -13159,118 +12211,99 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             }
         }
-
         if (this._uGammaFactor) {
             gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
         }
     };
 
-    xeogl.renderer.GhostVerticesRenderer.prototype.drawObject = function (frame, object, mode) {
-
+    xeogl.renderer.EmphasisVerticesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var materialState = mode === 0 ? mesh._ghostMaterial._state : (mode === 1 ? mesh._highlightMaterial._state : mesh._selectedMaterial._state);
+        var meshState = mesh._state;
+        var geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
-
-        var gl = this._gl;
-        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        if (material.id !== this._lastMaterialId) {
+        if (materialState.id !== this._lastMaterialId) {
+            var backfaces = materialState.backfaces;
+            if (frame.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frame.backfaces = backfaces;
+            }
             if (this._uVertexSize) { // TODO: cache
-                gl.uniform1f(this._uVertexSize, material.vertexSize);
+                gl.uniform1f(this._uVertexSize, materialState.vertexSize);
             }
             if (this._uVertexColor) {
-                var vertexColor = material.vertexColor;
-                var vertexAlpha = material.vertexAlpha;
+                var vertexColor = materialState.vertexColor;
+                var vertexAlpha = materialState.vertexAlpha;
                 gl.uniform4f(this._uVertexColor, vertexColor[0], vertexColor[1], vertexColor[2], vertexAlpha);
             }
-            this._lastMaterialId = material.id;
+            this._lastMaterialId = materialState.id;
         }
-
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            if (this._uModelNormalMatrix) {
-                gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, modelTransform.getNormalMatrix());
-            }
-            this._lastModelTransformId = modelTransform.id;
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+        if (this._uModelNormalMatrix) {
+            gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, mesh.worldNormalMatrix);
         }
-
-        var modes = object.modes;
-
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, modes.clippable);
+            gl.uniform1i(this._uClippable, meshState.clippable);
         }
-
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        if (geometryState.combined) {
+            var vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
-                if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
-                    frame.bindArray++;
-                }
                 this._lastVertexBufsId = vertexBufs.id;
             }
         }
-
         // Bind VBOs
-
-        if (geometry.id !== this._lastGeometryId) {
-
+        if (geometryState.id !== this._lastGeometryId) {
             if (this._uPositionsDecodeMatrix) {
-                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
             }
-
-            if (geometry.combined) { // VBOs were bound by the VertexBufs logic above
-                if (geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined.bind();
+            if (geometryState.combined) { // VBOs were bound by the VertexBufs logic above
+                if (geometryState.indicesBufCombined) {
+                    geometryState.indicesBufCombined.bind();
                     frame.bindArray++;
                 }
             } else {
-
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
-
-                if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
+                if (geometryState.indicesBuf) {
+                    geometryState.indicesBuf.bind();
                     frame.bindArray++;
-                }
-
-                if (geometry.indicesBuf) {
-                    geometry.indicesBuf.bind();
-                    frame.bindArray++;
-                    // gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+                    // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                     // frame.drawElements++;
-                } else if (geometry.positions) {
-                    // gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+                } else if (geometryState.positions) {
+                    // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                     //  frame.drawArrays++;
                 }
             }
-            this._lastGeometryId = geometry.id;
+            this._lastGeometryId = geometryState.id;
         }
-
         // Draw (indices bound in prev step)
-
-        if (geometry.combined) {
-            if (geometry.indicesBufCombined) { // Geometry indices into portion of uber-array
-                gl.drawElements(gl.POINTS, geometry.indicesBufCombined.numItems, geometry.indicesBufCombined.itemType, 0);
+        if (geometryState.combined) {
+            if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
+                gl.drawElements(gl.POINTS, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
                 frame.drawElements++;
             } else {
                 // TODO: drawArrays() with VertexBufs positions
             }
         } else {
-            if (geometry.indicesBuf) {
-                gl.drawElements(gl.POINTS, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+            if (geometryState.indicesBuf) {
+                gl.drawElements(gl.POINTS, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 frame.drawElements++;
-            } else if (geometry.positions) {
-                gl.drawArrays(gl.POINTS, 0, geometry.positions.numItems);
+            } else if (geometryState.positions) {
+                gl.drawArrays(gl.POINTS, 0, geometryState.positions.numItems);
                 frame.drawArrays++;
             }
         }
@@ -13284,64 +12317,32 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.GhostVerticesShaderSource = function (gl, scene, object) {
-        var cfg = {
-            normals: hasNormals(object),
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized,
-            gammaOutput: scene.gammaOutput
-        };
-        this.vertex = buildVertex(gl, cfg, scene, object);
-        this.fragment = buildFragment(gl, cfg, scene, object);
+    xeogl.renderer.EmphasisVerticesShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
 
-    function hasNormals(object) {
-        var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
-            return true;
-        }
-        return false;
-    }
-
-    function buildVertex(gl, cfg, scene, object) {
-
-        var billboard = object.modes.billboard;
-
+    function buildVertex(mesh) {
+        var scene = mesh.scene;
+        var clipping = scene._clipsState.clips.length > 0;
+        var quantizedGeometry = !!mesh._geometry._state.quantized;
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
         var src = [];
-
         src.push("// Vertices drawing vertex shader");
-
         src.push("attribute vec3 position;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
         src.push("uniform vec4 vertexColor;");
         src.push("uniform float vertexSize;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        if (cfg.normals) {
-            src.push("attribute vec3 normal;");
-            if (cfg.quantizedGeometry) {
-                src.push("vec3 octDecode(vec2 oct) {");
-                src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
-                src.push("    if (v.z < 0.0) {");
-                src.push("        v.xy = (1.0 - abs(v.yx)) * vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0);");
-                src.push("    }");
-                src.push("    return normalize(v);");
-                src.push("}");
-            }
-        }
-
         src.push("varying vec4 vColor;");
-
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
@@ -13357,80 +12358,58 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
-                src.push("vec3 localNormal = octDecode(normal.xy); ");
-            } else {
-                src.push("vec3 localNormal = normal; ");
-            }
-       //     src.push("localPosition.xyz +=  localNormal * 0.09; ");
-        }
-
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
             src.push("worldPosition = modelMatrix2 * localPosition;");
-            src.push("vec4 viewPosition = modelViewMatrix * (localPosition + normal);");
+            src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
         } else {
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
         src.push("vColor = vertexColor;");
-
         src.push("gl_PointSize = vertexSize;");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("}");
-
         return src;
     }
 
-    function buildFragment(gl, cfg, scene, object) {
-
+    function buildFragment(mesh) {
+        var clipsState = mesh.scene._clipsState;
+        var gammaOutput = mesh.scene.gammaOutput;
+        var clipping = clipsState.clips.length > 0;
         var i;
         var len;
         var src = [];
-
         src.push("// Vertices drawing fragment shader");
-
         src.push("precision lowp float;");
-
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("uniform float gammaFactor;");
             src.push("vec4 linearToGamma( in vec4 value, in float gammaFactor ) {");
             src.push("  return vec4( pow( value.xyz, vec3( 1.0 / gammaFactor ) ), value.w );");
             src.push("}");
         }
 
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
             src.push("uniform bool clippable;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
@@ -13438,10 +12417,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
         src.push("varying vec4 vColor;");
         src.push("void main(void) {");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
@@ -13457,7 +12436,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("}");
         //}
         src.push("gl_FragColor = vColor;");
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("gl_FragColor = linearToGamma(vColor, gammaFactor);");
         } else {
             src.push("gl_FragColor = vColor;");
@@ -13476,16 +12455,23 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     var ids = new xeogl.utils.Map({});
 
-    xeogl.renderer.GhostEdgesRenderer = function (gl, hash, scene, object) {
-        this._init(gl, hash, scene, object);
+    xeogl.renderer.EmphasisEdgesRenderer = function (hash, mesh) {
+        this._init(hash, mesh);
     };
 
     var ghostEdgesRenderers = {};
 
-    xeogl.renderer.GhostEdgesRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.EmphasisEdgesRenderer.get = function (mesh) {
+        var hash = [
+            mesh.scene.id,
+            mesh.scene.gammaOutput ? "go" : "", // Gamma input not needed
+            mesh.scene._clipsState.getHash(),
+            mesh._geometry._state.quantized ? "cp" : "",
+            mesh._state.hash
+        ].join(";");
         var renderer = ghostEdgesRenderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.GhostEdgesRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.EmphasisEdgesRenderer(hash, mesh);
             ghostEdgesRenderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -13493,7 +12479,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         return renderer;
     };
 
-    xeogl.renderer.GhostEdgesRenderer.prototype.destroy = function () {
+    xeogl.renderer.EmphasisEdgesRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
             this._program.destroy();
@@ -13502,73 +12488,57 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.GhostEdgesRenderer.prototype._init = function (gl, hash, scene, object) {
-
+    xeogl.renderer.EmphasisEdgesRenderer.prototype._init = function (hash, mesh) {
+        var gl = mesh.scene.canvas.gl;
+        var clipsState = mesh.scene._clipsState;
         this.id = ids.addItem({});
-        this._gl = gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.GhostEdgesShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.EmphasisEdgesShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uClips = [];
-
-        var clips = scene.clips.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
+        for (var i = 0, len = clipsState.clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
                 pos: program.getLocation("clipPos" + i),
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
         this._uEdgeColor = program.getLocation("edgeColor");
         this._aPosition = program.getAttribute("position");
-        this._aNormal = program.getAttribute("normal");
         this._uClippable = program.getLocation("clippable");
         this._uGammaFactor = program.getLocation("gammaFactor");
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
     };
 
-    xeogl.renderer.GhostEdgesRenderer.prototype._bindProgram = function (frame) {
-
+    xeogl.renderer.EmphasisEdgesRenderer.prototype._bindProgram = function (frame) {
         var program = this._program;
-
-        program.bind();
-
-        frame.useProgram++;
-
-        var gl = this._gl;
         var scene = this._scene;
-
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
+        var camera = scene.camera;
+        var cameraState = camera._state;
+        program.bind();
+        frame.useProgram++;
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
-
-        gl.uniformMatrix4fv(this._uViewMatrix, false, scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, scene.projTransform.matrix);
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        if (clipsState.clips.length > 0) {
+            var clips = clipsState.clips;
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -13591,104 +12561,97 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             }
         }
-
         if (this._uGammaFactor) {
             gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
         }
     };
 
-    xeogl.renderer.GhostEdgesRenderer.prototype.drawObject = function (frame, object, mode) {
-
+    xeogl.renderer.EmphasisEdgesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var materialState;
+        var meshState = mesh._state;
+        var geometry = mesh._geometry;
+        var geometryState = geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
-
-        var gl = this._gl;
-        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        if (material.id !== this._lastMaterialId) {
-
-            if (frame.lineWidth !== material.edgeWidth) {
-                gl.lineWidth(material.edgeWidth);
-                frame.lineWidth = material.edgeWidth;
+        switch (mode) {
+            case 0:
+                materialState = mesh._ghostMaterial._state;
+                break;
+            case 1:
+                materialState = mesh._highlightMaterial._state;
+                break;
+            case 2:
+                materialState = mesh._selectedMaterial._state;
+                break;
+            case 3:
+            default:
+                materialState = mesh._edgeMaterial._state;
+                break;
+        }
+        if (materialState.id !== this._lastMaterialId) {
+            var backfaces = materialState.backfaces;
+            if (frame.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frame.backfaces = backfaces;
             }
-
+            if (frame.lineWidth !== materialState.edgeWidth) {
+                gl.lineWidth(materialState.edgeWidth);
+                frame.lineWidth = materialState.edgeWidth;
+            }
             if (this._uEdgeColor) {
-                var edgeColor = material.edgeColor;
-                var edgeAlpha = material.edgeAlpha;
+                var edgeColor = materialState.edgeColor;
+                var edgeAlpha = materialState.edgeAlpha;
                 gl.uniform4f(this._uEdgeColor, edgeColor[0], edgeColor[1], edgeColor[2], edgeAlpha);
             }
-
-            this._lastMaterialId = material.id;
+            this._lastMaterialId = materialState.id;
         }
-
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            if (this._uModelNormalMatrix) {
-                gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, modelTransform.getNormalMatrix());
-            }
-            this._lastModelTransformId = modelTransform.id;
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+        if (this._uModelNormalMatrix) {
+            gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, mesh.worldNormalMatrix);
         }
-
-        var modes = object.modes;
-
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, modes.clippable);
+            gl.uniform1i(this._uClippable, meshState.clippable);
         }
-
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        if (geometryState.combined) {
+            var vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
-                if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
-                    frame.bindArray++;
-                }
                 this._lastVertexBufsId = vertexBufs.id;
             }
         }
-
         // Bind VBOs
-
         var indicesBuf;
-
-        if (geometry.primitive === gl.TRIANGLES) {
-            indicesBuf = geometry.getGhostEdgesIndices();
-        } else if (geometry.primitive === gl.LINES) {
-            indicesBuf = geometry.indicesBuf;
+        if (geometryState.primitive === gl.TRIANGLES) {
+            indicesBuf = geometry._getEdgesIndices();
+        } else if (geometryState.primitive === gl.LINES) {
+            indicesBuf = geometryState.indicesBuf;
         }
-
         if (indicesBuf) {
-
-            if (geometry.id !== this._lastGeometryId) {
-
+            if (geometryState.id !== this._lastGeometryId) {
                 if (this._uPositionsDecodeMatrix) {
-                    gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                    gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
                 }
-
-                if (!geometry.combined) { // VBOs were bound by the VertexBufs logic above
+                if (!geometryState.combined) { // VBOs were bound by the VertexBufs logic above
                     if (this._aPosition) {
-                        this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
-                        frame.bindArray++;
-                    }
-                    if (this._aNormal) {
-                        this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
+                        this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                         frame.bindArray++;
                     }
                 }
-
                 indicesBuf.bind();
                 frame.bindArray++;
-
-                this._lastGeometryId = geometry.id;
+                this._lastGeometryId = geometryState.id;
             }
-
             gl.drawElements(gl.LINES, indicesBuf.numItems, indicesBuf.itemType, 0);
             frame.drawElements++;
         }
@@ -13702,64 +12665,31 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     "use strict";
 
-    xeogl.renderer.GhostEdgesShaderSource = function (gl, scene, object) {
-        var cfg = {
-            normals: hasNormals(object),
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized,
-            gammaOutput: scene.gammaOutput
-        };
-        this.vertex =  buildVertex(gl, cfg, scene, object);
-        this.fragment = buildFragment(gl, cfg, scene, object);
+    xeogl.renderer.EmphasisEdgesShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
 
-    function hasNormals(object) {
-        var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
-            return true;
-        }
-        return false;
-    }
-
-    function buildVertex(gl, cfg, scene, object) {
-
-        var billboard = object.modes.billboard;
-
+    function buildVertex(mesh) {
+        var scene = mesh.scene;
+        var clipping = scene._clipsState.clips.length > 0;
+        var quantizedGeometry = !!mesh._geometry._state.quantized;
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
         var src = [];
-
         src.push("// Edges drawing vertex shader");
-
         src.push("attribute vec3 position;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
-
         src.push("uniform vec4 edgeColor;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        if (cfg.normals) {
-            src.push("attribute vec3 normal;");
-            if (cfg.quantizedGeometry) {
-                src.push("vec3 octDecode(vec2 oct) {");
-                src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
-                src.push("    if (v.z < 0.0) {");
-                src.push("        v.xy = (1.0 - abs(v.yx)) * vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0);");
-                src.push("    }");
-                src.push("    return normalize(v);");
-                src.push("}");
-            }
-        }
-
         src.push("varying vec4 vColor;");
-
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
@@ -13775,80 +12705,56 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
-                src.push("vec3 localNormal = octDecode(normal.xy); ");
-            } else {
-                src.push("vec3 localNormal = normal; ");
-            }
-            //src.push("localPosition.xyz +=  localNormal * 0.01; ");
-        }
-
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
         } else {
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
         src.push("vColor = edgeColor;");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-        
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("}");
-
         return src;
     }
 
-    function buildFragment(gl, cfg, scene, object) {
-
+    function buildFragment(mesh) {
+        var clipsState = mesh.scene._clipsState;
+        var gammaOutput = mesh.scene.gammaOutput;
+        var clipping = clipsState.clips.length > 0;
         var i;
         var len;
         var src = [];
-
         src.push("// Edges drawing fragment shader");
-
         src.push("precision lowp float;");
-
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("uniform float gammaFactor;");
             src.push("vec4 linearToGamma( in vec4 value, in float gammaFactor ) {");
             src.push("  return vec4( pow( value.xyz, vec3( 1.0 / gammaFactor ) ), value.w );");
             src.push("}");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
             src.push("uniform bool clippable;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
@@ -13856,10 +12762,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
         src.push("varying vec4 vColor;");
         src.push("void main(void) {");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
@@ -13868,13 +12774,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("}");
         }
         src.push("gl_FragColor = vColor;");
-
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("gl_FragColor = linearToGamma(vColor, gammaFactor);");
         } else {
             src.push("gl_FragColor = vColor;");
         }
-
         src.push("}");
         return src;
     }
@@ -14171,14 +13075,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             this.meta = cfg.meta || {};
 
             /**
-             Indicates whether this is one of the {{#crossLink "Scene"}}Scene{{/crossLink}}'s built-in Components.
-
-             @property isDefault
-             @type Boolean
-             */
-            this.isDefault = cfg.isDefault;
-
-            /**
              Unique ID for this Component within its parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
              @property id
@@ -14353,7 +13249,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this._eventSubs = {};
             }
             if (forget !== true) {
-                this._events[event] = value; // Save notification
+                this._events[event] = value || true; // Save notification
             }
             var subs = this._eventSubs[event];
             var sub;
@@ -14414,7 +13310,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
             return handle;
         },
-
+        
         /**
          * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}Component#on(){{/crossLink}} or
          * {{#crossLink "Component/once:method"}}Component#once(){{/crossLink}}.
@@ -14793,6 +13689,17 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         },
 
         _checkComponent: function (expectedType, component) {
+            if (xeogl._isObject(component)) {
+                if (component.type) {
+                    if (!xeogl._isComponentType(component.type, expectedType)) {
+                        this.error("Expected a " + expectedType + " type or subtype: " + component.type + " " + xeogl._inQuotes(component.id));
+                        return;
+                    }
+                } else {
+                    component.type = "xeogl.Component";
+                }
+                component = new window[component.type](this.scene, component);
+            }
             if (component.scene.id !== this.scene.id) {
                 this.error("Not in same scene: " + component.type + " " + xeogl._inQuotes(component.id));
                 return;
@@ -14974,6 +13881,19 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this._destroy();
             }
 
+            this.scene._removeComponent(this);
+
+            // Memory leak avoidance
+            this._attached = {};
+            this._attachments = null;
+            this._handleMap = null;
+            this._handleEvents = null;
+            this._eventSubs = null;
+            this._events = null;
+            this._eventCallDepth = 0;
+            this._adoptees = null;
+            this._updateScheduled = false;
+
             /**
              * Fired when this Component is destroyed.
              * @event destroyed
@@ -14988,16 +13908,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
          * @protected
          */
         _destroy: function () {
-            // Memory leak avoidance
-            this._attached = {};
-            this._attachments = null;
-            this._handleMap = null;
-            this._handleEvents = null;
-            this._eventSubs = null;
-            this._events = null;
-            this._eventCallDepth = 0;
-            this._adoptees = null;
-            this._updateScheduled = false;
 
         }
     });
@@ -15636,10 +14546,163 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 alert("xeogl failed to find WebGL!");
             });
 
-            this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this.canvas.canvas, this.canvas.gl, {
+            this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this, {
                 transparent: transparent
             });
 
+            this._clipsState = new (function () {
+
+                this.clips = [];
+
+                var hash = null;
+
+                this.getHash = function () {
+                    if (hash) {
+                        return hash;
+                    }
+                    var clips = this.clips;
+                    if (clips.length === 0) {
+                        return this.hash = ";";
+                    }
+                    var clip;
+                    var hashParts = [];
+                    for (var i = 0, len = clips.length; i < len; i++) {
+                        clip = clips[i];
+                        hashParts.push("cp");
+                    }
+                    hashParts.push(";");
+                    hash = hashParts.join("");
+                    return hash;
+                };
+
+                this.addClip = function (clip) {
+                    this.clips.push(clip);
+                    hash = null;
+                };
+
+                this.removeClip = function (clip) {
+                    for (var i = 0, len = this.clips.length; i < len; i++) {
+                        if (this.clips[i].id === clip.id) {
+                            this.clips.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+            })();
+
+            this._lightsState = new (function () {
+
+                const DEFAULT_AMBIENT = xeogl.math.vec3([0, 0, 0]);
+                var ambientColor = xeogl.math.vec3();
+
+                this.lights = [];
+                this.reflectionMaps = [];
+                this.lightMaps = [];
+
+                var hash = null;
+                var ambientLight = null;
+
+                this.getHash = function () {
+                    if (hash) {
+                        return hash;
+                    }
+                    var hashParts = [];
+                    var lights = this.lights;
+                    var light;
+                    for (var i = 0, len = lights.length; i < len; i++) {
+                        light = lights[i];
+                        hashParts.push("/");
+                        hashParts.push(light.type);
+                        hashParts.push((light.space === "world") ? "w" : "v");
+                        if (light.shadow) {
+                            hashParts.push("sh");
+                        }
+                    }
+                    if (this.lightMaps.length > 0) {
+                        hashParts.push("/lm");
+                    }
+                    if (this.reflectionMaps.length > 0) {
+                        hashParts.push("/rm");
+                    }
+                    hashParts.push(";");
+                    hash = hashParts.join("");
+                    return hash;
+                };
+
+                this.addLight = function (state) {
+                    this.lights.push(state);
+                    ambientLight = null;
+                    hash = null;
+                };
+
+                this.removeLight = function (state) {
+                    for (var i = 0, len = this.lights.length; i < len; i++) {
+                        var light = this.lights[i];
+                        if (light.id === state.id) {
+                            this.lights.splice(i, 1);
+                            if (ambientLight && ambientLight.id === state.id) {
+                                ambientLight = null;
+                            }
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.addReflectionMap = function (state) {
+                    this.reflectionMaps.push(state);
+                    hash = null;
+                };
+
+                this.removeReflectionMap = function (state) {
+                    for (var i = 0, len = this.reflectionMaps.length; i < len; i++) {
+                        if (this.reflectionMaps[i].id === state.id) {
+                            this.reflectionMaps.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.addLightMap = function (state) {
+                    this.lightMaps.push(state);
+                    hash = null;
+                };
+
+                this.removeLightMap = function (state) {
+                    for (var i = 0, len = this.lightMaps.length; i < len; i++) {
+                        if (this.lightMaps[i].id === state.id) {
+                            this.lightMaps.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.getAmbientColor = function () {
+                    if (!ambientLight) {
+                        for (var i = 0, len = this.lights.length; i < len; i++) {
+                            var light = this.lights[i];
+                            if (light.type === "ambient") {
+                                ambientLight = light;
+                                break;
+                            }
+                        }
+                    }
+                    if (ambientLight) {
+                        var color = ambientLight.color;
+                        var intensity = ambientLight.intensity;
+                        ambientColor[0] = color[0] * intensity;
+                        ambientColor[1] = color[1] * intensity;
+                        ambientColor[2] = color[2] * intensity;
+                        return ambientColor;
+                    } else {
+                        return DEFAULT_AMBIENT;
+                    }
+                };
+
+            })();
             /**
              Publishes input events that occur on this Scene's canvas.
 
@@ -15720,13 +14783,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var renderer = this._renderer;
             var camera = this._camera;
 
-            renderer.viewport = viewport._state;
-            renderer.projTransform = camera[camera.projection]._state;
-            renderer.viewTransform = camera._state;
-
             camera.on("dirty", function () {
-                renderer.projTransform = camera.project._state;
-                renderer.viewTransform = camera._state;
                 renderer.imageDirty();
             });
 
@@ -15750,96 +14807,140 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             dummy = this.outlineMaterial;
         },
 
-        // Called by each component that is created with this Scene as parent.
-        // Registers the component in this scene.
-
         _addComponent: function (c) {
-
-            if (c.id) {
-
-                // User-supplied ID
-
+            if (c.id) { // Manual ID
                 if (this.components[c.id]) {
                     this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
-                    //        c.id = this._componentIDMap.addItem(c);
-                    return;
+                    c.id = null;
                 }
-            } else {
-
-                // Auto-generated ID
-
+            }
+            if (!c.id) { // Auto ID
                 if (window.nextID === undefined) {
                     window.nextID = 0;
                 }
                 //c.id = xeogl.math.createUUID();
                 c.id = "_" + window.nextID++;
-
                 while (this.components[c.id]) {
                     c.id = xeogl.math.createUUID();
                 }
             }
-
             this.components[c.id] = c;
-
             // Register for class type
-
             var type = c.type;
-
             var types = this.types[c.type];
-
             if (!types) {
                 types = this.types[type] = {};
             }
-
             types[c.id] = c;
+        },
 
-            c.on("destroyed", function () {
-                this._componentDestroyed(c);
-            }, this);
-
-            if (c.isType("xeogl.Clip")) {
-                this._needRecompileMeshes = true;
-                this.clips[c.id] = c;
-
-            } else if (c.isType("xeogl.PointLight") || c.isType("xeogl.DirLight") || c.isType("xeogl.SpotLight")) {
-                this._needRecompileMeshes = true;
-                this.lights[c.id] = c;
-
-            } else if (c.isType("xeogl.LightLight")) {
-                this._needRecompileMeshes = true;
-                this.lightMaps[c.id] = c;
-
-            } else if (c.isType("xeogl.ReflectionLight")) {
-                this._needRecompileMeshes = true;
-                this.reflectionMaps[c.id] = c;
-
-            } else {
-
-                if (c.isType("xeogl.Mesh")) {
-                    c.on("boundary", this._setBoundaryDirty, this);
-                    this.meshes[c.id] = c;
-                    xeogl.stats.components.meshes++;
-                }
-
-                if (c.isType("xeogl.Model")) {
-                    this.models[c.id] = c;
-                    xeogl.stats.components.models++;
-                }
-                if (c.isType("xeogl.Object")) {
-                    this.objects[c.id] = c;
-                    if (c.guid) {
-                        this.guidObjects[c.id] = c;
-                        this._objectGUIDs = null; // To lazy-rebuild
-                    }
-                    if (!c.parent) {
-                        this.rootObjects[c.id] = c; // TODO: What about when a root Object is added as child to another?
-                    }
-                    xeogl.stats.components.objects++;
+        _removeComponent: function (c) {
+            delete this.components[c.id];
+            var types = this.types[c.type];
+            if (types) {
+                delete types[c.id];
+                if (xeogl._isEmptyObject(types)) {
+                    delete this.types[c.type];
                 }
             }
         },
 
-        // Methods to register entity Objects and their most pertinent state updates
+        // Methods below are called by various component types to register themselves on their
+        // Scene. Violates Hollywood Principle, where we could just filter on type in _addComponent,
+        // but this is faster than checking the type of each component in such a filter.
+
+        _clipCreated: function (clip) {
+            this.clips[clip.id] = clip;
+            this.scene._clipsState.addClip(clip._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightCreated: function (light) {
+            this.lights[light.id] = light;
+            this.scene._lightsState.addLight(light._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightMapCreated: function (lightMap) {
+            this.lightMaps[lightMap.id] = lightMap;
+            this.scene._lightsState.addLightMap(lightMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _reflectionMapCreated: function (reflectionMap) {
+            this.reflectionMaps[reflectionMap.id] = reflectionMap;
+            this.scene._lightsState.addReflectionMap(reflectionMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _objectCreated: function (object) {
+            this.objects[object.id] = object;
+            if (object.guid) {
+                this.guidObjects[object.id] = object;
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
+            if (!object.parent) {
+                this.rootObjects[object.id] = object; // TODO: What about when a root Object is added as child to another?
+            }
+            xeogl.stats.components.objects++;
+        },
+
+        _meshCreated: function (mesh) {
+            this.meshes[mesh.id] = mesh;
+            xeogl.stats.components.meshes++;
+        },
+
+        _modelCreated: function (model) {
+            this.models[model.id] = model;
+            xeogl.stats.components.models++;
+        },
+
+        _clipDestroyed: function (clip) {
+            delete this.clips[clip.id];
+            this.scene._clipsState.removeClip(clip._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightDestroyed: function (light) {
+            delete this.lights[light.id];
+            this.scene._lightsState.removeLight(light._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightMapDestroyed: function (lightMap) {
+            delete this.lightMaps[lightMap.id];
+            this.scene._lightsState.removeLightMap(lightMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _reflectionMapDestroyed: function (reflectionMap) {
+            delete this.reflectionMaps[reflectionMap.id];
+            this.scene._lightsState.removeReflectionMap(reflectionMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _objectDestroyed: function (object) {
+            delete this.objects[object.id];
+            if (object.guid) {
+                delete this.guidObjects[object.guid];
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
+            if (!object.parent) {
+                delete this.rootObjects[object.id];
+            }
+            xeogl.stats.components.objects--;
+        },
+
+        _meshDestroyed: function (mesh) {
+            xeogl.stats.components.meshes--;
+            delete this.meshes[mesh.id];
+            xeogl.stats.components.meshes--;
+        },
+
+        _modelDestroyed: function (model) {
+            this.models[model.id] = model;
+            xeogl.stats.components.models++;
+        },
 
         _entityTypeAssigned: function (object, newEntityType) {
             this.entities[object.id] = object;
@@ -15899,65 +15000,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             this._selectedEntityIds = null; // Lazy regenerate
         },
 
-        // Callbacks as members to reduce GC churn
-
-        _componentDestroyed: function (c) {
-
-            delete this.components[c.id];
-
-            var types = this.types[c.type];
-            if (types) {
-                delete types[c.id];
-                if (xeogl._isEmptyObject(types)) {
-                    delete this.types[c.type];
-                }
-            }
-
-            if (c.isType("xeogl.Clip")) {
-                delete this.clips[c.id];
-                this._needRecompileMeshes = true;
-
-            } else if (c.isType("xeogl.PointLight") || c.isType("xeogl.DirLight") || c.isType("xeogl.SpotLight")) {
-                delete this.lights[c.id];
-                this._needRecompileMeshes = true;
-
-            } else if (c.isType("xeogl.LightLight")) {
-                delete this.lightMaps[c.id];
-                this._needRecompileMeshes = true;
-
-            } else if (c.isType("xeogl.ReflectionLight")) {
-                delete this.reflectionMaps[c.id];
-                this._needRecompileMeshes = true;
-
-            } else {
-
-                if (c.isType("xeogl.Mesh")) {
-                    xeogl.stats.components.meshes--;
-                    delete this.meshes[c.id];
-                    xeogl.stats.components.meshes--;
-                }
-
-                if (c.isType("xeogl.Object")) {
-                    delete this.objects[c.id];
-                    if (c.guid) {
-                        delete this.guidObjects[c.guid];
-                        this._objectGUIDs = null; // To lazy-rebuild
-                    }
-                    if (!c.parent) {
-                        delete this.rootObjects[c.id];
-                    }
-                    xeogl.stats.components.objects--;
-                }
-
-                if (c.isType("xeogl.Model")) {
-                    delete this.models[c.id];
-                    xeogl.stats.components.models--;
-                }
-            }
-
-            //this.log("Destroyed " + c.type + " " + xeogl._inQuotes(c.id));
-        },
-
         /**
          * Renders a single frame of this Scene.
          *
@@ -15973,24 +15015,25 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             var renderEvent = {
                 sceneId: null,
-                pass: null
+                pass: 0
             };
 
             return function (forceRender) {
-
-                // The renderer is suspended while a model loads, and when a Scene is made to load something
-                // as soon as it's instantiated, that means that its lights may not get a chance to set the
-                // canvas background until the model is loaded and the renderer is unsuspended again. Therefore,
-                // we have a special imageForceDirty flag that bypasses the suspension, which lights set when
-                // their properties are updated.
 
                 if (this._needRecompileMeshes) {
                     this._recompileMeshes();
                     this._needRecompileMeshes = false;
                 }
 
-                if (this.loading > 0) {
+                if (this.loading > 0 || this.canvas.spinner.processes > 0) {
+                    this.canvas.canvas.style.opacity = 0.0;
                     return;
+                }
+
+                var opacity = Number.parseFloat(this.canvas.canvas.style.opacity);
+                if (opacity < 1.0) {
+                    opacity  += 0.1;
+                    this.canvas.canvas.style.opacity = opacity;
                 }
 
                 renderEvent.sceneId = this.id;
@@ -16039,11 +15082,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         },
 
-
         _saveAmbientColor: function () {
             var canvas = this.canvas;
             if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
-                var ambientColor = this._renderer.getAmbientColor();
+                var ambientColor = this._lightsState.getAmbientColor();
                 if (!this._lastAmbientColor ||
                     this._lastAmbientColor[0] !== ambientColor[0] ||
                     this._lastAmbientColor[1] !== ambientColor[1] ||
@@ -16175,27 +15217,19 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @type Number
              */
             ticksPerRender: {
-
                 set: function (value) {
-
                     if (value === undefined || value === null) {
                         value = 1;
-
                     } else if (!xeogl._isNumeric(value) || value <= 0) {
-
                         this.error("Unsupported value for 'ticksPerRender': '" + value +
                             "' - should be an integer greater than zero.");
-
                         value = 1;
                     }
-
                     if (value === this._ticksPerRender) {
                         return;
                     }
-
                     this._ticksPerRender = value;
                 },
-
                 get: function () {
                     return this._ticksPerRender;
                 }
@@ -16209,29 +15243,20 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @type Number
              */
             passes: {
-
                 set: function (value) {
-
                     if (value === undefined || value === null) {
                         value = 1;
-
                     } else if (!xeogl._isNumeric(value) || value <= 0) {
-
                         this.error("Unsupported value for 'passes': '" + value +
                             "' - should be an integer greater than zero.");
-
                         value = 1;
                     }
-
                     if (value === this._passes) {
                         return;
                     }
-
                     this._passes = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._passes;
                 }
@@ -16246,20 +15271,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @type Boolean
              */
             clearEachPass: {
-
                 set: function (value) {
-
                     value = !!value;
-
                     if (value === this._clearEachPass) {
                         return;
                     }
-
                     this._clearEachPass = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._clearEachPass;
                 }
@@ -16273,20 +15292,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @type Boolean
              */
             gammaInput: {
-
                 set: function (value) {
-
                     value = value !== false;
-
                     if (value === this._renderer.gammaInput) {
                         return;
                     }
-
                     this._renderer.gammaInput = value;
-
                     this._needRecompileMeshes = true;
                 },
-
                 get: function () {
                     return this._renderer.gammaInput;
                 }
@@ -16300,20 +15313,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @type Boolean
              */
             gammaOutput: {
-
                 set: function (value) {
-
                     value = value !== false;
-
                     if (value === this._renderer.gammaOutput) {
                         return;
                     }
-
                     this._renderer.gammaOutput = value;
-
                     this._needRecompileMeshes = true;
                 },
-
                 get: function () {
                     return this._renderer.gammaOutput;
                 }
@@ -16327,20 +15334,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @type Number
              */
             gammaFactor: {
-
                 set: function (value) {
-
                     value = (value === undefined || value === null) ? 2.2 : value;
-
                     if (value === this._renderer.gammaFactor) {
                         return;
                     }
-
                     this._renderer.gammaFactor = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._renderer.gammaFactor;
                 }
@@ -16464,6 +15465,33 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
+             The Scene's default {{#crossLink "EdgeMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when edges are emphasized.
+
+             This {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} has
+             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.edgeMaterial", with all
+             other properties initialised to their default values.
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} by default.
+             @property edgeMaterial
+             @final
+             @type EdgeMaterial
+             */
+            edgeMaterial: {
+                get: function () {
+                    return this.components["default.edgeMaterial"] ||
+                        new xeogl.EdgeMaterial(this, {
+                            id: "default.edgeMaterial",
+                            preset: "default",
+                            edgeColor: [0.0, 0.0, 0.0],
+                            edgeAlpha: 1.0,
+                            edgeWidth: 1,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
              The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are outlined.
 
              This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
@@ -16520,22 +15548,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @type {Float32Array}
              */
             center: {
-
                 get: function () {
-
                     if (this._aabbDirty || !this._center) {
-
                         if (!this._center || !this._center) {
                             this._center = xeogl.math.vec3();
                         }
-
                         var aabb = this.aabb;
-
                         this._center[0] = (aabb[0] + aabb[3] ) / 2;
                         this._center[1] = (aabb[1] + aabb[4] ) / 2;
                         this._center[2] = (aabb[2] + aabb[5] ) / 2;
                     }
-
                     return this._center;
                 }
             },
@@ -16551,43 +15573,28 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
              @type {Float32Array}
              */
             aabb: {
-
                 get: function () {
-
+                    //   console.log("get aabb")
                     if (this._aabbDirty) {
-
                         if (!this._aabb) {
                             this._aabb = xeogl.math.AABB3();
                         }
-
                         var xmin = xeogl.math.MAX_DOUBLE;
                         var ymin = xeogl.math.MAX_DOUBLE;
                         var zmin = xeogl.math.MAX_DOUBLE;
                         var xmax = -xeogl.math.MAX_DOUBLE;
                         var ymax = -xeogl.math.MAX_DOUBLE;
                         var zmax = -xeogl.math.MAX_DOUBLE;
-
                         var aabb;
-
                         var meshes = this.meshes;
                         var mesh;
-
                         for (var meshId in meshes) {
                             if (meshes.hasOwnProperty(meshId)) {
-
                                 mesh = meshes[meshId];
-
                                 if (!mesh.collidable) {
                                     continue;
                                 }
-
                                 aabb = mesh.aabb;
-
-                                if (!aabb) {
-                                    this.error("internal error: mesh without aabb: " + meshId);
-                                    continue;
-                                }
-
                                 if (aabb[0] < xmin) {
                                     xmin = aabb[0];
                                 }
@@ -16608,27 +15615,24 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                 }
                             }
                         }
-
                         this._aabb[0] = xmin;
                         this._aabb[1] = ymin;
                         this._aabb[2] = zmin;
                         this._aabb[3] = xmax;
                         this._aabb[4] = ymax;
                         this._aabb[5] = zmax;
-
                         this._aabbDirty = false;
                     }
-
                     return this._aabb;
                 }
             }
         },
 
         _setBoundaryDirty: function () {
-            if (!this._aabbDirty) {
-                this._aabbDirty = true;
-                this.fire("boundary");
-            }
+            //if (!this._aabbDirty) {
+            this._aabbDirty = true;
+            this.fire("boundary");
+            // }
         },
 
         /**
@@ -16763,8 +15767,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var tempVec3j = math.vec3();
             var tempVec3k = math.vec3();
 
-            function getRendererObjectIDs(scene, meshIds) {
-                var objectIds = {};
+            function getMeshIDMap(scene, meshIds) {
+                var map = {};
                 var meshId;
                 var mesh;
                 for (var i = 0, len = meshIds.length; i < len; i++) {
@@ -16774,12 +15778,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         scene.warn("pick(): Mesh not found: " + meshId);
                         continue;
                     }
-                    objectIds[mesh._objectId] = true;
+                    map[meshId] = true;
                 }
-                return objectIds;
+                return map;
             }
 
-            function getRendererObjectIDsFromentityTypes(scene, entityTypes) {
+            function getMeshIDMapFromentityTypes(scene, entityTypes) {
                 // var objectIds = {};
                 // var entityType;
                 // var mesh;
@@ -16812,37 +15816,33 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                 var includeMeshes = params.includeMeshes || params.include; // Backwards compat
                 if (includeMeshes) {
-                    params.includeObjects = getRendererObjectIDs(this, includeMeshes);
+                    params.includeMeshIds = getMeshIDMap(this, includeMeshes);
                 }
 
                 var excludeMeshes = params.excludeMeshes || params.exclude; // Backwards compat
                 if (excludeMeshes) {
-                    params.excludeObjects = getRendererObjectIDs(this, excludeMeshes);
+                    params.excludeMeshIds = getMeshIDMap(this, excludeMeshes);
                 }
 
-                if (params.includeEntityTypes) {
-                    params.includeObjects = getRendererObjectIDsFromEntityTypes(this, params.includeEntityTypes);
-                }
-
-                if (params.excludeEntityTypes) {
-                    params.excludeObjects = getRendererObjectIDsFromEntityTypes(this, params.excludeEntityTypes);
-                }
-
+                // if (params.includeEntityTypes) {
+                //     params.includeObjects = getMeshIDMapFromEntityTypes(this, params.includeEntityTypes);
+                // }
+                //
+                // if (params.excludeEntityTypes) {
+                //     params.excludeObjects = getMeshIDMapFromEntityTypes(this, params.excludeEntityTypes);
+                // }
 
                 var hit = this._renderer.pick(params);
 
                 if (hit) {
 
-                    var mesh = this.meshes[hit.mesh];
-
-                    hit.mesh = mesh; // Swap string ID for xeogl.Mesh
-                    hit.object = hit.mesh;
+                    hit.object = hit.mesh; // Backwards compat
 
                     if (params.pickSurface) {
 
                         if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
-                            var geometry = mesh.geometry._state;
+                            var geometry = hit.mesh.geometry._state;
 
                             if (geometry.primitiveName === "triangles") {
 
@@ -16916,10 +15916,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                 if (params.canvasPos) {
                                     canvasPos = params.canvasPos;
                                     hit.canvasPos = params.canvasPos;
-                                    math.canvasPosToLocalRay(this.camera, mesh, canvasPos, localRayOrigin, localRayDir);
+                                    math.canvasPosToLocalRay(this.camera, hit.mesh, canvasPos, localRayOrigin, localRayDir);
 
                                 } else if (params.origin && params.direction) {
-                                    math.worldRayToLocalRay(mesh, params.origin, params.direction, localRayOrigin, localRayDir);
+                                    math.worldRayToLocalRay(hit.mesh, params.origin, params.direction, localRayOrigin, localRayDir);
                                 }
 
                                 math.normalizeVec3(localRayDir);
@@ -16941,7 +15941,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                 // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(mesh.worldMatrix || mesh.worldMatrix, tempVec4a, tempVec4b);
+                                math.transformVec4(hit.mesh.worldMatrix, tempVec4a, tempVec4b);
 
                                 worldPos[0] = tempVec4b[0];
                                 worldPos[1] = tempVec4b[1];
@@ -16951,7 +15951,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                 // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(mesh.scene.camera.matrix, tempVec4b, tempVec4c);
+                                math.transformVec4(hit.mesh.scene.camera.matrix, tempVec4b, tempVec4c);
 
                                 viewPos[0] = tempVec4c[0];
                                 viewPos[1] = tempVec4c[1];
@@ -17003,7 +16003,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                         math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
-                                    hit.normal = math.transformVec3(mesh.worldNormalMatrix, normal, tempVec3f);
+                                    hit.normal = math.transformVec3(hit.mesh.worldNormalMatrix, normal, tempVec3f);
                                 }
 
                                 // Get interpolated UV coordinates
@@ -17161,6 +16161,33 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         },
 
         /**
+         Convenience method that destroys all light sources.
+
+         Removes all {{#crossLink "AmbientLight"}}AmbientLights{{/crossLink}}, {{#crossLink "PointLight"}}PointLights{{/crossLink}},
+         {{#crossLink "DirLight"}}DirLights{{/crossLink}} and {{#crossLink "SpotLight"}}SpotLights{{/crossLink}}.
+
+         @method clearLights
+         */
+        clearLights: function () {
+            var ids = Object.keys(this.lights);
+            for (var i = 0, len = ids.length; i < len; i++) {
+                this.lights[ids[i]].destroy();
+            }
+        },
+
+        /**
+         Convenience method that destroys all {{#crossLink "Clip"}}Clips{{/crossLink}}.
+
+         @method clearClips
+         */
+        clearClips: function () {
+            var ids = Object.keys(this.clips);
+            for (var i = 0, len = ids.length; i < len; i++) {
+                this.clips[ids[i]].destroy();
+            }
+        },
+
+        /**
          Shows or hides a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          Each Object indicates its visibility status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
@@ -17302,6 +16329,29 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         })(),
 
         /**
+         Shows or hides wireeframe edges for batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         @method setEdges
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param edges {Float32Array} Whether to show or hide edges.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed edges state, else false if all updates were redundant and not applied.
+         */
+        setEdges: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.edges != newValue);
+                object.edges = newValue;
+                return changed;
+            }
+
+            return function (ids, edges) {
+                newValue = edges;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
          Shows or hides an outline around a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          Each Object indicates its outlined status in its {{#crossLink "Object/outlined:property"}}{{/crossLink}} property.
@@ -17371,13 +16421,41 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         })(),
 
         /**
+         Sets a batch of {{#crossLink "Object"}}Objects{{/crossLink}} pickable or unpickable, specified by their IDs, GUIDs and/or entity types.
+
+         Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+         @method setPickable
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param pickable {Float32Array} Whether to ghost or un-ghost.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed pickable state, else false if all updates were redundant and not applied.
+         */
+        setPickable: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.pickable != newValue);
+                object.pickable = newValue;
+                return changed;
+            }
+
+            return function (ids, pickable) {
+                newValue = pickable;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
          Iterates with a callback over {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          @method withObjects
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param ids {String|Array} One or more {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
          @param callback {Function} The callback, which takes each object as its argument.
          */
         withObjects: function (ids, callback) {
+            if (xeogl._isString(ids)) {
+                ids = [ids];
+            }
             var changed = false;
             for (var i = 0, len = ids.length; i < len; i++) {
                 var id = ids[i];
@@ -17612,6 +16690,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  * {{#crossLink "Object/highlighted:property"}}highlighted{{/crossLink}}
  * {{#crossLink "Object/ghosted:property"}}ghosted{{/crossLink}}
  * {{#crossLink "Object/selected:property"}}selected{{/crossLink}}
+ * {{#crossLink "Object/edges:property"}}edges{{/crossLink}}
  * {{#crossLink "Object/colorize:property"}}colorize{{/crossLink}}
  * {{#crossLink "Object/opacity:property"}}opacity{{/crossLink}}
  * {{#crossLink "Object/clippable:property"}}clippable{{/crossLink}}
@@ -17986,29 +17065,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  var isYellowLegHighlighted = scene.highlightedEntities["yellowLeg"];
  ````
 
- We can also update or remove entity classes dynamically, for example:
-
- ````javascript
- var tableTop = scene.entities["tableTop"];
- tableTop.entityType = "workSurface";
- ````
-
- Now our table top Mesh can be found with its new class:
-
- ````javascript
- var workSurfaceEntities = scene.entityTypes["workSurface"];
- var tableTop = workSurfaceEntities["tableTop"];
- ````
-
- And we can remove its class altogether:
-
- ````javascript
- tableTop.entityType = null;
- ````
-
- That will remove this entity Mesh from the {{#crossLink "Scene"}}Scene{{/crossLink}}'s visibility and
- highlighted maps. Restoring a class will register it with those maps again, since the Mesh is currently visible and highlighted.
-
  * [Example](../../examples/#objects_entities)
 
  #### Limitations with state inheritance
@@ -18060,8 +17116,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  @param [cfg.ghosted=false] {Boolean}       Indicates if ghosted.
  @param [cfg.highlighted=false] {Boolean}   Indicates if highlighted.
  @param [cfg.selected=false] {Boolean}      Indicates if selected.
+ @param [cfg.edges=false] {Boolean}         Indicates if edges are emphasized.
  @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
- @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
  @param [cfg.opacity=1.0] {Number}          Opacity factor, multiplies by the rendered fragment alpha.
  @param [cfg.children] {Array(Object)}      Children to add. Children must be in the same {{#crossLink "Scene"}}{{/crossLink}} and will be removed from whatever parents they may already have.
@@ -18086,6 +17142,8 @@ xeogl.Object = xeogl.Component.extend({
 
         var math = xeogl.math;
 
+        this._guid = cfg.guid;
+
         this._parent = null;
         this._childList = [];
         this._childMap = {};
@@ -18093,15 +17151,13 @@ xeogl.Object = xeogl.Component.extend({
 
         this._aabb = null;
         this._aabbDirty = true;
-        this._obb = null;
-        this._obbDirty = true;
+        this.scene._aabbDirty = true;
 
         this._scale = math.vec3();
         this._quaternion = math.identityQuaternion();
         this._rotation = math.vec3();
         this._position = math.vec3();
 
-        this._localMatrix = math.identityMat4();
         this._worldMatrix = math.identityMat4();
         this._worldNormalMatrix = math.identityMat4();
 
@@ -18109,12 +17165,8 @@ xeogl.Object = xeogl.Component.extend({
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
 
-        this._guid = cfg.guid;
-        this.entityType = cfg.entityType;
-
         if (cfg.matrix) {
             this.matrix = cfg.matrix;
-
         } else {
             this.scale = cfg.scale;
             this.position = cfg.position;
@@ -18122,6 +17174,11 @@ xeogl.Object = xeogl.Component.extend({
             } else {
                 this.rotation = cfg.rotation;
             }
+        }
+
+        if (cfg.entityType) {
+            this._entityType = cfg.entityType;
+            this.scene._entityTypeAssigned(this, this._entityType); // Must assign type before setting properties
         }
 
         // Properties
@@ -18138,15 +17195,16 @@ xeogl.Object = xeogl.Component.extend({
         this.castShadow = cfg.castShadow;
         this.receiveShadow = cfg.receiveShadow;
         this.outlined = cfg.outlined;
-        this.layer = cfg.layer;
         this.solid = cfg.solid;
         this.ghosted = cfg.ghosted;
         this.highlighted = cfg.highlighted;
         this.selected = cfg.selected;
+        this.edges = cfg.edges;
+        this.aabbVisible = cfg.aabbVisible;
+
+        this.layer = cfg.layer;
         this.colorize = cfg.colorize;
         this.opacity = cfg.opacity;
-        this.aabbVisible = cfg.aabbVisible;
-        this.obbVisible = cfg.obbVisible;
 
         // Add children, which inherit state from this Object
 
@@ -18160,22 +17218,18 @@ xeogl.Object = xeogl.Component.extend({
         if (cfg.parent) {
             cfg.parent.addChild(this);
         }
+
+        this.scene._objectCreated(this);
     },
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Transform management
-    //------------------------------------------------------------------------------------------------------------------
-
-    _setLocalMatrixDirty: function () { // Invalidates Local matrix of the Object and invalidates World matrix of child Objects
+    _setLocalMatrixDirty: function () {
         this._localMatrixDirty = true;
         this._setWorldMatrixDirty();
     },
 
-    _setWorldMatrixDirty: function () { // Invalidates World matrix of the Object and child Objects
+    _setWorldMatrixDirty: function () {
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
-        this._aabbDirty = true;
-        this._obbDirty = true;
         if (this._childList) {
             for (var i = 0, len = this._childList.length; i < len; i++) {
                 this._childList[i]._setWorldMatrixDirty();
@@ -18183,27 +17237,19 @@ xeogl.Object = xeogl.Component.extend({
         }
     },
 
-    _buildLocalMatrix: function () { // Rebuilds and validates the Object's Local matrix
-        xeogl.math.composeMat4(this._position, this._quaternion, this._scale, this._localMatrix);
-        this._localMatrixDirty = false;
-    },
-
-    _buildWorldMatrix: function () { // Rebuilds and validates Local matrix of the Object, then rebuilds and validates World matrices of the Object and parent Objects
-        if (this._localMatrixDirty) {
-            this._buildLocalMatrix();
-        }
+    _buildWorldMatrix: function () {
+        var localMatrix = this.matrix;
         if (!this._parent) {
-            for (var i = 0, len = this._localMatrix.length; i < len; i++) {
-                this._worldMatrix[i] = this._localMatrix[i];
+            for (var i = 0, len = localMatrix.length; i < len; i++) {
+                this._worldMatrix[i] = localMatrix[i];
             }
         } else {
-            xeogl.math.mulMat4(this._parent.worldMatrix, this._localMatrix, this._worldMatrix);
-            //  xeogl.math.mulMat4(this._localMatrix, this._parent.worldMatrix, this._worldMatrix);
+            xeogl.math.mulMat4(this._parent.worldMatrix, localMatrix, this._worldMatrix);
         }
         this._worldMatrixDirty = false;
     },
 
-    _buildWorldNormalMatrix: function () { // Rebuilds and validates World matrix of the Object, then builds and revalidates World normal matrix of the Object
+    _buildWorldNormalMatrix: function () {
         if (this._worldMatrixDirty) {
             this._buildWorldMatrix();
         }
@@ -18215,85 +17261,53 @@ xeogl.Object = xeogl.Component.extend({
         this._worldNormalMatrixDirty = false;
     },
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Boundary methods
-    //------------------------------------------------------------------------------------------------------------------
+    _setAABBDirty: (function () {
 
-    _setBoundaryDirty: (function () {
-
-        var notifications = [];
-        var lenNotifications = 0;
-
-        function setParentBoundariesDirty(object) {
-            for (; object; object = object._parent) {
-                if (object._aabbDirty) {
-                    object._aabbDirty = true;
-                    object._obbDirty = true;
-                    notifications[lenNotifications++] = object;
-                }
-            }
-        }
-
-        function setSubtreeBoundariesDirty(object) {
+        function setSubtreeAABBsDirty(object) {
+            object._aabbDirty = true;
+            object.fire("boundary", true);
             if (object._childList) {
                 for (var i = 0, len = object._childList.length; i < len; i++) {
-                    setSubtreeBoundariesDirty(object._childList[i]);
+                    setSubtreeAABBsDirty(object._childList[i]);
                 }
-            }
-            if (object._aabbDirty) {
-                object._aabbDirty = true;
-                object._obbDirty = true;
-                notifications[lenNotifications++] = object;
             }
         }
 
-        return function () { // Invalidates AABB and OBB boundaries of the Object and parent Objects
-            lenNotifications = 0;
-            setSubtreeBoundariesDirty(this);
-            setParentBoundariesDirty(this);
-            for (var i = 0; i < lenNotifications; i++) {
-                notifications[i].fire("boundary");
+        return function () {
+            setSubtreeAABBsDirty(this);
+            if (this.collidable) {
+                for (var object = this; object; object = object._parent) {
+                    object._aabbDirty = true;
+                    object.fire("boundary", true);
+                }
             }
         };
     })(),
 
-
     _updateAABB: function () {
+        this.scene._aabbDirty = true;
         if (!this._aabb) {
             this._aabb = xeogl.math.AABB3();
-            this._aabbDirty = true;
         }
-        if (this._aabbDirty) {
+        if (this._buildMeshAABB) {
+            this._buildMeshAABB(this.worldMatrix, this._aabb); // Geometry
+        } else { // Object | Group | Model
             xeogl.math.collapseAABB3(this._aabb);
+            var object;
             for (var i = 0, len = this._childList.length; i < len; i++) {
-                xeogl.math.expandAABB3(this._aabb, this._childList[i].aabb);
+                object = this._childList[i];
+                if (!object.collidable) {
+                    continue;
+                }
+                xeogl.math.expandAABB3(this._aabb, object.aabb);
             }
             if (!this._aabbCenter) {
                 this._aabbCenter = new Float32Array(3);
             }
             xeogl.math.getAABB3Center(this._aabb, this._aabbCenter);
-            this._aabbDirty = false;
         }
+        this._aabbDirty = false;
     },
-
-    _updateOBB: function () {
-        if (!this._obb) {
-            this._obb = xeogl.math.OBB3();
-            this._obbDirty = true;
-        }
-        if (this._obbDirty) {
-            if (this._childList.length === 1) {
-                this._obb.set(this._childList[0].obb);
-            } else {
-                xeogl.math.AABB3ToOBB3(this.aabb, this._obb);
-            }
-            this._obbDirty = false;
-        }
-    },
-
-    //------------------------------------------------------------------------------------------------------------------
-    // Child management methods
-    //------------------------------------------------------------------------------------------------------------------
 
     /**
      Adds a child.
@@ -18305,11 +17319,11 @@ xeogl.Object = xeogl.Component.extend({
      Does nothing if already a child.
 
      @param {Object|String} object Instance or ID of the child to add.
-     @param [inheritStates=true] Indicates if the child should inherit state from this parent as it is added. State includes
+     @param [inheritStates=false] Indicates if the child should inherit state from this parent as it is added. State includes
      {{#crossLink "Object/visible:property"}}{{/crossLink}}, {{#crossLink "Object/culled:property"}}{{/crossLink}}, {{#crossLink "Object/pickable:property"}}{{/crossLink}},
      {{#crossLink "Object/clippable:property"}}{{/crossLink}}, {{#crossLink "Object/castShadow:property"}}{{/crossLink}}, {{#crossLink "Object/receiveShadow:property"}}{{/crossLink}},
      {{#crossLink "Object/outlined:property"}}{{/crossLink}}, {{#crossLink "Object/ghosted:property"}}{{/crossLink}}, {{#crossLink "Object/highlighted:property"}}{{/crossLink}},
-     {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
+     {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/edges:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
      @returns {Object} The child object.
      */
     addChild: function (object, inheritStates) {
@@ -18321,6 +17335,7 @@ xeogl.Object = xeogl.Component.extend({
                 return;
             }
         } else if (xeogl._isObject(object)) {
+            throw "addChild( * ) not implemented";
             var cfg = object;
             // object = new xeogl.Group(this.scene, cfg);
             if (!object) {
@@ -18341,20 +17356,21 @@ xeogl.Object = xeogl.Component.extend({
         }
         var id = object.id;
         if (object.scene.id !== this.scene.id) {
-            this.error("Object not in same Scene: " + id);
+            this.error("Object not in same Scene: " + object.id);
             return;
         }
-        delete this.scene.rootObjects[id];
+        delete this.scene.rootObjects[object.id];
         this._childList.push(object);
-        this._childMap[id] = object;
+        this._childMap[object.id] = object;
         this._childIDs = null;
         object._parent = this;
-        if (inheritStates !== false) {
+        if (!!inheritStates) {
             object.visible = this.visible;
             object.culled = this.culled;
             object.ghosted = this.ghosted;
             object.highlited = this.highlighted;
             object.selected = this.selected;
+            object.edges = this.edges;
             object.outlined = this.outlined;
             object.clippable = this.clippable;
             object.pickable = this.pickable;
@@ -18365,7 +17381,7 @@ xeogl.Object = xeogl.Component.extend({
             object.opacity = this.opacity;
         }
         object._setWorldMatrixDirty();
-        object._setBoundaryDirty(); // Propagates up to this as parent
+        object._setAABBDirty();
         return object;
     },
 
@@ -18376,17 +17392,16 @@ xeogl.Object = xeogl.Component.extend({
      @param {Object} object Child to remove.
      */
     removeChild: function (object) {
-        var id = object.id;
         for (var i = 0, len = this._childList.length; i < len; i++) {
-            if (this._childList[i].id === id) {
+            if (this._childList[i].id === object.id) {
                 object._parent = null;
                 this._childList = this._childList.splice(i, 1);
-                delete this._childMap[id];
+                delete this._childMap[object.id];
                 this._childIDs = null;
                 this.scene.rootObjects[object.id] = object;
                 object._setWorldMatrixDirty();
-                object._setBoundaryDirty();
-                this._setBoundaryDirty();
+                object._setAABBDirty();
+                this._setAABBDirty();
                 return;
             }
         }
@@ -18404,12 +17419,12 @@ xeogl.Object = xeogl.Component.extend({
             object._parent = null;
             this.scene.rootObjects[object.id] = object;
             object._setWorldMatrixDirty();
-            object._setBoundaryDirty();
+            object._setAABBDirty();
         }
         this._childList = [];
         this._childMap = {};
         this._childIDs = null;
-        this._setBoundaryDirty();
+        this._setAABBDirty();
     },
 
     /**
@@ -18432,7 +17447,7 @@ xeogl.Object = xeogl.Component.extend({
             xeogl.math.mulQuaternions(this.quaternion, q1, q2);
             this.quaternion = q2;
             this._setLocalMatrixDirty();
-            this._setBoundaryDirty();
+            this._setAABBDirty();
             this._renderer.imageDirty();
             return this;
         };
@@ -18500,7 +17515,7 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     Translates in local by the given increment.
+     Translates along local space vector by the given increment.
 
      @method translate
      @param {Float32Array} axis Normalized local space 3D vector along which to translate.
@@ -18514,7 +17529,7 @@ xeogl.Object = xeogl.Component.extend({
             xeogl.math.mulVec3Scalar(veca, distance, vecb);
             xeogl.math.addVec3(this.position, vecb, this.position);
             this._setLocalMatrixDirty();
-            this._setBoundaryDirty();
+            this._setAABBDirty();
             this._renderer.imageDirty();
             return this;
         };
@@ -18586,37 +17601,9 @@ xeogl.Object = xeogl.Component.extend({
          @property entityType
          @default null
          @type String
+         @final
          */
         entityType: {
-            set: function (newEntityType) {
-                if (this._entityType !== newEntityType) {
-                    var scene = this.scene;
-                    if (this._entityType) {
-                        scene._entityTypeRemoved(this, this._entityType);
-                    }
-                    this._entityType = newEntityType;
-                    if (newEntityType) {
-                        scene._entityTypeAssigned(this, this._entityType);
-                        if (this._visible) {
-                            scene._entityVisibilityUpdated(this, true);
-                        }
-                        if (this._ghosted) {
-                            scene._entityGhostedUpdated(this, true);
-                        }
-                        if (this._selected) {
-                            scene._entitySelectedUpdated(this, true);
-                        }
-                        if (this._highlighted) {
-                            scene._entityHighlightedUpdated(this, true);
-                        }
-                    } else {
-                        scene._entityVisibilityUpdated(this, false);
-                        scene._entityGhostedUpdated(this, false);
-                        scene._entitySelectedUpdated(this, false);
-                        scene._entityHighlightedUpdated(this, false);
-                    }
-                }
-            },
             get: function () {
                 return this._entityType;
             }
@@ -18730,7 +17717,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (value) {
                 this._position.set(value || [0, 0, 0]);
                 this._setLocalMatrixDirty();
-                this._setBoundaryDirty();
+                this._setAABBDirty();
                 this._renderer.imageDirty();
             },
             get: function () {
@@ -18750,7 +17737,7 @@ xeogl.Object = xeogl.Component.extend({
                 this._rotation.set(value || [0, 0, 0]);
                 xeogl.math.eulerToQuaternion(this._rotation, "XYZ", this._quaternion);
                 this._setLocalMatrixDirty();
-                this._setBoundaryDirty();
+                this._setAABBDirty();
                 this._renderer.imageDirty();
             },
             get: function () {
@@ -18770,7 +17757,7 @@ xeogl.Object = xeogl.Component.extend({
                 this._quaternion.set(value || [0, 0, 0, 1]);
                 xeogl.math.quaternionToEuler(this._quaternion, "XYZ", this._rotation);
                 this._setLocalMatrixDirty();
-                this._setBoundaryDirty();
+                this._setAABBDirty();
                 this._renderer.imageDirty();
             },
             get: function () {
@@ -18782,14 +17769,14 @@ xeogl.Object = xeogl.Component.extend({
          Local scale.
 
          @property scale
-         @default [0,0,0]
+         @default [1,1,1]
          @type {Float32Array}
          */
         scale: {
             set: function (value) {
                 this._scale.set(value || [1, 1, 1]);
                 this._setLocalMatrixDirty();
-                this._setBoundaryDirty();
+                this._setAABBDirty();
                 this._renderer.imageDirty();
             },
             get: function () {
@@ -18808,19 +17795,26 @@ xeogl.Object = xeogl.Component.extend({
             set: (function () {
                 var identityMat = xeogl.math.identityMat4();
                 return function (value) {
-                    this._localMatrix.set(value || identityMat);
-                    xeogl.math.decomposeMat4(this._localMatrix, this._position, this._quaternion, this._scale);
+                    if (!this.__localMatrix) {
+                        this.__localMatrix = xeogl.math.identityMat4();
+                    }
+                    this.__localMatrix.set(value || identityMat);
+                    xeogl.math.decomposeMat4(this.__localMatrix, this._position, this._quaternion, this._scale);
                     this._localMatrixDirty = false;
                     this._setWorldMatrixDirty();
-                    this._setBoundaryDirty();
+                    this._setAABBDirty();
                     this._renderer.imageDirty();
                 };
             })(),
             get: function () {
                 if (this._localMatrixDirty) {
-                    this._buildLocalMatrix();
+                    if (!this.__localMatrix) {
+                        this.__localMatrix = xeogl.math.identityMat4();
+                    }
+                    xeogl.math.composeMat4(this._position, this._quaternion, this._scale, this.__localMatrix);
+                    this._localMatrixDirty = false;
                 }
-                return this._localMatrix;
+                return this.__localMatrix;
             }
         },
 
@@ -18927,28 +17921,9 @@ xeogl.Object = xeogl.Component.extend({
         aabb: {
             get: function () {
                 if (this._aabbDirty) {
-                    this._updateAABB();  // Could be xeogl.Mesh._updateAABB()
+                    this._updateAABB();
                 }
                 return this._aabb;
-            }
-        },
-
-        /**
-         World-space 3D oriented bounding box (OBB).
-
-         Represented by a 32-element Float32Array containing the eight vertices of the box,
-         where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
-
-         @property obb
-         @final
-         @type {Float32Array}
-         */
-        obb: {
-            get: function () {
-                if (this._obbDirty) {
-                    this._updateOBB(); // Could be xeogl.Mesh._updateAABB()
-                }
-                return this._obb;
             }
         },
 
@@ -19076,6 +18051,26 @@ xeogl.Object = xeogl.Component.extend({
             },
             get: function () {
                 return this._selected;
+            }
+        },
+
+        /**
+         Indicates if edges are emphasized.
+
+         @property edges
+         @default false
+         @type Boolean
+         */
+        edges: {
+            set: function (edges) {
+                edges = !!edges;
+                this._edges = edges;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].edges = edges;
+                }
+            },
+            get: function () {
+                return this._edges;
             }
         },
 
@@ -19315,37 +18310,6 @@ xeogl.Object = xeogl.Component.extend({
             get: function () {
                 return this._aabbHelper ? this._aabbHelper.visible : false;
             }
-        },
-
-        /**
-         Indicates if the World-space 3D object-aligned bounding box (OBB) is visible.
-
-         @property obbVisible
-         @default false
-         @type {Boolean}
-         */
-        obbVisible: {
-            set: function (show) {
-                if (!show && !this._obbHelper) {
-                    return;
-                }
-                if (!this._obbHelper) {
-                    this._obbHelper = new xeogl.Mesh(this, {
-                        geometry: new xeogl.OBBGeometry(this, {
-                            target: this
-                        }),
-                        material: new xeogl.PhongMaterial(this, {
-                            diffuse: [0.5, 1.0, 0.5],
-                            emissive: [0.5, 1.0, 0.5],
-                            lineWidth: 2
-                        })
-                    });
-                }
-                this._obbHelper.visible = show;
-            },
-            get: function () {
-                return this._obbHelper ? this._obbHelper.visible : false;
-            }
         }
     },
 
@@ -19357,30 +18321,25 @@ xeogl.Object = xeogl.Component.extend({
         }
         if (this._entityType) {
             var scene = this.scene;
-            var id = this.id;
-            var objectsOfType = scene.entityTypes[this._entityType];
-            if (objectsOfType) {
-                delete objectsOfType[id];
-                // TODO remove submap if now empty
+            scene._entityTypeRemoved(this, this._entityType);
+            if (this._visible) {
+                scene._entityVisibilityUpdated(this, false);
             }
-            if (this._entityType) {
-                scene._entityTypeRemoved(this, this._entityType);
-                if (this._visible) {
-                    scene._entityVisibilityUpdated(this, false);
-                }
-                if (this._ghosted) {
-                    scene._entityGhostedUpdated(this, false);
-                }
-                if (this._selected) {
-                    scene._entitySelectedUpdated(this, false);
-                }
-                if (this._highlighted) {
-                    scene._entityHighlightedUpdated(this, false);
-                }
+            if (this._ghosted) {
+                scene._entityGhostedUpdated(this, false);
+            }
+            if (this._selected) {
+                scene._entitySelectedUpdated(this, false);
+            }
+            if (this._highlighted) {
+                scene._entityHighlightedUpdated(this, false);
             }
         }
+        this.scene._aabbDirty = true;
+        this.scene._objectDestroyed(this);
     }
-});;/**
+});
+;/**
  A **Group** is an {{#crossLink "Object"}}{{/crossLink}} that groups other Objects.
 
  Group is subclassed by (at least) {{#crossLink "Model"}}{{/crossLink}}, which is the abstract base class for {{#crossLink "GLTFModel"}}{{/crossLink}}, {{#crossLink "STLModel"}}{{/crossLink}} etc.
@@ -19413,6 +18372,7 @@ xeogl.Object = xeogl.Component.extend({
  @param [cfg.ghosted=false] {Boolean}       Indicates if rendered as ghosted.
  @param [cfg.highlighted=false] {Boolean}   Indicates if rendered as highlighted.
  @param [cfg.selected=false] {Boolean}      Indicates if rendered as selected.
+ @param [cfg.edges=false] {Boolean}         Indicates if edges are emphasized.
  @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
  @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
@@ -20002,9 +18962,7 @@ xeogl.Group = xeogl.Object.extend({
 
         _init: function (cfg) {
 
-            var self = this;
-
-            this._state = new xeogl.renderer.Modes({
+            this._state = new xeogl.renderer.State({ // NOTE: Renderer gets modeling and normal matrices from xeogl.Object#matrix and xeogl.Object.#normalMatrix
                 visible: true,
                 culled: false,
                 pickable: null,
@@ -20017,47 +18975,36 @@ xeogl.Group = xeogl.Object.extend({
                 ghosted: false,
                 highlighted: false,
                 selected: false,
+                edges: false,
                 layer: null,
                 billboard: this._checkBillboard(cfg.billboard),
                 stationary: !!cfg.stationary,
                 hash: ""
             });
 
-            this._modelTransformState = new xeogl.renderer.Transform({
-                getMatrix: function () {
-                    return self.worldMatrix;
-                },
-                getNormalMatrix: function () {
-                    return self.worldNormalMatrix;
-                }
-            });
+            this._drawRenderer = null;
+            this._emphasisFillRenderer = null;
+            this._emphasisEdgesRenderer = null;
+            this._emphasisVerticesRenderer = null;
+            this._pickMeshRenderer = null;
+            this._pickTriangleRenderer = null;
 
-            this._objectId = null; // Renderer object
-            this._loading = cfg.loading !== false;
             this._worldPositions = null;
             this._worldPositionsDirty = true;
-
-            // TODO check in same Scene:
-
-            if (cfg.baseColorMap) {
-                this._baseColorMap = this._checkComponent("xeogl.Texture", cfg.baseColorMap);
-                this._state.baseColorMap = this._baseColorMap ? this._baseColorMap._state : null;
-            }
-
             this._geometry = cfg.geometry ? this._checkComponent("xeogl.Geometry", cfg.geometry) : this.scene.geometry;
+            this._vertexBufs = this._geometry._getVertexBufs();
             this._material = cfg.material ? this._checkComponent("xeogl.Material", cfg.material) : this.scene.material;
             this._ghostMaterial = cfg.ghostMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.ghostMaterial) : this.scene.ghostMaterial;
             this._outlineMaterial = cfg.outlineMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.outlineMaterial) : this.scene.outlineMaterial;
             this._highlightMaterial = cfg.highlightMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.highlightMaterial) : this.scene.highlightMaterial;
             this._selectedMaterial = cfg.selectedMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.selectedMaterial) : this.scene.selectedMaterial;
+            this._edgeMaterial = cfg.edgeMaterial ? this._checkComponent("xeogl.EdgeMaterial", cfg.edgeMaterial) : this.scene.edgeMaterial;
 
-            this._makeHash(); // Mesh is immutable, only make once
             this._compile();
 
-            // xeogl.Mesh overrides xeogl.Object's state properties, (eg. visible, ghosted etc)
-            // and those redefined properties are being set here through the super constructor.
-
             this._super(cfg); // Call xeogl.Object._init()
+
+            this.scene._meshCreated(this);
         },
 
         _checkBillboard: function (value) {
@@ -20068,6 +19015,18 @@ xeogl.Group = xeogl.Object.extend({
                 value = "none";
             }
             return value;
+        },
+
+        _compile: function () {
+            this._putRenderers();
+            this._makeHash();
+            this._drawRenderer = xeogl.renderer.DrawRenderer.get(this);
+            this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this);
+            this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this);
+            this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this);
+            this._pickMeshRenderer = xeogl.renderer.PickMeshRenderer.get(this);
+
+            this._renderer.meshListDirty();
         },
 
         _makeHash: function () {
@@ -20090,58 +19049,163 @@ xeogl.Group = xeogl.Object.extend({
             this._state.hash = hash.join("");
         },
 
-        _compile: function () {
-            if (this._objectId) { // Support recompile when global scene state changes
-                this._renderer.destroyObject(this._objectId);
-                this._objectId = null;
-            }
-            var result = this._renderer.createObject(this.id,
-                this._material._state,
-                this._ghostMaterial._state,
-                this._outlineMaterial._state,
-                this._highlightMaterial._state,
-                this._selectedMaterial._state,
-                this._geometry._getVertexBufs(),
-                this._geometry._state,
-                this._modelTransformState,
-                this._state);
-            if (this._loading) {
-                this._loading = false;
-                this.fire("loaded", true);
-            }
-            if (result.objectId) {
-                this._objectId = result.objectId;
-            } else if (result.errors) {
-                var errors = result.errors.join("\n");
-                this.error(errors);
-                this.fire("error", errors);
+        _buildMeshAABB: (function () {
+            var math = xeogl.math;
+            var obb = math.OBB3();
+            return function (worldMatrix, aabb) { // TODO: factor out into class member
+                math.transformOBB3(worldMatrix, this._geometry.obb, obb);
+                math.OBB3ToAABB3(obb, aabb);
+            };
+        })(),
+
+        _getSceneHash: function () {
+            return (this.scene.gammaInput ? "gi;" : ";") + (this.scene.gammaOutput ? "go" : "");
+        },
+
+        //--------------------- Rendering ------------------------------------------------------------------------------
+
+        _draw: function (frame) {
+            if (this._drawRenderer || (this._drawRenderer = xeogl.renderer.DrawRenderer.get(this))) {
+                this._drawRenderer.drawMesh(frame, this);
             }
         },
 
-        _updateAABB: function () { // Overrides xeogl.Object._updateAABB
-            if (this._aabbDirty) {
-                var math = xeogl.math;
-                var geometry = this._geometry;
-                if (!this._aabb) {
-                    this._aabb = math.AABB3();
-                }
-                if (!this._obb) {
-                    this._obb = math.OBB3();
-                }
-                math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                math.OBB3ToAABB3(this._obb, this._aabb);
-                this._aabbDirty = false;
+        _drawGhostFill: function (frame) {
+            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
+                this._emphasisFillRenderer.drawMesh(frame, this, 0); // 0 == ghost
             }
         },
 
-        _updateOBB: function () { // Overrides xeogl.Object._updateOBB
-            if (this._obbDirty) {
-                var geometry = this._geometry;
-                if (!this._obb) {
-                    this._obb = xeogl.math.OBB3();
-                }
-                xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                this._obbDirty = false;
+        _drawGhostEdges: function (frame) {
+            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
+                this._emphasisEdgesRenderer.drawMesh(frame, this, 0); // 0 == ghost
+            }
+        },
+
+        _drawGhostVertices: function (frame) {
+            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
+                this._emphasisVerticesRenderer.drawMesh(frame, this, 0); // 0 == ghost
+            }
+        },
+
+        _drawHighlightFill: function (frame) {
+            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
+                this._emphasisFillRenderer.drawMesh(frame, this, 1); // 1 == highlight
+            }
+        },
+
+        _drawHighlightEdges: function (frame) {
+            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
+                this._emphasisEdgesRenderer.drawMesh(frame, this, 1); // 1 == highlight
+            }
+        },
+
+        _drawHighlightVertices: function (frame) {
+            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
+                this._emphasisVerticesRenderer.drawMesh(frame, this, 1); // 1 == highlight
+            }
+        },
+
+        _drawSelectedFill: function (frame) {
+            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
+                this._emphasisFillRenderer.drawMesh(frame, this, 2); // 2 == selected
+            }
+        },
+
+        _drawSelectedEdges: function (frame) {
+            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
+                this._emphasisEdgesRenderer.drawMesh(frame, this, 2); // 2 == selected
+            }
+        },
+
+        _drawSelectedVertices: function (frame) {
+            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
+                this._emphasisVerticesRenderer.drawMesh(frame, this, 2); // 2 == selected
+            }
+        },
+
+        _drawEdges: function (frame) {
+            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
+                this._emphasisEdgesRenderer.drawMesh(frame, this, 3); // 3 == edges
+            }
+        },
+
+        _drawShadow: function (frame, light) {
+            if (this._shadowRenderer || (this._shadowRenderer = xeogl.renderer.ShadowRenderer.get(this))) {
+                this._shadowRenderer.drawMesh(frame, this, light);
+            }
+        },
+
+        _drawOutline: function (frame) {
+            if (this._shadowRenderer || (this._outlineRenderer = xeogl.renderer.OutlineRenderer.get(this))) {
+                this._outlineRenderer.drawMesh(frame, this);
+            }
+        },
+
+        _pickMesh: function (frame) {
+            if (this._pickMeshRenderer || (this._pickMeshRenderer = xeogl.renderer.PickMeshRenderer.get(this))) {
+                this._pickMeshRenderer.drawMesh(frame, this);
+            }
+        },
+
+        _pickTriangle: function (frame) {
+            if (this._pickTriangleRenderer || (this._pickTriangleRenderer = xeogl.renderer.PickTriangleRenderer.get(this))) {
+                this._pickTriangleRenderer.drawMesh(frame, this);
+            }
+        },
+
+        _pickVertex: function (frame) {
+            if (this._pickVertexRenderer || (this._pickVertexRenderer = xeogl.renderer.PickVertexRenderer.get(this))) {
+                this._pickVertexRenderer.drawMesh(frame, this);
+            }
+        },
+
+        _getOutlineRenderer: function () {
+            this._outlineRenderer = xeogl.renderer.OutlineRenderer.get(this);
+            if (this._outlineRenderer.errors) {
+                this.errors = (this.errors || []).concat(this._outlineRenderer.errors);
+                this.error(this._outlineRenderer.errors.join("\n"));
+                return false;
+            }
+            return true;
+        },
+
+        _putRenderers: function () {
+            if (this._drawRenderer) {
+                this._drawRenderer.put();
+                this._drawRenderer = null;
+            }
+            if (this._emphasisFillRenderer) {
+                this._emphasisFillRenderer.put();
+                this._emphasisFillRenderer = null;
+            }
+            if (this._emphasisEdgesRenderer) {
+                this._emphasisEdgesRenderer.put();
+                this._emphasisEdgesRenderer = null;
+            }
+            if (this._emphasisVerticesRenderer) {
+                this._emphasisVerticesRenderer.put();
+                this._emphasisVerticesRenderer = null;
+            }
+            if (this._outlineRenderer) {
+                this._outlineRenderer.put();
+                this._outlineRenderer = null;
+            }
+            if (this._shadowRenderer) {
+                this._shadowRenderer.put();
+                this._shadowRenderer = null;
+            }
+            if (this._pickMeshRenderer) {
+                this._pickMeshRenderer.put();
+                this._pickMeshRenderer = null;
+            }
+            if (this._pickTriangleRenderer) {
+                this._pickTriangleRenderer.put();
+                this._pickTriangleRenderer = null;
+            }
+            if (this._pickVertexRenderer) {
+                this._pickVertexRenderer.put();
+                this._pickVertexRenderer = null;
             }
         },
 
@@ -20238,6 +19302,18 @@ xeogl.Group = xeogl.Object.extend({
             selectedMaterial: {
                 get: function () {
                     return this._selectedMaterial;
+                }
+            },
+
+            /**
+             Defines surface appearance when edges are shown.
+
+             @property edgeMaterial
+             @type EdgeMaterial
+             */
+            edgeMaterial: {
+                get: function () {
+                    return this._edgeMaterial;
                 }
             },
 
@@ -20368,6 +19444,29 @@ xeogl.Group = xeogl.Object.extend({
                 },
                 get: function () {
                     return this._state.selected;
+                }
+            },
+
+            /**
+             Indicates if edges are shown.
+
+             The edges appearance is configured by {{#crossLink "Mesh/edgeMaterial:property"}}edgeMaterial{{/crossLink}}.
+
+             @property edges
+             @default false
+             @type Boolean
+             */
+            edges: {
+                set: function (edges) {
+                    edges = !!edges;
+                    if (edges === this._state.edges) {
+                        return;
+                    }
+                    this._state.edges = edges;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.edges;
                 }
             },
 
@@ -20649,15 +19748,21 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         _destroy: function () {
-            this._super();
-            if (this._objectId) {
-                this._renderer.destroyObject(this._objectId);
-                this._objectId = null;
-            }
+            this._super(); // xeogl.Object
+            this._putRenderers();
+            this._renderer.meshListDirty();
+            this.scene._meshDestroyed(this);
         }
     });
-})();
-;/**
+
+    xeogl.Mesh._compareState = function (a, b) {
+        return (a._state.layer - b._state.layer)
+            || (a._drawRenderer.id - b._drawRenderer.id) // Program state
+            || (a._material._state.id - b._material._state.id) // Material state
+            || (a._vertexBufs.id - b._vertexBufs.id)  // SHared vertex bufs
+            || (a._geometry._state.id - b._geometry._state.id); // Geometry state
+    };
+})();;/**
  * Components for animating state within Scenes.
  *
  * @module xeogl
@@ -20948,7 +20053,7 @@ xeogl.Group = xeogl.Object.extend({
                     aabb = component.aabb || this.scene.aabb;
                 }
 
-                var offset = params.offset;
+                var poi = params.poi;
 
                 if (aabb) {
 
@@ -20972,19 +20077,14 @@ xeogl.Group = xeogl.Object.extend({
                         //this._aabbHelper.visible = true;
                     }
 
+                    aabb = aabb.slice();
+
                     var aabbCenter = math.getAABB3Center(aabb);
-
-                    this._look2 = params.look || aabbCenter;
-
-                    if (offset) {
-                        this._look2[0] += offset[0];
-                        this._look2[1] += offset[1];
-                        this._look2[2] += offset[2];
-                    }
+                    this._look2 = poi ||  aabbCenter;
 
                     var eyeLookVec = math.subVec3(this._eye1, this._look1, tempVec3);
                     var eyeLookVecNorm = math.normalizeVec3(eyeLookVec);
-                    var diag = (params.look && false) ? math.getAABB3DiagPoint(aabb, params.look) : math.getAABB3Diag(aabb);
+                    var diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
                     var fitFOV = params.fitFOV || this._fitFOV;
                     var sca = Math.abs(diag / Math.tan(fitFOV * xeogl.math.DEGTORAD));
 
@@ -21119,7 +20219,7 @@ xeogl.Group = xeogl.Object.extend({
                     aabb = component.aabb || this.scene.aabb;
                 }
 
-                var offset = params.offset;
+                var poi = params.poi;
 
                 if (aabb) {
 
@@ -21131,8 +20231,8 @@ xeogl.Group = xeogl.Object.extend({
                         return;
                     }
 
-                    diag = math.getAABB3Diag(aabb);
-                    math.getAABB3Center(aabb, newLook);
+                    var diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
+                    newLook = poi || math.getAABB3Center(aabb, newLook);
 
                     if (this._trail) {
                         math.subVec3(camera.look, newLook, newLookEyeVec);
@@ -22169,8 +21269,6 @@ xeogl.Group = xeogl.Object.extend({
     // Ensures lazy-injected CSS only injected once  
     var spinnerCSSInjected = false;
 
-    var imageSrc = "data:image/gif;base64,R0lGODlhqgCqAIABAP///////yH/C05FVFNDQVBFMi4wAwEAAAAh/wtYTVAgRGF0YVhNUDw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQwIDc5LjE2MDQ1MSwgMjAxNy8wNS8wNi0wMTowODoyMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTggKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6REMyNUFCN0Q1Nzk1MTFFODhBRkVBQTRCRkJCRTQ4NDQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6REMyNUFCN0U1Nzk1MTFFODhBRkVBQTRCRkJCRTQ4NDQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpEQzI1QUI3QjU3OTUxMUU4OEFGRUFBNEJGQkJFNDg0NCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpEQzI1QUI3QzU3OTUxMUU4OEFGRUFBNEJGQkJFNDg0NCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACH5BAkDAAEALAAAAACqAKoAAAL/jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqtrgLb7DY/L5/T6GlLP6/f0+4MPGGjn1yBoeAhAWIjIuKfI0Bg5+JggaRlHqXC52ZZZyXnpiQAaKmpAaml6ihqpGsDaqgrb6DrLWGt7iJsruMsL6PvrKCsMTFw8bIrMF7w81+yMeRz9PE0trXxdna2NLdotB90trk1+bU6NHq3uzL7sjgxfLC9M/2vPi5+rb8s/6w8LICuBqAiSMggKISeFmxiW4gbOjcNU1iJaTCTkosZOqBk3XiTi0aKrVxpHbjRZcmKsiuNU0nJ5CyYilB9l6rJpiKZInL14BtIZESg4oS1ZlvNpzOg5pMyYJoMY1KkeokeVppOah+pSq+uwToI61GsfsdvAFjVbFe1WtVe5tiMbDq63byndvpMLR2tbtl3txsP7Rm9fvm/9zgMscaTixYwbO34MObLkyZQrW76MObPmzZw7e/4MOrTo0aRLmz6NOrXq1axbu75QAAAh+QQFAwABACwAAAAAqgCqAAAC/4yPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MCofEovGITCqXzKbzCY1Kp9Sq9YrNarfcrvcLDovH5LL5jE6r1+w2FACPy+f0uv2Oz+vl3L3/DxhY1ydYaHgYR4i4yJin2AgZCfAoWXlIaZkJiKnZ6bjlGbrHKVoKR2oqiprqucqq6fpqGSsrSVsLeYvLqLuL2OtrCBwsOEy8CXoMm6w8y9xs+wydKz3NW239i50tvM1d7P2NrCV+TV6ufY7erb4O3u4+nhVfaBxv746/ro/OX+4vDuA3gdwIZjNoDeE0hdAYNnOoDOIxifQ+/aiIy42DhKsaGXDsqOAjSAQiRxooaRLlSJUgWXZ0qRGmG5ltaLKxuQanGp1peKLxeQaoGaFliJIxOgapGKVhmIJx+gWqF6ldqFKsZ5LkwqwHrIbLyPXk1rBe4U0MG6DsvLFc1WJxewWuFblV6FKxOwWvFL1R+L5hm9XvE8FOCDcxzAQx2sWMGzt+DDmy5MmUK1u+jDmz5s2cO3v+DDq06NGkS5s+jTq16tWsW7t+DTt2jAIAIfkEBQMAAQAscQAhABIAMwAAAh2Ej6nL7Q+jnLTai7PevPsPhuJIluaJpurKtu5UAAAh+QQFAwABACyDACEABgAzAAACD4SPqcvtD6OctNqLs95cFQAh+QQJAwABACxAACEATABpAAACrISPqcvt3wKctNokr9488w86XkiWY4l26aqybnW+8hLPtlHfc66/fM/6AVPCocl4KyJBymXL6WpCL9IpzBrErqraB7cbAR/FoS8Zc2amP+Y1oL2Gp+VnOtkuxoP1Xb7WjwVoJThFCGXohLikiMRo5DgECSTZQ6lj6ZapucnZ6fkJGio6SlpqeoqaqrrK2ur6ChsrO0tba3uLm6u7y9vr+wscLDxMXGx8jJw8VAAAIfkECQMAAQAsAAAAAKoAqgAAAv+Mj6nL7Q+jnLTai7PevPsPhuJIluaJpurKtu4Lx/JM1/aN5/rO9/4PDAqHxKLxiEwql8ym8wmNSqfUqvWKzWq33K73Cw6Lx+Sy+YxOq9fs9hMAj8vn9Lr9js/r9/y4sA8YKDhI6BdUiJioKPi36PgICdAYSVkJOGmZqUmHuemZ2fkpChk6appYeqrKeLjqSpj6KnsXO2srV3t7m6s7y9v7+gu8Kjx8Wmw8ipz8ucy86fwM2iptG11NeY1NSr3tqu29CB6O2k1uOn4Oa67ezN4O/Q4/DTSvLG+fjZ/PXc8f7+8fvR8CNaUrSGsfQkQHF3JS6HBQw4iGAlIUB/Fin4nIFzlS9BgRpEORC0mWtKixHJKUgZSwvJTk5caYMve4rKnnJk48Onfa6enz4cqgP2kSFXrkaB2gSiUZbQqHqVKpR6kStRoUq0+tO7ni9FoTrEyxL8myNJsSrUa1HZ9CZfvRbVO4IeVOtVsV71W9Wflu9dsV8FfBYQmPNVwW8VnFaRmvddx2KNSokONKnkx3ZOW6l99u1uwmtOjRpEubPo06terVrFu7fg07tuzZtGvbvo07t+7dvHv7/g08uPDhxIsbP448uXIGBQAAIfkECQMAAQAsAAAAAKoAqgAAAv+Mj6nL7Q+jnLTai7PevPsPhuJIluaJpurKtu4Lx/JM1/aN5/rO9/4PDAqHxKLxiEwql8ym8wmNSqfUqvWKzWq33K73Cw6Lx+Sy+YxOq9fsthsAj8vn9Lr9js/jxfq+/w9IxxdIWGgIMHiouGiXyPjI6Ag5WShJeelnibl5p8n5KecJCio6yllqiomaSrnKCun6Ghkmaxpbe3iLW0m7e9rrqwoc3DpMDGt8PAumXMzcjPwMvfw1/ahr3ZicHYjNPef9HRcujrhdrkcurv7Nzu2eDW8tP00Pbd+Mr6x/zE/sHwygL4G7COIyWAuhLIWviqDbJ+QhxCAS+0WsGPAixoLMGjcm7OixIciQqYaQ/EjxpMiUKkuObPmLJUxSL2deMmmTpsycwnbydAbkZ8ygQnsSLQr0B9KbNZcawun0WtOo3aZS/QP1ai6rWtNx7brnK1htPsdmEmsWHNq049ayNVf2bSe3bLPKzWP37ty4etXy7dv2L2C4RwfXyWs4cOHEoeimRcwYcmLJhikPtgwYc1/Nejnf9SyXCGNBbkqbPo06terVrFu7fg07tuzZtGvbvo07t+7dvHv7/g08uPDhxIsbP448ufLlzJs7d1AAACH5BAkDAAEALAAAAACqAKoAAAL/jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqvX7LbbAojL5/S6/Y7Pz98Ivf8PiMd3EFhoqDdocLjIGJcY0BhZ+ChZ6UdpmWmHqdnpmOgZyhmaOUpaaXoamarKyNp6+Ao7CTq7Wmvripsbu8tLO/i7KCss6Ft8eYycR7xM1+wsBx0NMB1t7Yy9rI3MXewtDP4rzkuea26LPqsOy97qrgp/Kk9KL6pM/YyfL73PX+2Pnz1PAzsV1HSwlJB/DDcFaQixH5CIERdSbGjx4r+MzBrzcex47SFIjyJHhpxo8uSPlCp9sMxW8mW4mDLL0ayZ7ibOdjp3xuvpsx7QoASHEkVo9Kilj0rvoWw6LynURkynKnxq1aDUrIaqcr2F9SuqrWL/eC3bKyxaXWrXpl3pFizcuGzn0n3r8u4wsnr38O37qS1gZn8Bnx3sUDDixHYXE1bs2C/kyIEbU65z+HJmypsjd3b8eXFoxKMHPzqNOrXq1axbu34NO7bs2bRr276NO7fu3bx7+/4NPLjw4cSLGz+OPLny5cybO0dTAAAh+QQJAwABACwAAAAAqgCqAAAC/4yPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MCofEovGITCqXzKbzCY1Kp9Sq9YrNarfcrvcLDovH5LL5jE6r1+y2mwOIy+f0uv2Ox78b+b7/f7fHAEhYqCeoYKi4iJi4+AjYmABJ2SeJUJlpd3mg6SnHafD5GRow6ll6qpmqWsnaCvkKyxg6G1trS8uZq3vJqyj7+xcsbIlbPHyMbLy77EfsXAcdPTdNHWd9nU29Hd3t/L0cjjxeXC58/pvOu57bbvs+Gw8731qven+aP7pPqnxNpx+qfwBBESwIQOCqgwWHIHyYxyHEiQGFUESo5GLDJMoaAWbsyI0jSG8iR4oradIcypTqVrJ05/KlvJgy7dGsqe8mTn9IdsLs6XMm0KA2hxLNafQozyNK8els2ssIVH5Ppxb6aDUT1qyUtnJ95PUrsKpiI5ItG+gsWmlq11Zr6xYb3Lhh4zJjapdQ3bxpk/I95Pfvprlu9wp+G/gwYryK+zJuzDYxZMONKSu2fBizYM1/OfP1nBe0XdF0S5k+jTq16tWsW7t+DTu27Nm0a9u+jTu37t28e/v+DTy48OHEixs/jjy58uXMexQAACH5BAkDAAEALAAAAACqAKoAAAL/jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqvX7LabA4jL5/S6/Y7Hvxv5vv9/t8cASFioJ6hgqLiImLj4CNiYAEnZJ4lQmWl3eaDpKcdp8PkZGjDqWXqqmapaydoK+QrLGDobW2tLy5mre8mrKPv7FyxsiVs8fIxsvLvsR+xcBx09N00dZ32dTb0d3e38vRyOPF5cLnz+m867nttu+z4bDzvfWq96f5o/uk+qfE2nH6p/AEERLAhA4KqDBYcgfJjHIcSJAYVQfNbmIrM1qRojZuwY6CNIaSJHVitpEhvKlG5SVmTj8iTMmCpn0mxJM+FKkzhv7hzZM2ZQl0NZ/gRZlOfRjkmBLtXYFOnTi1GZTqVYFerViVmpboXYFevXh2G5jkVYFuzZhmsBpiXbVltcbnO91QV3V1xecnvN9UX3V11gdoPdFYZXKrHixYwbO34MObLkyZQrW76MObPmzZw7e/4MOrTo0aRLmz6NOrXq1axbu34dpgAAIfkECQMAAQAsAAAAAKoAqgAAAv+Mj6nL7Q+jnLTai7PevPsPhuJIluaJpurKtu4Lx/JM1/aN5/rO9/4PDAqHxKLxiEwql8ym8wmNSqfUqvWKzWq33K73Cw6Lx+Sy+YxOq9fstpsDiMvn9Lr9jse/G/m+/3+3xwBIWKgnqGCouIiYuPgI2JgASdkniVCZaXd5oOkpx2nw+RkaMOpZeqqZqlrJ2gr5CssYOhtba0vLmat7yaso+/sXLGyJWzx8jGy8u+xH7FwHHT03TR1nfZ1NvR3d7fy9HI48XlwufP6bzrue2277PhsPO99ar3p/mj+6T6p8Tacfqn8AQREsCEDgqoMFhyB8mMchxIkBhVCs2OhiNUmiGg1m7JiQI0hfI0V2JHnSpEaUK1VeZPnSJUWYM2VOpHnTJkScO3U+5PnTJ0KgQ4U2NAqQ6NGPKZm2dBoTak2pOan2tBoUa1GtSxGBDMk1KVJtY7mV9XYWXFpxa8m1NfcWXVx1c9nVdXcXXl55e+n1tfdXX6nBhAsbPow4seLFjBs7fgw5suTJlCtbvow5s+bNnDt7/gw6tOjRpEubPo06dZoCACH5BAUDAAEALAAAAACqAKoAAAL/jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqvX7LabA4jL5/S6/Y7Hvxv5vv9/t8cASFioJ6hgqLiImLj4CNiYAEnZJ4lQmWl3eaDpKcdp8PkZGjDqWXqqmapaydoK+QrLGDobW2tLy5mre8mrKPv7FyxsiVs8fIxsvLvsR+xcBx09N00dZ32dTb0d3e38vRyOPF5cLnz+m867nttu+z4bDzvfWq96f5o/uk+qfE2nH6p/AEERLAhA4KqDBYcgfJjHIcSJAYVQNOjrYsJmoBcZNuRI0SNAkdpATiTJzSRElN5UPmQJziVCmOJkfszY0eZInSVxhuSZ0udJoC2FriQa0+hLpDWVzmRKDqo5qeioqrPKDqs7rfC4yvNKD6w9sfjI6jPLD60/pzcladzIdmfcnm410ow6N2jdnHmL7v1ZKrDgwYQLGz6MOLHixYwbO34MObLkyZQrW76MObPmzZw7e/4MOrTo0aRLmz6dpgAAIfkEBQMAAQAsVwBWADQAAwAAAguEj6nL7Q+jnLSeAgAh+QQFAwABACxXAFkANAAlAAACK4SPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MlgoAIfkECQMAAQAsIgB+AGkADQAAAi+Ej6nL7Q+jnLTai7PevPsPhuJIluaJpurKtu4Lx/JMk8GN5/rO9z5fO/yGxCKvAAAh+QQJAwABACwAAAAAqgCqAAAC/4yPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MCofEovGITCqXzKbzCY1Kp9Sq9YrNarfcrvcLDovH5LL5jE6r1+wi4A2Py+f0ut3ezuv3/L7/DxgoOEhYaHiImKi4yAhy9wgZSUcoWWlZR3mpeZm56QnZ+Sk6OThqOhd6apqqKsra6vkKqyk7a1lrK4mbC1rKG+v7SxssfEtcrHuM3Cu4bNzsnAwdzRxIHbl7DZB9zU3tHQ3uLL5MjmxejC6s/svO654Lbys/Sw/biJ+vv8/f7/8PMKDAgQQLGjyIMKHChQwbOnwIMaLEiRQrWryIMaPGjV8cO3r8CDKkyJEkS5q8oi0lsCEqWz4T4jJmtSAya2IiYjNnHDc6dfLsafMnUJlCh7osalQl0qTaljL9Ni3nyalUq1q9ijWr1q1cu3r9Cjas2LFky5o9izat2rVs294oAAAh+QQJAwABACwAAAAAqgCqAAAC/4yPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MCofEovGITCqXzKbzCY1Kp9Sq9YrNarfcrvcLDovH5LL5jE6rbYC2+w2Py+f0uv2OzwOG+r7/DxjYxidYaHjYR4i4yMio2AgZ6fcoWWkpR3mpaZm56dnY+SlqGDpq+ld6qoqXuuo61/oq6xY7K1tr64qbq7rLa+r7Kxos7ElcrHmMzCm0zKvsHAkdDdpMfWt9rZut3cvdDfwNPiw+blxunoyezhzEPjr9PrkuDxlfn3ePf6e/X9fvDxa9gKQGEhQE8OCbhAoHGWw4zx1ERw8n5qtokR/GjM3/NnIUKPEjQo8i4TBseFJhyoMrCbYM+NJfzH0z8dWsd1Neznc72fVM99Nc0HFDwRXtdlRb0mtLqTWN9tRZ1GVTkVUtdlVY1l9bn5EsSesr2D1iwXbNddZW2llrsYUcm6hsybav6G57C/ci3rwa9/Lt6PcvSCCC9RIu3PcwYsCKFw/+4Zgx5MiPfVCu3OMyJrki7a7y7G3NA6yiS5s+jTq16tWsW7t+DTu27Nm0a9u+jTu37t28e/v+DTy48OHEixs/jjy58uXMmzt/LrsAACH5BAkDAAEALAAAAACqAKoAAAL/jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqtrgLb7DY/L5/T6GlLP6/f0+4MPGGjn1yBoeAhAWIjIuKfI0Bg5+JggaRlHqXC52ZZZyXnpiQAaKmpAaml6ihqpGsDaqgrb6DrLWGt7iJsruMsL6PvrKCsMTFw8bIrMF7w81+yMeRz9PE0trXxdna2NLdotB90trk1+bU6NHq3uzL7sjgxfLA8eP1SP7/2Tz98p1M/vHkB8AgeCK2iw3L+E4xYyPOfw4bqIEt9RrDjvIsZfzwg3CuvokRfIkLZGkoRl8iSqlCpBsWy56SXMVBpncpJpk1bNnDSD8GSF86ehoEIDES3KbCdSXUqX9mrq1JjPqJKOUt0G5GqsqVoRWe365itYf1zHGoVqVp+PtE/LstUjdmxcsHO71tV692peqnuj9nX6d2lgpIOLFhZ6+GdinotzNrb5eGZkmJNbVlZ5+WRmkptDdvb4eWNojKMrlpbo6lXA1Kxbu34NO7bs2bRr276NO7fu3bx7+/4NPLjw4cSLGz+OPLny5cybO38OPfqJAgAh+QQJAwABACwAAAAAqgCqAAAC/4yPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MCofEovGITCqXzKbzCY1Kp9Sq9YrNarfcrvcLDovH5LL5jE6ra4C2+w2Py+f0+hpSz+v39PuDDxho59cgaHgIQFiIyLinyNAYOfiYIGkZR6lwudmWWcl56YkAGipqQGppeooaqRrA2qoK2+g6y1hre4ibK7jLC+j76ygrDExcPGyKzBe8PNfsjHkc/TxNLa18XZ2tjS3aLQfdLa5Nfm1OjR6t7sy+7I4MXywvTP9rz4ufq2/LP+sPCyArgagIkjIICiEnhZsYgkso5KFEbz8mWuwU8eLEIdEaN2bsCI4jyJAfR54raXIdypTvVrKc5/LlvZgy99Gs+e8mzoE6dx7s6XMh0KClghCdafSozaRKczJtyvMp1J9SpwqtarUokKwFh3INJPJrQ69ik20tq7Ui2lRk1/Zp6zYc3LhwwtLVNfcuRqx6zart2yuvXruAmQm+S7iwnsSKJ3GT6OqVxcgXKU92KMmyR2skOY/DHMtzOdC0SN8yjUgzZNR4I7t+DTu27Nm0a9u+jTu37t28e/v+DTy48OHEixs/jjy58uXMmzt/Dj26dAsFAAAh+QQJAwABACwAAAAAqgCqAAAC/4yPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MCofEovGITCqXzKbzCY1Kp9Sq9YrNarfcrvcLDovH5LL5jE6ra4C2+w2Py+f0+hpSz+v39PuDDxho59cgaHgIQFiIyLinyNAYOfiYIGkZR6lwudmWWcl56YkAGipqQGppeooaqRrA2qoK2+g6y1hre4ibK7jLC+j76ygrDExcPGyKzBe8PNfsjHkc/TxNLa18XZ2tjS3aLQfdLa5Nfm1OjR6t7sy+7I4MXywvTP9rz4ufq2/LP+sPCyArgagIkjIICiEnhZsYluIGzo3DVNYiWkwk5KLGTrEZN14c4vFjx5DgQJIsOfLkuZQq17Fs+e4lzHkyZ94zaTPexFgVx+2k9fNWUESuXmksuhHp0aG6mBpSKrJnOae9qAaCahFrRK0opa70ms6qMbAuybYTywxtMohb1erh6tNsTLk66dK0W89tHrhT8d70m0/vJLZdCcc13BfxV8VhAe8T3Keo5MmUK1u+jDmz5s2cO3v+DDq06NGkS5s+jTq16tWsW7t+DTu27Nm0a9u+UAAAIfkEBQMAAQAsAAAAAKoAqgAAAv+Mj6nL7Q+jnLTai7PevPsPhuJIluaJpurKtu4Lx/JM1/aN5/rO9/4PDAqHxKLxiEwql8ym8wmNSqfUqvWKzWq33K73Cw6Lx+Sy+YxOq9fsNhQAj8vn9Lr9jnc38Py+/67H8DdImBeoUJioCHCIuPjo15gASWkoaVCZSXd5oOkJx4n5qRkaMEoaeppZqlrJ2gr5CrsoO5tYa0uIm/u3y9vn+2t5KaybWtx7jAysvDws6czMGc0XTA3afD1nfc1N7R0N7iy+TI5sXowurP7LzuueC28rP0sPa9+Kr6p/yj/q/wmgJ4GopmmrQ3BVtoPYDDJ8aCcIxImbElIqZYoiRoqejCzG8vhoo0aQtEgqEjkRJUSVD1kydHkQpjaZ3UzeslmI5jecxhbG5DlIZzigyXzOJBoJqTSHK5VWc/oM2kijNanutDoU6ziogLhG9IoQbEWt5cRuMytH6Fay59DGUVuWbTq3DZm2pNtR7jq8cNti/As4sODBhAsbPow4seLFjBs7fgw5suTJlCtbvow5s+bNnDt7/gw6tOjRpEvTKAAAOw==";
-
     xeogl.Spinner = xeogl.Component.extend({
 
         type: "xeogl.Spinner",
@@ -22189,8 +21287,6 @@ xeogl.Group = xeogl.Object.extend({
             var style = div.style;
 
             style["z-index"] = "9000";
-            style["background"] = "black";
-
             style.position = "absolute";
 
             div.innerHTML = '<div class="sk-fading-circle">\
@@ -22206,9 +21302,7 @@ xeogl.Group = xeogl.Object.extend({
                 <div class="sk-circle10 sk-circle"></div>\
                 <div class="sk-circle11 sk-circle"></div>\
                 <div class="sk-circle12 sk-circle"></div>\
-                </div><p>LOADING</p>';
-
-            //div.innerHTML = '<img src="' + imageSrc + '">';
+                </div>';
 
             this._canvas.parentElement.appendChild(div);
             this._element = div;
@@ -22330,7 +21424,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         _spinnerCSS: ".sk-fading-circle {\
-        background: black;\
+        background: transparent;\
         margin: 20px auto;\
         width: 50px;\
         height:50px;\
@@ -22492,15 +21586,15 @@ xeogl.Group = xeogl.Object.extend({
  // Create a set of Clip planes in the default Scene
  scene.clips.clips = [
 
-     // Clip plane on negative diagonal
-     new xeogl.Clip({
+ // Clip plane on negative diagonal
+ new xeogl.Clip({
          pos: [1.0, 1.0, 1.0],
          dir: [-1.0, -1.0, -1.0],
          active: true
      }),
 
-     // Clip plane on positive diagonal
-     new xeogl.Clip({
+ // Clip plane on positive diagonal
+ new xeogl.Clip({
          pos: [-1.0, -1.0, -1.0],
          dir: [1.0, 1.0, 1.0],
          active: true
@@ -22564,7 +21658,7 @@ xeogl.Group = xeogl.Object.extend({
             this.pos = cfg.pos;
             this.dir = cfg.dir;
 
-            this._renderer.clips.addClip(this._state);
+            this.scene._clipCreated(this);
         },
 
         _props: {
@@ -22579,7 +21673,7 @@ xeogl.Group = xeogl.Object.extend({
             active: {
                 set: function (value) {
                     this._state.active = value !== false;
-
+                    this._renderer.imageDirty();
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/active:property"}}{{/crossLink}} property changes.
 
@@ -22604,7 +21698,6 @@ xeogl.Group = xeogl.Object.extend({
                 set: function (value) {
                     this._state.pos.set(value || [0, 0, 0]);
                     this._renderer.imageDirty();
-
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/pos:property"}}{{/crossLink}} property changes.
 
@@ -22632,7 +21725,6 @@ xeogl.Group = xeogl.Object.extend({
                 set: function (value) {
                     this._state.dir.set(value || [0, 0, -1]);
                     this._renderer.imageDirty();
-
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/dir:property"}}{{/crossLink}} property changes.
 
@@ -22641,7 +21733,6 @@ xeogl.Group = xeogl.Object.extend({
                      */
                     this.fire("dir", this._state.dir);
                 },
-
                 get: function () {
                     return this._state.dir;
                 }
@@ -22649,7 +21740,7 @@ xeogl.Group = xeogl.Object.extend({
         },
 
         _destroy: function () {
-            this._renderer.clips.removeClip(this._state);
+            this.scene._clipDestroyed(this);
         }
     });
 })();
@@ -22957,7 +22048,7 @@ xeogl.Group = xeogl.Object.extend({
 
             /**
              When true, mouse wheel when mouse is over a {{#crossLink "Mesh"}}{{/crossLink}} will zoom
-             the {{#crossLink "Camera"}}{{/crossLink}} towards the hoveredd point on the Mesh's surface.
+             the {{#crossLink "Camera"}}{{/crossLink}} towards the hovered point on the Mesh's surface.
 
              @property panToPointer
              @default false
@@ -22966,6 +22057,9 @@ xeogl.Group = xeogl.Object.extend({
             panToPointer: {
                 set: function (value) {
                     this._panToPointer = !!value;
+                    if (this._panToPointer) {
+                        this._panToPivot = false;
+                    }
                 },
                 get: function () {
                     return this._panToPointer;
@@ -22983,6 +22077,9 @@ xeogl.Group = xeogl.Object.extend({
             panToPivot: {
                 set: function (value) {
                     this._panToPivot = !!value;
+                    if (this._panToPivot) {
+                        this._panToPointer = false;
+                    }
                 },
                 get: function () {
                     return this._panToPivot;
@@ -23557,9 +22654,7 @@ xeogl.Group = xeogl.Object.extend({
                         if (!self._active) {
                             return;
                         }
-                        if (!over) {
-                            return;
-                        }
+                        over = true;
                         switch (e.which) {
                             case 1: // Left button
                                 mouseDownLeft = true;
@@ -24475,7 +23570,7 @@ xeogl.Group = xeogl.Object.extend({
 
  ### Geometry compression
 
- Geometries are automatically quantized to reduce memory and GPU bus usage. Usually, geometry attributes such as positions
+ Geometries may be automatically quantized to reduce memory and GPU bus usage. Usually, geometry attributes such as positions
  and normals are stored as 32-bit floating-point numbers. Quantization compresses those attributes to 16-bit integers
  represented on a scale between the minimum and maximum values. Decompression is then done on the GPU, via a simple
  matrix multiplication in the vertex shader.
@@ -24496,7 +23591,7 @@ xeogl.Group = xeogl.Object.extend({
  // Disable compression when creating a Geometry
  var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        quantized: false // Default is true
+        quantized: false // Default is false
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -24525,7 +23620,7 @@ xeogl.Group = xeogl.Object.extend({
  // Disable VBO combination for an individual Geometry
  var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        combined: false // Default is true
+        combined: false // Default is false
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -24551,11 +23646,11 @@ xeogl.Group = xeogl.Object.extend({
  @param [cfg.indices] {Array of Number} Indices array.
  @param [cfg.autoVertexNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and
  indices, if those are supplied.
- @param [cfg.quantized=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
+ @param [cfg.quantized=false] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
  for reduced memory footprint and GPU bus usage.
  @param [cfg.combined=false] {Boolean} Combines positions, colors, normals and UVs into the same WebGL vertex buffers
  with other Geometries, in order to reduce the number of buffer binds performed per frame.
- @param [cfg.ghostEdgeThreshold=2] {Number} When a {{#crossLink "Mesh"}}{{/crossLink}} renders this Geometry as wireframe,
+ @param [cfg.edgeThreshold=2] {Number} When a {{#crossLink "Mesh"}}{{/crossLink}} renders this Geometry as wireframe,
  this indicates the threshold angle (in degrees) between the face normals of adjacent triangles below which the edge is discarded.
  @extends Component
  */
@@ -24563,10 +23658,12 @@ xeogl.Group = xeogl.Object.extend({
 
     "use strict";
 
+    const CHUNK_LEN = bigIndicesSupported ? (Number.MAX_SAFE_INTEGER / 6) : (64000 * 4); // RGBA is largest item
+
     var memoryStats = xeogl.stats.memory;
     var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
     var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
-    var nullVertexBufs = new xeogl.renderer.VertexBufs({});
+    var nullVertexBufs = new xeogl.renderer.State({});
 
     var SceneVertexBufs = function (scene,
                                     hasPositions,
@@ -24574,8 +23671,6 @@ xeogl.Group = xeogl.Object.extend({
                                     hasColors,
                                     hasUVs,
                                     quantized) {
-
-        const CHUNK_LEN = bigIndicesSupported ? (Number.MAX_SAFE_INTEGER / 6) : (64000 * 4); // RGBA is largest item
 
         var gl = scene.canvas.gl;
         var geometries = {};
@@ -24700,6 +23795,42 @@ xeogl.Group = xeogl.Object.extend({
 
             vertexBufs = null;
 
+            var lenPositions = 0;
+            var lenNormals = 0;
+            var lenUVs = 0;
+            var lenColors = 0;
+
+            for (id in geometries) {
+                if (geometries.hasOwnProperty(id)) {
+                    geometry = geometries[id];
+                    if (hasPositions) {
+                        lenPositions += geometry.positions.length;
+                    }
+                    if (hasNormals) {
+                        lenNormals += geometry.normals.length;
+                    }
+                    if (hasUVs) {
+                        lenUVs += geometry.uv.length;
+                    }
+                    if (hasColors) {
+                        lenColors += geometry.uv.length;
+                    }
+                }
+            }
+
+            // if (hasPositions) {
+            //     positions = quantized ? new Uint16Array(lenPositions) : new Float32Array(lenPositions);
+            // }
+            // if (hasNormals) {
+            //     normals = quantized ? new Uint16Array(lenNormals) : new Float32Array(lenNormals);
+            // }
+            // if (hasUVs) {
+            //     uv = quantized ? new Uint16Array(lenUVs) : new Float32Array(lenUVs);
+            // }
+            // if (hasColors) {
+            //     colors = quantized ? new Uint16Array(lenColors) : new Float32Array(lenColors);
+            // }
+
             for (id in geometries) {
                 if (geometries.hasOwnProperty(id)) {
 
@@ -24711,7 +23842,7 @@ xeogl.Group = xeogl.Object.extend({
                         if (vertexBufs) {
                             createBufs(vertexBufs);
                         }
-                        vertexBufs = new xeogl.renderer.VertexBufs({
+                        vertexBufs = new xeogl.renderer.State({
                             positionsBuf: null,
                             normalsBuf: null,
                             uvBuf: null,
@@ -24813,7 +23944,7 @@ xeogl.Group = xeogl.Object.extend({
                 uv = [];
             }
         }
-    };
+    }; // SceneVertexBufs
 
     function getSceneVertexBufs(scene, geometry) {
         var hasPositions = !!geometry.positions;
@@ -24853,66 +23984,29 @@ xeogl.Group = xeogl.Object.extend({
 
             var self = this;
 
-            this._state = new xeogl.renderer.Geometry({
-
+            this._state = new xeogl.renderer.State({ // Arrays for emphasis effects are got from xeogl.Geometry friend methods
                 combined: !!cfg.combined,
                 quantized: !!cfg.quantized,
                 autoVertexNormals: !!cfg.autoVertexNormals,
-
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
-
                 positions: null,    // Uint16Array when quantized == true, else Float32Array
                 normals: null,      // Uint8Array when quantized == true, else Float32Array
                 colors: null,
                 uv: null,           // Uint8Array when quantized == true, else Float32Array
                 indices: null,
-
                 positionsDecodeMatrix: null, // Set when quantized == true
                 uvDecodeMatrix: null, // Set when quantized == true
-
                 positionsBuf: null,
                 normalsBuf: null,
                 colorsbuf: null,
                 uvBuf: null,
                 indicesBuf: null,
                 indicesBufCombined: null, // Indices into a shared VertexBufs, set when combined == true
-
-                hash: "",
-
-                getGhostEdgesIndices: function () {
-                    if (!self._edgesIndicesBuf) {
-                        self._buildGhostEdgesIndices();
-                    }
-                    return self._edgesIndicesBuf;
-                },
-                getPickTrianglePositions: function () {
-                    if (!self._pickTrianglePositionsBuf) {
-                        self._buildPickTriangleVBOs();
-                    }
-                    return self._pickTrianglePositionsBuf;
-                },
-                getPickTriangleColors: function () {
-                    if (!self._pickTriangleColorsBuf) {
-                        self._buildPickTriangleVBOs();
-                    }
-                    return self._pickTriangleColorsBuf;
-                },
-                getPickVertexPositions: function () {
-                    if (!self._pickVertexPositionsBuf) {
-                        self._buildPickTriangleVBOs();
-                    }
-                    return self._pickVertexPositionsBuf;
-                },
-                getPickVertexColors: function () {
-                    if (!self._pickVertexColorsBuf) {
-                        self._buildPickTriangleVBOs();
-                    }
-                    return self._pickVertexColorsBuf;
-                }
+                hash: ""
             });
 
-            this._ghostEdgeThreshold = cfg.ghostEdgeThreshold || 2.0;
+            this._edgeThreshold = cfg.edgeThreshold || 2.0;
 
             // Lazy-generated VBOs
 
@@ -24922,7 +24016,6 @@ xeogl.Group = xeogl.Object.extend({
 
             // Local-space Boundary3D
 
-            this._localBoundary = null;
             this._boundaryDirty = true;
 
             this._aabb = null;
@@ -25017,11 +24110,7 @@ xeogl.Group = xeogl.Object.extend({
                 memoryStats.indices += state.indicesBuf.numItems;
             }
 
-            this._buildVBOs();
-
             this._buildHash();
-
-            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._buildVBOs, this);
 
             memoryStats.meshes++;
 
@@ -25029,6 +24118,10 @@ xeogl.Group = xeogl.Object.extend({
                 this._sceneVertexBufs = getSceneVertexBufs(this.scene, this._state);
                 this._sceneVertexBufs.addGeometry(this._state);
             }
+
+            this._buildVBOs();
+
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._buildVBOs, this);
 
             self.fire("created", this.created = true);
         },
@@ -25062,6 +24155,8 @@ xeogl.Group = xeogl.Object.extend({
                     memoryStats.uvs += state.uvBuf.numItems;
                 }
             }
+
+
         },
 
         _buildHash: function () {
@@ -25087,14 +24182,55 @@ xeogl.Group = xeogl.Object.extend({
             state.hash = hash.join("");
         },
 
-        _buildGhostEdgesIndices: function () {
+        _getEdgesIndices: function () {
+            if (!this._edgesIndicesBuf) {
+                this._buildEdgesIndices();
+            }
+            return this._edgesIndicesBuf;
+        },
+
+        _getPickTrianglePositions: function () {
+            if (!this._pickTrianglePositionsBuf) {
+                this._buildPickTriangleVBOs();
+            }
+            return this._pickTrianglePositionsBuf;
+        },
+
+        _getPickTriangleColors: function () {
+            if (!this._pickTriangleColorsBuf) {
+                this._buildPickTriangleVBOs();
+            }
+            return this._pickTriangleColorsBuf;
+        },
+
+        // _getPickVertexPositions: function () {
+        //     if (!this._pickVertexPositionsBuf) {
+        //         this._buildPickTriangleVBOs();
+        //     }
+        //     return this._pickVertexPositionsBuf;
+        // },
+        //
+        // _getPickVertexColors: function () {
+        //     if (!this._pickVertexColorsBuf) {
+        //         this._buildPickTriangleVBOs();
+        //     }
+        //     return this._pickVertexColorsBuf;
+        // },
+        //
+
+         _buildEdgesIndices: function () { // FIXME: Does not adjust indices after other objects are deleted from vertex buffer!!
             var state = this._state;
             if (!state.positions || !state.indices) {
                 return;
             }
             var gl = this.scene.canvas.gl;
-            var indicesOffset = state.combined ? this._sceneVertexBufs.getIndicesOffset(state) : 0;
-            var edgesIndices = buildEdgesIndices(state.positions, state.indices, state.positionsDecodeMatrix, indicesOffset, this._ghostEdgeThreshold);
+            var edgesIndices = buildEdgesIndices(state.positions, state.indices, state.positionsDecodeMatrix, this._edgeThreshold, state.combined);
+             if (state.combined) {
+                 var indicesOffset = this._sceneVertexBufs.getIndicesOffset(state);
+                 for (var i = 0, len = edgesIndices.length; i < len; i++) {
+                     edgesIndices[i] += indicesOffset;
+                 }
+             }
             this._edgesIndicesBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, edgesIndices, edgesIndices.length, 1, gl.STATIC_DRAW);
             memoryStats.indices += this._edgesIndicesBuf.numItems;
         },
@@ -25106,10 +24242,10 @@ xeogl.Group = xeogl.Object.extend({
             }
             var gl = this.scene.canvas.gl;
             var arrays = xeogl.math.buildPickTriangles(state.positions, state.indices, state.quantized);
-            var pickTrianglePositions = arrays.positions;
-            var pickColors = arrays.colors;
-            this._pickTrianglePositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickTrianglePositions, pickTrianglePositions.length, 3, gl.STATIC_DRAW);
-            this._pickTriangleColorsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, gl.STATIC_DRAW, true);
+            var positions = arrays.positions;
+            var colors = arrays.colors;
+            this._pickTrianglePositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, positions, positions.length, 3, gl.STATIC_DRAW);
+            this._pickTriangleColorsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, colors, colors.length, 4, gl.STATIC_DRAW, true);
             memoryStats.positions += this._pickTrianglePositionsBuf.numItems;
             memoryStats.colors += this._pickTriangleColorsBuf.numItems;
         },
@@ -25208,10 +24344,6 @@ xeogl.Group = xeogl.Object.extend({
                 },
 
                 set: function (newPositions) {
-                    if (this._state.quantized) {
-                        this.error("can't update geometry positions - quantized geometry is immutable"); // But will be eventually
-                        return;
-                    }
                     var state = this._state;
                     var positions = state.positions;
                     if (!positions) {
@@ -25221,6 +24353,12 @@ xeogl.Group = xeogl.Object.extend({
                     if (positions.length !== newPositions.length) {
                         this.error("can't update geometry positions - new positions are wrong length");
                         return;
+                    }
+                    if (this._state.quantized) {
+                        var bounds = getBounds(newPositions, 3);
+                        var quantized = quantizeVec3(newPositions, bounds.min, bounds.max);
+                        newPositions = quantized.quantized; // TODO: Copy in-place
+                        state.positionsDecodeMatrix = quantized.decode;
                     }
                     positions.set(newPositions);
                     if (state.positionsBuf) {
@@ -25459,9 +24597,6 @@ xeogl.Group = xeogl.Object.extend({
             this._boundaryDirty = true;
             this._aabbDirty = true;
             this._obbDirty = true;
-            if (this._localBoundary) {
-                this._localBoundary.fire("updated", true);
-            }
 
             /**
              Fired whenever this Geometry's boundary changes.
@@ -25507,9 +24642,6 @@ xeogl.Group = xeogl.Object.extend({
             if (this._pickVertexColorsBuf) {
                 this._pickVertexColorsBuf.destroy();
             }
-            if (this._localBoundary) {
-                this._localBoundary.destroy();
-            }
             if (this._state.combined) {
                 this._sceneVertexBufs.removeGeometry(state);
             }
@@ -25538,6 +24670,7 @@ xeogl.Group = xeogl.Object.extend({
         };
     }
 
+    // http://cg.postech.ac.kr/research/mesh_comp_mobile/mesh_comp_mobile_conference.pdf
     var quantizeVec3 = (function () {
         var math = xeogl.math;
         var translate = math.mat4();
@@ -25601,6 +24734,7 @@ xeogl.Group = xeogl.Object.extend({
         };
     })();
 
+    // http://jcgt.org/published/0003/02/01/
     function octEncode(array) {
         var encoded = new Int8Array(array.length * 2 / 3);
         var oct, dec, best, currentCos, bestCos;
@@ -25680,87 +24814,19 @@ xeogl.Group = xeogl.Object.extend({
         return array[i] * vec3[0] + array[i + 1] * vec3[1] + array[i + 2] * vec3[2];
     }
 
-
     var buildEdgesIndices = (function () {
 
         var math = xeogl.math;
 
-        // function mergeVertices(positions, indices) {
-        //
-        //     var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-        //     var uniquePositions = [];
-        //     var changes = [];
-        //     var vx;
-        //     var vy;
-        //     var vz;
-        //     var key;
-        //     var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-        //     var precision = Math.pow(10, precisionPoints);
-        //     var i;
-        //     var len;
-        //
-        //     for (i = 0, len = positions.length; i < len; i += 3) {
-        //
-        //         vx = positions[i];
-        //         vy = positions[i + 1];
-        //         vz = positions[i + 2];
-        //
-        //         key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
-        //
-        //         if (positionsMap[key] === undefined) {
-        //
-        //             positionsMap[key] = i / 3;
-        //
-        //             uniquePositions.push(vx);
-        //             uniquePositions.push(vy);
-        //             uniquePositions.push(vz);
-        //
-        //             changes[i / 3] = (uniquePositions.length - 3) / 3;
-        //
-        //         } else {
-        //
-        //             changes[i / 3] = changes[positionsMap[key]];
-        //         }
-        //     }
-        //
-        //     var faceIndicesToRemove = [];
-        //
-        //     for (i = 0, len = indices.length; i < len; i += 3) {
-        //
-        //         indices[i + 0] = changes[indices[i + 0]];
-        //         indices[i + 1] = changes[indices[i + 1]];
-        //         indices[i + 2] = changes[indices[i + 2]];
-        //
-        //         var indicesDup = [indices[i + 0], indices[i + 1], indices[i + 2]];
-        //
-        //         for (var n = 0; n < 3; n++) {
-        //             if (indicesDup[n] === indicesDup[( n + 1 ) % 3]) {
-        //                 faceIndicesToRemove.push(i);
-        //                 break;
-        //             }
-        //         }
-        //     }
-        //
-        //     if (faceIndicesToRemove.length > 0) {
-        //         indices = Array.prototype.slice.call(indices); // splice is not available on typed arrays
-        //         for (i = faceIndicesToRemove.length - 1; i >= 0; i--) {
-        //             var idx = faceIndicesToRemove[i];
-        //             indices.splice(idx, 3);
-        //         }
-        //     }
-        //
-        //     return {
-        //         positions: uniquePositions,
-        //         indices: indices
-        //     };
-        // }
+        // TODO: Optimize with caching, but need to cater to both compressed and uncompressed positions
 
-        function mergeVertices(positions, indices) {
+        var uniquePositions = [];
+        var indicesLookup = [];
+        var indicesReverseLookup = [];
+        var weldedIndices = [];
 
+        function weldVertices(positions, indices) {
             var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-            var indicesLookup = [];
-            var uniquePositions = [];
-            var indices2 = [];
             var vx;
             var vy;
             var vz;
@@ -25769,29 +24835,24 @@ xeogl.Group = xeogl.Object.extend({
             var precision = Math.pow(10, precisionPoints);
             var i;
             var len;
-
+            var lenUniquePositions = 0;
             for (i = 0, len = positions.length; i < len; i += 3) {
                 vx = positions[i];
                 vy = positions[i + 1];
                 vz = positions[i + 2];
                 key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
                 if (positionsMap[key] === undefined) {
-                    positionsMap[key] = i / 3;
-                    uniquePositions.push(vx);
-                    uniquePositions.push(vy);
-                    uniquePositions.push(vz);
+                    positionsMap[key] = lenUniquePositions / 3;
+                    uniquePositions[lenUniquePositions++] = vx;
+                    uniquePositions[lenUniquePositions++] = vy;
+                    uniquePositions[lenUniquePositions++] = vz;
                 }
                 indicesLookup[i / 3] = positionsMap[key];
             }
-
             for (i = 0, len = indices.length; i < len; i++) {
-                indices2[i] = indicesLookup[indices[i]];
+                weldedIndices[i] = indicesLookup[indices[i]];
+                indicesReverseLookup[weldedIndices[i]] = indices[i];
             }
-
-            return {
-                positions: uniquePositions,
-                indices: indices2
-            };
         }
 
         var faces = [];
@@ -25807,103 +24868,75 @@ xeogl.Group = xeogl.Object.extend({
         var cross = math.vec3();
         var normal = math.vec3();
 
-        function buildFaces(positions, indices, positionsDecodeMatrix) {
-
+        function buildFaces(numIndices, positionsDecodeMatrix) {
             numFaces = 0;
-
-            for (var i = 0, len = indices.length; i < len; i += 3) {
-
-                var ia = ((indices[i + 0]) * 3);
-                var ib = ((indices[i + 1]) * 3);
-                var ic = ((indices[i + 2]) * 3);
-
+            for (var i = 0, len = numIndices; i < len; i += 3) {
+                var ia = ((weldedIndices[i]) * 3);
+                var ib = ((weldedIndices[i + 1]) * 3);
+                var ic = ((weldedIndices[i + 2]) * 3);
                 if (positionsDecodeMatrix) {
-
-                    compa[0] = positions[ia];
-                    compa[1] = positions[ia + 1];
-                    compa[2] = positions[ia + 2];
-
-                    compb[0] = positions[ib];
-                    compb[1] = positions[ib + 1];
-                    compb[2] = positions[ib + 2];
-
-                    compc[0] = positions[ic];
-                    compc[1] = positions[ic + 1];
-                    compc[2] = positions[ic + 2];
-
+                    compa[0] = uniquePositions[ia];
+                    compa[1] = uniquePositions[ia + 1];
+                    compa[2] = uniquePositions[ia + 2];
+                    compb[0] = uniquePositions[ib];
+                    compb[1] = uniquePositions[ib + 1];
+                    compb[2] = uniquePositions[ib + 2];
+                    compc[0] = uniquePositions[ic];
+                    compc[1] = uniquePositions[ic + 1];
+                    compc[2] = uniquePositions[ic + 2];
                     // Decode
-
                     math.decompressPosition(compa, positionsDecodeMatrix, a);
                     math.decompressPosition(compb, positionsDecodeMatrix, b);
                     math.decompressPosition(compc, positionsDecodeMatrix, c);
-
                 } else {
-
-                    a[0] = positions[ia];
-                    a[1] = positions[ia + 1];
-                    a[2] = positions[ia + 2];
-
-                    b[0] = positions[ib];
-                    b[1] = positions[ib + 1];
-                    b[2] = positions[ib + 2];
-
-                    c[0] = positions[ic];
-                    c[1] = positions[ic + 1];
-                    c[2] = positions[ic + 2];
+                    a[0] = uniquePositions[ia];
+                    a[1] = uniquePositions[ia + 1];
+                    a[2] = uniquePositions[ia + 2];
+                    b[0] = uniquePositions[ib];
+                    b[1] = uniquePositions[ib + 1];
+                    b[2] = uniquePositions[ib + 2];
+                    c[0] = uniquePositions[ic];
+                    c[1] = uniquePositions[ic + 1];
+                    c[2] = uniquePositions[ic + 2];
                 }
-
                 math.subVec3(c, b, cb);
                 math.subVec3(a, b, ab);
                 math.cross3Vec3(cb, ab, cross);
                 math.normalizeVec3(cross, normal);
-
                 var face = faces[numFaces] || (faces[numFaces] = {normal: math.vec3()});
-
                 face.normal[0] = normal[0];
                 face.normal[1] = normal[1];
                 face.normal[2] = normal[2];
-
                 numFaces++;
             }
         }
 
-        return function (positions, indices, positionsDecodeMatrix, indicesOffset, ghostEdgeThreshold) {
-
-            var math = xeogl.math;
-
-            // var merged = mergeVertices(positions, indices);
-            //
-            // positions = merged.positions;
-            // indices = merged.indices;
-
-            buildFaces(positions, indices, positionsDecodeMatrix);
-
+        return function (positions, indices, positionsDecodeMatrix, edgeThreshold, combined) {
+            weldVertices(positions, indices);
+            buildFaces(indices.length, positionsDecodeMatrix);
             var edgeIndices = [];
-            var thresholdDot = Math.cos(xeogl.math.DEGTORAD * ghostEdgeThreshold);
+            var thresholdDot = Math.cos(xeogl.math.DEGTORAD * edgeThreshold);
             var edges = {};
             var edge1;
             var edge2;
             var index1;
             var index2;
             var key;
-
-            var a = math.vec3();
-            var b = math.vec3();
-
+            var largeIndex = false;
+            var edge;
+            var normal1;
+            var normal2;
+            var dot;
+            var ia;
+            var ib;
             for (var i = 0, len = indices.length; i < len; i += 3) {
-
                 var faceIndex = i / 3;
-
                 for (var j = 0; j < 3; j++) {
-
-                    edge1 = indices[i + j];
-                    edge2 = indices[i + ((j + 1) % 3)];
-
+                    edge1 = weldedIndices[i + j];
+                    edge2 = weldedIndices[i + ((j + 1) % 3)];
                     index1 = Math.min(edge1, edge2);
                     index2 = Math.max(edge1, edge2);
-
                     key = index1 + "," + index2;
-
                     if (edges[key] === undefined) {
                         edges[key] = {
                             index1: index1,
@@ -25916,39 +24949,26 @@ xeogl.Group = xeogl.Object.extend({
                     }
                 }
             }
-
-            var largeIndex = false;
-
             for (key in edges) {
-
-                var e = edges[key];
-
+                edge = edges[key];
                 // an edge is only rendered if the angle (in degrees) between the face normals of the adjoining faces exceeds this value. default = 1 degree.
-
-                if (e.face2 !== undefined) {
-
-                    var normal1 = faces[e.face1].normal;
-                    var normal2 = faces[e.face2].normal;
-
-                    var dot = math.dotVec3(normal1, normal2);
-
+                if (edge.face2 !== undefined) {
+                    normal1 = faces[edge.face1].normal;
+                    normal2 = faces[edge.face2].normal;
+                    dot = math.dotVec3(normal1, normal2);
                     if (dot > thresholdDot) {
                         continue;
                     }
                 }
-
-                var ia = e.index1 + indicesOffset;
-                var ib = e.index2 + indicesOffset;
-
+                ia = edge.index1;
+                ib = edge.index2;
                 if (!largeIndex && ia > 65535 || ib > 65535) {
                     largeIndex = true;
                 }
-
-                edgeIndices.push(ia);
-                edgeIndices.push(ib);
+                edgeIndices.push(indicesReverseLookup[ia]);
+                edgeIndices.push(indicesReverseLookup[ib]);
             }
-
-            return largeIndex ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
+            return (largeIndex || combined) ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
         }
     })();
 })();;/**
@@ -26351,7 +25371,7 @@ xeogl.Group = xeogl.Object.extend({
                 for (i = 0; i <= radialSegments; i++) {
 
                     u = i / radialSegments * arc;
-                    v = j / tubeSegments * Math.PI * 2;
+                    v = 0.785398 + (j / tubeSegments * Math.PI * 2);
 
                     centerX = radius * Math.cos(u);
                     centerY = radius * Math.sin(u);
@@ -26668,6 +25688,8 @@ xeogl.Group = xeogl.Object.extend({
         _init: function (cfg) {
 
             this._super(xeogl._apply(cfg, {
+                combined: true,
+                quantized: false, // Quantized geometry is immutable
                 primitive: cfg.primitive || "lines",
                 positions: cfg.positions || [1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
                     1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0],
@@ -26854,7 +25876,8 @@ xeogl.Group = xeogl.Object.extend({
 
             this._super(xeogl._apply(cfg, {
 
-                // combined: true,
+                combined: true,
+                quantized: true, // Quantized geometry is immutable
 
                 primitive: cfg.primitive || "lines",
                 indices: [
@@ -29051,14 +28074,15 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  ## Overview
 
- * AmbientLights are grouped, along with other light source types, within a {{#crossLink "Lights"}}Lights{{/crossLink}} component,
- which belongs to a {{#crossLink "Scene"}}{{/crossLink}}.
- * When the {{#crossLink "Mesh"}}Meshes{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ * When {{#crossLink "Mesh"}}Meshes{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  PhongMaterial {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} at each rendered fragment of the {{#crossLink "Geometry"}}{{/crossLink}} surface.
  * When the Meshes have {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  LambertMaterial {{#crossLink "LambertMaterial/ambient:property"}}{{/crossLink}} for each rendered triangle of the Geometry surface (ie. flat shaded).
+ * {{#crossLink "AmbientLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+ {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "PointLight"}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink "Scene/lights:property"}}Scene#lights{{/crossLink}} for convenient access.
 
  ## Examples
 
@@ -29070,38 +28094,23 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  DirLights, then create a Phong-shaded box mesh.
 
  ````javascript
+ new xeogl.AmbientLight({
+    color: [0.8, 0.8, 0.8],
+    intensity: 0.5
+ });
 
- // We're using the default xeogl Scene
- // Get Scene's Lights
- var lights = xeogl.scene.lights;
+ new xeogl.DirLight({
+    dir: [-0.8, -0.4, -0.4],
+    color: [0.4, 0.4, 0.5],
+    intensity: 0.5,
+    space: "view"
+ });
 
- // Customize the light sources
- lights.lights = [
-    new xeogl.AmbientLight({
-        color: [0.8, 0.8, 0.8],
-        intensity: 0.5
-    }),
-    new xeogl.DirLight({
-        dir: [-0.8, -0.4, -0.4],
-        color: [0.4, 0.4, 0.5],
-        intensity: 0.5,
-        space: "view"
-    }),
-    new xeogl.DirLight({
-        dir: [0.2, -0.8, 0.8],
-        color: [0.8, 0.8, 0.8],
-        intensity: 0.5,
-        space: "view"
-    })
- ];
-
- // Create box mesh
- new xeogl.Mesh({
-    material: new xeogl.PhongMaterial({
-        ambient: [0.5, 0.5, 0.5],
-        diffuse: [1,0.3,0.3]
-    }),
-    geometry: new xeogl.BoxGeometry()
+ new xeogl.DirLight({
+    dir: [0.2, -0.8, 0.8],
+    color: [0.8, 0.8, 0.8],
+    intensity: 0.5,
+    space: "view"
  });
  ````
 
@@ -29134,6 +28143,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             };
             this.color = cfg.color;
             this.intensity = cfg.intensity;
+            this.scene._lightCreated(this);
         },
 
         _props: {
@@ -29171,6 +28181,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     return this._state.intensity;
                 }
             }
+        },
+
+        _destroy: function () {
+            this.scene._lightDestroyed(this);
         }
     });
 
@@ -29188,6 +28202,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  * A DirLight can also have a {{#crossLink "Shadow"}}{{/crossLink}} component, to configure it to cast a shadow.
+ * {{#crossLink "AmbientLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+ {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "PointLight"}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink "Scene/lights:property"}}Scene#lights{{/crossLink}} for convenient access.
 
  ## Examples
 
@@ -29268,7 +28285,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this._shadowViewMatrixDirty = true;
             this._shadowProjMatrixDirty = true;
 
-            this._state = new xeogl.renderer.Light({
+            this._state = new xeogl.renderer.State({
                 type: "dir",
                 dir: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([0.7, 0.7, 0.8]),
@@ -29316,8 +28333,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this.color = cfg.color;
             this.intensity = cfg.intensity;
             this.shadow = cfg.shadow;
-
-            this._renderer.lights.addLight(this._state);
+            this.scene._lightCreated(this);
         },
 
         _props: {
@@ -29405,7 +28421,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             if (this._shadowRenderBuf) {
                 this._shadowRenderBuf.destroy();
             }
-            this._renderer.lights.removeLight(this._state);
+            this.scene._lightDestroyed(this);
         }
     });
 
@@ -29425,6 +28441,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  * PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
+ * {{#crossLink "AmbientLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+ {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "PointLight"}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink "Scene/lights:property"}}Scene#lights{{/crossLink}} for convenient access.
 
  ## Examples
 
@@ -29513,7 +28532,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this._shadowViewMatrixDirty = true;
             this._shadowProjMatrixDirty = true;
 
-            this._state = new xeogl.renderer.Light({
+            this._state = new xeogl.renderer.State({
                 type: "point",
                 pos: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([0.7, 0.7, 0.8]),
@@ -29565,7 +28584,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this.quadraticAttenuation = cfg.quadraticAttenuation;
             this.shadow = cfg.shadow;
 
-            this._renderer.lights.addLight(this._state);
+            this.scene._lightCreated(this);
         },
 
         _props: {
@@ -29704,7 +28723,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             if (this._shadowRenderBuf) {
                 this._shadowRenderBuf.destroy();
             }
-            this._renderer.lights.removeLight(this._state);
+            this.scene._lightDestroyed(this);
         }
     });
 
@@ -29723,7 +28742,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  * SpotLights have {{#crossLink "SpotLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "SpotLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "SpotLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
  * A SpotLight can also have a {{#crossLink "Shadow"}}{{/crossLink}} component, to configure it to cast a shadow.
-
+ * {{#crossLink "AmbientLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+ {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "PointLight"}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink "Scene/lights:property"}}Scene#lights{{/crossLink}} for convenient access.
  ## Examples
 
  TODO
@@ -29735,31 +28756,31 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  ````javascript
  new xeogl.AmbientLight({
-         color: [0.8, 0.8, 0.8],
-         intensity: 0.5
-     });
+     color: [0.8, 0.8, 0.8],
+     intensity: 0.5
+ });
 
  new xeogl.SpotLight({
-         pos: [0, 100, 100],
-         dir: [0, -1, 0],
-         color: [0.5, 0.7, 0.5],
-         intensity: 1
-         constantAttenuation: 0,
-         linearAttenuation: 0,
-         quadraticAttenuation: 0,
-         space: "view"
-     });
+     pos: [0, 100, 100],
+     dir: [0, -1, 0],
+     color: [0.5, 0.7, 0.5],
+     intensity: 1
+     constantAttenuation: 0,
+     linearAttenuation: 0,
+     quadraticAttenuation: 0,
+     space: "view"
+ });
 
  new xeogl.PointLight({
-         pos: [0, 100, 100],
-         dir: [0, -1, 0],
-         color: [0.5, 0.7, 0.5],
-         intensity: 1
-         constantAttenuation: 0,
-         linearAttenuation: 0,
-         quadraticAttenuation: 0,
-         space: "view"
-     });
+     pos: [0, 100, 100],
+     dir: [0, -1, 0],
+     color: [0.5, 0.7, 0.5],
+     intensity: 1
+     constantAttenuation: 0,
+     linearAttenuation: 0,
+     quadraticAttenuation: 0,
+     space: "view"
+ });
 
  // Create box mesh
  new xeogl.Mesh({
@@ -29811,7 +28832,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this._shadowViewMatrixDirty = true;
             this._shadowProjMatrixDirty = true;
 
-            this._state = new xeogl.renderer.Light({
+            this._state = new xeogl.renderer.State({
                 type: "spot",
                 pos: math.vec3([1.0, 1.0, 1.0]),
                 dir: math.vec3([0.0, -1.0, 0.0]),
@@ -29865,8 +28886,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this.linearAttenuation = cfg.linearAttenuation;
             this.quadraticAttenuation = cfg.quadraticAttenuation;
             this.shadow = cfg.shadow;
-
-            this._renderer.lights.addLight(this._state);
+            this.scene._lightCreated(this);
         },
 
         _props: {
@@ -30026,7 +29046,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             if (this._shadowRenderBuf) {
                 this._shadowRenderBuf.destroy();
             }
-            this._renderer.lights.removeLight(this._state);
+            this.scene._lightDestroyed(this);
         }
     });
 
@@ -30064,7 +29084,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             var gl = this.scene.canvas.gl;
 
-            this._state = new xeogl.renderer.CubeTexture({
+            this._state = new xeogl.renderer.State({
                 texture : new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP),
                 flipY: this._checkFlipY(cfg.minFilter),
                 encoding: this._checkEncoding(cfg.encoding),
@@ -30197,12 +29217,12 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         type: "xeogl.LightMap",
         _init: function (cfg) {
             this._super(cfg);
-            this._renderer.lights.addLightMap(this._state);
+            this.scene._lightMapCreated(this);
         },
 
         _destroy: function () {
-            this._renderer.lights.removeLightMap(this._state);
-            this._super(cfg);
+            this._super();
+            this.scene._lightMapDestroyed(this);
         }
     });
 
@@ -30247,12 +29267,13 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         type: "xeogl.ReflectionMap",
         _init: function (cfg) {
             this._super(cfg);
-            this._renderer.lights.addReflectionMap(this._state);
+            this.scene._lightsState.addReflectionMap(this._state);
+            this.scene._reflectionMapCreated(this);
         },
 
         _destroy: function () {
-            this._renderer.lights.removeReflectionMap(this._state);
-            this._super(cfg);
+            this._super();
+            this.scene._reflectionMapDestroyed(this);
         }
     });
 })();
@@ -30450,6 +29471,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.ghosted=false] {Boolean}       Indicates if rendered as ghosted.
  @param [cfg.highlighted=false] {Boolean}   Indicates if rendered as highlighted.
  @param [cfg.selected=false] {Boolean}      Indicates if rendered as selected.
+ @param [cfg.edges=false] {Boolean}         Indicates if edges are emphasized.
  @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
  @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
@@ -30522,6 +29544,18 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this.objects = {};
 
             /**
+             {{#crossLink "Object"}}Objects{{/crossLink}} in this Model that have GUIDs, mapped to their GUIDs.
+
+             Each Object is registered in this map when its {{#crossLink "Object/guid:property"}}{{/crossLink}} is
+             assigned a value.
+
+             @property guidObjects
+             @final
+             @type {{String:Object}}
+             */
+            this.guidObjects = {};
+
+            /**
              All contained {{#crossLink "Mesh"}}Meshes{{/crossLink}}, mapped to their IDs.
 
              @property meshes
@@ -30542,10 +29576,30 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
              */
             this.entities = {};
 
+            /**
+             For each entity type, a map of IDs to {{#crossLink "Object"}}Objects{{/crossLink}} of that entity type.
+
+             Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
+             assigned a value.
+
+             @property entityTypes
+             @final
+             @type {String:{String:xeogl.Component}}
+             */
+            this.entityTypes = {};
+
+            /**
+             Lazy-regenerated ID lists.
+             */
+            this._objectGUIDs = null;
+            this._entityIds = null;
+
             // xeogl.Model overrides xeogl.Group / xeogl.Object state properties, (eg. visible, ghosted etc)
             // and those redefined properties are being set here through the super constructor.
 
             this._super(cfg); // Call xeogl.Group._init()
+
+            this.scene._modelCreated(this);
         },
 
         _addComponent: function (component) {
@@ -30573,7 +29627,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 return;
             }
             if (component.model && component.model.id !== this.id) { // Component in other Model
-                component.model.remove(component); // Transferring to this Model
+                component.model._removeComponent(component); // Transferring to this Model
             }
             this.components[component.id] = component;
             types = this.types[component.type];
@@ -30581,15 +29635,51 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 types = this.types[component.type] = {};
             }
             types[component.id] = component;
-            if (component.isType("xeogl.Mesh")) {
-                this.meshes[component.id] = component;
-            }
             if (component.isType("xeogl.Object")) {
-                this.objects[component.id] = component;
+                var object = component;
+                this.objects[object.id] = object;
+                if (object.entityType) {
+                    this.entities[object.id] = object;
+                    var objectsOfType = this.entityTypes[object.entityType];
+                    if (!objectsOfType) {
+                        objectsOfType = {};
+                        this.entityTypes[object.entityType] = objectsOfType;
+                    }
+                    objectsOfType[object.id] = object;
+                    this._entityIds = null; // Lazy regenerate
+                    this._entityTypeIds = null; // Lazy regenerate
+                }
+                if (object.guid) {
+                    this.guidObjects[object.id] = object;
+                    this._objectGUIDs = null; // To lazy-rebuild
+                }
+                if (component.isType("xeogl.Mesh")) {
+                    this.meshes[component.id] = component;
+                }
             }
             this.numComponents++;
             component._addedToModel(this);
             return component;
+        },
+
+        _removeComponent: function(component) {
+            var id = component.id;
+            delete this.components[id];
+            delete this.meshes[id];
+            delete this.objects[id];
+            if (component.entityType) {
+                delete this.entities[id];
+                var objectsOfType = this.entityTypes[component.entityType];
+                if (objectsOfType) {
+                    delete objectsOfType[id];
+                }
+                this._entityIds = null; // Lazy regenerate
+                this._entityTypeIds = null; // Lazy regenerate
+            }
+            if (component.guid) {
+                delete this.guidObjects[component.guid];
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
         },
 
         /**
@@ -30614,6 +29704,55 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this.types = {};
             this.objects = {};
             this.meshes = {};
+            this.entities = {};
+        },
+
+        _props: {
+
+            /**
+             Convenience array of entity type IDs in {{#crossLink "Model/entityTypes:property"}}{{/crossLink}}.
+             @property entityTypeIds
+             @final
+             @type {Array of String}
+             */
+            objectGUIDs: {
+                get: function () {
+                    if (!this._objectGUIDs) {
+                        this._objectGUIDs = Object.keys(this.guidObjects);
+                    }
+                    return this._objectGUIDs;
+                }
+            },
+
+            /**
+             Convenience array of entity type IDs in {{#crossLink "Model/entityTypes:property"}}{{/crossLink}}.
+             @property entityTypeIds
+             @final
+             @type {Array of String}
+             */
+            entityTypeIds: {
+                get: function () {
+                    if (!this._entityTypeIds) {
+                        this._entityTypeIds = Object.keys(this.entityTypes);
+                    }
+                    return this._entityTypeIds;
+                }
+            },
+
+            /**
+             Convenience array of IDs in {{#crossLink "Model/entities:property"}}{{/crossLink}}.
+             @property entityIds
+             @final
+             @type {Array of String}
+             */
+            entityIds: {
+                get: function () {
+                    if (!this._entityIds) {
+                        this._entityIds = Object.keys(this.entities);
+                    }
+                    return this._entityIds;
+                }
+            }
         },
 
         /**
@@ -30626,6 +29765,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         _destroy: function () {
             this._super();
             this.clear();
+            this.scene._modelDestroyed(this);
         }
     });
 
@@ -30646,6 +29786,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  * {{#crossLink "LambertMaterial"}}{{/crossLink}} - material for fast, flat-shaded CAD rendering without textures. Use
  this for navigating huge CAD or BIM models interactively. This material gives the best rendering performance and uses the least memory.
  * {{#crossLink "EmphasisMaterial"}}{{/crossLink}} - defines the appearance of Meshes when "ghosted" or "highlighted".
+ * {{#crossLink "EdgeMaterial"}}{{/crossLink}} - defines the appearance of Meshes when edges are emphasized.
  * {{#crossLink "OutlineMaterial"}}{{/crossLink}} - defines the appearance of outlines drawn around Meshes.
 
  A {{#crossLink "Scene"}}Scene{{/crossLink}} is allowed to contain a mixture of these material types.
@@ -30845,32 +29986,23 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.PhongMaterial({
-
+            this._state = new xeogl.renderer.State({
                 type: "PhongMaterial",
-
                 ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 diffuse: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
-
                 alpha: null,
                 shininess: null,
                 reflectivity: null,
-
                 alphaMode: null,
                 alphaCutoff: null,
-
                 lineWidth: null,
                 pointSize: null,
-
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-
                 hash: null
             });
-
-            this._hashDirty = true;
 
             this.ambient = cfg.ambient;
             this.diffuse = cfg.diffuse;
@@ -30884,55 +30016,42 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             if (cfg.ambientMap) {
                 this._ambientMap = this._checkComponent("xeogl.Texture", cfg.ambientMap);
-                this._state.ambientMap = this._ambientMap ? this._ambientMap._state : null;
             }
             if (cfg.diffuseMap) {
                 this._diffuseMap = this._checkComponent("xeogl.Texture", cfg.diffuseMap);
-                this._state.diffuseMap = this._diffuseMap ? this._diffuseMap._state : null;
             }
             if (cfg.specularMap) {
                 this._specularMap = this._checkComponent("xeogl.Texture", cfg.specularMap);
-                this._state.specularMap = this._specularMap ? this._specularMap._state : null;
             }
             if (cfg.emissiveMap) {
                 this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
-                this._state.emissiveMap = this._emissiveMap ? this._emissiveMap._state : null;
             }
             if (cfg.alphaMap) {
                 this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
-                this._state.alphaMap = this._alphaMap ? this._alphaMap._state : null;
             }
             if (cfg.reflectivityMap) {
                 this._reflectivityMap = this._checkComponent("xeogl.Texture", cfg.reflectivityMap);
-                this._state.reflectivityMap = this._reflectivityMap ? this._reflectivityMap._state : null;
             }
             if (cfg.normalMap) {
                 this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
-                this._state.normalMap = this._normalMap ? this._normalMap._state : null;
             }
             if (cfg.occlusionMap) {
                 this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
-                this._state.occlusionMap = this._occlusionMap ? this._occlusionMap._state : null;
             }
             if (cfg.diffuseFresnel) {
                 this._diffuseFresnel = this._checkComponent("xeogl.Fresnel", cfg.diffuseFresnel);
-                this._state.diffuseFresnel = this._diffuseFresnel ? this._diffuseFresnel._state : null;
             }
             if (cfg.specularFresnel) {
                 this._specularFresnel = this._checkComponent("xeogl.Fresnel", cfg.specularFresnel);
-                this._state.specularFresnel = this._specularFresnel ? this._specularFresnel._state : null;
             }
             if (cfg.emissiveFresnel) {
                 this._emissiveFresnel = this._checkComponent("xeogl.Fresnel", cfg.emissiveFresnel);
-                this._state.emissiveFresnel = this._emissiveFresnel ? this._emissiveFresnel._state : null;
             }
             if (cfg.alphaFresnel) {
                 this._alphaFresnel = this._checkComponent("xeogl.Fresnel", cfg.alphaFresnel);
-                this._state.alphaFresnel = this._alphaFresnel ? this._alphaFresnel._state : null;
             }
             if (cfg.reflectivityFresnel) {
                 this._reflectivityFresnel = this._checkComponent("xeogl.Fresnel", cfg.reflectivityFresnel);
-                this._state.reflectivityFresnel = this._reflectivityFresnel ? this._reflectivityFresnel._state : null;
             }
 
             this.alphaMode = cfg.alphaMode;
@@ -30946,70 +30065,70 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         _makeHash: function () {
             var state = this._state;
             var hash = ["/p"]; // 'P' for Phong
-            if (state.normalMap) {
+            if (this._normalMap) {
                 hash.push("/nm");
-                if (state.normalMap.hasMatrix) {
+                if (this._normalMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.ambientMap) {
+            if (this._ambientMap) {
                 hash.push("/am");
-                if (state.ambientMap.hasMatrix) {
+                if (this._ambientMap.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.ambientMap.encoding);
+                hash.push("/" + this._ambientMap.encoding);
             }
-            if (state.diffuseMap) {
+            if (this._diffuseMap) {
                 hash.push("/dm");
-                if (state.diffuseMap.hasMatrix) {
+                if (this._diffuseMap.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.diffuseMap.encoding);
+                hash.push("/" + this._diffuseMap.encoding);
             }
-            if (state.specularMap) {
+            if (this._specularMap) {
                 hash.push("/sm");
-                if (state.specularMap.hasMatrix) {
+                if (this._specularMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.emissiveMap) {
+            if (this._emissiveMap) {
                 hash.push("/em");
-                if (state.emissiveMap.hasMatrix) {
+                if (this._emissiveMap.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.emissiveMap.encoding);
+                hash.push("/" + this._emissiveMap.encoding);
             }
-            if (state.alphaMap) {
+            if (this._alphaMap) {
                 hash.push("/opm");
-                if (state.alphaMap.hasMatrix) {
+                if (this._alphaMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.reflectivityMap) {
+            if (this._reflectivityMap) {
                 hash.push("/rm");
-                if (state.reflectivityMap.hasMatrix) {
+                if (this._reflectivityMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.occlusionMap) {
+            if (this._occlusionMap) {
                 hash.push("/ocm");
-                if (state.occlusionMap.hasMatrix) {
+                if (this._occlusionMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.diffuseFresnel) {
+            if (this._diffuseFresnel) {
                 hash.push("/df");
             }
-            if (state.specularFresnel) {
+            if (this._specularFresnel) {
                 hash.push("/sf");
             }
-            if (state.emissiveFresnel) {
+            if (this._emissiveFresnel) {
                 hash.push("/ef");
             }
-            if (state.alphaFresnel) {
+            if (this._alphaFresnel) {
                 hash.push("/of");
             }
-            if (state.reflectivityFresnel) {
+            if (this._reflectivityFresnel) {
                 hash.push("/rf");
             }
             hash.push(";");
@@ -31656,7 +30775,7 @@ TODO
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.LambertMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "LambertMaterial",
                 ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([1.0, 1.0, 1.0]),
@@ -31836,7 +30955,7 @@ TODO
             /**
              Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
-             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
              the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
@@ -31998,17 +31117,17 @@ TODO
  var scene = plasteredSphere.scene;
 
  scene.lights.lights = [
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [0.8, -0.6, -0.8],
          color: [0.8, 0.8, 0.8],
          space: "view"
      }),
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [-0.8, -0.4, -0.4],
          color: [0.4, 0.4, 0.5],
          space: "view"
      }),
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [0.2, -0.8, 0.8],
          color: [0.8, 0.8, 0.8],
          space: "view"
@@ -32196,7 +31315,7 @@ TODO
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.SpecularMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "SpecularMaterial",
                 diffuse: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
@@ -32204,15 +31323,6 @@ TODO
                 glossiness: null,
                 specularF0: null,
                 alpha: null,
-
-                diffuseMap: null,
-                emissiveMap: null,
-                specularMap: null,
-                glossinessMap: null,
-                specularGlossinessMap: null,
-                occlusionMap: null,
-                alphaMap: null,
-                normalMap: null,
                 alphaMode: null,
                 alphaCutoff: null,
                 lineWidth: null,
@@ -32221,17 +31331,6 @@ TODO
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
                 hash: null
             });
-
-            this._hashDirty = true;
-
-            this.on("dirty", function () {
-
-                // This SpecularMaterial is flagged dirty when a
-                // child component fires "dirty", which always
-                // means that a shader recompile will be needed.
-
-                this._hashDirty = true;
-            }, this);
 
             this.diffuse = cfg.diffuse;
             this.specular = cfg.specular;
@@ -32242,42 +31341,27 @@ TODO
 
             if (cfg.diffuseMap) {
                 this._diffuseMap = this._checkComponent("xeogl.Texture", cfg.diffuseMap);
-                this._state.diffuseMap = this._diffuseMap ? this._diffuseMap._state : null;
             }
-
             if (cfg.emissiveMap) {
                 this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
-                this._state.emissiveMap = this._emissiveMap ? this._emissiveMap._state : null;
             }
-
             if (cfg.specularMap) {
                 this._specularMap = this._checkComponent("xeogl.Texture", cfg.specularMap);
-                this._state.specularMap = this._specularMap ? this._specularMap._state : null;
             }
-
             if (cfg.glossinessMap) {
                 this._glossinessMap = this._checkComponent("xeogl.Texture", cfg.glossinessMap);
-                this._state.glossinessMap = this._glossinessMap ? this._glossinessMap._state : null;
             }
-
             if (cfg.specularGlossinessMap) {
                 this._specularGlossinessMap = this._checkComponent("xeogl.Texture", cfg.specularGlossinessMap);
-                this._state.specularGlossinessMap = this._specularGlossinessMap ? this._specularGlossinessMap._state : null;
             }
-
             if (cfg.occlusionMap) {
                 this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
-                this._state.occlusionMap = this._occlusionMap ? this._occlusionMap._state : null;
             }
-
             if (cfg.alphaMap) {
                 this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
-                this._state.alphaMap = this._alphaMap ? this._alphaMap._state : null;
             }
-
             if (cfg.normalMap) {
                 this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
-                this._state.normalMap = this._normalMap ? this._normalMap._state : null;
             }
 
             this.alphaMode = cfg.alphaMode;
@@ -32294,52 +31378,52 @@ TODO
         _makeHash: function () {
             var state = this._state;
             var hash = ["/spe"];
-            if (state.diffuseMap) {
+            if (this._diffuseMap) {
                 hash.push("/dm");
-                if (state.diffuseMap.hasMatrix) {
+                if (this._diffuseMap.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.diffuseMap.encoding);
+                hash.push("/" + this._diffuseMap.encoding);
             }
-            if (state.emissiveMap) {
+            if (this._emissiveMap) {
                 hash.push("/em");
-                if (state.emissiveMap.hasMatrix) {
+                if (this._emissiveMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.glossinessMap) {
+            if (this._glossinessMap) {
                 hash.push("/gm");
-                if (state.glossinessMap.hasMatrix) {
+                if (this._glossinessMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.specularMap) {
+            if (this._specularMap) {
                 hash.push("/sm");
-                if (state.specularMap.hasMatrix) {
+                if (this._specularMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.specularGlossinessMap) {
+            if (this._specularGlossinessMap) {
                 hash.push("/sgm");
-                if (state.specularGlossinessMap.hasMatrix) {
+                if (this._specularGlossinessMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.occlusionMap) {
+            if (this._occlusionMap) {
                 hash.push("/ocm");
-                if (state.occlusionMap.hasMatrix) {
+                if (this._occlusionMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.normalMap) {
+            if (this._normalMap) {
                 hash.push("/nm");
-                if (state.normalMap.hasMatrix) {
+                if (this._normalMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.alphaMap) {
+            if (this._alphaMap) {
                 hash.push("/opm");
-                if (state.alphaMap.hasMatrix) {
+                if (this._alphaMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
@@ -32361,7 +31445,7 @@ TODO
              */
             diffuse: {
                 set: function (value) {
-                    var diffuse = this._state.diffuse
+                    var diffuse = this._state.diffuse;
                     if (!diffuse) {
                         diffuse = this._state.diffuse = new Float32Array(3);
                     } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
@@ -32478,9 +31562,16 @@ TODO
              @property glossiness
              @default 1.0
              @type Number
-             @final
              */
             glossiness: {
+                set: function (value) {
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+                    if (this._state.glossiness === value) {
+                        return;
+                    }
+                    this._state.glossiness = value;
+                    this._renderer.imageDirty();
+                },
                 get: function () {
                     return this._state.glossiness;
                 }
@@ -33116,7 +32207,7 @@ TODO
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.MetallicMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "MetallicMaterial",
                 baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
@@ -33124,14 +32215,6 @@ TODO
                 roughness: null,
                 specularF0: null,
                 alpha: null,
-                baseColorMap: null,
-                alphaMap: null,
-                metallicMap: null,
-                roughnessMap: null,
-                metallicRoughnessMap: null,
-                emissiveMap: null,
-                occlusionMap: null,
-                normalMap: null,
                 alphaMode: null, // "opaque"
                 alphaCutoff: null,
                 lineWidth: null,
@@ -33150,36 +32233,28 @@ TODO
 
             if (cfg.baseColorMap) {
                 this._baseColorMap = this._checkComponent("xeogl.Texture", cfg.baseColorMap);
-                this._state.baseColorMap = this._baseColorMap ? this._baseColorMap._state : null;
             }
             if (cfg.metallicMap) {
                 this._metallicMap = this._checkComponent("xeogl.Texture", cfg.metallicMap);
-                this._state.metallicMap = this._metallicMap ? this._metallicMap._state : null;
 
             }
             if (cfg.roughnessMap) {
                 this._roughnessMap = this._checkComponent("xeogl.Texture", cfg.roughnessMap);
-                this._state.roughnessMap = this._roughnessMap ? this._roughnessMap._state : null;
             }
             if (cfg.metallicRoughnessMap) {
                 this._metallicRoughnessMap = this._checkComponent("xeogl.Texture", cfg.metallicRoughnessMap);
-                this._state.metallicRoughnessMap = this._metallicRoughnessMap ? this._metallicRoughnessMap._state : null;
             }
             if (cfg.emissiveMap) {
                 this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
-                this._state.emissiveMap = this._emissiveMap ? this._emissiveMap._state : null;
             }
             if (cfg.occlusionMap) {
                 this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
-                this._state.occlusionMap = this._occlusionMap ? this._occlusionMap._state : null;
             }
             if (cfg.alphaMap) {
                 this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
-                this._state.alphaMap = this._alphaMap ? this._alphaMap._state : null;
             }
             if (cfg.normalMap) {
                 this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
-                this._state.normalMap = this._normalMap ? this._normalMap._state : null;
             }
 
             this.alphaMode = cfg.alphaMode;
@@ -33195,52 +32270,52 @@ TODO
         _makeHash: function () {
             var state = this._state;
             var hash = ["/met"];
-            if (state.baseColorMap) {
+            if (this._baseColorMap) {
                 hash.push("/bm");
-                if (state.baseColorMap.hasMatrix) {
+                if (this._baseColorMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.baseColorMap.encoding);
+                hash.push("/" + this._baseColorMap._state.encoding);
             }
-            if (state.metallicMap) {
+            if (this._metallicMap) {
                 hash.push("/mm");
-                if (state.metallicMap.hasMatrix) {
+                if (this._metallicMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.roughnessMap) {
+            if (this._roughnessMap) {
                 hash.push("/rm");
-                if (state.roughnessMap.hasMatrix) {
+                if (this._roughnessMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.metallicRoughnessMap) {
+            if (this._metallicRoughnessMap) {
                 hash.push("/mrm");
-                if (state.metallicRoughnessMap.hasMatrix) {
+                if (this._metallicRoughnessMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.emissiveMap) {
+            if (this._emissiveMap) {
                 hash.push("/em");
-                if (state.emissiveMap.hasMatrix) {
+                if (this._emissiveMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.occlusionMap) {
+            if (this._occlusionMap) {
                 hash.push("/ocm");
-                if (state.occlusionMap.hasMatrix) {
+                if (this._occlusionMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.alphaMap) {
+            if (this._alphaMap) {
                 hash.push("/am");
-                if (state.alphaMap.hasMatrix) {
+                if (this._alphaMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.normalMap) {
+            if (this._normalMap) {
                 hash.push("/nm");
-                if (state.normalMap.hasMatrix) {
+                if (this._normalMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
@@ -33741,7 +32816,7 @@ TODO
  ````javascript
  var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 1
+        edgeThreshold: 1
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -33763,9 +32838,9 @@ TODO
  });
  ````
 
- Note the **ghostEdgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
+ Note the **edgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
  Mesh. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
- adjacent co-planar triangles) removed for visual clarity. The ````ghostEdgeThreshold```` configuration indicates
+ adjacent co-planar triangles) removed for visual clarity. The ````edgeThreshold```` configuration indicates
  that, for this particular Geometry, an inner edge is one where the angle between the surface normals of adjacent triangles is not
  greater than ````5```` degrees. That's set to ````2```` by default, but we can override it to tweak the effect as needed for particular Geometries.
 
@@ -33775,7 +32850,7 @@ TODO
  ````javascript
  var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 5
+        edgeThreshold: 5
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -33809,7 +32884,7 @@ TODO
  ````javascript
  var model = new xeogl.GLTFModel({
      src: "models/gltf/gearbox_conical/scene.gltf",
-     ghostEdgeThreshold: 10
+     edgeThreshold: 10
  });
 
  model.on("loaded", function() {
@@ -33899,7 +32974,7 @@ TODO
  ````javascript
  var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 5
+        edgeThreshold: 5
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -33923,21 +32998,18 @@ TODO
  @param [cfg] {*} The EmphasisMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this EmphasisMaterial.
-
  @param [cfg.edges=true] {Boolean} Indicates whether or not ghost edges are visible.
  @param [cfg.edgeColor=[0.2,0.2,0.2]] {Array of Number}  RGB color of ghost edges.
  @param [cfg.edgeAlpha=0.5] {Number} Transparency of ghost edges. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
  @param [cfg.edgeWidth=1] {Number}  Width of ghost edges, in pixels.
-
  @param [cfg.vertices=false] {Boolean} Indicates whether or not ghost vertices are visible.
  @param [cfg.vertexColor=[0.4,0.4,0.4]] {Array of Number} Color of ghost vertices.
  @param [cfg.vertexAlpha=0.7] {Number}  Transparency of ghost vertices. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
  @param [cfg.vertexSize=4.0] {Number} Pixel size of ghost vertices.
-
  @param [cfg.fill=true] {Boolean} Indicates whether or not ghost surfaces are filled with color.
  @param [cfg.fillColor=[0.4,0.4,0.4]] {Array of Number} EmphasisMaterial fill color.
  @param [cfg.fillAlpha=0.2] {Number}  Transparency of filled ghost faces. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.preset] {String} Selects a preset EmphasisMaterial configuration - see {{#crossLink "EmphasisMaterial/preset:method"}}EmphasisMaterial#preset(){{/crossLink}}.
  */
 (function () {
@@ -33952,7 +33024,7 @@ TODO
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.EmphasisMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "EmphasisMaterial",
                 edges: null,
                 edgeColor: null,
@@ -33964,7 +33036,8 @@ TODO
                 vertexSize: null,
                 fill: null,
                 fillColor: null,
-                fillAlpha: null
+                fillAlpha: null,
+                backfaces: true
             });
 
             this._preset = "default";
@@ -33984,6 +33057,7 @@ TODO
                 if (cfg.fill !== undefined) this.fill = cfg.fill;
                 if (cfg.fillColor) this.fillColor = cfg.fillColor;
                 if (cfg.fillAlpha !== undefined) this.fillAlpha = cfg.fillAlpha;
+                if (cfg.backfaces !== undefined) this.backfaces = cfg.backfaces;
             } else {
                 this.edges = cfg.edges;
                 this.edgeColor = cfg.edgeColor;
@@ -33996,6 +33070,7 @@ TODO
                 this.fill = cfg.fill;
                 this.fillColor = cfg.fillColor;
                 this.fillAlpha = cfg.fillAlpha;
+                this.backfaces = cfg.backfaces;
             }
         },
 
@@ -34260,6 +33335,29 @@ TODO
                 }
             },
 
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+                set: function (value) {
+                    value = !!value;
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+                    this._state.backfaces = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
 
             /**
              Selects a preset EmphasisMaterial configuration.
@@ -34495,6 +33593,379 @@ TODO
     xeogl.GhostMaterial = xeogl.EmphasisMaterial; // Backward compatibility
 
 })();;/**
+ An **EdgeMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of attached
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}} when they are highlighted, selected or ghosted.
+
+ ## Examples
+
+ | <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a> | <a href="../../examples/#effects_demo_housePlan"><img src="../../assets/images/screenshots/HighlightMaterial/house.png"></img></a> | <a href="../../examples/#effects_demo_gearbox"><img src="../../assets/images/screenshots/HighlightMaterial/gearbox.png"></img></a> | <a href="../../examples/#effects_demo_adam"><img src="../../assets/images/screenshots/HighlightMaterial/adam.png"></img></a>|
+ |:------:|:------:|:----:|:-----:|:-----:|
+ |[Example 1: Ghost effect](../../examples/#effects_ghost)|[Example 2: Ghost and highlight effects for architecture](../../examples/#effects_demo_housePlan)|[Example 3: Ghost and highlight effects for CAD](../../examples/#effects_demo_gearbox)| [Example 4: Ghost effect for CAD ](../../examples//#effects_demo_adam)|
+
+ ## Overview
+
+ * Ghost an {{#crossLink "Mesh"}}{{/crossLink}} by setting its {{#crossLink "Mesh/ghost:property"}}{{/crossLink}} property ````true````.
+ * When ghosted, a Mesh's appearance is controlled by its EdgeMaterial.
+ * An EdgeMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink "EdgeMaterial/preset:property"}}{{/crossLink}} to the preset's ID. A map of available presets is provided in {{#crossLink "EdgeMaterial/presets:property"}}xeogl.EdgeMaterial.presets{{/crossLink}}.
+ * By default, a Mesh uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EdgeMaterials, but you can give each Mesh its own EdgeMaterial when you want to customize the effect per-Mesh.
+ * Ghost all Meshes in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Meshes in a Model have the Scene's global EdgeMaterial by default.
+ * Modify the Scene's global EdgeMaterial to customize it.
+
+ ## Usage
+
+ * [Ghosting](#ghosting)
+ * [Highlighting](#highlighting)
+
+ ### Ghosting
+
+ In the usage example below, we'll create a Mesh with a ghost effect applied to it. The Mesh gets its own EdgeMaterial for ghosting, and
+ has its {{#crossLink "Mesh/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
+
+ <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a>
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+    geometry: new xeogl.TeapotGeometry({
+        edgeThreshold: 1
+    }),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    }),
+    edgeMaterial: new xeogl.EdgeMaterial({
+        edges: true,
+        edgeColor: [0.2, 1.0, 0.2],
+        edgeAlpha: 1.0,
+        edgeWidth: 2,
+        vertices: true,
+        vertexColor: [0.6, 1.0, 0.6],
+        vertexAlpha: 1.0,
+        vertexSize: 8,
+        fill: true,
+        fillColor: [0, 0, 0],
+        fillAlpha: 0.7
+    }),
+    ghost: true
+ });
+ ````
+
+ Note the **edgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
+ Mesh. Our EdgeMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
+ adjacent co-planar triangles) removed for visual clarity. The ````edgeThreshold```` configuration indicates
+ that, for this particular Geometry, an inner edge is one where the angle between the surface normals of adjacent triangles is not
+ greater than ````5```` degrees. That's set to ````2```` by default, but we can override it to tweak the effect as needed for particular Geometries.
+
+ Here's the example again, this time using the Scene's global EdgeMaterial by default. We'll also modify that EdgeMaterial
+ to customize the effect.
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+    geometry: new xeogl.TeapotGeometry({
+        edgeThreshold: 5
+    }),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    }),
+    ghost: true
+ });
+
+ var edgeMaterial = mesh.scene.edgeMaterial;
+
+ edgeMaterial.edges = true;
+ edgeMaterial.edgeColor = [0.2, 1.0, 0.2];
+ edgeMaterial.edgeAlpha = 1.0;
+ edgeMaterial.edgeWidth = 2;
+ ````
+
+ ### Highlighting
+
+ In the next example, we'll use a ghosting in conjunction with highlighting, to emphasise a couple of objects within
+ a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Meshes except for two gears, which we'll highlight instead. The ghosted
+ Meshes have the Scene's global ghosting EdgeMaterial, which we'll modify. The  highlighted Meshes also have the Scene's global highlighting EdgeMaterial, which we'll modify as well.
+
+ <a href="../../examples/#effects_demo_gearbox"><img src="../../assets/images/screenshots/HighlightMaterial/gearbox.png"></img></a>
+
+ ````javascript
+ var model = new xeogl.GLTFModel({
+     src: "models/gltf/gearbox_conical/scene.gltf",
+     edgeThreshold: 10
+ });
+
+ model.on("loaded", function() {
+
+    model.meshes["gearbox#77.0"].highlight = true;
+    model.meshes["gearbox#79.0"].highlight = true;
+
+    var edgeMaterial = model.scene.edgeMaterial;
+
+    edgeMaterial.edgeColor = [0.4, 0.4, 1.6];
+    edgeMaterial.edgeAlpha = 0.8;
+    edgeMaterial.edgeWidth = 3;
+
+    var highlightMaterial = model.scene.highlightMaterial;
+
+    highlightMaterial.color = [1.0, 1.0, 1.0];
+    highlightMaterial.alpha = 1.0;
+ });
+ ````
+
+ ## Presets
+
+ For convenience, an EdgeMaterial provides several preset configurations that you can set it to, which are provided in
+ {{#crossLink "EdgeMaterial/presets:property"}}xeogl.EdgeMaterial.presets{{/crossLink}}:
+
+ ````javascript
+ var presets = xeogl.EdgeMaterial.presets;
+ ````
+
+ The presets look something like this:
+
+ ````json
+ {
+        "default": {
+            edgeColor: [0.2, 0.2, 0.2],
+            edgeAlpha: 1.0,
+            edgeWidth: 1
+        },
+
+         "sepia": {
+            edgeColor: [0.45, 0.45, 0.41],
+            edgeAlpha: 1.0,
+            edgeWidth: 1
+        },
+
+        //...
+ }
+ ````
+
+ Let's switch the Scene's global default  EdgeMaterial over to the "sepia" preset used in <a href="/examples/#effects_demo_adam">Example 4: Ghost effect for CAD</a>.
+
+ ````javascript
+ scene.edgeMaterial.preset = "sepia";
+ ````
+
+ You can also just create an EdgeMaterial from a preset:
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+    geometry: new xeogl.TeapotGeometry({
+        edgeThreshold: 5
+    }),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    }),
+    edgeMaterial: new xeogl.EdgeMaterial({
+        preset: "sepia"
+    });
+    ghost: true
+ });
+ ````
+
+ Note that applying a preset just sets the EdgeMaterial's property values, which you are then free to modify afterwards.
+
+ @class EdgeMaterial
+ @module xeogl
+ @submodule materials
+ @constructor
+ @extends Material
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this EdgeMaterial within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The EdgeMaterial configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta=null] {String:Object} Metadata to attach to this EdgeMaterial.
+
+ @param [cfg.edgeColor=[0.2,0.2,0.2]] {Array of Number}  RGB color of ghost edges.
+ @param [cfg.edgeAlpha=1.0] {Number} Transparency of ghost edges. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+ @param [cfg.edgeWidth=1] {Number}  Width of ghost edges, in pixels.
+
+ @param [cfg.preset] {String} Selects a preset EdgeMaterial configuration - see {{#crossLink "EdgeMaterial/preset:method"}}EdgeMaterial#preset(){{/crossLink}}.
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.EdgeMaterial = xeogl.Material.extend({
+
+        type: "xeogl.EdgeMaterial",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._state = new xeogl.renderer.State({
+                type: "EdgeMaterial",
+                edgeColor: null,
+                edgeAlpha: null,
+                edgeWidth: null
+            });
+
+            this._preset = "default";
+
+            if (cfg.preset) {
+                this.preset = cfg.preset;
+                if (cfg.edgeColor)  this.edgeColor = cfg.edgeColor;
+                if (cfg.edgeAlpha !== undefined) this.edgeAlpha = cfg.edgeAlpha;
+                if (cfg.edgeWidth !== undefined) this.edgeWidth = cfg.edgeWidth;
+            } else {
+                this.edgeColor = cfg.edgeColor;
+                this.edgeAlpha = cfg.edgeAlpha;
+                this.edgeWidth = cfg.edgeWidth;
+            }
+        },
+
+        _props: {
+
+            /**
+             RGB color of ghost edges.
+
+             @property edgeColor
+             @default [0.2, 0.2, 0.2]
+             @type Float32Array
+             */
+            edgeColor: {
+                set: function (value) {
+                    var edgeColor = this._state.edgeColor;
+                    if (!edgeColor) {
+                        edgeColor = this._state.edgeColor = new Float32Array(3);
+                    } else if (value && edgeColor[0] === value[0] && edgeColor[1] === value[1] && edgeColor[2] === value[2]) {
+                        return;
+                    }
+                    if (value) {
+                        edgeColor[0] = value[0];
+                        edgeColor[1] = value[1];
+                        edgeColor[2] = value[2];
+                    } else {
+                        edgeColor[0] = 0.2;
+                        edgeColor[1] = 0.2;
+                        edgeColor[2] = 0.2;
+                    }
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.edgeColor;
+                }
+            },
+
+            /**
+             Transparency of ghost edges.
+
+             A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+
+             @property edgeAlpha
+             @default 1.0
+             @type Number
+             */
+            edgeAlpha: {
+                set: function (value) {
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+                    if (this._state.edgeAlpha === value) {
+                        return;
+                    }
+                    this._state.edgeAlpha = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.edgeAlpha;
+                }
+            },
+
+            /**
+             Width of ghost edges, in pixels.
+
+             @property edgeWidth
+             @default 1.0
+             @type Number
+             */
+            edgeWidth: {
+                set: function (value) {
+                    this._state.edgeWidth = value || 1.0;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.edgeWidth;
+                }
+            },
+
+            /**
+             Selects a preset EdgeMaterial configuration.
+
+             Available presets are:
+
+             * "default" - grey wireframe with translucent fill, for light backgrounds.
+             * "defaultLightBG" - grey wireframe with grey translucent fill, for light backgrounds.
+             * "defaultDarkBG" - grey wireframe with grey translucent fill, for dark backgrounds.
+             * "vectorscope" - green wireframe with glowing vertices and black translucent fill.
+             * "battlezone" - green wireframe with black opaque fill, giving a solid hidden-lines-removed effect.
+             * "sepia" - light red-grey wireframe with light sepia translucent fill - easy on the eyes.
+             * "gamegrid" - light blue wireframe with dark blue translucent fill - reminiscent of Tron.
+             * "yellowHighlight" - light yellow translucent fill - highlights while allowing underlying detail to show through.
+
+             @property preset
+             @default "default"
+             @type String
+             */
+            preset: {
+                set: function (value) {
+                    value = value || "default";
+                    if (this._preset === value) {
+                        return;
+                    }
+                    var preset = xeogl.EdgeMaterial.presets[value];
+                    if (!preset) {
+                        this.error("unsupported preset: '" + value + "' - supported values are " + Object.keys(xeogl.EdgeMaterial.presets).join(", "));
+                        return;
+                    }
+                    this.edgeColor = preset.edgeColor;
+                    this.edgeAlpha = preset.edgeAlpha;
+                    this.edgeWidth = preset.edgeWidth;
+                    this._preset = value;
+                },
+                get: function () {
+                    return this._preset;
+                }
+            }
+        },
+
+        _destroy: function () {
+            this._super();
+            this._state.destroy();
+        }
+    });
+
+    /**
+     Available EdgeMaterial presets.
+
+     @property presets
+     @type {Object}
+     @static
+     */
+    xeogl.EdgeMaterial.presets = {
+
+        "default": {
+            edgeColor: [0.0, 0.0, 0.0],
+            edgeAlpha: 1.0,
+            edgeWidth: 1
+        },
+
+        "defaultWhiteBG": {
+            edgeColor: [0.2, 0.2, 0.2],
+            edgeAlpha: 1.0,
+            edgeWidth: 1
+        },
+
+        "defaultLightBG": {
+            edgeColor: [0.2, 0.2, 0.2],
+            edgeAlpha: 1.0,
+            edgeWidth: 1
+        },
+
+        "defaultDarkBG": {
+            edgeColor: [0.5, 0.5, 0.5],
+            edgeAlpha: 1.0,
+            edgeWidth: 1
+        }
+    };
+
+})();;/**
  An **OutlineMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that's applied to {{#crossLink "Mesh"}}Meshes{{/crossLink}}
  to render an outline around them.
 
@@ -34524,7 +33995,7 @@ TODO
 
         _init: function (cfg) {
             this._super(cfg);
-            this._state = new xeogl.renderer.OutlineMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "OutlineMaterial",
                 color: null,
                 alpha: null,
@@ -34699,15 +34170,15 @@ TODO
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.Texture({
+            this._state = new xeogl.renderer.State({
                 texture: new xeogl.renderer.Texture2D(this.scene.canvas.gl),
                 matrix: null,   // Float32Array
                 hasMatrix: (cfg.translate && (cfg.translate[0] !== 0 || cfg.translate[1] !== 0)) || (!!cfg.rotate) || (cfg.scale && (cfg.scale[0] !== 0 || cfg.scale[1] !== 0)),
                 minFilter: this._checkMinFilter(cfg.minFilter),
                 magFilter: this._checkMagFilter(cfg.minFilter),
-                wrapS: this._checkWrapS(cfg.minFilter),
-                wrapT: this._checkWrapT(cfg.minFilter),
-                flipY: this._checkFlipY(cfg.minFilter),
+                wrapS: this._checkWrapS(cfg.wrapS),
+                wrapT: this._checkWrapT(cfg.wrapT),
+                flipY: this._checkFlipY(cfg.flipY),
                 encoding: this._checkEncoding(cfg.encoding)
             });
 
@@ -34847,13 +34318,13 @@ TODO
         _props: {
 
             /**
-              Indicates an HTML DOM Image object to source this Texture from.
+             Indicates an HTML DOM Image object to source this Texture from.
 
-              Sets the {{#crossLink "Texture/src:property"}}{{/crossLink}} property to null.
+             Sets the {{#crossLink "Texture/src:property"}}{{/crossLink}} property to null.
 
-              @property image
-              @default null
-              @type {HTMLImageElement}
+             @property image
+             @default null
+             @type {HTMLImageElement}
              */
             image: {
                 set: function (value) {
@@ -34862,6 +34333,7 @@ TODO
                     this._state.texture.setImage(this._image, this._state);
                     this._state.texture.setProps(this._state); // Generate mipmaps
                     this._src = null;
+                    this._renderer.imageDirty();
                 },
                 get: function () {
                     return this._image;
@@ -34869,13 +34341,13 @@ TODO
             },
 
             /**
-              Indicates a path to an image file to source this Texture from.
+             Indicates a path to an image file to source this Texture from.
 
-              Sets the {{#crossLink "Texture/image:property"}}{{/crossLink}} property to null.
+             Sets the {{#crossLink "Texture/image:property"}}{{/crossLink}} property to null.
 
-              @property src
-              @default null
-              @type String
+             @property src
+             @default null
+             @type String
              */
             src: {
                 set: function (src) {
@@ -34889,6 +34361,7 @@ TODO
                         self._state.texture.setProps(self._state); // Generate mipmaps
                         self.scene.loading--;
                         self.scene.canvas.spinner.processes--;
+                        self._renderer.imageDirty();
                     };
                     image.src = src;
                     this._src = src;
@@ -34900,11 +34373,11 @@ TODO
             },
 
             /**
-              2D translation vector that will be added to this Texture's *S* and *T* coordinates.
+             2D translation vector that will be added to this Texture's *S* and *T* coordinates.
 
-              @property translate
-              @default [0, 0]
-              @type Array(Number)
+             @property translate
+             @default [0, 0]
+             @type Array(Number)
              */
             translate: {
                 set: function (value) {
@@ -34918,11 +34391,11 @@ TODO
             },
 
             /**
-              2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.
+             2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.
 
-              @property scale
-              @default [1, 1]
-              @type Array(Number)
+             @property scale
+             @default [1, 1]
+             @type Array(Number)
              */
             scale: {
                 set: function (value) {
@@ -34936,11 +34409,11 @@ TODO
             },
 
             /**
-              Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.
+             Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.
 
-              @property rotate
-              @default 0
-              @type Number
+             @property rotate
+             @default 0
+             @type Number
              */
             rotate: {
                 set: function (value) {
@@ -35173,7 +34646,7 @@ TODO
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.Fresnel({
+            this._state = new xeogl.renderer.State({
                 edgeColor: xeogl.math.vec3([0, 0, 0]),
                 centerColor: xeogl.math.vec3([1, 1, 1]),
                 edgeBias: 0,
@@ -35366,7 +34839,7 @@ TODO
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.Viewport({
+            this._state = new xeogl.renderer.State({
                 boundary: [0, 0, 100, 100]
             });
 
@@ -35717,7 +35190,7 @@ TODO
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.ViewTransform({
+            this._state = new xeogl.renderer.State({
                 deviceMatrix: math.mat4(),
                 hasDeviceMatrix: false, // True when deviceMatrix set to other than identity
                 matrix: math.mat4(),
@@ -35754,19 +35227,16 @@ TODO
                     self.fire("projMatrix", self._perspective.matrix);
                 }
             });
-
             this._ortho.on("matrix", function () {
                 if (self._projectionType === "ortho") {
                     self.fire("projMatrix", self._ortho.matrix);
                 }
             });
-
             this._frustum.on("matrix", function () {
                 if (self._projectionType === "frustum") {
                     self.fire("projMatrix", self._frustum.matrix);
                 }
             });
-
             this._customProjection.on("matrix", function () {
                 if (self._projectionType === "customProjection") {
                     self.fire("projMatrix", self._customProjection.matrix);
@@ -35775,22 +35245,17 @@ TODO
         },
 
         _update: (function () {
-
             var eyeLookVec = math.vec3();
             var eyeLookVecNorm = math.vec3();
             var eyeLookOffset = math.vec3();
             var offsetEye = math.vec3();
             var tempMat = math.mat4();
-
             return function () {
-
                 var state = this._state;
-
                 // In ortho mode, build the view matrix with an eye position that's translated
                 // well back from look, so that the front clip plane doesn't unexpectedly cut
                 // the front off the view (not a problem with perspective, since objects close enough
                 // to be clipped by the front plane are usually too big to see anything of their cross-sections).
-
                 var eye;
                 if (this.projection === "ortho") {
                     math.subVec3(this._eye, this._look, eyeLookVec);
@@ -35801,7 +35266,6 @@ TODO
                 } else {
                     eye = this._eye;
                 }
-
                 if (state.hasDeviceMatrix) {
                     math.lookAtMat4v(eye, this._look, this._up, tempMat);
                     math.mulMat4(state.deviceMatrix, tempMat, state.matrix);
@@ -35809,72 +35273,62 @@ TODO
                 } else {
                     math.lookAtMat4v(eye, this._look, this._up, state.matrix);
                 }
-
                 math.inverseMat4(this._state.matrix, this._state.normalMatrix);
                 math.transposeMat4(this._state.normalMatrix);
-
                 this._renderer.imageDirty();
-
                 this.fire("matrix", this._state.matrix);
                 this.fire("viewMatrix", this._state.matrix);
             };
         })(),
 
         /**
-         * Rotates {{#crossLink "Camera/eye:property"}}{{/crossLink}} about {{#crossLink "Camera/look:property"}}{{/crossLink}}, around the {{#crossLink "Camera/up:property"}}{{/crossLink}} vector
-         *
-         * @method orbitYaw
-         * @param {Number} angle Angle of rotation in degrees
+         Rotates {{#crossLink "Camera/eye:property"}}{{/crossLink}} about {{#crossLink "Camera/look:property"}}{{/crossLink}}, around the {{#crossLink "Camera/up:property"}}{{/crossLink}} vector
+
+         @method orbitYaw
+         @param {Number} angle Angle of rotation in degrees
          */
         orbitYaw: (function () {
             var mat = math.mat4();
             return function (angle) {
-
                 var lookEyeVec = math.subVec3(this._eye, this._look, tempVec3);
                 math.rotationMat4v(angle * 0.0174532925, this._gimbalLock ? this._worldUp : this._up, mat);
                 lookEyeVec = math.transformPoint3(mat, lookEyeVec, tempVec3b);
-
                 this.eye = math.addVec3(this._look, lookEyeVec, tempVec3c); // Set eye position as 'look' plus 'eye' vector
                 this.up = math.transformPoint3(mat, this._up, tempVec3d); // Rotate 'up' vector
             };
         })(),
 
         /**
-         * Rotates {{#crossLink "Camera/eye:property"}}{{/crossLink}} about {{#crossLink "Camera/look:property"}}{{/crossLink}} around the right axis (orthogonal to {{#crossLink "Camera/up:property"}}{{/crossLink}} and "look").
-         *
-         * @method orbitPitch
-         * @param {Number} angle Angle of rotation in degrees
+         Rotates {{#crossLink "Camera/eye:property"}}{{/crossLink}} about {{#crossLink "Camera/look:property"}}{{/crossLink}} around the right axis (orthogonal to {{#crossLink "Camera/up:property"}}{{/crossLink}} and "look").
+
+         @method orbitPitch
+         @param {Number} angle Angle of rotation in degrees
          */
         orbitPitch: (function () {
             var mat = math.mat4();
             return function (angle) {
-
                 var eye2 = math.subVec3(this._eye, this._look, tempVec3);
                 var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
                 math.rotationMat4v(angle * 0.0174532925, left, mat);
                 eye2 = math.transformPoint3(mat, eye2, tempVec3d);
-
                 this.eye = math.addVec3(eye2, this._look, tempVec3e);
                 this.up = math.transformPoint3(mat, this._up, tempVec3f);
             };
         })(),
 
         /**
-         * Rotates {{#crossLink "Camera/look:property"}}{{/crossLink}} about {{#crossLink "Camera/eye:property"}}{{/crossLink}}, around the {{#crossLink "Camera/up:property"}}{{/crossLink}} vector.
-         *
-         * @method yaw
-         * @param {Number} angle Angle of rotation in degrees
+         Rotates {{#crossLink "Camera/look:property"}}{{/crossLink}} about {{#crossLink "Camera/eye:property"}}{{/crossLink}}, around the {{#crossLink "Camera/up:property"}}{{/crossLink}} vector.
+
+         @method yaw
+         @param {Number} angle Angle of rotation in degrees
          */
         yaw: (function () {
             var mat = math.mat4();
             return function (angle) {
-
                 var look2 = math.subVec3(this._look, this._eye, tempVec3);
                 math.rotationMat4v(angle * 0.0174532925, this._gimbalLock ? this._worldUp : this._up, mat);
                 look2 = math.transformPoint3(mat, look2, tempVec3b);
-
                 this.look = math.addVec3(look2, this._eye, tempVec3c);
-
                 if (this._gimbalLock) {
                     this.up = math.transformPoint3(mat, this._up, tempVec3d);
                 }
@@ -35882,37 +35336,33 @@ TODO
         })(),
 
         /**
-         * Rotates {{#crossLink "Camera/look:property"}}{{/crossLink}} about {{#crossLink "Camera/eye:property"}}{{/crossLink}}, around the right axis (orthogonal to {{#crossLink "Camera/up:property"}}{{/crossLink}} and "look").
-         *
-         * @method pitch
-         * @param {Number} angle Angle of rotation in degrees
+         Rotates {{#crossLink "Camera/look:property"}}{{/crossLink}} about {{#crossLink "Camera/eye:property"}}{{/crossLink}}, around the right axis (orthogonal to {{#crossLink "Camera/up:property"}}{{/crossLink}} and "look").
+
+         @method pitch
+         @param {Number} angle Angle of rotation in degrees
          */
         pitch: (function () {
             var mat = math.mat4();
             return function (angle) {
-
                 var look2 = math.subVec3(this._look, this._eye, tempVec3);
                 var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
                 math.rotationMat4v(angle * 0.0174532925, left, mat);
                 look2 = math.transformPoint3(mat, look2, tempVec3d);
-
                 this.look = math.addVec3(look2, this._eye, tempVec3e);
                 this.up = math.transformPoint3(mat, this._up, tempVec3f);
             };
         })(),
 
         /**
-         * Pans the camera along the camera's local X, Y and Z axis.
-         *
-         * @method pan
-         * @param pan The pan vector
+         Pans the camera along the camera's local X, Y and Z axis.
+
+         @method pan
+         @param pan The pan vector
          */
         pan: function (pan) {
-
             var eye2 = math.subVec3(this._eye, this._look, tempVec3);
             var vec = [0, 0, 0];
             var v;
-
             if (pan[0] !== 0) {
                 var left = math.cross3Vec3(math.normalizeVec3(eye2, []), math.normalizeVec3(this._up, tempVec3b));
                 v = math.mulVec3Scalar(left, pan[0]);
@@ -35920,134 +35370,115 @@ TODO
                 vec[1] += v[1];
                 vec[2] += v[2];
             }
-
             if (pan[1] !== 0) {
                 v = math.mulVec3Scalar(math.normalizeVec3(this._up, tempVec3c), pan[1]);
                 vec[0] += v[0];
                 vec[1] += v[1];
                 vec[2] += v[2];
             }
-
             if (pan[2] !== 0) {
                 v = math.mulVec3Scalar(math.normalizeVec3(eye2, tempVec3d), pan[2]);
                 vec[0] += v[0];
                 vec[1] += v[1];
                 vec[2] += v[2];
             }
-
             this.eye = math.addVec3(this._eye, vec, tempVec3e);
             this.look = math.addVec3(this._look, vec, tempVec3f);
         },
 
         /**
-         * Increments/decrements zoom factor, ie. distance between {{#crossLink "Camera/eye:property"}}{{/crossLink}}
-         * and {{#crossLink "Camera/look:property"}}{{/crossLink}}.
-         *
-         * @method zoom
-         * @param delta
+         Increments/decrements zoom factor, ie. distance between {{#crossLink "Camera/eye:property"}}{{/crossLink}}
+         and {{#crossLink "Camera/look:property"}}{{/crossLink}}.
+
+         @method zoom
+         @param delta
          */
         zoom: function (delta) {
-
             var vec = math.subVec3(this._eye, this._look, tempVec3);
             var lenLook = Math.abs(math.lenVec3(vec, tempVec3b));
             var newLenLook = Math.abs(lenLook + delta);
-
             if (newLenLook < 0.5) {
                 return;
             }
-
             var dir = math.normalizeVec3(vec, tempVec3c);
-
             this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
         },
 
         _props: {
 
             /**
-             * Position of this Camera's eye.
-             *
-             * Fires an {{#crossLink "Camera/eye:event"}}{{/crossLink}} event on change.
-             *
-             * @property eye
-             * @default [0,0,10]
-             * @type Float32Array
+             Position of this Camera's eye.
+
+             Fires an {{#crossLink "Camera/eye:event"}}{{/crossLink}} event on change.
+
+             @property eye
+             @default [0,0,10]
+             @type Float32Array
              */
             eye: {
-
                 set: function (value) {
-
                     this._eye.set(value || [0, 0, 10]);
                     this._needUpdate(0); // Ensure matrix built on next "tick"
-
                     /**
-                     * Fired whenever this Camera's {{#crossLink "Camera/eye:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event eye
-                     * @param value The property's new value
+                     Fired whenever this Camera's {{#crossLink "Camera/eye:property"}}{{/crossLink}} property changes.
+
+                     @event eye
+                     @param value The property's new value
                      */
                     this.fire("eye", this._eye);
                 },
-
                 get: function () {
                     return this._eye;
                 }
             },
 
             /**
-             * Position of this Camera's point-of-interest.
-             *
-             * Fires a {{#crossLink "Camera/look:event"}}{{/crossLink}} event on change.
-             *
-             * @property look
-             * @default [0,0,0]
-             * @type Float32Array
+             Position of this Camera's point-of-interest.
+
+             Fires a {{#crossLink "Camera/look:event"}}{{/crossLink}} event on change.
+
+             @property look
+             @default [0,0,0]
+             @type Float32Array
              */
             look: {
-
                 set: function (value) {
-
                     this._look.set(value || [0, 0, 0]);
                     this._needUpdate(0); // Ensure matrix built on next "tick"
-
                     /**
-                     * Fired whenever this Camera's {{#crossLink "Camera/look:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event look
-                     * @param value The property's new value
+                     Fired whenever this Camera's {{#crossLink "Camera/look:property"}}{{/crossLink}} property changes.
+
+                     @event look
+                     @param value The property's new value
                      */
                     this.fire("look", this._look);
                 },
-
                 get: function () {
                     return this._look;
                 }
             },
 
             /**
-             * Direction of this Camera's {{#crossLink "Camera/up:property"}}{{/crossLink}} vector.
-             *
-             * Fires an {{#crossLink "Camera/up:event"}}{{/crossLink}} event on change.
-             *
-             * @property up
-             * @default [0,1,0]
-             * @type Float32Array
+             Direction of this Camera's {{#crossLink "Camera/up:property"}}{{/crossLink}} vector.
+
+             Fires an {{#crossLink "Camera/up:event"}}{{/crossLink}} event on change.
+
+             @property up
+             @default [0,1,0]
+             @type Float32Array
              */
             up: {
-
                 set: function (value) {
-
                     this._up.set(value || [0, 1, 0]);
                     this._needUpdate(0);
-
                     /**
-                     * Fired whenever this Camera's {{#crossLink "Camera/up:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event up
-                     * @param value The property's new value
+                     Fired whenever this Camera's {{#crossLink "Camera/up:property"}}{{/crossLink}} property changes.
+
+                     @event up
+                     @param value The property's new value
                      */
                     this.fire("up", this._up);
                 },
-
                 get: function () {
                     return this._up;
                 }
@@ -36058,64 +35489,53 @@ TODO
 
              This is intended to be used for stereo rendering with WebVR etc.
 
-             * @property deviceMatrix
-             * @type {Float32Array}
+             @property deviceMatrix
+             @type {Float32Array}
              */
             deviceMatrix: {
-
                 set: function (matrix) {
                     this._state.deviceMatrix.set(matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
                     this._state.hasDeviceMatrix = !!matrix;
                     this._needUpdate(0);
-
                     /**
-                     * Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event deviceMatrix
-                     * @param value The property's new value
+                     Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
+
+                     @event deviceMatrix
+                     @param value The property's new value
                      */
                     this.fire("deviceMatrix", this._state.deviceMatrix);
                 },
-
                 get: function () {
                     return this._state.deviceMatrix;
                 }
             },
 
             /**
-             * Indicates the up, right and forward axis of the World coordinate system.
-             *
-             * Has format: ````[rightX, rightY, rightZ, upX, upY, upZ, forwardX, forwardY, forwardZ]````
-             *
-             * @property worldAxis
-             * @default [1, 0, 0, 0, 1, 0, 0, 0, 1]
-             * @type Float32Array
+             Indicates the up, right and forward axis of the World coordinate system.
+
+             Has format: ````[rightX, rightY, rightZ, upX, upY, upZ, forwardX, forwardY, forwardZ]````
+
+             @property worldAxis
+             @default [1, 0, 0, 0, 1, 0, 0, 0, 1]
+             @type Float32Array
              */
             worldAxis: {
-
                 set: function (value) {
-
                     value = value || [1, 0, 0, 0, 1, 0, 0, 0, 1];
-
                     if (!this._worldAxis) {
                         this._worldAxis = new Float32Array(value);
-
                     } else {
                         this._worldAxis.set(value);
                     }
-
                     this._worldRight[0] = this._worldAxis[0];
                     this._worldRight[1] = this._worldAxis[1];
                     this._worldRight[2] = this._worldAxis[2];
-
                     this._worldUp[0] = this._worldAxis[3];
                     this._worldUp[1] = this._worldAxis[4];
                     this._worldUp[2] = this._worldAxis[5];
-
                     this._worldForward[0] = this._worldAxis[6];
                     this._worldForward[1] = this._worldAxis[7];
                     this._worldForward[2] = this._worldAxis[8];
-
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/worldAxis:property"}}{{/crossLink}} property changes.
                      *
@@ -36124,94 +35544,85 @@ TODO
                      */
                     this.fire("worldAxis", this._worldAxis);
                 },
-
                 get: function () {
                     return this._worldAxis;
                 }
             },
 
             /**
-             * Direction of World-space "up".
-             *
-             * @property worldUp
-             * @default [0,1,0]
-             * @type Float32Array
-             * @final
+             Direction of World-space "up".
+
+             @property worldUp
+             @default [0,1,0]
+             @type Float32Array
+             @final
              */
             worldUp: {
-
                 get: function () {
                     return this._worldUp;
                 }
             },
 
             /**
-             * Direction of World-space "right".
-             *
-             * @property worldRight
-             * @default [1,0,0]
-             * @type Float32Array
-             * @final
+             Direction of World-space "right".
+
+             @property worldRight
+             @default [1,0,0]
+             @type Float32Array
+             @final
              */
             worldRight: {
-
                 get: function () {
                     return this._worldRight;
                 }
             },
 
             /**
-             * Direction of World-space "forwards".
-             *
-             * @property worldForward
-             * @default [0,0,-1]
-             * @type Float32Array
-             * @final
+             Direction of World-space "forwards".
+
+             @property worldForward
+             @default [0,0,-1]
+             @type Float32Array
+             @final
              */
             worldForward: {
-
                 get: function () {
                     return this._worldForward;
                 }
             },
 
             /**
-             * Whether to lock yaw rotation to pivot about the World-space "up" axis.
-             *
-             * Fires a {{#crossLink "Camera/gimbalLock:event"}}{{/crossLink}} event on change.
-             *
-             * @property gimbalLock
-             * @default true
-             * @type Boolean
+             Whether to lock yaw rotation to pivot about the World-space "up" axis.
+
+             Fires a {{#crossLink "Camera/gimbalLock:event"}}{{/crossLink}} event on change.
+
+             @property gimbalLock
+             @default true
+             @type Boolean
              */
             gimbalLock: {
-
                 set: function (value) {
-
                     this._gimbalLock = value !== false;
-
                     /**
-                     * Fired whenever this Camera's  {{#crossLink "Camera/gimbalLock:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event gimbalLock
-                     * @param value The property's new value
+                     Fired whenever this Camera's  {{#crossLink "Camera/gimbalLock:property"}}{{/crossLink}} property changes.
+
+                     @event gimbalLock
+                     @param value The property's new value
                      */
                     this.fire("gimbalLock", this._gimbalLock);
                 },
-
                 get: function () {
                     return this._gimbalLock;
                 }
             },
 
             /**
-             * Distance from "look" to "eye".
-             * @property eyeLookDist
-             * @type Number
-             * @final
+             Distance from "look" to "eye".
+             @property eyeLookDist
+             @type Number
+             @final
              */
             eyeLookDist: {
-
                 get: (function () {
                     var vec = new Float32Array(3);
                     return function () {
@@ -36221,167 +35632,149 @@ TODO
             },
 
             /**
-             * The Camera's viewing transformation matrix.
-             *
-             * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @type {Float32Array}
-             * @final
-             * @deprecated
+             The Camera's viewing transformation matrix.
+
+             Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
+
+             @property matrix
+             @type {Float32Array}
+             @final
+             @deprecated
              */
             matrix: {
-
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
                     return this._state.matrix;
                 }
             },
 
             /**
-             * The Camera's viewing transformation matrix.
-             *
-             * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property viewMatrix
-             * @final
-             * @type {Float32Array}
+             The Camera's viewing transformation matrix.
+
+             Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
+
+             @property viewMatrix
+             @final
+             @type {Float32Array}
              */
             viewMatrix: {
-
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
                     return this._state.matrix;
                 }
             },
 
             /**
-             * The Camera's viewing normal transformation matrix.
-             *
-             * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property normalMatrix
-             * @type {Float32Array}
-             * @final
-             * @deprecated
+             The Camera's viewing normal transformation matrix.
+
+             Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
+
+             @property normalMatrix
+             @type {Float32Array}
+             @final
+             @deprecated
              */
             normalMatrix: {
-
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
                     return this._state.normalMatrix;
                 }
             },
 
             /**
-             * The Camera's viewing normal transformation matrix.
-             *
-             * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property viewNormalMatrix
-             * @final
-             * @type {Float32Array}
+             The Camera's viewing normal transformation matrix.
+
+             Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
+
+             @property viewNormalMatrix
+             @final
+             @type {Float32Array}
              */
             viewNormalMatrix: {
-
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
                     return this._state.normalMatrix;
                 }
             },
 
             /**
-             * Camera's projection transformation projMatrix.
-             *
-             * Fires a {{#crossLink "Camera/projMatrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property projMatrix
-             * @final
-             * @type {Float32Array}
+             Camera's projection transformation projMatrix.
+
+             Fires a {{#crossLink "Camera/projMatrix:event"}}{{/crossLink}} event on change.
+
+             @property projMatrix
+             @final
+             @type {Float32Array}
              */
             projMatrix: {
-
                 get: function () {
-
                     return this[this.projection].matrix;
                 }
             },
 
             /**
-             * The perspective projection transform for this Camera.
-             *
-             * This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "perspective".
-             *
-             * @property perspective
-             * @type Perspective
-             * @final
+             The perspective projection transform for this Camera.
+
+             This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "perspective".
+
+             @property perspective
+             @type Perspective
+             @final
              */
             perspective: {
-
                 get: function () {
                     return this._perspective;
                 }
             },
 
             /**
-             * The orthographic projection transform for this Camera.
-             *
-             * This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "ortho".
-             *
-             * @property ortho
-             * @type Ortho
-             * @final
+             The orthographic projection transform for this Camera.
+
+             This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "ortho".
+
+             @property ortho
+             @type Ortho
+             @final
              */
             ortho: {
-
                 get: function () {
                     return this._ortho;
                 }
             },
 
             /**
-             * The frustum projection transform for this Camera.
-             *
-             * This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "frustum".
-             *
-             * @property frustum
-             * @type Frustum
-             * @final
+             The frustum projection transform for this Camera.
+
+             This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "frustum".
+
+             @property frustum
+             @type Frustum
+             @final
              */
             frustum: {
-
                 get: function () {
                     return this._frustum;
                 }
             },
 
             /**
-             * A custom projection transform, given as a 4x4 matrix.
-             *
-             * This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "customProjection".
-             *
-             * @property customProjection
-             * @type CustomProjection
-             * @final
+             A custom projection transform, given as a 4x4 matrix.
+
+             This is used while {{#crossLink "Camera/projection:property"}}{{/crossLink}} equals "customProjection".
+
+             @property customProjection
+             @type CustomProjection
+             @final
              */
             customProjection: {
-
                 get: function () {
                     return this._customProjection;
                 }
@@ -36397,56 +35790,42 @@ TODO
              @type {String}
              */
             projection: {
-
                 set: function (value) {
-
                     value = value || "perspective";
-
                     if (this._projectionType === value) {
                         return;
                     }
-
                     if (value === "perspective") {
                         this._project = this._perspective;
-
                     } else if (value === "ortho") {
                         this._project = this._ortho;
-
                     } else if (value === "frustum") {
                         this._project = this._frustum;
-
                     } else if (value === "customProjection") {
                         this._project = this._customProjection;
-
                     } else {
                         this.error("Unsupported value for 'projection': " + value + " defaulting to 'perspective'");
                         this._project = this._perspective;
                         value = "perspective";
                     }
-
                     this._projectionType = value;
-
                     this._renderer.imageDirty();
-
                     this._update(); // Need to rebuild lookat matrix with full eye, look & up
-
                     this.fire("dirty");
                 },
-
                 get: function () {
                     return this._projectionType;
                 }
             },
 
             /**
-             * The active projection transform for this Camera.
-             *
-             * @property project
-             * @type Transform
-             * @final
+             The active projection transform for this Camera.
+
+             @property project
+             @type Transform
+             @final
              */
             project: {
-
                 get: function () {
                     return this._project;
                 }
@@ -36457,6 +35836,10 @@ TODO
                     return this;
                 }
             }
+        },
+
+        _destroy: function () {
+            this._state.destroy();
         }
     });
 })();
@@ -36507,7 +35890,7 @@ TODO
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.ProjTransform({
+            this._state = new xeogl.renderer.State({
                 matrix: xeogl.math.mat4()
             });
 
@@ -36529,11 +35912,8 @@ TODO
         },
 
         _update: function () {
-
             xeogl.math.frustumMat4(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
-
             this._renderer.imageDirty();
-
             this.fire("matrix", this._state.matrix);
         },
 
@@ -36549,173 +35929,144 @@ TODO
              @type Number
              */
             left: {
-
                 set: function (value) {
-
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event left
-                     * @param value The property's new value
+                     Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
+
+                     @event left
+                     @param value The property's new value
                      */
                     this.fire("left", this._left);
                 },
-
                 get: function () {
                     return this._left;
                 }
             },
 
             /**
-             * Position of this Frustum's right plane on the View-space X-axis.
-             *
-             * Fires a {{#crossLink "Frustum/right:event"}}{{/crossLink}} event on change.
-             *
-             * @property right
-             * @default 1.0
-             * @type Number
+             Position of this Frustum's right plane on the View-space X-axis.
+
+             Fires a {{#crossLink "Frustum/right:event"}}{{/crossLink}} event on change.
+
+             @property right
+             @default 1.0
+             @type Number
              */
             right: {
-
                 set: function (value) {
-
                     this._right = (value !== undefined && value !== null) ? value : 1.0;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event right
-                     * @param value The property's new value
+                     Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
+
+                     @event right
+                     @param value The property's new value
                      */
                     this.fire("right", this._right);
                 },
-
                 get: function () {
                     return this._right;
                 }
             },
 
             /**
-             * Position of this Frustum's top plane on the View-space Y-axis.
-             *
-             * Fires a {{#crossLink "Frustum/top:event"}}{{/crossLink}} event on change.
-             *
-             * @property top
-             * @default 1.0
-             * @type Number
+             Position of this Frustum's top plane on the View-space Y-axis.
+
+             Fires a {{#crossLink "Frustum/top:event"}}{{/crossLink}} event on change.
+
+             @property top
+             @default 1.0
+             @type Number
              */
             top: {
-
                 set: function (value) {
-
                     this._top = (value !== undefined && value !== null) ? value : 1.0;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event top
-                     * @param value The property's new value
+                     Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
+
+                     @event top
+                     @param value The property's new value
                      */
                     this.fire("top", this._top);
                 },
-
                 get: function () {
                     return this._top;
                 }
             },
 
             /**
-             * Position of this Frustum's bottom plane on the View-space Y-axis.
-             *
-             * Fires a {{#crossLink "Frustum/bottom:event"}}{{/crossLink}} event on change.
-             *
-             * @property bottom
-             * @default -1.0
-             * @type Number
+             Position of this Frustum's bottom plane on the View-space Y-axis.
+
+             Fires a {{#crossLink "Frustum/bottom:event"}}{{/crossLink}} event on change.
+
+             @property bottom
+             @default -1.0
+             @type Number
              */
             bottom: {
-
                 set: function (value) {
-
                     this._bottom = (value !== undefined && value !== null) ? value : -1.0;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event bottom
-                     * @param value The property's new value
+                     Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
+
+                     @event bottom
+                     @param value The property's new value
                      */
                     this.fire("bottom", this._bottom);
                 },
-
                 get: function () {
                     return this._bottom;
                 }
             },
 
             /**
-             * Position of this Frustum's near plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Frustum/near:event"}}{{/crossLink}} event on change.
-             *
-             * @property near
-             * @default 0.1
-             * @type Number
+             Position of this Frustum's near plane on the positive View-space Z-axis.
+
+             Fires a {{#crossLink "Frustum/near:event"}}{{/crossLink}} event on change.
+
+             @property near
+             @default 0.1
+             @type Number
              */
             near: {
-
                 set: function (value) {
-
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event near
-                     * @param value The property's new value
+                     Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
+
+                     @event near
+                     @param value The property's new value
                      */
                     this.fire("near", this._near);
                 },
-
                 get: function () {
                     return this._near;
                 }
             },
 
             /**
-             * Position of this Frustum's far plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Frustum/far:event"}}{{/crossLink}} event on change.
-             *
-             * @property far
-             * @default 10000.0
-             * @type Number
+             Position of this Frustum's far plane on the positive View-space Z-axis.
+
+             Fires a {{#crossLink "Frustum/far:event"}}{{/crossLink}} event on change.
+
+             @property far
+             @default 10000.0
+             @type Number
              */
             far: {
-
                 set: function (value) {
-
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event far
-                     * @param value The property's new value
+                     Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
+
+                     @event far
+                     @param value The property's new value
                      */
                     this.fire("far", this._far);
                 },
@@ -36726,25 +36077,26 @@ TODO
             },
 
             /**
-             * The Frustum's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Frustum/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
+             The Frustum's projection transform matrix.
+
+             Fires a {{#crossLink "Frustum/matrix:event"}}{{/crossLink}} event on change.
+
+             @property matrix
+             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             @type {Float32Array}
              */
             matrix: {
-
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
                     return this._state.matrix;
                 }
             }
+        },
+
+        _destroy: function () {
+            this._state.destroy();
         }
     });
 })();
@@ -36796,7 +36148,7 @@ TODO
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.ProjTransform({
+            this._state = new xeogl.renderer.State({
                 matrix: xeogl.math.mat4()
             });
 
@@ -36849,136 +36201,115 @@ TODO
         _props: {
 
             /**
-             * Scale factor for this Ortho's extents on X and Y axis.
-             *
-             * Clamps to minimum value of ````0.01```.
-             *
-             * Fires a {{#crossLink "Ortho/scale:event"}}{{/crossLink}} event on change.
-             *
-             * @property scale
-             * @default 1.0
-             * @type Number
+             Scale factor for this Ortho's extents on X and Y axis.
+
+             Clamps to minimum value of ````0.01```.
+
+             Fires a {{#crossLink "Ortho/scale:event"}}{{/crossLink}} event on change.
+
+             @property scale
+             @default 1.0
+             @type Number
              */
             scale: {
-
                 set: function (value) {
-
                     if (value === undefined || value === null) {
                         value = 1.0;
                     }
-
                     if (value <= 0) {
                         value = 0.01;
                     }
-
                     this._scale = value;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Ortho's {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event scale
-                     * @param value The property's new value
+                     Fired whenever this Ortho's {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property changes.
+
+                     @event scale
+                     @param value The property's new value
                      */
                     this.fire("scale", this._scale);
                 },
-
                 get: function () {
                     return this._scale;
                 }
             },
 
             /**
-             * Position of this Ortho's near plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Ortho/near:event"}}{{/crossLink}} event on change.
-             *
-             * @property near
-             * @default 0.1
-             * @type Number
+             Position of this Ortho's near plane on the positive View-space Z-axis.
+
+             Fires a {{#crossLink "Ortho/near:event"}}{{/crossLink}} event on change.
+
+             @property near
+             @default 0.1
+             @type Number
              */
             near: {
-
                 set: function (value) {
-
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event near
-                     * @param value The property's new value
+                     Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
+
+                     @event near
+                     @param value The property's new value
                      */
                     this.fire("near", this._near);
                 },
-
                 get: function () {
                     return this._near;
                 }
             },
 
             /**
-             * Position of this Ortho's far plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Ortho/far:event"}}{{/crossLink}} event on change.
-             *
-             * @property far
-             * @default 10000.0
-             * @type Number
+             Position of this Ortho's far plane on the positive View-space Z-axis.
+
+             Fires a {{#crossLink "Ortho/far:event"}}{{/crossLink}} event on change.
+
+             @property far
+             @default 10000.0
+             @type Number
              */
             far: {
-
                 set: function (value) {
-
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
-
                     this._needUpdate();
-
                     /**
-                     * Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event far
-                     * @param value The property's new value
+                     Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
+
+                     @event far
+                     @param value The property's new value
                      */
                     this.fire("far", this._far);
                 },
-
                 get: function () {
                     return this._far;
                 }
             },
 
             /**
-             * The Ortho's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Ortho/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
+             The Ortho's projection transform matrix.
+
+             Fires a {{#crossLink "Ortho/matrix:event"}}{{/crossLink}} event on change.
+
+             @property matrix
+             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             @type {Float32Array}
              */
             matrix: {
-
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
                     return this._state.matrix;
                 }
             }
         },
 
         _destroy: function () {
-            this._super();
+            this._state.destroy();
             this.scene.canvas.off(this._onCanvasBoundary);
         }
     });
-
 })();;/**
  A **Perspective** defines a perspective projection transform for a {{#crossLink "Camera"}}Camera{{/crossLink}}.
 
@@ -37022,7 +36353,7 @@ TODO
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.ProjTransform({
+            this._state = new xeogl.renderer.State({
                 matrix: xeogl.math.mat4()
             });
 
@@ -37041,193 +36372,157 @@ TODO
         },
 
         _update: function () {
-
             const WIDTH_INDEX = 2;
             const HEIGHT_INDEX = 3;
-
             var boundary = this.scene.viewport.boundary;
             var aspect = boundary[WIDTH_INDEX] / boundary[HEIGHT_INDEX];
-
             var fov = this._fov;
             var fovAxis = this._fovAxis;
-
             if (fovAxis == "x" || (fovAxis == "min" && aspect < 1) || (fovAxis == "max" && aspect > 1)) {
                 fov = fov / aspect;
             }
-
             fov = Math.min(fov, 120);
-
             xeogl.math.perspectiveMat4(fov * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
-
             this._renderer.imageDirty();
-
             this.fire("matrix", this._state.matrix);
         },
 
         _props: {
 
             /**
-             * The field-of-view angle (FOV).
-             *
-             * Fires a {{#crossLink "Perspective/fov:event"}}{{/crossLink}} event on change.
-             *
-             * @property fov
-             * @default 60.0
-             * @type Number
+             The field-of-view angle (FOV).
+
+             Fires a {{#crossLink "Perspective/fov:event"}}{{/crossLink}} event on change.
+
+             @property fov
+             @default 60.0
+             @type Number
              */
             fov: {
-
                 set: function (value) {
-
                     this._fov = (value !== undefined && value !== null) ? value : 60.0;
-
                     this._needUpdate(0); // Ensure matrix built on next "tick"
-
                     /**
-                     * Fired whenever this Perspective's {{#crossLink "Perspective/fov:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event fov
-                     * @param value The property's new value
+                     Fired whenever this Perspective's {{#crossLink "Perspective/fov:property"}}{{/crossLink}} property changes.
+
+                     @event fov
+                     @param value The property's new value
                      */
                     this.fire("fov", this._fov);
                 },
-
                 get: function () {
                     return this._fov;
                 }
             },
 
             /**
-             * The FOV axis.
-             *
-             * Options are "x", "y" or "min", to use the minimum axis.
-             *
-             * Fires a {{#crossLink "Perspective/fov:event"}}{{/crossLink}} event on change.
-             *
-             * @property fov
-             * @default "min"
-             * @type String
+             The FOV axis.
+
+             Options are "x", "y" or "min", to use the minimum axis.
+
+             Fires a {{#crossLink "Perspective/fov:event"}}{{/crossLink}} event on change.
+
+             @property fov
+             @default "min"
+             @type String
              */
             fovAxis: {
-
                 set: function (value) {
-
                     value = value || "min";
-
                     if (this._fovAxis === value) {
                         return;
                     }
-
                     if (value !== "x" && value !== "y" && value !== "min") {
                         this.error("Unsupported value for 'fovAxis': " + value + " - defaulting to 'min'");
                         value = "min";
                     }
-
                     this._fovAxis = value;
-
                     this._needUpdate(0); // Ensure matrix built on next "tick"
-
                     /**
-                     * Fired whenever this Perspective's {{#crossLink "Perspective/fovAxis:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event fovAxis
-                     * @param value The property's new value
+                     Fired whenever this Perspective's {{#crossLink "Perspective/fovAxis:property"}}{{/crossLink}} property changes.
+
+                     @event fovAxis
+                     @param value The property's new value
                      */
                     this.fire("fovAxis", this._fovAxis);
                 },
-
                 get: function () {
                     return this._fovAxis;
                 }
             },
 
             /**
-             * Position of this Perspective's near plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Perspective/near:event"}}{{/crossLink}} event on change.
-             *
-             * @property near
-             * @default 0.1
-             * @type Number
+             Position of this Perspective's near plane on the positive View-space Z-axis.
+
+             Fires a {{#crossLink "Perspective/near:event"}}{{/crossLink}} event on change.
+
+             @property near
+             @default 0.1
+             @type Number
              */
             near: {
-
                 set: function (value) {
-
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
-
                     this._needUpdate(0); // Ensure matrix built on next "tick"
-
                     /**
-                     * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
-                     * @event near
-                     * @param value The property's new value
+                     Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
+                     @event near
+                     @param value The property's new value
                      */
                     this.fire("near", this._near);
                 },
-
                 get: function () {
                     return this._near;
                 }
             },
 
             /**
-             * Position of this Perspective's far plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Perspective/far:event"}}{{/crossLink}} event on change.
-             *
-             * @property far
-             * @default 10000.0
-             * @type Number
+             Position of this Perspective's far plane on the positive View-space Z-axis.
+
+             Fires a {{#crossLink "Perspective/far:event"}}{{/crossLink}} event on change.
+
+             @property far
+             @default 10000.0
+             @type Number
              */
             far: {
-
                 set: function (value) {
-
                     this._far = (value !== undefined && value !== null) ? value : 10000;
-
                     this._needUpdate(0); // Ensure matrix built on next "tick"
-
                     /**
-                     * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event far
-                     * @param value The property's new value
+                     Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.
+
+                     @event far
+                     @param value The property's new value
                      */
                     this.fire("far", this._far);
                 },
-
                 get: function () {
                     return this._far;
                 }
             },
 
             /**
-             * The Perspective's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Perspective/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
+             The Perspective's projection transform matrix.
+
+             Fires a {{#crossLink "Perspective/matrix:event"}}{{/crossLink}} event on change.
+
+             @property matrix
+             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             @type {Float32Array}
              */
             matrix: {
-
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
                     return this._state.matrix;
                 }
             }
         },
 
         _destroy: function () {
-
-            this._super();
-
+            this._state.destroy();
             this.scene.canvas.off(this._canvasResized);
         }
     });
@@ -37269,43 +36564,42 @@ TODO
         type: "xeogl.CustomProjection",
 
         _init: function (cfg) {
-
-            this._state = new xeogl.renderer.ProjTransform({
+            this._state = new xeogl.renderer.State({
                 matrix: xeogl.math.mat4()
             });
-
             this.matrix = cfg.matrix;
         },
 
         _props: {
 
             /**
-             * The CustomProjection's projection transform matrix.
-             *
-             * Fires a {{#crossLink "CustomProjection/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
+             The CustomProjection's projection transform matrix.
+
+             Fires a {{#crossLink "CustomProjection/matrix:event"}}{{/crossLink}} event on change.
+
+             @property matrix
+             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             @type {Float32Array}
              */
             matrix: {
-
-                set: function(matrix) {
+                set: function (matrix) {
                     this._state.matrix.set(matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-
                     /**
-                     * Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event matrix
-                     * @param value The property's new value
+                     Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
+
+                     @event matrix
+                     @param value The property's new value
                      */
                     this.fire("far", this._state.matrix);
                 },
-
                 get: function () {
                     return this._state.matrix;
                 }
             }
+        },
+
+        _destroy: function () {
+            this._state.destroy();
         }
     });
 })();
