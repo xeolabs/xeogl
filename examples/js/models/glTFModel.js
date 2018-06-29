@@ -107,7 +107,7 @@
 
  | Option | Type | Range | Default Value | Description |
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
- | objectTree | Boolean |  | false | When true, organizes the model's {{#crossLink "Mesh"}}Meshes{{/crossLink}} with a tree of {{#crossLink "Object"}}Objects{{/crossLink}} that represents the glTF scene node hierarchy. Objects will then be available in the GLTFModel's {{#crossLink "Model/objects:property"}}{{/crossLink}} property, mapped to their IDs.|
+ | entities | Boolean |  | false | When true, organizes the model's {{#crossLink "Mesh"}}Meshes{{/crossLink}} with a tree of {{#crossLink "Object"}}Objects{{/crossLink}} that represents the glTF scene node hierarchy. Objects will then be available in the GLTFModel's {{#crossLink "Model/objects:property"}}{{/crossLink}} property, mapped to their IDs.|
  | lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Mesh"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Mesh/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
  | quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
  | combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink "Geometry"}}{{/crossLink}}). |
@@ -116,30 +116,31 @@
  | outlined | Boolean |  | false | When true, outlines all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
  | selected | Boolean |  | false | When true, renders all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
  | highlighted | Boolean |  | false | When true, highlights all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
- | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ | edges | Boolean |  | false | When true, emphasizes the edges on all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EdgeMaterial"}}{{/crossLink}}). |
+ | edgeThreshold | Number | [0..180] | 20 | When ghosting, highlighting, selecting or edging, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  | maxObjects | Number | | | Optional maximum number of {{#crossLink "Mesh"}}{{/crossLink}}'s to load. |
- | includeObjects | Function(objectId) | | null | Optional callback to mask which {{#crossLink "Object"}}Objects{{/crossLink}} are loaded. Each Object will only be loaded when this callback returns ````true``` for its ID. Only used when loading Objects. |
+ | handleNode | Function(objectId) | | null | Optional callback to mask which {{#crossLink "Object"}}Objects{{/crossLink}} are loaded. Each Object will only be loaded when this callback returns ````true``` for its ID. Only used when loading Objects. |
 
- Using the ````includeObjects```` option to load all {{#crossLink "Mesh"}}Meshes{{/crossLink}} except for those with IDs "gearbox#77.0" and "gearbox#79.0":
+ Using the ````handleNode```` option to load all {{#crossLink "Mesh"}}Meshes{{/crossLink}} except for those with IDs "gearbox#77.0" and "gearbox#79.0":
 
  ````javascript
  var model = new xeogl.GLTFModel({
      id: "gearbox",
      src: "models/gltf/gearbox_conical/scene.gltf",
-     includeObjects: function(meshId) {
+     handleNode: function(meshId) {
         return id !== ("gearbox#77.0") &&  (id !== "gearbox#79.0");
      }
  });
  ````
 
- Using the ````objectTree```` option to load an {{#crossLink "Object"}}{{/crossLink}} hierarchy, along with ````includeObjects````, to prevent loading Objects "gearbox#77" and "gearbox#79":
+ Using the ````entities```` option to load an {{#crossLink "Object"}}{{/crossLink}} hierarchy, along with ````handleNode````, to prevent loading Objects "gearbox#77" and "gearbox#79":
 
  ````javascript
  var model = new xeogl.GLTFModel({
      id: "gearbox",
      src: "models/gltf/gearbox_conical/scene.gltf",
-     objectTree: true,
-     includeObjects: function(objectId) {
+     entities: true,
+     handleNode: function(objectId) {
         return id !== ("gearbox#77") &&  (id !== "gearbox#79");
      }
  });
@@ -207,7 +208,7 @@
  var myModel = new xeogl.GLTFModel({
     id: "myModel",
     src: "models/carModel.gltf",
-    objectTree: true
+    entities: true
  });
  ````
 
@@ -322,6 +323,7 @@
  @param [cfg.ghosted=false] {Boolean} Whether this GLTFModel is rendered ghosted.
  @param [cfg.highlighted=false] {Boolean} Whether this GLTFModel is rendered highlighted.
  @param [cfg.selected=false] {Boolean} Whether this GLTFModel is rendered selected.
+ @param [cfg.edges=false] {Boolean} Whether this GLTFModel is rendered with edges emphasized.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
  @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
  @param [cfg.position=[0,0,0]] {Float32Array} The GLTFModel's local 3D position.
@@ -330,14 +332,14 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} GLTFThe Model's local modelling transform matrix. Overrides the position, scale and rotation parameters.
  @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
  @param [cfg.loaded=true] {Boolean} Indicates whether this GLTFModel is loaded or not. If initially set false, then the GLTFModel will load as soon as you set it true while {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} is set to the location of a glTF file.
- @param [cfg.objectTree=false] {Boolean} When true, organizes the model's {{#crossLink "Mesh"}}Meshes{{/crossLink}} with a tree of {{#crossLink "Object"}}Objects{{/crossLink}} that represents the glTF scene node hierarchy. Use this if you want Objects for the whole node tree. Objects will then be available in the GLTFModel's {{#crossLink "Model/objects:property"}}{{/crossLink}}, mapped to their IDs.
+ @param [cfg.entities=false] {Boolean} When true, organizes the model's {{#crossLink "Mesh"}}Meshes{{/crossLink}} with a tree of {{#crossLink "Object"}}Objects{{/crossLink}} that represents the glTF scene node hierarchy. Use this if you want Objects for the whole node tree. Objects will then be available in the GLTFModel's {{#crossLink "Model/objects:property"}}{{/crossLink}}, mapped to their IDs.
  @param [cfg.lambertMaterials=false] {Boolean} When true, gives each {{#crossLink "Mesh"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Mesh/colorize:property"}}{{/crossLink}} value set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.
  @param [cfg.quantizeGeometry=true] {Boolean} When true, quantizes geometry to reduce memory and GPU bus usage.
  @param [cfg.combineGeometry=true] {Boolean} When true, combines geometry vertex buffers to improve rendering performance.
  @param [cfg.backfaces=false] {Boolean} When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces.
- @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
+ @param [cfg.edgeThreshold=20] {Number} When ghosting, highlighting, selecting or edging, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
  @param [cfg.maxObjects] {Number} Optional maximum number of {{#crossLink "Object"}}Objects{{/crossLink}}'s to load.
- @param [cfg.includeObjects] {Function} Optional callback to mask which {{#crossLink "Object"}}Objects{{/crossLink}} are loaded. Each Object will only be loaded when this callback returns ````true``` for its ID.
+ @param [cfg.handleNode] {Function} Optional callback to mask which {{#crossLink "Object"}}Objects{{/crossLink}} are loaded. Each Object will only be loaded when this callback returns ````true``` for its ID.
 
  @extends Model
  */
@@ -355,14 +357,14 @@
 
             this._src = null;
             this._options = {
-                objectTree: !!cfg.objectTree,
+                entities: !!cfg.entities,
                 ignoreMaterials: !!cfg.ignoreMaterials,
-                combineGeometry: cfg.combineGeometry !== false,
-                quantizeGeometry: cfg.quantizeGeometry !== false,
-                ghostEdgeThreshold: cfg.ghostEdgeThreshold,
+                combineGeometry: cfg.combineGeometry !== true,
+                quantizeGeometry: cfg.quantizeGeometry !== true,
+                edgeThreshold: cfg.edgeThreshold || 20,
                 lambertMaterials: !!cfg.lambertMaterials,
                 maxObjects: cfg.maxObjects,
-                includeObjects: cfg.includeObjects
+                handleNode: cfg.handleNode
             };
             this.loaded = cfg.loaded;
             this.src = cfg.src;
@@ -373,11 +375,11 @@
             /**
              Array of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel.
 
-             When **objectTree** is set ````true```` in the GLTFModel's constructor, this will contain the root
+             When **entities** is set ````true```` in the GLTFModel's constructor, this will contain the root
              {{#crossLink "Object"}}Objects{{/crossLink}} corresponding to root ````nodes```` within the glTF
              ````scene```` graph.
 
-             When **objectTree** is omitted or set ````false```` in the GLTFModel's constructor, this will contain
+             When **entities** is omitted or set ````false```` in the GLTFModel's constructor, this will contain
              {{#crossLink "Mesh"}}Meshes{{/crossLink}} corresponding to leaf ````nodes```` within the glTF
              ````scene```` graph.
 
@@ -389,11 +391,11 @@
             /**
              Map of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel, mapped to their IDs.
 
-             When **objectTree** is set ````true```` in the GLTFModel's constructor, this will contain the root
+             When **entities** is set ````true```` in the GLTFModel's constructor, this will contain the root
              {{#crossLink "Object"}}Objects{{/crossLink}} corresponding to root ````nodes```` within the glTF
              ````scene```` graph.
 
-             When **objectTree** is omitted or set ````false```` in the GLTFModel's constructor, this will contain
+             When **entities** is omitted or set ````false```` in the GLTFModel's constructor, this will contain
              {{#crossLink "Mesh"}}Meshes{{/crossLink}} corresponding to leaf ````nodes```` within the glTF
              ````scene```` graph.
 
@@ -532,7 +534,7 @@
      * @param {String} [options.basePath] Base path path to find external resources on, if any.
      * @param {String} [options.loadBuffer] Callback to load buffer files.
      */
-    xeogl.GLTFModel.parse = function (model, gltf, options) {
+    xeogl.GLTFModel.parse = function (model, gltf, options, ok, error) {
 
         options = options || {};
 
@@ -542,11 +544,17 @@
         parseGLTF(gltf, "", options, model, function () {
                 spinner.processes--;
                 model.fire("loaded", true, true);
+                if (ok) {
+                    ok();
+                }
             },
             function (msg) {
                 spinner.processes--;
                 model.error(msg);
                 model.fire("error", msg);
+                if (error) {
+                    error(msg);
+                }
             });
     };
 
@@ -651,20 +659,36 @@
                 src: src,
                 loadBuffer: options.loadBuffer,
                 basePath: options.basePath,
-                objectTree: !!options.objectTree,
+                entities: !!options.entities,
+                handleNode: options.handleNode,
                 ignoreMaterials: !!options.ignoreMaterials,
-                combineGeometry: !!options.combineGeometry,
-                quantizeGeometry: !!options.quantizeGeometry,
-                ghostEdgeThreshold: options.ghostEdgeThreshold,
+                combineGeometry: options.combineGeometry,
+                quantizeGeometry: options.quantizeGeometry,
+                edgeThreshold: options.edgeThreshold,
                 lambertMaterials: !!options.lambertMaterials,
                 maxObjects: options.maxObjects,
-                includeObjects: options.includeObjects,
                 json: json,
                 scene: model.scene,
                 model: model,
+                modelProps: {
+                    visible: model.visible,
+                    culled: model.culled,
+                    ghosted: model.ghosted,
+                    highlighted: model.highlighted,
+                    selected: model.selected,
+                    outlined: model.outlined,
+                    clippable: model.clippable,
+                    pickable: model.pickable,
+                    collidable: model.collidable,
+                    castShadow: model.castShadow,
+                    receiveShadow: model.receiveShadow,
+                    colorize: model.colorize,
+                    opacity: model.opacity,
+                    edges: model.edges
+                },
                 numObjects: 0
             };
-            
+
             model.scene.loading++; // Disables (re)compilation
 
             loadBuffers(ctx, function () {
@@ -1211,7 +1235,7 @@
                         primitive: "triangles",
                         combined: ctx.combineGeometry,
                         quantized: ctx.quantizeGeometry,
-                        ghostEdgeThreshold: ctx.ghostEdgeThreshold
+                        edgeThreshold: ctx.edgeThreshold
                     };
 
                     primitiveInfo = primitivesInfo[i];
@@ -1301,22 +1325,30 @@
             }
         }
 
-        function loadNode(ctx, nodeIdx, nodeInfo, matrix, parentObject) {
+        function loadNode(ctx, nodeIdx, nodeInfo, matrix, parent, parentCfg) {
 
-            var objectId = ctx.model.id + "#" + (nodeInfo.name || ctx.numObjects);
+            parent = parent || ctx.model;
+            var createObject;
 
-            if (ctx.includeObjects && !ctx.includeObjects(objectId)) {
-                return;
+            if (ctx.handleNode) {
+                var actions = {};
+                if (!ctx.handleNode(nodeInfo, actions)) {
+                    return;
+                }
+                if (actions.createObject) {
+                    createObject = actions.createObject;
+                }
+                // if (actions.createMesh) {
+                //     createMesh = actions.createMesh;
+                // }
             }
 
             var json = ctx.json;
             var model = ctx.model;
             var math = xeogl.math;
             var localMatrix;
-
-            // if (ctx.objectTree && !ctx.leafObjects) {
-            //     matrix = null;
-            // }
+            var hasChildNodes = nodeInfo.children && nodeInfo.children.length > 0;
+            var group;
 
             if (nodeInfo.matrix) {
                 localMatrix = nodeInfo.matrix;
@@ -1356,23 +1388,6 @@
 
             ctx.numObjects++;
 
-            var object;
-
-            if (ctx.objectTree) {
-                object = new xeogl.Group(ctx.scene, {
-                    id: objectId,
-                    matrix: matrix,
-                    entityType: "DEFAULT"
-                });
-                matrix = null;
-                if (parentObject) {
-                    parentObject.addChild(object);
-                } else {
-                    model.addChild(object);
-                }
-                model._addComponent(object);
-            }
-
             if (nodeInfo.mesh !== undefined) {
 
                 var meshInfo = json.meshes[nodeInfo.mesh];
@@ -1381,67 +1396,206 @@
 
                     var meshesInfo = meshInfo._mesh;
                     var meshesInfoMesh;
-                    var meshId;
                     var mesh;
                     var numMeshes = meshesInfo.length;
 
-                    if (numMeshes > 0) {
+                    if (!createObject && numMeshes > 0 && !hasChildNodes) {
+
+                        // Case 1: Not creating object, node has meshes, node has no child nodes
 
                         for (var i = 0, len = numMeshes; i < len; i++) {
-
-                            meshId = objectId + "." + i;
-
                             meshesInfoMesh = meshesInfo[i];
-
-                            var meta = nodeInfo.extra || {};
-                            meta.name = nodeInfo.name;
-
-                            if (window.numMeshes === undefined) {
-                                window.numMeshes = 0;
+                            var meshCfg = {
+                                geometry: meshesInfoMesh.geometry,
+                                matrix: matrix
+                            };
+                            xeogl._apply(ctx.modelProps, meshCfg);
+                            if (ctx.lambertMaterials) {
+                                if (!model.material) {
+                                    model.material = new xeogl.LambertMaterial(ctx.scene, {
+                                        backfaces: true
+                                    });
+                                }
+                                meshCfg.material = model.material;
+                                meshCfg.colorize = meshesInfoMesh.material;
+                            } else {
+                                meshCfg.material = meshesInfoMesh.material;
                             }
-
-                            window.numMeshes++;
-
-                            if (!ctx.maxObjects || (window.numMeshes < ctx.maxObjects)) {
-
-                                var meshCfg = {
-                                    id: meshId,
-                                    meta: meta,
-                                    geometry: meshesInfoMesh.geometry,
-                                    // Indicates that this Mesh is freshly loaded -  increments the xeogl.Spinner#processes
-                                    // count on the Scene Canvas, which will decrement again as soon as Mesh is compiled
-                                    // into the render graph, causing the Spinner to show until this Mesh is visible
-                                    loading: true,
-                                    receiveShadow: true,
-                                    castShadow: true
-                                };
-
-                                if (!ctx.objects && matrix) {
-                                    meshCfg.matrix = matrix;
-                                }
-
-                                if (ctx.lambertMaterials) {
-                                    if (!model.material) {
-                                        model.material = new xeogl.LambertMaterial(ctx.scene, {
-                                            backfaces: true
-                                        });
-                                    }
-                                    meshCfg.material = model.material;
-                                    meshCfg.colorize = meshesInfoMesh.material; // [R,G,B,A]
-                                } else if (!ctx.ignoreMaterials) {
-                                    meshCfg.material = meshesInfoMesh.material;
-                                }
-
-                                mesh = new xeogl.Mesh(model, meshCfg);
-
-                                if (object) {
-                                    object.addChild(mesh);
-                                } else {
-                                    model.addChild(mesh);
-                                }
-                                model._addComponent(mesh);
-                            }
+                            mesh = new xeogl.Mesh(ctx.scene, meshCfg);
+                            parent.addChild(mesh, false); // Don't automatically inherit properties
+                            model._addComponent(mesh);
                         }
+                        return;
+                    }
+
+                    if (createObject && numMeshes === 1 && !hasChildNodes) {
+
+                        // Case 2: Creating object, node has one mesh, node has no child nodes
+
+                        meshesInfoMesh = meshesInfo[0];
+                        var meshCfg = {
+                            geometry: meshesInfoMesh.geometry,
+                            matrix: matrix
+                        };
+                        xeogl._apply(ctx.modelProps, meshCfg);
+                        if (ctx.lambertMaterials) {
+                            if (!model.material) {
+                                model.material = new xeogl.LambertMaterial(ctx.scene, {
+                                    backfaces: true
+                                });
+                            }
+                            meshCfg.material = model.material;
+                            meshCfg.colorize = meshesInfoMesh.material; // [R,G,B,A]
+                        } else {
+                            meshCfg.material = meshesInfoMesh.material;
+                        }
+                        xeogl._apply(createObject, meshCfg);
+                        mesh = new xeogl.Mesh(ctx.scene, meshCfg);
+                        parent.addChild(mesh, false); // Don't automatically inherit properties
+                        model._addComponent(mesh);
+                        return;
+                    }
+
+                    if (createObject && numMeshes > 0 && !hasChildNodes) {
+
+                        // Case 3: Creating object, node has meshes, node has no child nodes
+
+                        var groupCfg = {
+                            matrix: matrix
+                        };
+                        xeogl._apply(ctx.modelProps, groupCfg);
+                        xeogl._apply(createObject, groupCfg);
+                        var group = new xeogl.Group(ctx.scene, groupCfg);
+                        parent.addChild(group, false);
+                        model._addComponent(group);
+                        for (var i = 0, len = numMeshes; i < len; i++) {
+                            meshesInfoMesh = meshesInfo[i];
+                            var meshCfg = {
+                                geometry: meshesInfoMesh.geometry
+                            };
+                            xeogl._apply(ctx.modelProps, meshCfg);
+                            if (ctx.lambertMaterials) {
+                                if (!model.material) {
+                                    model.material = new xeogl.LambertMaterial(ctx.scene, {
+                                        backfaces: true
+                                    });
+                                }
+                                meshCfg.material = model.material;
+                                meshCfg.colorize = meshesInfoMesh.material;
+                            } else {
+                                meshCfg.material = meshesInfoMesh.material;
+                            }
+                            xeogl._apply(createObject, meshCfg);
+                            meshCfg.id = createObject.id + "." + i;
+                            meshCfg.entityType = null;
+                            mesh = new xeogl.Mesh(ctx.scene, meshCfg);
+                            group.addChild(mesh, false);
+                            model._addComponent(mesh);
+                        }
+                        return;
+                    }
+
+                    if (!createObject && numMeshes > 0 && hasChildNodes) {
+
+                        // Case 4: Not creating object, node has meshes, node has child nodes
+
+                        var groupCfg = {
+                            matrix: matrix
+                        };
+                        xeogl._apply(ctx.modelProps, groupCfg);
+                        var group = new xeogl.Group(ctx.scene, groupCfg);
+                        parent.addChild(group, false);
+                        model._addComponent(group);
+                        for (var i = 0, len = numMeshes; i < len; i++) {
+                            meshesInfoMesh = meshesInfo[i];
+                            var meshCfg = {
+                                geometry: meshesInfoMesh.geometry
+                            };
+                            xeogl._apply(groupCfg, meshCfg);
+                            meshCfg.entityType = null;
+                            if (ctx.lambertMaterials) {
+                                if (!model.material) {
+                                    model.material = new xeogl.LambertMaterial(ctx.scene, {
+                                        backfaces: true
+                                    });
+                                }
+                                meshCfg.material = model.material;
+                                meshCfg.colorize = meshesInfoMesh.material;
+                            } else {
+                                meshCfg.material = meshesInfoMesh.material;
+                            }
+                            mesh = new xeogl.Mesh(ctx.scene, meshCfg);
+                            group.addChild(mesh, false);
+                            model._addComponent(mesh);
+                        }
+                        matrix = null;
+                        parent = group;
+                        parentCfg = groupCfg;
+                    }
+
+                    if (createObject && numMeshes === 0 && hasChildNodes) {
+
+                        // Case 5: Creating explicit object, node has meshes OR node has child nodes
+
+                        var groupCfg = {
+                            matrix: matrix
+                        };
+                        xeogl._apply(ctx.modelProps, groupCfg);
+                        xeogl._apply(createObject, groupCfg);
+                        createObject.matrix = matrix;
+                        var group = new xeogl.Group(ctx.scene, groupCfg);
+                        parent.addChild(group, false); // Don't automatically inherit properties
+                        model._addComponent(group);
+                        matrix = null;
+                        parent = group;
+                        parentCfg = groupCfg;
+                    }
+
+                    if (createObject && numMeshes > 0 || hasChildNodes) {
+
+                        // Case 6: Creating explicit object, node has meshes OR node has child nodes
+
+                        console.log("Case 6");
+
+                        var groupCfg = {
+                            matrix: matrix
+                        };
+                        xeogl._apply(ctx.modelProps, groupCfg);
+                        if (createObject) {
+                            xeogl._apply(createObject, groupCfg);
+                        }
+                        var group = new xeogl.Group(ctx.scene, groupCfg);
+                        parent.addChild(group, false); // Don't automatically inherit properties
+                        model._addComponent(group);
+                        for (var i = 0, len = numMeshes; i < len; i++) {
+                            meshesInfoMesh = meshesInfo[i];
+                            var meshCfg = {
+                                geometry: meshesInfoMesh.geometry
+                            };
+                            xeogl._apply(ctx.modelProps, meshCfg);
+                            if (ctx.lambertMaterials) {
+                                if (!model.material) {
+                                    model.material = new xeogl.LambertMaterial(ctx.scene, {
+                                        backfaces: true
+                                    });
+                                }
+                                meshCfg.material = model.material;
+                                meshCfg.colorize = meshesInfoMesh.material; // [R,G,B,A]
+                            } else {
+                                meshCfg.material = meshesInfoMesh.material;
+                            }
+                            if (createObject) {
+                                xeogl._apply(createObject, meshCfg);
+                                meshCfg.id = createObject.id + "." + i;
+                            }
+                            meshCfg.entityType = null;
+                            mesh = new xeogl.Mesh(ctx.scene, meshCfg);
+                            group.addChild(mesh, false); // Don't automatically inherit properties
+                            model._addComponent(mesh);
+                        }
+                        matrix = null;
+                        parent = group;
+                        parentCfg = groupCfg;
                     }
                 }
             }
@@ -1457,7 +1611,7 @@
                         error(ctx, "Node not found: " + i);
                         continue;
                     }
-                    loadNode(ctx, nodeIdx, childNodeInfo, matrix, object);
+                    loadNode(ctx, nodeIdx, childNodeInfo, matrix, parent, parentCfg);
                 }
             }
         }
