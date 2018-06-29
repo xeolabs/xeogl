@@ -38,12 +38,12 @@
         type: "xeogl.LightMap",
         _init: function (cfg) {
             this._super(cfg);
-            this._renderer.lights.addLightMap(this._state);
+            this.scene._lightMapCreated(this);
         },
 
         _destroy: function () {
-            this._renderer.lights.removeLightMap(this._state);
-            this._super(cfg);
+            this._super();
+            this.scene._lightMapDestroyed(this);
         }
     });
 

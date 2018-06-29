@@ -8,16 +8,30 @@
 
     var ids = new xeogl.utils.Map({});
 
-    xeogl.renderer.DrawRenderer = function (gl, hash, scene, object) {
-        this._init(gl, hash, scene, object);
+    xeogl.renderer.DrawRenderer = function (hash, mesh) {
+        this._init(hash, mesh);
     };
 
     var drawRenderers = {};
 
-    xeogl.renderer.DrawRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.DrawRenderer.get = function (mesh) {
+        var scene = mesh.scene;
+        var hash = [
+            scene.canvas.canvas.id,
+            (scene.gammaInput ? "gi;" : ";") + (scene.gammaOutput ? "go" : ""),
+            scene._lightsState.getHash(),
+            scene._clipsState.getHash(),
+            mesh._geometry._state.hash,
+            mesh._material._state.hash,
+            mesh._state.hash
+        ].join(";");
         var renderer = drawRenderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.DrawRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.DrawRenderer(hash, mesh);
+            if (renderer.errors) {
+                console.log(renderer.errors.join("\n"));
+                return null;
+            }
             drawRenderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -25,7 +39,7 @@
         return renderer;
     };
 
-    xeogl.renderer.DrawRenderer.prototype.destroy = function () {
+    xeogl.renderer.DrawRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
             this._program.destroy();
@@ -34,33 +48,31 @@
         }
     };
 
-    xeogl.renderer.DrawRenderer.prototype._init = function (gl, hash, scene, object) {
-
+    xeogl.renderer.DrawRenderer.prototype._init = function (hash, mesh) {
+        var gl = mesh.scene.canvas.gl;
+        var material = mesh._material;
+        var lightsState = mesh.scene._lightsState;
+        var clipsState = mesh.scene._clipsState;
+        var materialState = mesh._material._state;
         this.id = ids.addItem({});
-        this._gl = gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.DrawShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.DrawShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
         this._uUVDecodeMatrix = program.getLocation("uvDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uModelNormalMatrix = program.getLocation("modelNormalMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uViewNormalMatrix = program.getLocation("viewNormalMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
         this._uGammaFactor = program.getLocation("gammaFactor");
-
         this._uLightAmbient = [];
         this._uLightColor = [];
         this._uLightDir = [];
@@ -69,7 +81,7 @@
         this._uShadowViewMatrix = [];
         this._uShadowProjMatrix = [];
 
-        var lights = scene.lights.lights;
+        var lights = lightsState.lights;
         var light;
 
         for (var i = 0, len = lights.length; i < len; i++) {
@@ -107,16 +119,16 @@
             }
         }
 
-        if (scene.lights.lightMaps.length > 0) {
+        if (lightsState.lightMaps.length > 0) {
             this._uLightMap = "lightMap";
         }
 
-        if (scene.lights.reflectionMaps.length > 0) {
+        if (lightsState.reflectionMaps.length > 0) {
             this._uReflectionMap = "reflectionMap";
         }
 
         this._uClips = [];
-        var clips = scene.clips.clips;
+        var clips = clipsState.clips;
         for (var i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
@@ -125,90 +137,83 @@
             });
         }
 
-        var material = object.material;
-
         this._uPointSize = program.getLocation("pointSize");
 
-        switch (material.type) {
-
+        switch (materialState.type) {
             case "LambertMaterial":
-
                 this._uMaterialColor = program.getLocation("materialColor");
                 this._uMaterialEmissive = program.getLocation("materialEmissive");
                 this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-
                 break;
 
             case "PhongMaterial":
-
                 this._uMaterialAmbient = program.getLocation("materialAmbient");
                 this._uMaterialDiffuse = program.getLocation("materialDiffuse");
                 this._uMaterialSpecular = program.getLocation("materialSpecular");
                 this._uMaterialEmissive = program.getLocation("materialEmissive");
                 this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
                 this._uMaterialShininess = program.getLocation("materialShininess");
-
-                if (material.ambientMap) {
+                if (material._ambientMap) {
                     this._uMaterialAmbientMap = "ambientMap";
                     this._uMaterialAmbientMapMatrix = program.getLocation("ambientMapMatrix");
                 }
-                if (material.diffuseMap) {
+                if (material._diffuseMap) {
                     this._uDiffuseMap = "diffuseMap";
                     this._uDiffuseMapMatrix = program.getLocation("diffuseMapMatrix");
                 }
-                if (material.specularMap) {
+                if (material._specularMap) {
                     this._uSpecularMap = "specularMap";
                     this._uSpecularMapMatrix = program.getLocation("specularMapMatrix");
                 }
-                if (material.emissiveMap) {
+                if (material._emissiveMap) {
                     this._uEmissiveMap = "emissiveMap";
                     this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
                 }
-                if (material.alphaMap) {
+                if (material._alphaMap) {
                     this._uAlphaMap = "alphaMap";
                     this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
                 }
-                if (material.reflectivityMap) {
+                if (material._reflectivityMap) {
                     this._uReflectivityMap = "reflectivityMap";
                     this._uReflectivityMapMatrix = program.getLocation("reflectivityMapMatrix");
                 }
-                if (material.normalMap) {
+                if (material._normalMap) {
                     this._uNormalMap = "normalMap";
                     this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
                 }
-                if (material.occlusionMap) {
+                if (material._occlusionMap) {
                     this._uOcclusionMap = "occlusionMap";
                     this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
                 }
-                if (material.diffuseFresnel) {
+                if (material._diffuseFresnel) {
                     this._uDiffuseFresnelEdgeBias = program.getLocation("diffuseFresnelEdgeBias");
                     this._uDiffuseFresnelCenterBias = program.getLocation("diffuseFresnelCenterBias");
                     this._uDiffuseFresnelEdgeColor = program.getLocation("diffuseFresnelEdgeColor");
                     this._uDiffuseFresnelCenterColor = program.getLocation("diffuseFresnelCenterColor");
                     this._uDiffuseFresnelPower = program.getLocation("diffuseFresnelPower");
                 }
-                if (material.specularFresnel) {
+                if (material._specularFresnel) {
                     this._uSpecularFresnelEdgeBias = program.getLocation("specularFresnelEdgeBias");
                     this._uSpecularFresnelCenterBias = program.getLocation("specularFresnelCenterBias");
                     this._uSpecularFresnelEdgeColor = program.getLocation("specularFresnelEdgeColor");
                     this._uSpecularFresnelCenterColor = program.getLocation("specularFresnelCenterColor");
                     this._uSpecularFresnelPower = program.getLocation("specularFresnelPower");
                 }
-                if (material.alphaFresnel) {
+                if (material._alphaFresnel) {
                     this._uAlphaFresnelEdgeBias = program.getLocation("alphaFresnelEdgeBias");
                     this._uAlphaFresnelCenterBias = program.getLocation("alphaFresnelCenterBias");
                     this._uAlphaFresnelEdgeColor = program.getLocation("alphaFresnelEdgeColor");
                     this._uAlphaFresnelCenterColor = program.getLocation("alphaFresnelCenterColor");
                     this._uAlphaFresnelPower = program.getLocation("alphaFresnelPower");
                 }
-                if (material.reflectivityFresnel) {
+                if (material._reflectivityFresnel) {
                     this._uReflectivityFresnelEdgeBias = program.getLocation("reflectivityFresnelEdgeBias");
                     this._uReflectivityFresnelCenterBias = program.getLocation("reflectivityFresnelCenterBias");
                     this._uReflectivityFresnelEdgeColor = program.getLocation("reflectivityFresnelEdgeColor");
                     this._uReflectivityFresnelCenterColor = program.getLocation("reflectivityFresnelCenterColor");
                     this._uReflectivityFresnelPower = program.getLocation("reflectivityFresnelPower");
                 }
-                if (material.emissiveFresnel) {
+                if (material._emissiveFresnel) {
                     this._uEmissiveFresnelEdgeBias = program.getLocation("emissiveFresnelEdgeBias");
                     this._uEmissiveFresnelCenterBias = program.getLocation("emissiveFresnelCenterBias");
                     this._uEmissiveFresnelEdgeColor = program.getLocation("emissiveFresnelEdgeColor");
@@ -218,84 +223,82 @@
                 break;
 
             case "MetallicMaterial":
-
                 this._uBaseColor = program.getLocation("materialBaseColor");
                 this._uMaterialMetallic = program.getLocation("materialMetallic");
                 this._uMaterialRoughness = program.getLocation("materialRoughness");
                 this._uMaterialSpecularF0 = program.getLocation("materialSpecularF0");
                 this._uMaterialEmissive = program.getLocation("materialEmissive");
                 this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-                if (material.baseColorMap) {
+                if (material._baseColorMap) {
                     this._uBaseColorMap = "baseColorMap";
                     this._uBaseColorMapMatrix = program.getLocation("baseColorMapMatrix");
                 }
-                if (material.metallicMap) {
+                if (material._metallicMap) {
                     this._uMetallicMap = "metallicMap";
                     this._uMetallicMapMatrix = program.getLocation("metallicMapMatrix");
                 }
-                if (material.roughnessMap) {
+                if (material._roughnessMap) {
                     this._uRoughnessMap = "roughnessMap";
                     this._uRoughnessMapMatrix = program.getLocation("roughnessMapMatrix");
                 }
-                if (material.metallicRoughnessMap) {
+                if (material._metallicRoughnessMap) {
                     this._uMetallicRoughnessMap = "metallicRoughnessMap";
                     this._uMetallicRoughnessMapMatrix = program.getLocation("metallicRoughnessMapMatrix");
                 }
-                if (material.emissiveMap) {
+                if (material._emissiveMap) {
                     this._uEmissiveMap = "emissiveMap";
                     this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
                 }
-                if (material.occlusionMap) {
+                if (material._occlusionMap) {
                     this._uOcclusionMap = "occlusionMap";
                     this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
                 }
-                if (material.alphaMap) {
+                if (material._alphaMap) {
                     this._uAlphaMap = "alphaMap";
                     this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
                 }
-                if (material.normalMap) {
+                if (material._normalMap) {
                     this._uNormalMap = "normalMap";
                     this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
                 }
                 break;
 
             case "SpecularMaterial":
-
                 this._uMaterialDiffuse = program.getLocation("materialDiffuse");
                 this._uMaterialSpecular = program.getLocation("materialSpecular");
                 this._uMaterialGlossiness = program.getLocation("materialGlossiness");
                 this._uMaterialReflectivity = program.getLocation("reflectivityFresnel");
                 this._uMaterialEmissive = program.getLocation("materialEmissive");
                 this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-                if (material.diffuseMap) {
+                if (material._diffuseMap) {
                     this._uDiffuseMap = "diffuseMap";
                     this._uDiffuseMapMatrix = program.getLocation("diffuseMapMatrix");
                 }
-                if (material.specularMap) {
+                if (material._specularMap) {
                     this._uSpecularMap = "specularMap";
                     this._uSpecularMapMatrix = program.getLocation("specularMapMatrix");
                 }
-                if (material.glossinessMap) {
+                if (material._glossinessMap) {
                     this._uGlossinessMap = "glossinessMap";
                     this._uGlossinessMapMatrix = program.getLocation("glossinessMapMatrix");
                 }
-                if (material.specularGlossinessMap) {
+                if (material._specularGlossinessMap) {
                     this._uSpecularGlossinessMap = "materialSpecularGlossinessMap";
                     this._uSpecularGlossinessMapMatrix = program.getLocation("materialSpecularGlossinessMapMatrix");
                 }
-                if (material.emissiveMap) {
+                if (material._emissiveMap) {
                     this._uEmissiveMap = "emissiveMap";
                     this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
                 }
-                if (material.occlusionMap) {
+                if (material._occlusionMap) {
                     this._uOcclusionMap = "occlusionMap";
                     this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
                 }
-                if (material.alphaMap) {
+                if (material._alphaMap) {
                     this._uAlphaMap = "alphaMap";
                     this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
                 }
-                if (material.normalMap) {
+                if (material._normalMap) {
                     this._uNormalMap = "normalMap";
                     this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
                 }
@@ -312,7 +315,6 @@
         this._uColorize = program.getLocation("colorize");
 
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
 
@@ -324,6 +326,15 @@
 
     xeogl.renderer.DrawRenderer.prototype._bindProgram = function (frame) {
 
+        var math = xeogl.math;
+        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var lightsState = scene._lightsState;
+        var clipsState = scene._clipsState;
+        var lights = lightsState.lights;
+        var light;
+
         var program = this._program;
 
         program.bind();
@@ -331,14 +342,7 @@
         frame.useProgram++;
         frame.textureUnit = 0;
 
-        var gl = this._gl;
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-        var scene = this._scene;
-        var lights = scene.lights;
-        var light;
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
 
@@ -347,13 +351,16 @@
         this._lastColorize[2] = -1;
         this._lastColorize[3] = -1;
 
-        gl.uniformMatrix4fv(this._uViewMatrix, false, scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, scene.viewTransform.normalMatrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, scene.projTransform.matrix);
+        var camera = scene.camera;
+        var cameraState = camera._state;
 
-        for (var i = 0, len = lights.lights.length; i < len; i++) {
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera._project._state.matrix);
 
-            light = lights.lights[i];
+        for (var i = 0, len = lightsState.lights.length; i < len; i++) {
+
+            light = lightsState.lights[i];
 
             if (this._uLightAmbient[i]) {
                 gl.uniform4f(this._uLightAmbient[i], light.color[0], light.color[1], light.color[2], light.intensity);
@@ -392,20 +399,20 @@
             }
         }
 
-        if (lights.lightMaps.length > 0 && lights.lightMaps[0].texture && this._uLightMap) {
-            program.bindTexture(this._uLightMap, lights.lightMaps[0].texture, frame.textureUnit);
+        if (lightsState.lightMaps.length > 0 && lightsState.lightMaps[0].texture && this._uLightMap) {
+            program.bindTexture(this._uLightMap, lightsState.lightMaps[0].texture, frame.textureUnit);
             frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
             frame.bindTexture++;
         }
 
-        if (lights.reflectionMaps.length > 0 && lights.reflectionMaps[0].texture && this._uReflectionMap) {
-            program.bindTexture(this._uReflectionMap, lights.reflectionMaps[0].texture, frame.textureUnit);
+        if (lightsState.reflectionMaps.length > 0 && lightsState.reflectionMaps[0].texture && this._uReflectionMap) {
+            program.bindTexture(this._uReflectionMap, lightsState.reflectionMaps[0].texture, frame.textureUnit);
             frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
             frame.bindTexture++;
         }
 
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        if (clipsState.clips.length > 0) {
+            var clips = scene._clipsState.clips;
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -436,25 +443,27 @@
         this._baseTextureUnit = frame.textureUnit;
     };
 
-    xeogl.renderer.DrawRenderer.prototype.drawObject = function (frame, object) {
+    xeogl.renderer.DrawRenderer.prototype.drawMesh = function (frame, mesh) {
+
+        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+        var scene = mesh.scene;
+        var material = mesh._material;
+        var gl = scene.canvas.gl;
+        var program = this._program;
+        var meshState = mesh._state;
+        var materialState = mesh._material._state;
+        var geometryState = mesh._geometry._state;
 
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
 
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-        var gl = this._gl;
-        var program = this._program;
-        var material = object.material;
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        if (material.id !== this._lastMaterialId) {
+        if (materialState.id !== this._lastMaterialId) {
 
             frame.textureUnit = this._baseTextureUnit;
 
-            var backfaces = material.backfaces;
+            var backfaces = materialState.backfaces;
             if (frame.backfaces !== backfaces) {
                 if (backfaces) {
                     gl.disable(gl.CULL_FACE);
@@ -464,7 +473,7 @@
                 frame.backfaces = backfaces;
             }
 
-            var frontface = material.frontface;
+            var frontface = materialState.frontface;
             if (frame.frontface !== frontface) {
                 if (frontface) {
                     gl.frontFace(gl.CCW);
@@ -474,409 +483,412 @@
                 frame.frontface = frontface;
             }
 
-            if (frame.lineWidth !== material.lineWidth) {
-                gl.lineWidth(material.lineWidth);
-                frame.lineWidth = material.lineWidth;
+            if (frame.lineWidth !== materialState.lineWidth) {
+                gl.lineWidth(materialState.lineWidth);
+                frame.lineWidth = materialState.lineWidth;
             }
 
             if (this._uPointSize) {
-                gl.uniform1f(this._uPointSize, material.pointSize);
+                gl.uniform1f(this._uPointSize, materialState.pointSize);
             }
 
-            switch (material.type) {
-
+            switch (materialState.type) {
                 case "LambertMaterial":
-
                     if (this._uMaterialAmbient) {
-                        gl.uniform3fv(this._uMaterialAmbient, material.ambient);
+                        gl.uniform3fv(this._uMaterialAmbient, materialState.ambient);
                     }
                     if (this._uMaterialColor) {
-                        gl.uniform4f(this._uMaterialColor, material.color[0], material.color[1], material.color[2], material.alpha);
+                        gl.uniform4f(this._uMaterialColor, materialState.color[0], materialState.color[1], materialState.color[2], materialState.alpha);
                     }
                     if (this._uMaterialEmissive) {
-                        gl.uniform3fv(this._uMaterialEmissive, material.emissive);
+                        gl.uniform3fv(this._uMaterialEmissive, materialState.emissive);
                     }
-
                     break;
 
                 case "PhongMaterial":
-
                     if (this._uMaterialShininess) {
-                        gl.uniform1f(this._uMaterialShininess, material.shininess);
+                        gl.uniform1f(this._uMaterialShininess, materialState.shininess);
                     }
                     if (this._uMaterialAmbient) {
-                        gl.uniform3fv(this._uMaterialAmbient, material.ambient);
+                        gl.uniform3fv(this._uMaterialAmbient, materialState.ambient);
                     }
                     if (this._uMaterialDiffuse) {
-                        gl.uniform3fv(this._uMaterialDiffuse, material.diffuse);
+                        gl.uniform3fv(this._uMaterialDiffuse, materialState.diffuse);
                     }
                     if (this._uMaterialSpecular) {
-                        gl.uniform3fv(this._uMaterialSpecular, material.specular);
+                        gl.uniform3fv(this._uMaterialSpecular, materialState.specular);
                     }
                     if (this._uMaterialEmissive) {
-                        gl.uniform3fv(this._uMaterialEmissive, material.emissive);
+                        gl.uniform3fv(this._uMaterialEmissive, materialState.emissive);
                     }
                     if (this._uAlphaModeCutoff) {
                         gl.uniform4f(
                             this._uAlphaModeCutoff,
-                            1.0 * material.alpha,
-                            material.alphaMode === 1 ? 1.0 : 0.0,
-                            material.alphaCutoff,
+                            1.0 * materialState.alpha,
+                            materialState.alphaMode === 1 ? 1.0 : 0.0,
+                            materialState.alphaCutoff,
                             0);
                     }
-                    if (material.ambientMap && material.ambientMap.texture && this._uMaterialAmbientMap) {
-                        program.bindTexture(this._uMaterialAmbientMap, material.ambientMap.texture, frame.textureUnit);
+                    if (material._ambientMap && material._ambientMap._state.texture && this._uMaterialAmbientMap) {
+                        program.bindTexture(this._uMaterialAmbientMap, material._ambientMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uMaterialAmbientMapMatrix) {
-                            gl.uniformMatrix4fv(this._uMaterialAmbientMapMatrix, false, material.ambientMap.matrix);
+                            gl.uniformMatrix4fv(this._uMaterialAmbientMapMatrix, false, material._ambientMap._state.matrix);
                         }
                     }
-                    if (material.diffuseMap && material.diffuseMap.texture && this._uDiffuseMap) {
-                        program.bindTexture(this._uDiffuseMap, material.diffuseMap.texture, frame.textureUnit);
+                    if (material._diffuseMap && material._diffuseMap._state.texture && this._uDiffuseMap) {
+                        program.bindTexture(this._uDiffuseMap, material._diffuseMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uDiffuseMapMatrix) {
-                            gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, material.diffuseMap.matrix);
+                            gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, material._diffuseMap._state.matrix);
                         }
                     }
-                    if (material.specularMap && material.specularMap.texture && this._uSpecularMap) {
-                        program.bindTexture(this._uSpecularMap, material.specularMap.texture, frame.textureUnit);
+                    if (material._specularMap && material._specularMap._state.texture && this._uSpecularMap) {
+                        program.bindTexture(this._uSpecularMap, material._specularMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uSpecularMapMatrix) {
-                            gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, material.specularMap.matrix);
+                            gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, material._specularMap._state.matrix);
                         }
                     }
-                    if (material.emissiveMap && material.emissiveMap.texture && this._uEmissiveMap) {
-                        program.bindTexture(this._uEmissiveMap, material.emissiveMap.texture, frame.textureUnit);
+                    if (material._emissiveMap && material._emissiveMap._state.texture && this._uEmissiveMap) {
+                        program.bindTexture(this._uEmissiveMap, material._emissiveMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uEmissiveMapMatrix) {
-                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, material.emissiveMap.matrix);
+                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, material._emissiveMap._state.matrix);
                         }
                     }
-                    if (material.alphaMap && material.alphaMap.texture && this._uAlphaMap) {
-                        program.bindTexture(this._uAlphaMap, material.alphaMap.texture, frame.textureUnit);
+                    if (material._alphaMap && material._alphaMap._state.texture && this._uAlphaMap) {
+                        program.bindTexture(this._uAlphaMap, material._alphaMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uAlphaMapMatrix) {
-                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, material.alphaMap.matrix);
+                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, material._alphaMap._state.matrix);
                         }
                     }
-                    if (material.reflectivityMap && material.reflectivityMap.texture && this._uReflectivityMap) {
-                        program.bindTexture(this._uReflectivityMap, material.reflectivityMap.texture, frame.textureUnit);
+                    if (material._reflectivityMap && material._reflectivityMap._state.texture && this._uReflectivityMap) {
+                        program.bindTexture(this._uReflectivityMap, material._reflectivityMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         if (this._uReflectivityMapMatrix) {
-                            gl.uniformMatrix4fv(this._uReflectivityMapMatrix, false, material.reflectivityMap.matrix);
+                            gl.uniformMatrix4fv(this._uReflectivityMapMatrix, false, material._reflectivityMap._state.matrix);
                         }
                     }
-                    if (material.normalMap && material.normalMap.texture && this._uNormalMap) {
-                        program.bindTexture(this._uNormalMap, material.normalMap.texture, frame.textureUnit);
+                    if (material._normalMap && material._normalMap._state.texture && this._uNormalMap) {
+                        program.bindTexture(this._uNormalMap, material._normalMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uNormalMapMatrix) {
-                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, material.normalMap.matrix);
+                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, material._normalMap._state.matrix);
                         }
                     }
-                    if (material.occlusionMap && material.occlusionMap.texture && this._uOcclusionMap) {
-                        program.bindTexture(this._uOcclusionMap, material.occlusionMap.texture, frame.textureUnit);
+                    if (material._occlusionMap && material._occlusionMap._state.texture && this._uOcclusionMap) {
+                        program.bindTexture(this._uOcclusionMap, material._occlusionMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uOcclusionMapMatrix) {
-                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, material.occlusionMap.matrix);
+                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, material._occlusionMap._state.matrix);
                         }
                     }
-                    if (material.diffuseFresnel) {
+                    if (material._diffuseFresnel) {
                         if (this._uDiffuseFresnelEdgeBias) {
-                            gl.uniform1f(this._uDiffuseFresnelEdgeBias, material.diffuseFresnel.edgeBias);
+                            gl.uniform1f(this._uDiffuseFresnelEdgeBias, material._diffuseFresnel.edgeBias);
                         }
                         if (this._uDiffuseFresnelCenterBias) {
-                            gl.uniform1f(this._uDiffuseFresnelCenterBias, material.diffuseFresnel.centerBias);
+                            gl.uniform1f(this._uDiffuseFresnelCenterBias, material._diffuseFresnel.centerBias);
                         }
                         if (this._uDiffuseFresnelEdgeColor) {
-                            gl.uniform3fv(this._uDiffuseFresnelEdgeColor, material.diffuseFresnel.edgeColor);
+                            gl.uniform3fv(this._uDiffuseFresnelEdgeColor, material._diffuseFresnel.edgeColor);
                         }
                         if (this._uDiffuseFresnelCenterColor) {
-                            gl.uniform3fv(this._uDiffuseFresnelCenterColor, material.diffuseFresnel.centerColor);
+                            gl.uniform3fv(this._uDiffuseFresnelCenterColor, material._diffuseFresnel.centerColor);
                         }
                         if (this._uDiffuseFresnelPower) {
-                            gl.uniform1f(this._uDiffuseFresnelPower, material.diffuseFresnel.power);
+                            gl.uniform1f(this._uDiffuseFresnelPower, material._diffuseFresnel.power);
                         }
                     }
-                    if (material.specularFresnel) {
+                    if (material._specularFresnel) {
                         if (this._uSpecularFresnelEdgeBias) {
-                            gl.uniform1f(this._uSpecularFresnelEdgeBias, material.specularFresnel.edgeBias);
+                            gl.uniform1f(this._uSpecularFresnelEdgeBias, material._specularFresnel.edgeBias);
                         }
                         if (this._uSpecularFresnelCenterBias) {
-                            gl.uniform1f(this._uSpecularFresnelCenterBias, material.specularFresnel.centerBias);
+                            gl.uniform1f(this._uSpecularFresnelCenterBias, material._specularFresnel.centerBias);
                         }
                         if (this._uSpecularFresnelEdgeColor) {
-                            gl.uniform3fv(this._uSpecularFresnelEdgeColor, material.specularFresnel.edgeColor);
+                            gl.uniform3fv(this._uSpecularFresnelEdgeColor, material._specularFresnel.edgeColor);
                         }
                         if (this._uSpecularFresnelCenterColor) {
-                            gl.uniform3fv(this._uSpecularFresnelCenterColor, material.specularFresnel.centerColor);
+                            gl.uniform3fv(this._uSpecularFresnelCenterColor, material._specularFresnel.centerColor);
                         }
                         if (this._uSpecularFresnelPower) {
-                            gl.uniform1f(this._uSpecularFresnelPower, material.specularFresnel.power);
+                            gl.uniform1f(this._uSpecularFresnelPower, material._specularFresnel.power);
                         }
                     }
-                    if (material.alphaFresnel) {
+                    if (material._alphaFresnel) {
                         if (this._uAlphaFresnelEdgeBias) {
-                            gl.uniform1f(this._uAlphaFresnelEdgeBias, material.alphaFresnel.edgeBias);
+                            gl.uniform1f(this._uAlphaFresnelEdgeBias, material._alphaFresnel.edgeBias);
                         }
                         if (this._uAlphaFresnelCenterBias) {
-                            gl.uniform1f(this._uAlphaFresnelCenterBias, material.alphaFresnel.centerBias);
+                            gl.uniform1f(this._uAlphaFresnelCenterBias, material._alphaFresnel.centerBias);
                         }
                         if (this._uAlphaFresnelEdgeColor) {
-                            gl.uniform3fv(this._uAlphaFresnelEdgeColor, material.alphaFresnel.edgeColor);
+                            gl.uniform3fv(this._uAlphaFresnelEdgeColor, material._alphaFresnel.edgeColor);
                         }
                         if (this._uAlphaFresnelCenterColor) {
-                            gl.uniform3fv(this._uAlphaFresnelCenterColor, material.alphaFresnel.centerColor);
+                            gl.uniform3fv(this._uAlphaFresnelCenterColor, material._alphaFresnel.centerColor);
                         }
                         if (this._uAlphaFresnelPower) {
-                            gl.uniform1f(this._uAlphaFresnelPower, material.alphaFresnel.power);
+                            gl.uniform1f(this._uAlphaFresnelPower, material._alphaFresnel.power);
                         }
                     }
-                    if (material.reflectivityFresnel) {
+                    if (material._reflectivityFresnel) {
                         if (this._uReflectivityFresnelEdgeBias) {
-                            gl.uniform1f(this._uReflectivityFresnelEdgeBias, material.reflectivityFresnel.edgeBias);
+                            gl.uniform1f(this._uReflectivityFresnelEdgeBias, material._reflectivityFresnel.edgeBias);
                         }
                         if (this._uReflectivityFresnelCenterBias) {
-                            gl.uniform1f(this._uReflectivityFresnelCenterBias, material.reflectivityFresnel.centerBias);
+                            gl.uniform1f(this._uReflectivityFresnelCenterBias, material._reflectivityFresnel.centerBias);
                         }
                         if (this._uReflectivityFresnelEdgeColor) {
-                            gl.uniform3fv(this._uReflectivityFresnelEdgeColor, material.reflectivityFresnel.edgeColor);
+                            gl.uniform3fv(this._uReflectivityFresnelEdgeColor, material._reflectivityFresnel.edgeColor);
                         }
                         if (this._uReflectivityFresnelCenterColor) {
-                            gl.uniform3fv(this._uReflectivityFresnelCenterColor, material.reflectivityFresnel.centerColor);
+                            gl.uniform3fv(this._uReflectivityFresnelCenterColor, material._reflectivityFresnel.centerColor);
                         }
                         if (this._uReflectivityFresnelPower) {
-                            gl.uniform1f(this._uReflectivityFresnelPower, material.reflectivityFresnel.power);
+                            gl.uniform1f(this._uReflectivityFresnelPower, material._reflectivityFresnel.power);
                         }
                     }
-                    if (material.emissiveFresnel) {
+                    if (material._emissiveFresnel) {
                         if (this._uEmissiveFresnelEdgeBias) {
-                            gl.uniform1f(this._uEmissiveFresnelEdgeBias, material.emissiveFresnel.edgeBias);
+                            gl.uniform1f(this._uEmissiveFresnelEdgeBias, material._emissiveFresnel.edgeBias);
                         }
                         if (this._uEmissiveFresnelCenterBias) {
-                            gl.uniform1f(this._uEmissiveFresnelCenterBias, material.emissiveFresnel.centerBias);
+                            gl.uniform1f(this._uEmissiveFresnelCenterBias, material._emissiveFresnel.centerBias);
                         }
                         if (this._uEmissiveFresnelEdgeColor) {
-                            gl.uniform3fv(this._uEmissiveFresnelEdgeColor, material.emissiveFresnel.edgeColor);
+                            gl.uniform3fv(this._uEmissiveFresnelEdgeColor, material._emissiveFresnel.edgeColor);
                         }
                         if (this._uEmissiveFresnelCenterColor) {
-                            gl.uniform3fv(this._uEmissiveFresnelCenterColor, material.emissiveFresnel.centerColor);
+                            gl.uniform3fv(this._uEmissiveFresnelCenterColor, material._emissiveFresnel.centerColor);
                         }
                         if (this._uEmissiveFresnelPower) {
-                            gl.uniform1f(this._uEmissiveFresnelPower, material.emissiveFresnel.power);
+                            gl.uniform1f(this._uEmissiveFresnelPower, material._emissiveFresnel.power);
                         }
                     }
                     break;
 
-
                 case "MetallicMaterial":
-
                     if (this._uBaseColor) {
-                        gl.uniform3fv(this._uBaseColor, material.baseColor);
+                        gl.uniform3fv(this._uBaseColor, materialState.baseColor);
                     }
                     if (this._uMaterialMetallic) {
-                        gl.uniform1f(this._uMaterialMetallic, material.metallic);
+                        gl.uniform1f(this._uMaterialMetallic, materialState.metallic);
                     }
                     if (this._uMaterialRoughness) {
-                        gl.uniform1f(this._uMaterialRoughness, material.roughness);
+                        gl.uniform1f(this._uMaterialRoughness, materialState.roughness);
                     }
                     if (this._uMaterialSpecularF0) {
-                        gl.uniform1f(this._uMaterialSpecularF0, material.specularF0);
+                        gl.uniform1f(this._uMaterialSpecularF0, materialState.specularF0);
                     }
                     if (this._uMaterialEmissive) {
-                        gl.uniform3fv(this._uMaterialEmissive, material.emissive);
+                        gl.uniform3fv(this._uMaterialEmissive, materialState.emissive);
                     }
                     if (this._uAlphaModeCutoff) {
                         gl.uniform4f(
                             this._uAlphaModeCutoff,
-                            1.0 * material.alpha,
-                            material.alphaMode === 1 ? 1.0 : 0.0,
-                            material.alphaCutoff,
+                            1.0 * materialState.alpha,
+                            materialState.alphaMode === 1 ? 1.0 : 0.0,
+                            materialState.alphaCutoff,
                             0.0);
                     }
-                    if (material.baseColorMap && material.baseColorMap.texture && this._uBaseColorMap) {
-                        program.bindTexture(this._uBaseColorMap, material.baseColorMap.texture, frame.textureUnit);
+                    var baseColorMap = material._baseColorMap;
+                    if (baseColorMap && baseColorMap._state.texture && this._uBaseColorMap) {
+                        program.bindTexture(this._uBaseColorMap, baseColorMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uBaseColorMapMatrix) {
-                            gl.uniformMatrix4fv(this._uBaseColorMapMatrix, false, material.baseColorMap.matrix);
+                            gl.uniformMatrix4fv(this._uBaseColorMapMatrix, false, baseColorMap._state.matrix);
                         }
                     }
-                    if (material.metallicMap && material.metallicMap.texture && this._uMetallicMap) {
-                        program.bindTexture(this._uMetallicMap, material.metallicMap.texture, frame.textureUnit);
+                    var metallicMap = material._metallicMap;
+                    if (metallicMap && metallicMap._state.texture && this._uMetallicMap) {
+                        program.bindTexture(this._uMetallicMap, metallicMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uMetallicMapMatrix) {
-                            gl.uniformMatrix4fv(this._uMetallicMapMatrix, false, material.metallicMap.matrix);
+                            gl.uniformMatrix4fv(this._uMetallicMapMatrix, false, metallicMap._state.matrix);
                         }
                     }
-                    if (material.roughnessMap && material.roughnessMap.texture && this._uRoughnessMap) {
-                        program.bindTexture(this._uRoughnessMap, material.roughnessMap.texture, frame.textureUnit);
+                    var roughnessMap = material._roughnessMap;
+                    if (roughnessMap && roughnessMap._state.texture && this._uRoughnessMap) {
+                        program.bindTexture(this._uRoughnessMap, roughnessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uRoughnessMapMatrix) {
-                            gl.uniformMatrix4fv(this._uRoughnessMapMatrix, false, material.roughnessMap.matrix);
+                            gl.uniformMatrix4fv(this._uRoughnessMapMatrix, false, roughnessMap._state.matrix);
                         }
                     }
-                    if (material.metallicRoughnessMap && material.metallicRoughnessMap.texture && this._uMetallicRoughnessMap) {
-                        program.bindTexture(this._uMetallicRoughnessMap, material.metallicRoughnessMap.texture, frame.textureUnit);
+                    var metallicRoughnessMap = material._metallicRoughnessMap;
+                    if (metallicRoughnessMap && metallicRoughnessMap._state.texture && this._uMetallicRoughnessMap) {
+                        program.bindTexture(this._uMetallicRoughnessMap, metallicRoughnessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uMetallicRoughnessMapMatrix) {
-                            gl.uniformMatrix4fv(this._uMetallicRoughnessMapMatrix, false, material.metallicRoughnessMap.matrix);
+                            gl.uniformMatrix4fv(this._uMetallicRoughnessMapMatrix, false, metallicRoughnessMap._state.matrix);
                         }
                     }
-                    if (material.emissiveMap && material.emissiveMap.texture && this._uEmissiveMap) {
-                        program.bindTexture(this._uEmissiveMap, material.emissiveMap.texture, frame.textureUnit);
+                    var emissiveMap = material._emissiveMap;
+                    if (emissiveMap && emissiveMap._state.texture && this._uEmissiveMap) {
+                        program.bindTexture(this._uEmissiveMap, emissiveMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uEmissiveMapMatrix) {
-                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, material.emissiveMap.matrix);
+                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, emissiveMap._state.matrix);
                         }
                     }
-                    if (material.occlusionMap && material.occlusionMap.texture && this._uOcclusionMap) {
-                        program.bindTexture(this._uOcclusionMap, material.occlusionMap.texture, frame.textureUnit);
+                    var occlusionMap = material._occlusionMap;
+                    if (occlusionMap && material._occlusionMap._state.texture && this._uOcclusionMap) {
+                        program.bindTexture(this._uOcclusionMap, occlusionMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uOcclusionMapMatrix) {
-                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, material.occlusionMap.matrix);
+                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, occlusionMap._state.matrix);
                         }
                     }
-                    if (material.alphaMap && material.alphaMap.texture && this._uAlphaMap) {
-                        program.bindTexture(this._uAlphaMap, material.alphaMap.texture, frame.textureUnit);
+                    var alphaMap = material._alphaMap;
+                    if (alphaMap && alphaMap._state.texture && this._uAlphaMap) {
+                        program.bindTexture(this._uAlphaMap, alphaMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uAlphaMapMatrix) {
-                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, material.alphaMap.matrix);
+                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, alphaMap._state.matrix);
                         }
                     }
-                    if (material.normalMap && material.normalMap.texture && this._uNormalMap) {
-                        program.bindTexture(this._uNormalMap, material.normalMap.texture, frame.textureUnit);
+                    var normalMap = material._normalMap;
+                    if (normalMap && normalMap._state.texture && this._uNormalMap) {
+                        program.bindTexture(this._uNormalMap, normalMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uNormalMapMatrix) {
-                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, material.normalMap.matrix);
+                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, normalMap._state.matrix);
                         }
                     }
                     break;
 
                 case "SpecularMaterial":
-
                     if (this._uMaterialDiffuse) {
-                        gl.uniform3fv(this._uMaterialDiffuse, material.diffuse);
+                        gl.uniform3fv(this._uMaterialDiffuse, materialState.diffuse);
                     }
                     if (this._uMaterialSpecular) {
-                        gl.uniform3fv(this._uMaterialSpecular, material.specular);
+                        gl.uniform3fv(this._uMaterialSpecular, materialState.specular);
                     }
                     if (this._uMaterialGlossiness) {
-                        gl.uniform1f(this._uMaterialGlossiness, material.glossiness);
+                        gl.uniform1f(this._uMaterialGlossiness, materialState.glossiness);
                     }
                     if (this._uMaterialReflectivity) {
-                        gl.uniform1f(this._uMaterialReflectivity, material.reflectivity);
+                        gl.uniform1f(this._uMaterialReflectivity, materialState.reflectivity);
                     }
                     if (this._uMaterialEmissive) {
-                        gl.uniform3fv(this._uMaterialEmissive, material.emissive);
+                        gl.uniform3fv(this._uMaterialEmissive, materialState.emissive);
                     }
                     if (this._uAlphaModeCutoff) {
                         gl.uniform4f(
                             this._uAlphaModeCutoff,
-                            1.0 * material.alpha,
-                            material.alphaMode === 1 ? 1.0 : 0.0,
-                            material.alphaCutoff,
+                            1.0 * materialState.alpha,
+                            materialState.alphaMode === 1 ? 1.0 : 0.0,
+                            materialState.alphaCutoff,
                             0.0);
                     }
-                    if (material.diffuseMap && material.diffuseMap.texture && this._uDiffuseMap) {
-                        program.bindTexture(this._uDiffuseMap, material.diffuseMap.texture, frame.textureUnit);
+                    var diffuseMap = material._diffuseMap;
+                    if (diffuseMap && diffuseMap._state.texture && this._uDiffuseMap) {
+                        program.bindTexture(this._uDiffuseMap, diffuseMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uDiffuseMapMatrix) {
-                            gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, material.diffuseMap.matrix);
+                            gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, diffuseMap._state.matrix);
                         }
                     }
-                    if (material.specularMap && material.specularMap.texture && this._uSpecularMap) {
-                        program.bindTexture(this._uSpecularMap, material.specularMap.texture, frame.textureUnit);
+                    var specularMap = material._specularMap;
+                    if (specularMap && specularMap._state.texture && this._uSpecularMap) {
+                        program.bindTexture(this._uSpecularMap, specularMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uSpecularMapMatrix) {
-                            gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, material.specularMap.matrix);
+                            gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, specularMap._state.matrix);
                         }
                     }
-                    if (material.glossinessMap && material.glossinessMap.texture && this._uGlossinessMap) {
-                        program.bindTexture(this._uGlossinessMap, material.glossinessMap.texture, frame.textureUnit);
+                    var glossinessMap = material._glossinessMap;
+                    if (glossinessMap && glossinessMap._state.texture && this._uGlossinessMap) {
+                        program.bindTexture(this._uGlossinessMap, glossinessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uGlossinessMapMatrix) {
-                            gl.uniformMatrix4fv(this._uGlossinessMapMatrix, false, material.glossinessMap.matrix);
+                            gl.uniformMatrix4fv(this._uGlossinessMapMatrix, false, glossinessMap._state.matrix);
                         }
                     }
-                    if (material.specularGlossinessMap && material.specularGlossinessMap.texture && this._uSpecularGlossinessMap) {
-                        program.bindTexture(this._uSpecularGlossinessMap, material.specularGlossinessMap.texture, frame.textureUnit);
+                    var specularGlossinessMap = material._specularGlossinessMap;
+                    if (specularGlossinessMap && specularGlossinessMap._state.texture && this._uSpecularGlossinessMap) {
+                        program.bindTexture(this._uSpecularGlossinessMap, specularGlossinessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uSpecularGlossinessMapMatrix) {
-                            gl.uniformMatrix4fv(this._uSpecularGlossinessMapMatrix, false, material.specularGlossinessMap.matrix);
+                            gl.uniformMatrix4fv(this._uSpecularGlossinessMapMatrix, false, specularGlossinessMap._state.matrix);
                         }
                     }
-                    if (material.emissiveMap && material.emissiveMap.texture && this._uEmissiveMap) {
-                        program.bindTexture(this._uEmissiveMap, material.emissiveMap.texture, frame.textureUnit);
+                    var emissiveMap = material._emissiveMap;
+                    if (emissiveMap && emissiveMap._state.texture && this._uEmissiveMap) {
+                        program.bindTexture(this._uEmissiveMap, emissiveMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uEmissiveMapMatrix) {
-                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, material.emissiveMap.matrix);
+                            gl.uniformMatrix4fv(this._uEmissiveMapMatrix, false, emissiveMap._state.matrix);
                         }
                     }
-                    if (material.occlusionMap && material.occlusionMap.texture && this._uOcclusionMap) {
-                        program.bindTexture(this._uOcclusionMap, material.occlusionMap.texture, frame.textureUnit);
+                    var occlusionMap = material._occlusionMap;
+                    if (occlusionMap && occlusionMap._state.texture && this._uOcclusionMap) {
+                        program.bindTexture(this._uOcclusionMap, occlusionMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uOcclusionMapMatrix) {
-                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, material.occlusionMap.matrix);
+                            gl.uniformMatrix4fv(this._uOcclusionMapMatrix, false, occlusionMap._state.matrix);
                         }
                     }
-                    if (material.alphaMap && material.alphaMap.texture && this._uAlphaMap) {
-                        program.bindTexture(this._uAlphaMap, material.alphaMap.texture, frame.textureUnit);
+                    var alphaMap = material._alphaMap;
+                    if (alphaMap && alphaMap._state.texture && this._uAlphaMap) {
+                        program.bindTexture(this._uAlphaMap, alphaMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uAlphaMapMatrix) {
-                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, material.alphaMap.matrix);
+                            gl.uniformMatrix4fv(this._uAlphaMapMatrix, false, alphaMap._state.matrix);
                         }
                     }
-                    if (material.normalMap && material.normalMap.texture && this._uNormalMap) {
-                        program.bindTexture(this._uNormalMap, material.normalMap.texture, frame.textureUnit);
+                    var normalMap = material._normalMap;
+                    if (normalMap && normalMap._state.texture && this._uNormalMap) {
+                        program.bindTexture(this._uNormalMap, normalMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
                         frame.bindTexture++;
                         if (this._uNormalMapMatrix) {
-                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, material.normalMap.matrix);
+                            gl.uniformMatrix4fv(this._uNormalMapMatrix, false, normalMap._state.matrix);
                         }
                     }
                     break;
             }
-
-            this._lastMaterialId = material.id;
+            this._lastMaterialId = materialState.id;
         }
 
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            if (this._uModelNormalMatrix) {
-                gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, modelTransform.getNormalMatrix());
-            }
-            this._lastModelTransformId = modelTransform.id;
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+        if (this._uModelNormalMatrix) {
+            gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, mesh.worldNormalMatrix);
         }
-
-        var modes = object.modes;
 
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, modes.clippable);
+            gl.uniform1i(this._uClippable, meshState.clippable);
         }
 
         if (this._uColorize) {
-            var colorize = modes.colorize;
+            var colorize = meshState.colorize;
             var lastColorize = this._lastColorize;
             if (lastColorize[0] !== colorize[0] ||
                 lastColorize[1] !== colorize[1] ||
@@ -890,8 +902,8 @@
             }
         }
 
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        if (geometryState.combined) {
+            var vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -902,7 +914,7 @@
                     frame.bindArray++;
                 }
                 if (vertexBufs.uvBuf && this._aUV) {
-                    this._aUV.bindArrayBuffer(vertexBufs.uvBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aUV.bindArrayBuffer(vertexBufs.uvBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.colorsBuf && this._aColor) {
@@ -919,70 +931,67 @@
 
         // Bind VBOs
 
-        if (geometry.id !== this._lastGeometryId) {
-
+        if (geometryState.id !== this._lastGeometryId) {
             if (this._uPositionsDecodeMatrix) {
-                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
             }
-
             if (this._uUVDecodeMatrix) {
-                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometry.uvDecodeMatrix);
+                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometryState.uvDecodeMatrix);
             }
-
-            if (geometry.combined) { // VBOs were bound by the VertexBufs logic above
-                if (geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined.bind();
+            if (geometryState.combined) { // VBOs were bound by the VertexBufs logic above
+                if (geometryState.indicesBufCombined) {
+                    geometryState.indicesBufCombined.bind();
                     frame.bindArray++;
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometryState.normalsBuf, geometryState.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aUV) {
-                    this._aUV.bindArrayBuffer(geometry.uvBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aUV.bindArrayBuffer(geometryState.uvBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aColor) {
-                    this._aColor.bindArrayBuffer(geometry.colorsBuf);
+                    this._aColor.bindArrayBuffer(geometryState.colorsBuf);
                     frame.bindArray++;
                 }
                 if (this._aFlags) {
-                    this._aFlags.bindArrayBuffer(geometry.flagsBuf);
+                    this._aFlags.bindArrayBuffer(geometryState.flagsBuf);
                     frame.bindArray++;
                 }
-                if (geometry.indicesBuf) {
-                    geometry.indicesBuf.bind();
+                if (geometryState.indicesBuf) {
+                    geometryState.indicesBuf.bind();
                     frame.bindArray++;
-                    // gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+                    // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                     // frame.drawElements++;
-                } else if (geometry.positions) {
-                    // gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+                } else if (geometryState.positions) {
+                    // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                     //  frame.drawArrays++;
                 }
             }
-            this._lastGeometryId = geometry.id;
+            this._lastGeometryId = geometryState.id;
         }
 
         // Draw (indices bound in prev step)
 
-        if (geometry.combined) {
-            if (geometry.indicesBufCombined) { // Geometry indices into portion of uber-array
-                gl.drawElements(geometry.primitive, geometry.indicesBufCombined.numItems, geometry.indicesBufCombined.itemType, 0);
+        if (geometryState.combined) {
+            if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
+                gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
                 frame.drawElements++;
             } else {
                 // TODO: drawArrays() with VertexBufs positions
             }
         } else {
-            if (geometry.indicesBuf) {
-                gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+            if (geometryState.indicesBuf) {
+                gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 frame.drawElements++;
-            } else if (geometry.positions) {
-                gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+            } else if (geometryState.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                 frame.drawArrays++;
             }
         }

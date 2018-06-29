@@ -11,6 +11,9 @@
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  * A DirLight can also have a {{#crossLink "Shadow"}}{{/crossLink}} component, to configure it to cast a shadow.
+ * {{#crossLink "AmbientLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+ {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "PointLight"}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink "Scene/lights:property"}}Scene#lights{{/crossLink}} for convenient access.
 
  ## Examples
 
@@ -91,7 +94,7 @@
             this._shadowViewMatrixDirty = true;
             this._shadowProjMatrixDirty = true;
 
-            this._state = new xeogl.renderer.Light({
+            this._state = new xeogl.renderer.State({
                 type: "dir",
                 dir: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([0.7, 0.7, 0.8]),
@@ -139,8 +142,7 @@
             this.color = cfg.color;
             this.intensity = cfg.intensity;
             this.shadow = cfg.shadow;
-
-            this._renderer.lights.addLight(this._state);
+            this.scene._lightCreated(this);
         },
 
         _props: {
@@ -228,7 +230,7 @@
             if (this._shadowRenderBuf) {
                 this._shadowRenderBuf.destroy();
             }
-            this._renderer.lights.removeLight(this._state);
+            this.scene._lightDestroyed(this);
         }
     });
 

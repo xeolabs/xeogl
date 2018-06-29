@@ -6,51 +6,42 @@
 
     "use strict";
 
-    xeogl.renderer.OutlineShaderSource = function (gl, scene, object) {
-        var cfg = {
-            normals: hasNormals(object),
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized
-        };
-        this.vertex = buildVertex(gl, cfg, object);
-        this.fragment = buildFragment(gl, cfg, scene);
+    xeogl.renderer.OutlineShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
 
-    function hasNormals(object) {
-        var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+    function hasNormals(mesh) {
+        var primitive = mesh._geometry._state.primitiveName;
+        if ((mesh._geometry._state.autoVertexNormals || mesh._geometry._state.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
     }
 
-    function buildVertex(gl, cfg, object) {
-
-        var billboard = object.modes.billboard;
-
+    function buildVertex(mesh) {
+        var scene = mesh.scene;
+        var clipping = scene._clipsState.clips.length > 0;
+        var quantizedGeometry = !!mesh._geometry._state.quantized;
+        var normals = hasNormals(mesh);
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
         var src = [];
-
         src.push("// Outline effect vertex shader");
-
         src.push("attribute vec3 position;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
-
         src.push("uniform float width;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        if (cfg.normals) {
+        if (normals) {
             src.push("attribute vec3 normal;");
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -60,7 +51,6 @@
                 src.push("}");
             }
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
@@ -76,18 +66,14 @@
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
+        if (normals) {
+            if (quantizedGeometry) {
                 src.push("vec3 localNormal = octDecode(normal.xy); ");
             } else {
                 src.push("vec3 localNormal = normal; ");
@@ -95,57 +81,51 @@
             //src.push("  localPosition.xyz += (normalize(normal) * (width * 0.0005 * (projPos.z/1.0)));");
             src.push("  localPosition.xyz += (normalize(normal) * (width * 0.0005));");
         }
-
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
         } else {
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("}");
         return src;
     }
 
-    function buildFragment(gl, cfg, scene) {
+    function buildFragment(mesh) {
+        var scene = mesh.scene;
+        var clipsState = scene._clipsState;
+        var clipping = clipsState.clips.length > 0;
         var src = [];
-        //src.push("precision " + getFragmentFloatPrecision(gl) + " float;");
         src.push("precision lowp float;");
         src.push("uniform vec4  color;");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("uniform bool clippable;");
             src.push("varying vec4 vWorldPosition;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
             }
         }
         src.push("void main(void) {");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
@@ -158,17 +138,5 @@
         return src;
     }
 
-    function getFragmentFloatPrecision(gl) {
-        if (!gl.getShaderPrecisionFormat) {
-            return "mediump";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
-            return "highp";
-        }
-        if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
-            return "mediump";
-        }
-        return "lowp";
-    }
 
 })();

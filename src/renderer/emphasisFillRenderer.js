@@ -8,16 +8,24 @@
 
     var ids = new xeogl.utils.Map({});
 
-    xeogl.renderer.GhostFillRenderer = function (gl, hash, scene, object) {
-        this._init(gl, hash, scene, object);
+    xeogl.renderer.EmphasisFillRenderer = function (hash, mesh) {
+        this._init(hash, mesh);
     };
 
     var ghostFillRenderers = {};
 
-    xeogl.renderer.GhostFillRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.EmphasisFillRenderer.get = function (mesh) {
+        var hash = [
+            mesh.scene.id,
+            mesh.scene.gammaOutput ? "go" : "", // Gamma input not needed
+            mesh.scene._clipsState.getHash(),
+            !!mesh._geometry.normals ? "n" : "",
+            mesh._geometry._state.quantized ? "cp" : "",
+            mesh._state.hash
+        ].join(";");
         var renderer = ghostFillRenderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.GhostFillRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.EmphasisFillRenderer(hash, mesh);
             ghostFillRenderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -25,7 +33,7 @@
         return renderer;
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype.destroy = function () {
+    xeogl.renderer.EmphasisFillRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
             this._program.destroy();
@@ -34,54 +42,43 @@
         }
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype._init = function (gl, hash, scene, object) {
-
+    xeogl.renderer.EmphasisFillRenderer.prototype._init = function (hash, mesh) {
+        var lightsState = mesh.scene._lightsState;
+        var clipsState = mesh.scene._clipsState;
         this.id = ids.addItem({});
-        this._gl = gl;
+        var gl = mesh.scene.canvas.gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.GhostFillShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.EmphasisFillShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uModelNormalMatrix = program.getLocation("modelNormalMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uViewNormalMatrix = program.getLocation("viewNormalMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uLightAmbient = [];
         this._uLightColor = [];
         this._uLightDir = [];
         this._uLightPos = [];
         this._uLightAttenuation = [];
-
-        var lights = scene.lights.lights;
-        var light;
-
-        for (var i = 0, len = lights.length; i < len; i++) {
-            light = lights[i];
+        for (var i = 0, len = lightsState.lights.length; i < len; i++) {
+            var light = lightsState.lights[i];
             switch (light.type) {
-
                 case "ambient":
                     this._uLightAmbient[i] = program.getLocation("lightAmbient");
                     break;
-
                 case "dir":
                     this._uLightColor[i] = program.getLocation("lightColor" + i);
                     this._uLightPos[i] = null;
                     this._uLightDir[i] = program.getLocation("lightDir" + i);
                     break;
-
                 case "point":
                     this._uLightColor[i] = program.getLocation("lightColor" + i);
                     this._uLightPos[i] = program.getLocation("lightPos" + i);
@@ -90,85 +87,64 @@
                     break;
             }
         }
-
         this._uClips = [];
-        var clips = scene.clips.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
+        for (var i = 0, len = clipsState.clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
                 pos: program.getLocation("clipPos" + i),
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
-        var material = object.material;
-
         this._uFillColor = program.getLocation("fillColor");
-
         this._aPosition = program.getAttribute("position");
         this._aNormal = program.getAttribute("normal");
-
         this._uClippable = program.getLocation("clippable");
         this._uGammaFactor = program.getLocation("gammaFactor");
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype._bindProgram = function (frame) {
-
+    xeogl.renderer.EmphasisFillRenderer.prototype._bindProgram = function (frame) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
+        var lightsState = scene._lightsState;
+        var camera = scene.camera;
+        var cameraState = camera._state;
+        var light;
         var program = this._program;
-
         program.bind();
-
         frame.useProgram++;
         frame.textureUnit = 0;
-
-        var gl = this._gl;
-        var scene = this._scene;
-        var lights = scene.lights;
-        var light;
-
         this._lastMaterialId = null;
-        this._lastModelTransformId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
         this._lastIndicesBufId = null;
-
-        gl.uniformMatrix4fv(this._uViewMatrix, false, scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, scene.viewTransform.normalMatrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, scene.projTransform.matrix);
-
-        for (var i = 0, len = lights.lights.length; i < len; i++) {
-
-            light = lights.lights[i];
-
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        for (var i = 0, len = lightsState.lights.length; i < len; i++) {
+            light = lightsState.lights[i];
             if (this._uLightAmbient[i]) {
                 gl.uniform4f(this._uLightAmbient[i], light.color[0], light.color[1], light.color[2], light.intensity);
-
             } else {
-
                 if (this._uLightColor[i]) {
                     gl.uniform4f(this._uLightColor[i], light.color[0], light.color[1], light.color[2], light.intensity);
                 }
-
                 if (this._uLightPos[i]) {
                     gl.uniform3fv(this._uLightPos[i], light.pos);
                     if (this._uLightAttenuation[i]) {
                         gl.uniform1f(this._uLightAttenuation[i], light.attenuation);
                     }
                 }
-
                 if (this._uLightDir[i]) {
                     gl.uniform3fv(this._uLightDir[i], light.dir);
                 }
             }
         }
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        if (clipsState.clips.length > 0) {
+            var clips = scene._clipsState.clips;
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -191,46 +167,44 @@
                 }
             }
         }
-
         if (this._uGammaFactor) {
             gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
         }
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype.drawObject = function (frame, object, mode) {
-
+    xeogl.renderer.EmphasisFillRenderer.prototype.drawMesh = function (frame, mesh, mode) {
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var materialState = mode === 0 ? mesh._ghostMaterial._state : (mode === 1 ? mesh._highlightMaterial._state : mesh._selectedMaterial._state);
+        var meshState = mesh._state;
+        var geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
-
-        var gl = this._gl;
-        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        if (material.id !== this._lastMaterialId) {
-            var fillColor = material.fillColor;
-            gl.uniform4f(this._uFillColor, fillColor[0], fillColor[1], fillColor[2], material.fillAlpha);
-            this._lastMaterialId = material.id;
-        }
-
-        if (modelTransform.id !== this._lastModelTransformId) {
-            gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-            if (this._uModelNormalMatrix) {
-                gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, modelTransform.getNormalMatrix());
+        if (materialState.id !== this._lastMaterialId) {
+            var fillColor = materialState.fillColor;
+            var backfaces = materialState.backfaces;
+            if (frame.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frame.backfaces = backfaces;
             }
-            this._lastModelTransformId = modelTransform.id;
+            gl.uniform4f(this._uFillColor, fillColor[0], fillColor[1], fillColor[2], materialState.fillAlpha);
+            this._lastMaterialId = materialState.id;
         }
-
-        var modes = object.modes;
-
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+        if (this._uModelNormalMatrix) {
+            gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, mesh.worldNormalMatrix);
+        }
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, modes.clippable);
+            gl.uniform1i(this._uClippable, meshState.clippable);
         }
-
-        if (geometry.combined) {
-            var vertexBufs = object.vertexBufs;
+        if (geometryState.combined) {
+            var vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -243,61 +217,54 @@
                 this._lastVertexBufsId = vertexBufs.id;
             }
         }
-
         // Bind VBOs
-
-        if (geometry.id !== this._lastGeometryId) {
-
+        if (geometryState.id !== this._lastGeometryId) {
             if (this._uPositionsDecodeMatrix) {
-                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
             }
-
             if (this._uUVDecodeMatrix) {
-                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometry.uvDecodeMatrix);
+                gl.uniformMatrix3fv(this._uUVDecodeMatrix, false, geometryState.uvDecodeMatrix);
             }
-
-            if (geometry.combined) { // VBOs were bound by the VertexBufs logic above
-                if (geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined.bind();
+            if (geometryState.combined) { // VBOs were bound by the VertexBufs logic above
+                if (geometryState.indicesBufCombined) {
+                    geometryState.indicesBufCombined.bind();
                     frame.bindArray++;
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometryState.normalsBuf, geometryState.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
-                if (geometry.indicesBuf) {
-                    geometry.indicesBuf.bind();
+                if (geometryState.indicesBuf) {
+                    geometryState.indicesBuf.bind();
                     frame.bindArray++;
-                    // gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+                    // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                     // frame.drawElements++;
-                } else if (geometry.positions) {
-                    // gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+                } else if (geometryState.positions) {
+                    // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                     //  frame.drawArrays++;
                 }
             }
-            this._lastGeometryId = geometry.id;
+            this._lastGeometryId = geometryState.id;
         }
-
         // Draw (indices bound in prev step)
-
-        if (geometry.combined) {
-            if (geometry.indicesBufCombined) { // Geometry indices into portion of uber-array
-                gl.drawElements(geometry.primitive, geometry.indicesBufCombined.numItems, geometry.indicesBufCombined.itemType, 0);
+        if (geometryState.combined) {
+            if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
+                gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
                 frame.drawElements++;
             } else {
                 // TODO: drawArrays() with VertexBufs positions
             }
         } else {
-            if (geometry.indicesBuf) {
-                gl.drawElements(geometry.primitive, geometry.indicesBuf.numItems, geometry.indicesBuf.itemType, 0);
+            if (geometryState.indicesBuf) {
+                gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 frame.drawElements++;
-            } else if (geometry.positions) {
-                gl.drawArrays(gl.TRIANGLES, 0, geometry.positions.numItems);
+            } else if (geometryState.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
                 frame.drawArrays++;
             }
         }

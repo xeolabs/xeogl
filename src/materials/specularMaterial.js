@@ -104,17 +104,17 @@
  var scene = plasteredSphere.scene;
 
  scene.lights.lights = [
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [0.8, -0.6, -0.8],
          color: [0.8, 0.8, 0.8],
          space: "view"
      }),
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [-0.8, -0.4, -0.4],
          color: [0.4, 0.4, 0.5],
          space: "view"
      }),
-     new xeogl.DirLight({
+ new xeogl.DirLight({
          dir: [0.2, -0.8, 0.8],
          color: [0.8, 0.8, 0.8],
          space: "view"
@@ -302,7 +302,7 @@
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.SpecularMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "SpecularMaterial",
                 diffuse: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
@@ -310,15 +310,6 @@
                 glossiness: null,
                 specularF0: null,
                 alpha: null,
-
-                diffuseMap: null,
-                emissiveMap: null,
-                specularMap: null,
-                glossinessMap: null,
-                specularGlossinessMap: null,
-                occlusionMap: null,
-                alphaMap: null,
-                normalMap: null,
                 alphaMode: null,
                 alphaCutoff: null,
                 lineWidth: null,
@@ -327,17 +318,6 @@
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
                 hash: null
             });
-
-            this._hashDirty = true;
-
-            this.on("dirty", function () {
-
-                // This SpecularMaterial is flagged dirty when a
-                // child component fires "dirty", which always
-                // means that a shader recompile will be needed.
-
-                this._hashDirty = true;
-            }, this);
 
             this.diffuse = cfg.diffuse;
             this.specular = cfg.specular;
@@ -348,42 +328,27 @@
 
             if (cfg.diffuseMap) {
                 this._diffuseMap = this._checkComponent("xeogl.Texture", cfg.diffuseMap);
-                this._state.diffuseMap = this._diffuseMap ? this._diffuseMap._state : null;
             }
-
             if (cfg.emissiveMap) {
                 this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
-                this._state.emissiveMap = this._emissiveMap ? this._emissiveMap._state : null;
             }
-
             if (cfg.specularMap) {
                 this._specularMap = this._checkComponent("xeogl.Texture", cfg.specularMap);
-                this._state.specularMap = this._specularMap ? this._specularMap._state : null;
             }
-
             if (cfg.glossinessMap) {
                 this._glossinessMap = this._checkComponent("xeogl.Texture", cfg.glossinessMap);
-                this._state.glossinessMap = this._glossinessMap ? this._glossinessMap._state : null;
             }
-
             if (cfg.specularGlossinessMap) {
                 this._specularGlossinessMap = this._checkComponent("xeogl.Texture", cfg.specularGlossinessMap);
-                this._state.specularGlossinessMap = this._specularGlossinessMap ? this._specularGlossinessMap._state : null;
             }
-
             if (cfg.occlusionMap) {
                 this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
-                this._state.occlusionMap = this._occlusionMap ? this._occlusionMap._state : null;
             }
-
             if (cfg.alphaMap) {
                 this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
-                this._state.alphaMap = this._alphaMap ? this._alphaMap._state : null;
             }
-
             if (cfg.normalMap) {
                 this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
-                this._state.normalMap = this._normalMap ? this._normalMap._state : null;
             }
 
             this.alphaMode = cfg.alphaMode;
@@ -400,52 +365,52 @@
         _makeHash: function () {
             var state = this._state;
             var hash = ["/spe"];
-            if (state.diffuseMap) {
+            if (this._diffuseMap) {
                 hash.push("/dm");
-                if (state.diffuseMap.hasMatrix) {
+                if (this._diffuseMap.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.diffuseMap.encoding);
+                hash.push("/" + this._diffuseMap.encoding);
             }
-            if (state.emissiveMap) {
+            if (this._emissiveMap) {
                 hash.push("/em");
-                if (state.emissiveMap.hasMatrix) {
+                if (this._emissiveMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.glossinessMap) {
+            if (this._glossinessMap) {
                 hash.push("/gm");
-                if (state.glossinessMap.hasMatrix) {
+                if (this._glossinessMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.specularMap) {
+            if (this._specularMap) {
                 hash.push("/sm");
-                if (state.specularMap.hasMatrix) {
+                if (this._specularMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.specularGlossinessMap) {
+            if (this._specularGlossinessMap) {
                 hash.push("/sgm");
-                if (state.specularGlossinessMap.hasMatrix) {
+                if (this._specularGlossinessMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.occlusionMap) {
+            if (this._occlusionMap) {
                 hash.push("/ocm");
-                if (state.occlusionMap.hasMatrix) {
+                if (this._occlusionMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.normalMap) {
+            if (this._normalMap) {
                 hash.push("/nm");
-                if (state.normalMap.hasMatrix) {
+                if (this._normalMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.alphaMap) {
+            if (this._alphaMap) {
                 hash.push("/opm");
-                if (state.alphaMap.hasMatrix) {
+                if (this._alphaMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
@@ -467,7 +432,7 @@
              */
             diffuse: {
                 set: function (value) {
-                    var diffuse = this._state.diffuse
+                    var diffuse = this._state.diffuse;
                     if (!diffuse) {
                         diffuse = this._state.diffuse = new Float32Array(3);
                     } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
@@ -584,9 +549,16 @@
              @property glossiness
              @default 1.0
              @type Number
-             @final
              */
             glossiness: {
+                set: function (value) {
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+                    if (this._state.glossiness === value) {
+                        return;
+                    }
+                    this._state.glossiness = value;
+                    this._renderer.imageDirty();
+                },
                 get: function () {
                     return this._state.glossiness;
                 }

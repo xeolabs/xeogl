@@ -290,14 +290,6 @@
             this.meta = cfg.meta || {};
 
             /**
-             Indicates whether this is one of the {{#crossLink "Scene"}}Scene{{/crossLink}}'s built-in Components.
-
-             @property isDefault
-             @type Boolean
-             */
-            this.isDefault = cfg.isDefault;
-
-            /**
              Unique ID for this Component within its parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
              @property id
@@ -472,7 +464,7 @@
                 this._eventSubs = {};
             }
             if (forget !== true) {
-                this._events[event] = value; // Save notification
+                this._events[event] = value || true; // Save notification
             }
             var subs = this._eventSubs[event];
             var sub;
@@ -533,7 +525,7 @@
             }
             return handle;
         },
-
+        
         /**
          * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}Component#on(){{/crossLink}} or
          * {{#crossLink "Component/once:method"}}Component#once(){{/crossLink}}.
@@ -912,6 +904,17 @@
         },
 
         _checkComponent: function (expectedType, component) {
+            if (xeogl._isObject(component)) {
+                if (component.type) {
+                    if (!xeogl._isComponentType(component.type, expectedType)) {
+                        this.error("Expected a " + expectedType + " type or subtype: " + component.type + " " + xeogl._inQuotes(component.id));
+                        return;
+                    }
+                } else {
+                    component.type = "xeogl.Component";
+                }
+                component = new window[component.type](this.scene, component);
+            }
             if (component.scene.id !== this.scene.id) {
                 this.error("Not in same scene: " + component.type + " " + xeogl._inQuotes(component.id));
                 return;
@@ -1093,6 +1096,19 @@
                 this._destroy();
             }
 
+            this.scene._removeComponent(this);
+
+            // Memory leak avoidance
+            this._attached = {};
+            this._attachments = null;
+            this._handleMap = null;
+            this._handleEvents = null;
+            this._eventSubs = null;
+            this._events = null;
+            this._eventCallDepth = 0;
+            this._adoptees = null;
+            this._updateScheduled = false;
+
             /**
              * Fired when this Component is destroyed.
              * @event destroyed
@@ -1107,16 +1123,6 @@
          * @protected
          */
         _destroy: function () {
-            // Memory leak avoidance
-            this._attached = {};
-            this._attachments = null;
-            this._handleMap = null;
-            this._handleEvents = null;
-            this._eventSubs = null;
-            this._events = null;
-            this._eventCallDepth = 0;
-            this._adoptees = null;
-            this._updateScheduled = false;
 
         }
     });

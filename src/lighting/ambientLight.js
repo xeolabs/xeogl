@@ -6,14 +6,15 @@
 
  ## Overview
 
- * AmbientLights are grouped, along with other light source types, within a {{#crossLink "Lights"}}Lights{{/crossLink}} component,
- which belongs to a {{#crossLink "Scene"}}{{/crossLink}}.
- * When the {{#crossLink "Mesh"}}Meshes{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ * When {{#crossLink "Mesh"}}Meshes{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  PhongMaterial {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} at each rendered fragment of the {{#crossLink "Geometry"}}{{/crossLink}} surface.
  * When the Meshes have {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  LambertMaterial {{#crossLink "LambertMaterial/ambient:property"}}{{/crossLink}} for each rendered triangle of the Geometry surface (ie. flat shaded).
+ * {{#crossLink "AmbientLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+ {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "PointLight"}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink "Scene/lights:property"}}Scene#lights{{/crossLink}} for convenient access.
 
  ## Examples
 
@@ -25,38 +26,23 @@
  DirLights, then create a Phong-shaded box mesh.
 
  ````javascript
+ new xeogl.AmbientLight({
+    color: [0.8, 0.8, 0.8],
+    intensity: 0.5
+ });
 
- // We're using the default xeogl Scene
- // Get Scene's Lights
- var lights = xeogl.scene.lights;
+ new xeogl.DirLight({
+    dir: [-0.8, -0.4, -0.4],
+    color: [0.4, 0.4, 0.5],
+    intensity: 0.5,
+    space: "view"
+ });
 
- // Customize the light sources
- lights.lights = [
-    new xeogl.AmbientLight({
-        color: [0.8, 0.8, 0.8],
-        intensity: 0.5
-    }),
-    new xeogl.DirLight({
-        dir: [-0.8, -0.4, -0.4],
-        color: [0.4, 0.4, 0.5],
-        intensity: 0.5,
-        space: "view"
-    }),
-    new xeogl.DirLight({
-        dir: [0.2, -0.8, 0.8],
-        color: [0.8, 0.8, 0.8],
-        intensity: 0.5,
-        space: "view"
-    })
- ];
-
- // Create box mesh
- new xeogl.Mesh({
-    material: new xeogl.PhongMaterial({
-        ambient: [0.5, 0.5, 0.5],
-        diffuse: [1,0.3,0.3]
-    }),
-    geometry: new xeogl.BoxGeometry()
+ new xeogl.DirLight({
+    dir: [0.2, -0.8, 0.8],
+    color: [0.8, 0.8, 0.8],
+    intensity: 0.5,
+    space: "view"
  });
  ````
 
@@ -89,6 +75,7 @@
             };
             this.color = cfg.color;
             this.intensity = cfg.intensity;
+            this.scene._lightCreated(this);
         },
 
         _props: {
@@ -126,6 +113,10 @@
                     return this._state.intensity;
                 }
             }
+        },
+
+        _destroy: function () {
+            this.scene._lightDestroyed(this);
         }
     });
 

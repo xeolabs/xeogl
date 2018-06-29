@@ -28,7 +28,7 @@
 
         _init: function (cfg) {
             this._super(cfg);
-            this._state = new xeogl.renderer.OutlineMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "OutlineMaterial",
                 color: null,
                 alpha: null,

@@ -416,7 +416,7 @@
 
                 // Auto-generated ID
 
-                scene.id = this._sceneIDMap.addItem(scene);
+                scene.id = this._sceneIDMap.addItem({});
             }
 
             this.scenes[scene.id] = scene;
@@ -434,16 +434,15 @@
 
             // Unregister destroyed scenes
 
-            scene.on("destroyed",
-                function () {
+            scene.on("destroyed", function () {
 
-                    self._sceneIDMap.removeItem(scene.id);
+                self._sceneIDMap.removeItem(scene.id);
 
-                    delete self.scenes[scene.id];
-                    delete self._scenesRenderInfo[scene.id];
+                delete self.scenes[scene.id];
+                delete self._scenesRenderInfo[scene.id];
 
-                    self.stats.components.scenes--;
-                });
+                self.stats.components.scenes--;
+            });
         },
 
         /**

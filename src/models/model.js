@@ -36,6 +36,7 @@
  @param [cfg.ghosted=false] {Boolean}       Indicates if rendered as ghosted.
  @param [cfg.highlighted=false] {Boolean}   Indicates if rendered as highlighted.
  @param [cfg.selected=false] {Boolean}      Indicates if rendered as selected.
+ @param [cfg.edges=false] {Boolean}         Indicates if edges are emphasized.
  @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
  @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
@@ -108,6 +109,18 @@
             this.objects = {};
 
             /**
+             {{#crossLink "Object"}}Objects{{/crossLink}} in this Model that have GUIDs, mapped to their GUIDs.
+
+             Each Object is registered in this map when its {{#crossLink "Object/guid:property"}}{{/crossLink}} is
+             assigned a value.
+
+             @property guidObjects
+             @final
+             @type {{String:Object}}
+             */
+            this.guidObjects = {};
+
+            /**
              All contained {{#crossLink "Mesh"}}Meshes{{/crossLink}}, mapped to their IDs.
 
              @property meshes
@@ -128,10 +141,30 @@
              */
             this.entities = {};
 
+            /**
+             For each entity type, a map of IDs to {{#crossLink "Object"}}Objects{{/crossLink}} of that entity type.
+
+             Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
+             assigned a value.
+
+             @property entityTypes
+             @final
+             @type {String:{String:xeogl.Component}}
+             */
+            this.entityTypes = {};
+
+            /**
+             Lazy-regenerated ID lists.
+             */
+            this._objectGUIDs = null;
+            this._entityIds = null;
+
             // xeogl.Model overrides xeogl.Group / xeogl.Object state properties, (eg. visible, ghosted etc)
             // and those redefined properties are being set here through the super constructor.
 
             this._super(cfg); // Call xeogl.Group._init()
+
+            this.scene._modelCreated(this);
         },
 
         _addComponent: function (component) {
@@ -159,7 +192,7 @@
                 return;
             }
             if (component.model && component.model.id !== this.id) { // Component in other Model
-                component.model.remove(component); // Transferring to this Model
+                component.model._removeComponent(component); // Transferring to this Model
             }
             this.components[component.id] = component;
             types = this.types[component.type];
@@ -167,15 +200,51 @@
                 types = this.types[component.type] = {};
             }
             types[component.id] = component;
-            if (component.isType("xeogl.Mesh")) {
-                this.meshes[component.id] = component;
-            }
             if (component.isType("xeogl.Object")) {
-                this.objects[component.id] = component;
+                var object = component;
+                this.objects[object.id] = object;
+                if (object.entityType) {
+                    this.entities[object.id] = object;
+                    var objectsOfType = this.entityTypes[object.entityType];
+                    if (!objectsOfType) {
+                        objectsOfType = {};
+                        this.entityTypes[object.entityType] = objectsOfType;
+                    }
+                    objectsOfType[object.id] = object;
+                    this._entityIds = null; // Lazy regenerate
+                    this._entityTypeIds = null; // Lazy regenerate
+                }
+                if (object.guid) {
+                    this.guidObjects[object.id] = object;
+                    this._objectGUIDs = null; // To lazy-rebuild
+                }
+                if (component.isType("xeogl.Mesh")) {
+                    this.meshes[component.id] = component;
+                }
             }
             this.numComponents++;
             component._addedToModel(this);
             return component;
+        },
+
+        _removeComponent: function(component) {
+            var id = component.id;
+            delete this.components[id];
+            delete this.meshes[id];
+            delete this.objects[id];
+            if (component.entityType) {
+                delete this.entities[id];
+                var objectsOfType = this.entityTypes[component.entityType];
+                if (objectsOfType) {
+                    delete objectsOfType[id];
+                }
+                this._entityIds = null; // Lazy regenerate
+                this._entityTypeIds = null; // Lazy regenerate
+            }
+            if (component.guid) {
+                delete this.guidObjects[component.guid];
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
         },
 
         /**
@@ -200,6 +269,55 @@
             this.types = {};
             this.objects = {};
             this.meshes = {};
+            this.entities = {};
+        },
+
+        _props: {
+
+            /**
+             Convenience array of entity type IDs in {{#crossLink "Model/entityTypes:property"}}{{/crossLink}}.
+             @property entityTypeIds
+             @final
+             @type {Array of String}
+             */
+            objectGUIDs: {
+                get: function () {
+                    if (!this._objectGUIDs) {
+                        this._objectGUIDs = Object.keys(this.guidObjects);
+                    }
+                    return this._objectGUIDs;
+                }
+            },
+
+            /**
+             Convenience array of entity type IDs in {{#crossLink "Model/entityTypes:property"}}{{/crossLink}}.
+             @property entityTypeIds
+             @final
+             @type {Array of String}
+             */
+            entityTypeIds: {
+                get: function () {
+                    if (!this._entityTypeIds) {
+                        this._entityTypeIds = Object.keys(this.entityTypes);
+                    }
+                    return this._entityTypeIds;
+                }
+            },
+
+            /**
+             Convenience array of IDs in {{#crossLink "Model/entities:property"}}{{/crossLink}}.
+             @property entityIds
+             @final
+             @type {Array of String}
+             */
+            entityIds: {
+                get: function () {
+                    if (!this._entityIds) {
+                        this._entityIds = Object.keys(this.entities);
+                    }
+                    return this._entityIds;
+                }
+            }
         },
 
         /**
@@ -212,6 +330,7 @@
         _destroy: function () {
             this._super();
             this.clear();
+            this.scene._modelDestroyed(this);
         }
     });
 

@@ -169,32 +169,23 @@
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.PhongMaterial({
-
+            this._state = new xeogl.renderer.State({
                 type: "PhongMaterial",
-
                 ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 diffuse: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
-
                 alpha: null,
                 shininess: null,
                 reflectivity: null,
-
                 alphaMode: null,
                 alphaCutoff: null,
-
                 lineWidth: null,
                 pointSize: null,
-
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-
                 hash: null
             });
-
-            this._hashDirty = true;
 
             this.ambient = cfg.ambient;
             this.diffuse = cfg.diffuse;
@@ -208,55 +199,42 @@
 
             if (cfg.ambientMap) {
                 this._ambientMap = this._checkComponent("xeogl.Texture", cfg.ambientMap);
-                this._state.ambientMap = this._ambientMap ? this._ambientMap._state : null;
             }
             if (cfg.diffuseMap) {
                 this._diffuseMap = this._checkComponent("xeogl.Texture", cfg.diffuseMap);
-                this._state.diffuseMap = this._diffuseMap ? this._diffuseMap._state : null;
             }
             if (cfg.specularMap) {
                 this._specularMap = this._checkComponent("xeogl.Texture", cfg.specularMap);
-                this._state.specularMap = this._specularMap ? this._specularMap._state : null;
             }
             if (cfg.emissiveMap) {
                 this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
-                this._state.emissiveMap = this._emissiveMap ? this._emissiveMap._state : null;
             }
             if (cfg.alphaMap) {
                 this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
-                this._state.alphaMap = this._alphaMap ? this._alphaMap._state : null;
             }
             if (cfg.reflectivityMap) {
                 this._reflectivityMap = this._checkComponent("xeogl.Texture", cfg.reflectivityMap);
-                this._state.reflectivityMap = this._reflectivityMap ? this._reflectivityMap._state : null;
             }
             if (cfg.normalMap) {
                 this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
-                this._state.normalMap = this._normalMap ? this._normalMap._state : null;
             }
             if (cfg.occlusionMap) {
                 this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
-                this._state.occlusionMap = this._occlusionMap ? this._occlusionMap._state : null;
             }
             if (cfg.diffuseFresnel) {
                 this._diffuseFresnel = this._checkComponent("xeogl.Fresnel", cfg.diffuseFresnel);
-                this._state.diffuseFresnel = this._diffuseFresnel ? this._diffuseFresnel._state : null;
             }
             if (cfg.specularFresnel) {
                 this._specularFresnel = this._checkComponent("xeogl.Fresnel", cfg.specularFresnel);
-                this._state.specularFresnel = this._specularFresnel ? this._specularFresnel._state : null;
             }
             if (cfg.emissiveFresnel) {
                 this._emissiveFresnel = this._checkComponent("xeogl.Fresnel", cfg.emissiveFresnel);
-                this._state.emissiveFresnel = this._emissiveFresnel ? this._emissiveFresnel._state : null;
             }
             if (cfg.alphaFresnel) {
                 this._alphaFresnel = this._checkComponent("xeogl.Fresnel", cfg.alphaFresnel);
-                this._state.alphaFresnel = this._alphaFresnel ? this._alphaFresnel._state : null;
             }
             if (cfg.reflectivityFresnel) {
                 this._reflectivityFresnel = this._checkComponent("xeogl.Fresnel", cfg.reflectivityFresnel);
-                this._state.reflectivityFresnel = this._reflectivityFresnel ? this._reflectivityFresnel._state : null;
             }
 
             this.alphaMode = cfg.alphaMode;
@@ -270,70 +248,70 @@
         _makeHash: function () {
             var state = this._state;
             var hash = ["/p"]; // 'P' for Phong
-            if (state.normalMap) {
+            if (this._normalMap) {
                 hash.push("/nm");
-                if (state.normalMap.hasMatrix) {
+                if (this._normalMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.ambientMap) {
+            if (this._ambientMap) {
                 hash.push("/am");
-                if (state.ambientMap.hasMatrix) {
+                if (this._ambientMap.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.ambientMap.encoding);
+                hash.push("/" + this._ambientMap.encoding);
             }
-            if (state.diffuseMap) {
+            if (this._diffuseMap) {
                 hash.push("/dm");
-                if (state.diffuseMap.hasMatrix) {
+                if (this._diffuseMap.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.diffuseMap.encoding);
+                hash.push("/" + this._diffuseMap.encoding);
             }
-            if (state.specularMap) {
+            if (this._specularMap) {
                 hash.push("/sm");
-                if (state.specularMap.hasMatrix) {
+                if (this._specularMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.emissiveMap) {
+            if (this._emissiveMap) {
                 hash.push("/em");
-                if (state.emissiveMap.hasMatrix) {
+                if (this._emissiveMap.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.emissiveMap.encoding);
+                hash.push("/" + this._emissiveMap.encoding);
             }
-            if (state.alphaMap) {
+            if (this._alphaMap) {
                 hash.push("/opm");
-                if (state.alphaMap.hasMatrix) {
+                if (this._alphaMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.reflectivityMap) {
+            if (this._reflectivityMap) {
                 hash.push("/rm");
-                if (state.reflectivityMap.hasMatrix) {
+                if (this._reflectivityMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.occlusionMap) {
+            if (this._occlusionMap) {
                 hash.push("/ocm");
-                if (state.occlusionMap.hasMatrix) {
+                if (this._occlusionMap.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.diffuseFresnel) {
+            if (this._diffuseFresnel) {
                 hash.push("/df");
             }
-            if (state.specularFresnel) {
+            if (this._specularFresnel) {
                 hash.push("/sf");
             }
-            if (state.emissiveFresnel) {
+            if (this._emissiveFresnel) {
                 hash.push("/ef");
             }
-            if (state.alphaFresnel) {
+            if (this._alphaFresnel) {
                 hash.push("/of");
             }
-            if (state.reflectivityFresnel) {
+            if (this._reflectivityFresnel) {
                 hash.push("/rf");
             }
             hash.push(";");

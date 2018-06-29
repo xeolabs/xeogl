@@ -31,7 +31,7 @@
 
             var gl = this.scene.canvas.gl;
 
-            this._state = new xeogl.renderer.CubeTexture({
+            this._state = new xeogl.renderer.State({
                 texture : new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP),
                 flipY: this._checkFlipY(cfg.minFilter),
                 encoding: this._checkEncoding(cfg.encoding),

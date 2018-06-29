@@ -6,33 +6,28 @@
 
     "use strict";
 
-    xeogl.renderer.DrawShaderSource = function (gl, scene, object) {
-        var cfg = {
-            texturing: hasTextures(object),
-            normals: hasNormals(object),
-            normalMapping: hasNormalMap(object),
-            clipping: scene.clips.clips.length > 0,
-            solid: false && object.material.backfaces,
-            lambertMaterial: (object.material.type === "LambertMaterial"),
-            phongMaterial: (object.material.type === "PhongMaterial"),
-            metallicMaterial: (object.material.type === "MetallicMaterial"),
-            specularMaterial: (object.material.type === "SpecularMaterial"),
-            reflection: hasReflection(scene),
-            receiveShadow: receivesShadow(scene, object),
-            quantizedGeometry: !!object.geometry.quantized,
-            gammaInput: scene.gammaInput, // If set, then it expects that all textures and colors are premultiplied gamma. Default is false.
-            gammaOutput: scene.gammaOutput // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
-        };
-        this.vertex = cfg.lambertMaterial ? buildVertexLambert(gl, cfg, scene, object) : buildVertexDraw(gl, cfg, scene, object);
-        this.fragment = cfg.lambertMaterial ? buildFragmentLambert(gl, cfg, scene, object) : buildFragmentDraw(gl, cfg, scene, object);
+    xeogl.renderer.DrawShaderSource = function (mesh) {
+        if (mesh._material._state.type === "LambertMaterial") {
+            this.vertex = buildVertexLambert(mesh);
+            this.fragment = buildFragmentLambert(mesh);
+        } else {
+            this.vertex = buildVertexDraw(mesh);
+            this.fragment = buildFragmentDraw(mesh);
+        }
     };
 
-    function receivesShadow(scene, object) {
-        if (!object.modes.receiveShadow) {
+    const TEXTURE_DECODE_FUNCS = {
+        "linear": "linearToLinear",
+        "sRGB": "sRGBToLinear",
+        "gamma": "gammaToLinear"
+    };
+
+    function receivesShadow(mesh) {
+        if (!mesh._state.receiveShadow) {
             return false;
         }
-        var lights = scene.lights.lights;
-        if (!lights) {
+        var lights = mesh.scene._lightsState.lights;
+        if (!lights || lights.length === 0) {
             return false;
         }
         for (var i = 0, len = lights.length; i < len; i++) {
@@ -43,44 +38,33 @@
         return false;
     }
 
-    function hasTextures(object) {
-        if (!object.geometry.uv) {
+    function hasTextures(mesh) {
+        if (!mesh._geometry._state.uv) {
             return false;
         }
-        var material = object.material;
-        return !!(material.ambientMap ||
-        material.occlusionMap ||
-        material.baseColorMap ||
-        material.diffuseMap ||
-        material.alphaMap ||
-        material.specularMap ||
-        material.glossinessMap ||
-        material.specularGlossinessMap ||
-        material.emissiveMap ||
-        material.metallicMap ||
-        material.roughnessMap ||
-        material.metallicRoughnessMap ||
-        material.reflectivityMap ||
-        object.material.normalMap);
+        var material = mesh._material;
+        return !!(material._ambientMap ||
+        material._occlusionMap ||
+        material._baseColorMap ||
+        material._diffuseMap ||
+        material._alphaMap ||
+        material._specularMap ||
+        material._glossinessMap ||
+        material._specularGlossinessMap ||
+        material._emissiveMap ||
+        material._metallicMap ||
+        material._roughnessMap ||
+        material._metallicRoughnessMap ||
+        material._reflectivityMap ||
+        material._normalMap);
     }
 
-    function hasReflection(scene) {
-        return false;
-        //return (object.cubemap.layers && object.cubemap.layers.length > 0 && object.geometry.normalBuf);
-    }
-
-    function hasNormals(object) {
-        var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+    function hasNormals(mesh) {
+        var primitive = mesh._geometry._state.primitiveName;
+        if ((mesh._geometry._state.autoVertexNormals || mesh._geometry._state.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
-    }
-
-    function hasNormalMap(object) {
-        var geometry = object.geometry;
-        var result = (!!geometry.positions && !!geometry.indices && !!geometry.normals && !!geometry.uv && !!object.material.normalMap);
-        return result;
     }
 
     function getFragmentFloatPrecision(gl) {
@@ -96,57 +80,42 @@
         return "lowp";
     }
 
-    const TEXTURE_DECODE_FUNCS = {
-        "linear": "linearToLinear",
-        "sRGB": "sRGBToLinear",
-        "gamma": "gammaToLinear"
-    };
-
-    function buildVertexLambert(gl, cfg, scene, object) {
-
+    function buildVertexLambert(mesh) {
+        var clipsState = mesh.scene._clipsState;
+        var lightsState = mesh.scene._lightsState;
+        var geometryState = mesh._geometry._state;
+        var billboard = mesh._state.billboard;
+        var stationary = mesh._state.stationary;
+        var clipping = clipsState.clips.length > 0;
+        var quantizedGeometry = !!geometryState.quantized;
         var i;
         var len;
-        var lights = scene.lights.lights;
         var light;
-        var billboard = object.modes.billboard;
-
         var src = [];
-
         src.push("// Lambertian drawing vertex shader");
-
         src.push("attribute vec3 position;");
-
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
         src.push("uniform vec4 colorize;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        src.push("uniform vec4   lightAmbient;");
-        src.push("uniform vec4   materialColor;");
-
-        if (cfg.normals) {
-
+        src.push("uniform vec4 lightAmbient;");
+        src.push("uniform vec4 materialColor;");
+        if (geometryState.normals) {
             src.push("attribute vec3 normal;");
             src.push("uniform mat4 modelNormalMatrix;");
             src.push("uniform mat4 viewNormalMatrix;");
-
-            for (i = 0, len = lights.length; i < len; i++) {
-                light = lights[i];
-
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 src.push("uniform vec4 lightColor" + i + ";");
-
                 if (light.type === "dir") {
                     src.push("uniform vec3 lightDir" + i + ";");
                 }
@@ -158,8 +127,7 @@
                     src.push("uniform vec3 lightDir" + i + ";");
                 }
             }
-
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -169,13 +137,10 @@
                 src.push("}");
             }
         }
-
         src.push("varying vec4 vColor;");
-
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("uniform float pointSize;");
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
@@ -191,18 +156,14 @@
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
+        if (geometryState.normals) {
+            if (quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -210,139 +171,118 @@
             src.push("mat4 modelNormalMatrix2 = modelNormalMatrix;");
             src.push("mat4 viewNormalMatrix2 = viewNormalMatrix;");
         }
-
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
-
-            if (cfg.normals) {
+            if (geometryState.normals) {
                 src.push("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
                 src.push("billboard(modelNormalMatrix2);");
                 src.push("billboard(viewNormalMatrix2);");
                 src.push("billboard(modelViewNormalMatrix);");
             }
-
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
         } else {
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
-        if (cfg.normals) {
+        if (geometryState.normals) {
             src.push("vec3 viewNormal = normalize((viewNormalMatrix2 * modelNormalMatrix2 * localNormal).xyz);");
         }
-
         src.push("vec3 reflectedColor = vec3(0.0, 0.0, 0.0);");
         src.push("vec3 viewLightDir = vec3(0.0, 0.0, -1.0);");
         src.push("float lambertian = 1.0;");
-
-        if (cfg.normals) {
-            for (i = 0, len = lights.length; i < len; i++) {
-
-                light = lights[i];
-
+        if (geometryState.normals) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 if (light.type === "dir") {
                     if (light.space === "view") {
                         src.push("viewLightDir = normalize(lightDir" + i + ");");
                     } else {
                         src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightDir" + i + ", 0.0)).xyz);");
                     }
-
                 } else if (light.type === "point") {
                     if (light.space === "view") {
                         src.push("viewLightDir = normalize(lightPos" + i + " - viewPosition.xyz);");
                     } else {
                         src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightPos" + i + ", 0.0)).xyz);");
                     }
-
                 } else if (light.type === "spot") {
                     if (light.space === "view") {
                         src.push("viewLightDir = normalize(lightDir" + i + ");");
                     } else {
                         src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightDir" + i + ", 0.0)).xyz);");
                     }
-
                 } else {
                     continue;
                 }
-
                 src.push("lambertian = max(dot(-viewNormal, viewLightDir), 0.0);");
                 src.push("reflectedColor += lambertian * (lightColor" + i + ".rgb * lightColor" + i + ".a);");
             }
         }
-
         //src.push("vColor = vec4((reflectedColor * materialColor) + (lightAmbient.rgb * lightAmbient.a), 1.0) * colorize;");
         src.push("vColor = vec4((reflectedColor * materialColor.rgb), materialColor.a) * colorize;"); // TODO: How to have ambient bright enough for canvas BG but not too bright for scene?
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("gl_PointSize = pointSize;");
         }
-
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("}");
-
         return src;
     }
 
-    function buildFragmentLambert(gl, cfg, scene, object) {
-
+    function buildFragmentLambert(mesh) {
+        var scene = mesh.scene;
+        var clipsState = scene._clipsState;
+        var materialState = mesh._material._state;
+        var geometryState = mesh._geometry._state;
         var i;
         var len;
+        var clipping = clipsState.clips.length > 0;
+        var solid = false && materialState.backfaces;
+        var gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
         var src = [];
-
         src.push("// Lambertian drawing fragment shader");
-
-        //src.push("precision " + getFragmentFloatPrecision(gl) + " float;");
         src.push("precision lowp float;");
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
             src.push("uniform bool clippable;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
             }
         }
         src.push("varying vec4 vColor;");
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("uniform float gammaFactor;");
             src.push("    vec4 linearToGamma( in vec4 value, in float gammaFactor ) {");
             src.push("    return vec4( pow( value.xyz, vec3( 1.0 / gammaFactor ) ), value.w );");
             src.push("}");
         }
         src.push("void main(void) {");
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (i = 0; i < scene.clips.clips.length; i++) {
+            for (i = 0, len = clipsState.clips.length; i < len; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
             }
             src.push("  if (dist > 0.0) { discard; }");
-            if (cfg.solid) {
+            if (solid) {
                 src.push("  if (gl_FrontFacing == false) {");
                 src.push("     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);");
                 src.push("     return;");
@@ -350,7 +290,7 @@
             }
             src.push("}");
         }
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
             src.push("float r = dot(cxy, cxy);");
             src.push("if (r > 1.0) {");
@@ -358,7 +298,7 @@
             src.push("}");
 
         }
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("gl_FragColor = linearToGamma(vColor, gammaFactor);");
         } else {
             src.push("gl_FragColor = vColor;");
@@ -367,53 +307,51 @@
         return src;
     }
 
-    function buildVertexDraw(gl, cfg, scene, object) {
-
-        var material = object.material;
-        var geometry = object.geometry;
+    function buildVertexDraw(mesh) {
+        var scene = mesh.scene;
+        var material = mesh._material;
+        var meshState = mesh._state;
+        var clipsState = scene._clipsState;
+        var geometryState = mesh._geometry._state;
+        var materialState = mesh._material._state;
+        var lightsState = scene._lightsState;
         var i;
         var len;
-        var lights = scene.lights.lights;
         var light;
-
+        var billboard = meshState.billboard;
+        var stationary = meshState.stationary;
+        var texturing = hasTextures(mesh);
+        var normals = hasNormals(mesh);
+        var clipping = clipsState.clips.length > 0;
+        var receiveShadow = receivesShadow(mesh);
+        var quantizedGeometry = !!geometryState.quantized;
         var src = [];
-
-        // src.push("#extension GL_OES_standard_derivatives : enable");
-
+        if (normals && material._normalMap) {
+            src.push("#extension GL_OES_standard_derivatives : enable");
+        }
         src.push("// Drawing vertex shader");
         src.push("attribute  vec3 position;");
 
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
-
-        src.push("uniform    mat4 modelMatrix;");
-        src.push("uniform    mat4 viewMatrix;");
-        src.push("uniform    mat4 projMatrix;");
-
-        src.push("varying    vec3 vViewPosition;");
-
-        if (cfg.clipping) {
+        src.push("uniform  mat4 modelMatrix;");
+        src.push("uniform  mat4 viewMatrix;");
+        src.push("uniform  mat4 projMatrix;");
+        src.push("varying  vec3 vViewPosition;");
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
         }
-
-        if (scene.lights.lightMaps.length > 0) {
+        if (lightsState.lightMaps.length > 0) {
             src.push("varying    vec3 vWorldNormal;");
         }
-
-        if (cfg.normals) {
-
+        if (normals) {
             src.push("attribute  vec3 normal;");
-
             src.push("uniform    mat4 modelNormalMatrix;");
             src.push("uniform    mat4 viewNormalMatrix;");
-
-            //src.push("varying    vec3 vLocalNormal;");
-
             src.push("varying    vec3 vViewNormal;");
-
-            for (i = 0, len = scene.lights.lights.length; i < len; i++) {
-                light = scene.lights.lights[i];
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
@@ -428,12 +366,10 @@
                     src.push("uniform vec3 lightDir" + i + ";");
                 }
                 if (!(light.type === "dir" && light.space === "view")) {
-                    // World-space dir lights don't need these varyings
                     src.push("varying vec4 vViewLightReverseDirAndDist" + i + ";");
                 }
             }
-
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -443,70 +379,53 @@
                 src.push("}");
             }
         }
-
-        if (cfg.texturing) {
+        if (texturing) {
             src.push("attribute vec2 uv;");
             src.push("varying vec2 vUV;");
-
-            if (cfg.quantizedGeometry) {
+            if (quantizedGeometry) {
                 src.push("uniform mat3 uvDecodeMatrix;")
             }
         }
-
-        if (object.geometry.colors) {
+        if (geometryState.colors) {
             src.push("attribute vec4 color;");
             src.push("varying vec4 vColor;");
         }
-
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("uniform float pointSize;");
         }
-
-        var billboard = object.modes.billboard;
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("void billboard(inout mat4 mat) {");
             src.push("   mat[0][0] = 1.0;");
             src.push("   mat[0][1] = 0.0;");
             src.push("   mat[0][2] = 0.0;");
-
             if (billboard === "spherical") {
                 src.push("   mat[1][0] = 0.0;");
                 src.push("   mat[1][1] = 1.0;");
                 src.push("   mat[1][2] = 0.0;");
             }
-
             src.push("   mat[2][0] = 0.0;");
             src.push("   mat[2][1] = 0.0;");
             src.push("   mat[2][2] =1.0;");
             src.push("}");
         }
-
-        if (cfg.receiveShadow) {
-
+        if (receiveShadow) {
             src.push("const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);");
-
-            for (i = 0, len = lights.length; i < len; i++) { // Light sources
-                if (lights[i].shadow) {
-                    src.push("uniform mat4 shadowViewMatrix" + i + ";");
-                    src.push("uniform mat4 shadowProjMatrix" + i + ";");
-                    src.push("varying vec4 vShadowPosFromLight" + i + ";");
-                }
-            }
+            // for (i = 0, len = lights.length; i < len; i++) { // Light sources
+            //     if (lights[i].shadow) {
+            //         src.push("uniform mat4 shadowViewMatrix" + i + ";");
+            //         src.push("uniform mat4 shadowProjMatrix" + i + ";");
+            //         src.push("varying vec4 vShadowPosFromLight" + i + ";");
+            //     }
+            // }
         }
-
         src.push("void main(void) {");
-
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
-
-        if (cfg.quantizedGeometry) {
+        if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-
-        if (cfg.normals) {
-            if (cfg.quantizedGeometry) {
+        if (normals) {
+            if (quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -514,144 +433,123 @@
             src.push("mat4 modelNormalMatrix2    = modelNormalMatrix;");
             src.push("mat4 viewNormalMatrix2     = viewNormalMatrix;");
         }
-
         src.push("mat4 viewMatrix2           = viewMatrix;");
         src.push("mat4 modelMatrix2          = modelMatrix;");
-
-        if (object.modes.stationary) {
+        if (stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
-
         if (billboard === "spherical" || billboard === "cylindrical") {
-
             src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
-
             src.push("billboard(modelMatrix2);");
             src.push("billboard(viewMatrix2);");
             src.push("billboard(modelViewMatrix);");
-
-            if (cfg.normals) {
-
+            if (normals) {
                 src.push("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
-
                 src.push("billboard(modelNormalMatrix2);");
                 src.push("billboard(viewNormalMatrix2);");
                 src.push("billboard(modelViewNormalMatrix);");
             }
-
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
         } else {
-
             src.push("worldPosition = modelMatrix2 * localPosition;");
             src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
         }
-
-        if (cfg.normals) {
-
+        if (normals) {
             src.push("vec3 worldNormal = (modelNormalMatrix2 * localNormal).xyz; ");
-            if (scene.lights.lightMaps.length > 0) {
+            if (lightsState.lightMaps.length > 0) {
                 src.push("vWorldNormal = worldNormal;");
             }
             src.push("vViewNormal = normalize((viewNormalMatrix2 * vec4(worldNormal, 1.0)).xyz);");
-
             src.push("vec3 tmpVec3;");
             src.push("float lightDist;");
-
-            for (i = 0, len = scene.lights.lights.length; i < len; i++) { // Lights
-
-                light = scene.lights.lights[i];
-
+            for (i = 0, len = lightsState.lights.length; i < len; i++) { // Lights
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 if (light.type === "dir") {
-
                     if (light.space === "world") {
                         src.push("tmpVec3 = vec3(viewMatrix2 * vec4(lightDir" + i + ", 0.0) ).xyz;");
                         src.push("vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
                 }
-
                 if (light.type === "point") {
-
                     if (light.space === "world") {
                         src.push("tmpVec3 = (viewMatrix2 * vec4(lightPos" + i + ", 1.0)).xyz - viewPosition.xyz;");
                         src.push("lightDist = abs(length(tmpVec3));");
-
                     } else {
                         src.push("tmpVec3 = lightPos" + i + ".xyz - viewPosition.xyz;");
                         src.push("lightDist = abs(length(tmpVec3));");
                     }
-
                     src.push("vViewLightReverseDirAndDist" + i + " = vec4(tmpVec3, lightDist);");
                 }
             }
         }
-
-        if (cfg.texturing) {
-            if (cfg.quantizedGeometry) {
+        if (texturing) {
+            if (quantizedGeometry) {
                 src.push("vUV = (uvDecodeMatrix * vec3(uv, 1.0)).xy;");
             } else {
                 src.push("vUV = uv;");
             }
         }
-
-        if (object.geometry.colors) {
+        if (geometryState.colors) {
             src.push("vColor = color;");
         }
-
-        if (object.geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("gl_PointSize = pointSize;");
         }
-
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("vWorldPosition = worldPosition;");
         }
-
         src.push("   vViewPosition = viewPosition.xyz;");
-
         src.push("   gl_Position = projMatrix * viewPosition;");
-
         src.push("const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);");
-
-        if (cfg.receiveShadow) {
+        if (receiveShadow) {
             src.push("vec4 tempx; ");
-            for (i = 0, len = lights.length; i < len; i++) { // Light sources
-                if (lights[i].shadow) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) { // Light sources
+                if (lightsState.lights[i].shadow) {
                     src.push("vShadowPosFromLight" + i + " = texUnitConverter * shadowProjMatrix" + i + " * (shadowViewMatrix" + i + " * worldPosition); ");
                 }
             }
         }
-
         src.push("}");
-
         return src;
     }
 
-    function buildFragmentDraw(gl, cfg, scene, object) {
+    function buildFragmentDraw(mesh) {
 
-        var material = object.material;
-        var geometry = object.geometry;
-
+        var scene = mesh.scene;
+        var gl = scene.canvas.gl;
+        var material = mesh._material;
+        var geometryState = mesh._geometry._state;
+        var clipsState = mesh.scene._clipsState;
+        var lightsState = mesh.scene._lightsState;
+        var materialState = mesh._material._state;
+        var clipping = clipsState.clips.length > 0;
+        var normals = hasNormals(mesh);
+        var uvs = geometryState.uv;
+        var solid = false && materialState.backfaces;
+        var phongMaterial = (materialState.type === "PhongMaterial");
+        var metallicMaterial = (materialState.type === "MetallicMaterial");
+        var specularMaterial = (materialState.type === "SpecularMaterial");
+        var receiveShadow = receivesShadow(mesh);
+        var gammaInput = scene.gammaInput; // If set, then it expects that all textures and colors are premultiplied gamma. Default is false.
+        var gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
         var i;
         var len;
-        var lights = scene.lights.lights;
         var light;
-
         var src = [];
 
         src.push("// Fragment vertex shader");
 
-        if (geometry.normals && material.normalMap) {
+        if (normals && material._normalMap) {
             src.push("#extension GL_OES_standard_derivatives : enable");
         }
 
         src.push("precision " + getFragmentFloatPrecision(gl) + " float;");
 
-        if (cfg.receiveShadow) {
+        if (receiveShadow) {
             src.push("float unpackDepth (vec4 color) {");
             src.push("  const vec4 bitShift = vec4(1.0, 1.0/256.0, 1.0/(256.0 * 256.0), 1.0/(256.0*256.0*256.0));");
             src.push("  return dot(color, bitShift);");
@@ -663,20 +561,16 @@
         //--------------------------------------------------------------------------------
 
         src.push("uniform float gammaFactor;");
-
         src.push("vec4 linearToLinear( in vec4 value ) {");
         src.push("  return value;");
         src.push("}");
-
         src.push("vec4 sRGBToLinear( in vec4 value ) {");
         src.push("  return vec4( mix( pow( value.rgb * 0.9478672986 + vec3( 0.0521327014 ), vec3( 2.4 ) ), value.rgb * 0.0773993808, vec3( lessThanEqual( value.rgb, vec3( 0.04045 ) ) ) ), value.w );");
         src.push("}");
-
         src.push("vec4 gammaToLinear( in vec4 value) {");
         src.push("  return vec4( pow( value.xyz, vec3( gammaFactor ) ), value.w );");
         src.push("}");
-
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("vec4 linearToGamma( in vec4 value, in float gammaFactor ) {");
             src.push("  return vec4( pow( value.xyz, vec3( 1.0 / gammaFactor ) ), value.w );");
             src.push("}");
@@ -686,33 +580,31 @@
         // USER CLIP PLANES
         //--------------------------------------------------------------------------------
 
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("varying vec4 vWorldPosition;");
             src.push("uniform bool clippable;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("uniform bool clipActive" + i + ";");
                 src.push("uniform vec3 clipPos" + i + ";");
                 src.push("uniform vec3 clipDir" + i + ";");
             }
         }
 
-        if (geometry.normals) {
+        if (normals) {
 
             //--------------------------------------------------------------------------------
             // LIGHT AND REFLECTION MAP INPUTS
             // Define here so available globally to shader functions
             //--------------------------------------------------------------------------------
 
-            if (scene.lights.lightMaps.length > 0) {
+            if (lightsState.lightMaps.length > 0) {
                 src.push("uniform samplerCube lightMap;");
                 src.push("uniform mat4 viewNormalMatrix;");
             }
-
-            if (scene.lights.reflectionMaps.length > 0) {
+            if (lightsState.reflectionMaps.length > 0) {
                 src.push("uniform samplerCube reflectionMap;");
             }
-
-            if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
+            if (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0) {
                 src.push("uniform mat4 viewMatrix;");
             }
 
@@ -763,26 +655,23 @@
 
             // COMMON UTILS
 
-            if (cfg.phongMaterial) {
+            if (phongMaterial) {
 
-                if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
+                if (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0) {
 
                     src.push("void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
-
-                    if (scene.lights.lightMaps.length > 0) {
-                        src.push("   vec3 irradiance = " + TEXTURE_DECODE_FUNCS[scene.lights.lightMaps[0].encoding] + "(textureCube(lightMap, geometry.worldNormal)).rgb;");
+                    if (lightsState.lightMaps.length > 0) {
+                        src.push("   vec3 irradiance = " + TEXTURE_DECODE_FUNCS[lightsState.lightMaps[0].encoding] + "(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
                         src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                     }
-
-                    if (scene.lights.reflectionMaps.length > 0) {
+                    if (lightsState.reflectionMaps.length > 0) {
                         src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
                         src.push("   vec3 radiance               = textureCube(reflectionMap, reflectVec).rgb * 0.2;");
-                  //      src.push("   radiance *= PI;");
+                        //      src.push("   radiance *= PI;");
                         src.push("   reflectedLight.specular     += radiance;");
                     }
-
                     src.push("}");
                 }
 
@@ -794,7 +683,7 @@
                 src.push("}");
             }
 
-            if (cfg.metallicMaterial || cfg.specularMaterial) {
+            if (metallicMaterial || specularMaterial) {
 
                 // IRRADIANCE EVALUATION
 
@@ -809,10 +698,10 @@
                 src.push("   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );");
                 src.push("}");
 
-                if (scene.lights.reflectionMaps.length > 0) {
+                if (lightsState.reflectionMaps.length > 0) {
                     src.push("vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {");
                     src.push("   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);"); //TODO: a random factor - fix this
-                    src.push("   vec3 envMapColor = " + TEXTURE_DECODE_FUNCS[scene.lights.reflectionMaps[0].encoding] + "(textureCube(reflectionMap, reflectVec, mipLevel)).rgb;");
+                    src.push("   vec3 envMapColor = " + TEXTURE_DECODE_FUNCS[lightsState.reflectionMaps[0].encoding] + "(textureCube(reflectionMap, reflectVec, mipLevel)).rgb;");
                     src.push("  return envMapColor;");
                     src.push("}");
                 }
@@ -867,20 +756,17 @@
                 src.push("   return specularColor * AB.x + AB.y;");
                 src.push("}");
 
-
-                if (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0) {
+                if (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0) {
 
                     src.push("void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
-
-                    if (scene.lights.lightMaps.length > 0) {
+                    if (lightsState.lightMaps.length > 0) {
                         src.push("   vec3 irradiance = sRGBToLinear(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
                         src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                         //   src.push("   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);");
                     }
-
-                    if (scene.lights.reflectionMaps.length > 0) {
+                    if (lightsState.reflectionMaps.length > 0) {
                         src.push("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
                         src.push("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
                         src.push("   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);");
@@ -888,7 +774,6 @@
                         src.push("   vec3 specularBRDFContrib    = BRDF_Specular_GGX_Environment(geometry, material.specularColor, material.specularRoughness);");
                         src.push("   reflectedLight.specular     += radiance * specularBRDFContrib;");
                     }
-
                     src.push("}");
                 }
 
@@ -901,7 +786,7 @@
                 src.push("   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);");
                 src.push("}");
 
-            } // (cfg.metallicMaterial || cfg.specularMaterial)
+            } // (metallicMaterial || specularMaterial)
 
         } // geometry.normals
 
@@ -911,28 +796,29 @@
 
         src.push("varying vec3 vViewPosition;");
 
-        if (geometry.colors) {
+        if (geometryState.colors) {
             src.push("varying vec4 vColor;");
         }
 
-        if (geometry.uv && ((geometry.normals && material.normalMap)
-            || material.ambientMap
-            || material.baseColorMap
-            || material.diffuseMap
-            || material.emissiveMap
-            || material.metallicMap
-            || material.roughnessMap
-            || material.metallicRoughnessMap
-            || material.specularMap
-            || material.glossinessMap
-            || material.specularGlossinessMap
-            || material.occlusionMap
-            || material.alphaMap)) {
+        if (uvs &&
+            ((normals && material._normalMap)
+            || material._ambientMap
+            || material._baseColorMap
+            || material._diffuseMap
+            || material._emissiveMap
+            || material._metallicMap
+            || material._roughnessMap
+            || material._metallicRoughnessMap
+            || material._specularMap
+            || material._glossinessMap
+            || material._specularGlossinessMap
+            || material._occlusionMap
+            || material._alphaMap)) {
             src.push("varying vec2 vUV;");
         }
 
-        if (geometry.normals) {
-            if (scene.lights.lightMaps.length > 0) {
+        if (normals) {
+            if (lightsState.lightMaps.length > 0) {
                 src.push("varying vec3 vWorldNormal;");
             }
             src.push("varying vec3 vViewNormal;");
@@ -942,47 +828,37 @@
         // MATERIAL CHANNEL INPUTS
         //--------------------------------------------------------------------------------
 
-        if (material.ambient) {
+        if (materialState.ambient) {
             src.push("uniform vec3 materialAmbient;");
         }
-
-        if (material.baseColor) {
+        if (materialState.baseColor) {
             src.push("uniform vec3 materialBaseColor;");
         }
-
-        if (material.alpha !== undefined && material.alpha !== null) {
+        if (materialState.alpha !== undefined && materialState.alpha !== null) {
             src.push("uniform vec4 materialAlphaModeCutoff;"); // [alpha, alphaMode, alphaCutoff]
         }
-
-        if (material.emissive) {
+        if (materialState.emissive) {
             src.push("uniform vec3 materialEmissive;");
         }
-
-        if (material.diffuse) {
+        if (materialState.diffuse) {
             src.push("uniform vec3 materialDiffuse;");
         }
-
-        if (material.glossiness !== undefined && material.glossiness !== null) {
+        if (materialState.glossiness !== undefined && materialState.glossiness !== null) {
             src.push("uniform float materialGlossiness;");
         }
-
-        if (material.shininess !== undefined && material.shininess !== null) {
+        if (materialState.shininess !== undefined && materialState.shininess !== null) {
             src.push("uniform float materialShininess;");  // Phong channel
         }
-
-        if (material.specular) {
+        if (materialState.specular) {
             src.push("uniform vec3 materialSpecular;");
         }
-
-        if (material.metallic !== undefined && material.metallic !== null) {
+        if (materialState.metallic !== undefined && materialState.metallic !== null) {
             src.push("uniform float materialMetallic;");
         }
-
-        if (material.roughness !== undefined && material.roughness !== null) {
+        if (materialState.roughness !== undefined && materialState.roughness !== null) {
             src.push("uniform float materialRoughness;");
         }
-
-        if (material.specularF0 !== undefined && material.specularF0 !== null) {
+        if (materialState.specularF0 !== undefined && materialState.specularF0 !== null) {
             src.push("uniform float materialSpecularF0;");
         }
 
@@ -990,61 +866,53 @@
         // MATERIAL TEXTURE INPUTS
         //--------------------------------------------------------------------------------
 
-        if (geometry.uv && material.ambientMap) {
+        if (uvs && material._ambientMap) {
             src.push("uniform sampler2D ambientMap;");
-            if (material.ambientMap.matrix) {
+            if (material._ambientMap._state.matrix) {
                 src.push("uniform mat4 ambientMapMatrix;");
             }
         }
-
-        if (geometry.uv && material.baseColorMap) {
+        if (uvs && material._baseColorMap) {
             src.push("uniform sampler2D baseColorMap;");
-            if (material.baseColorMap.matrix) {
+            if (material._baseColorMap._state.matrix) {
                 src.push("uniform mat4 baseColorMapMatrix;");
             }
         }
-
-        if (geometry.uv && material.diffuseMap) {
+        if (uvs && material._diffuseMap) {
             src.push("uniform sampler2D diffuseMap;");
-            if (material.diffuseMap.matrix) {
+            if (material._diffuseMap._state.matrix) {
                 src.push("uniform mat4 diffuseMapMatrix;");
             }
         }
-
-        if (geometry.uv && material.emissiveMap) {
+        if (uvs && material._emissiveMap) {
             src.push("uniform sampler2D emissiveMap;");
-            if (material.emissiveMap.matrix) {
+            if (material._emissiveMap._state.matrix) {
                 src.push("uniform mat4 emissiveMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.metallicMap) {
+        if (normals && uvs && material._metallicMap) {
             src.push("uniform sampler2D metallicMap;");
-            if (material.metallicMap.matrix) {
+            if (material._metallicMap._state.matrix) {
                 src.push("uniform mat4 metallicMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.roughnessMap) {
+        if (normals && uvs && material._roughnessMap) {
             src.push("uniform sampler2D roughnessMap;");
-            if (material.roughnessMap.matrix) {
+            if (material._roughnessMap._state.matrix) {
                 src.push("uniform mat4 roughnessMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.metallicRoughnessMap) {
+        if (normals && uvs && material._metallicRoughnessMap) {
             src.push("uniform sampler2D metallicRoughnessMap;");
-            if (material.metallicRoughnessMap.matrix) {
+            if (material._metallicRoughnessMap._state.matrix) {
                 src.push("uniform mat4 metallicRoughnessMapMatrix;");
             }
         }
-
-        if (geometry.normals && material.normalMap) {
+        if (normals && material._normalMap) {
             src.push("uniform sampler2D normalMap;");
-            if (material.normalMap.matrix) {
+            if (material._normalMap._state.matrix) {
                 src.push("uniform mat4 normalMapMatrix;");
             }
-
             src.push("vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm, vec2 uv ) {");
             src.push("      vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );");
             src.push("      vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );");
@@ -1059,38 +927,33 @@
             src.push("      return normalize( tsn * mapN );");
             src.push("}");
         }
-
-        if (geometry.uv && material.occlusionMap) {
+        if (uvs && material._occlusionMap) {
             src.push("uniform sampler2D occlusionMap;");
-            if (material.occlusionMap.matrix) {
+            if (material._occlusionMap._state.matrix) {
                 src.push("uniform mat4 occlusionMapMatrix;");
             }
         }
-
-        if (geometry.uv && material.alphaMap) {
+        if (uvs && material._alphaMap) {
             src.push("uniform sampler2D alphaMap;");
-            if (material.alphaMap.matrix) {
+            if (material._alphaMap._state.matrix) {
                 src.push("uniform mat4 alphaMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.specularMap) {
+        if (normals && uvs && material._specularMap) {
             src.push("uniform sampler2D specularMap;");
-            if (material.specularMap.matrix) {
+            if (material._specularMap._state.matrix) {
                 src.push("uniform mat4 specularMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.glossinessMap) {
+        if (normals && uvs && material._glossinessMap) {
             src.push("uniform sampler2D glossinessMap;");
-            if (material.glossinessMap.matrix) {
+            if (material._glossinessMap._state.matrix) {
                 src.push("uniform mat4 glossinessMapMatrix;");
             }
         }
-
-        if (geometry.normals && geometry.uv && material.specularGlossinessMap) {
+        if (normals && uvs && material._specularGlossinessMap) {
             src.push("uniform sampler2D materialSpecularGlossinessMap;");
-            if (material.specularGlossinessMap.matrix) {
+            if (material._specularGlossinessMap._state.matrix) {
                 src.push("uniform mat4 materialSpecularGlossinessMapMatrix;");
             }
         }
@@ -1099,51 +962,45 @@
         // MATERIAL FRESNEL INPUTS
         //--------------------------------------------------------------------------------
 
-        if (geometry.normals && (material.diffuseFresnel ||
-            material.specularFresnel ||
-            material.alphaFresnel ||
-            material.emissiveFresnel ||
-            material.reflectivityFresnel)) {
-
+        if (normals && (material._diffuseFresnel ||
+            material._specularFresnel ||
+            material._alphaFresnel ||
+            material._emissiveFresnel ||
+            material._reflectivityFresnel)) {
             src.push("float fresnel(vec3 eyeDir, vec3 normal, float edgeBias, float centerBias, float power) {");
             src.push("    float fr = abs(dot(eyeDir, normal));");
             src.push("    float finalFr = clamp((fr - edgeBias) / (centerBias - edgeBias), 0.0, 1.0);");
             src.push("    return pow(finalFr, power);");
             src.push("}");
-
-            if (material.diffuseFresnel) {
+            if (material._diffuseFresnel) {
                 src.push("uniform float  diffuseFresnelCenterBias;");
                 src.push("uniform float  diffuseFresnelEdgeBias;");
                 src.push("uniform float  diffuseFresnelPower;");
                 src.push("uniform vec3   diffuseFresnelCenterColor;");
                 src.push("uniform vec3   diffuseFresnelEdgeColor;");
             }
-
-            if (material.specularFresnel) {
+            if (material._specularFresnel) {
                 src.push("uniform float  specularFresnelCenterBias;");
                 src.push("uniform float  specularFresnelEdgeBias;");
                 src.push("uniform float  specularFresnelPower;");
                 src.push("uniform vec3   specularFresnelCenterColor;");
                 src.push("uniform vec3   specularFresnelEdgeColor;");
             }
-
-            if (material.alphaFresnel) {
+            if (material._alphaFresnel) {
                 src.push("uniform float  alphaFresnelCenterBias;");
                 src.push("uniform float  alphaFresnelEdgeBias;");
                 src.push("uniform float  alphaFresnelPower;");
                 src.push("uniform vec3   alphaFresnelCenterColor;");
                 src.push("uniform vec3   alphaFresnelEdgeColor;");
             }
-
-            if (material.reflectivityFresnel) {
+            if (material._reflectivityFresnel) {
                 src.push("uniform float  materialSpecularF0FresnelCenterBias;");
                 src.push("uniform float  materialSpecularF0FresnelEdgeBias;");
                 src.push("uniform float  materialSpecularF0FresnelPower;");
                 src.push("uniform vec3   materialSpecularF0FresnelCenterColor;");
                 src.push("uniform vec3   materialSpecularF0FresnelEdgeColor;");
             }
-
-            if (material.emissiveFresnel) {
+            if (material._emissiveFresnel) {
                 src.push("uniform float  emissiveFresnelCenterBias;");
                 src.push("uniform float  emissiveFresnelEdgeBias;");
                 src.push("uniform float  emissiveFresnelPower;");
@@ -1158,18 +1015,13 @@
 
         src.push("uniform vec4   lightAmbient;");
 
-        if (geometry.normals) {
-
-            for (i = 0, len = lights.length; i < len; i++) { // Light sources
-
-                light = lights[i];
-
+        if (normals) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) { // Light sources
+                light = lightsState.lights[i];
                 if (light.type === "ambient") {
                     continue;
                 }
-
                 src.push("uniform vec4 lightColor" + i + ";");
-
                 if (light.type === "point") {
                     src.push("uniform vec3 lightAttenuation" + i + ";");
                 }
@@ -1184,7 +1036,7 @@
             }
         }
 
-        if (cfg.receiveShadow) {
+        if (receiveShadow) {
 
             // Variance shadow mapping filter
 
@@ -1201,8 +1053,8 @@
             // src.push("      return clamp(max(p, p_max), 0.0, 1.0);");
             // src.push("}");
 
-            for (i = 0, len = lights.length; i < len; i++) { // Light sources
-                if (lights[i].shadow) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) { // Light sources
+                if (lightsState.lights[i].shadow) {
                     src.push("varying vec4 vShadowPosFromLight" + i + ";");
                     src.push("uniform sampler2D shadowMap" + i + ";");
                 }
@@ -1217,16 +1069,16 @@
 
         src.push("void main(void) {");
 
-        if (cfg.clipping) {
+        if (clipping) {
             src.push("if (clippable) {");
             src.push("  float dist = 0.0;");
-            for (var i = 0; i < scene.clips.clips.length; i++) {
+            for (var i = 0; i < clipsState.clips.length; i++) {
                 src.push("if (clipActive" + i + ") {");
                 src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
                 src.push("}");
             }
             src.push("  if (dist > 0.0) { discard; }");
-            if (cfg.solid) {
+            if (solid) {
                 src.push("  if (gl_FrontFacing == false) {");
                 src.push("     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);");
                 src.push("     return;");
@@ -1235,7 +1087,7 @@
             src.push("}");
         }
 
-        if (geometry.primitiveName === "points") {
+        if (geometryState.primitiveName === "points") {
             src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
             src.push("float r = dot(cxy, cxy);");
             src.push("if (r > 1.0) {");
@@ -1245,65 +1097,65 @@
 
         src.push("float occlusion = 1.0;");
 
-        if (material.ambient) {
+        if (materialState.ambient) {
             src.push("vec3 ambientColor = materialAmbient;");
         } else {
             src.push("vec3 ambientColor = vec3(1.0, 1.0, 1.0);");
         }
 
-        if (material.diffuse) {
+        if (materialState.diffuse) {
             src.push("vec3 diffuseColor = materialDiffuse;");
-        } else if (material.baseColor) {
+        } else if (materialState.baseColor) {
             src.push("vec3 diffuseColor = materialBaseColor;");
         } else {
             src.push("vec3 diffuseColor = vec3(1.0, 1.0, 1.0);");
         }
 
-        if (geometry.colors) {
+        if (geometryState.colors) {
             src.push("diffuseColor *= vColor.rgb;");
         }
 
-        if (material.emissive) {
+        if (materialState.emissive) {
             src.push("vec3 emissiveColor = materialEmissive;"); // Emissive default is (0,0,0), so initializing here
         } else {
             src.push("vec3  emissiveColor = vec3(0.0, 0.0, 0.0);");
         }
 
-        if (material.specular) {
+        if (materialState.specular) {
             src.push("vec3 specular = materialSpecular;");
         } else {
             src.push("vec3 specular = vec3(1.0, 1.0, 1.0);");
         }
 
-        if (material.alpha !== undefined) {
+        if (materialState.alpha !== undefined) {
             src.push("float alpha = materialAlphaModeCutoff[0];");
         } else {
             src.push("float alpha = 1.0;");
         }
 
-        if (geometry.colors) {
+        if (geometryState.colors) {
             src.push("alpha *= vColor.a;");
         }
 
-        if (material.glossiness !== undefined) {
+        if (materialState.glossiness !== undefined) {
             src.push("float glossiness = materialGlossiness;");
         } else {
             src.push("float glossiness = 1.0;");
         }
 
-        if (material.metallic !== undefined) {
+        if (materialState.metallic !== undefined) {
             src.push("float metallic = materialMetallic;");
         } else {
             src.push("float metallic = 1.0;");
         }
 
-        if (material.roughness !== undefined) {
+        if (materialState.roughness !== undefined) {
             src.push("float roughness = materialRoughness;");
         } else {
             src.push("float roughness = 1.0;");
         }
 
-        if (material.specularF0 !== undefined) {
+        if (materialState.specularF0 !== undefined) {
             src.push("float specularF0 = materialSpecularF0;");
         } else {
             src.push("float specularF0 = 1.0;");
@@ -1313,72 +1165,71 @@
         // TEXTURING
         //--------------------------------------------------------------------------------
 
-        if (geometry.uv
-            && ((geometry.normals && material.normalMap)
-            || material.ambientMap
-            || material.baseColorMap
-            || material.diffuseMap
-            || material.occlusionMap
-            || material.emissiveMap
-            || material.metallicMap
-            || material.roughnessMap
-            || material.metallicRoughnessMap
-            || material.specularMap
-            || material.glossinessMap
-            || material.specularGlossinessMap
-            || material.alphaMap)) {
+        if (uvs && ((normals && material._normalMap)
+            || material._ambientMap
+            || material._baseColorMap
+            || material._diffuseMap
+            || material._occlusionMap
+            || material._emissiveMap
+            || material._metallicMap
+            || material._roughnessMap
+            || material._metallicRoughnessMap
+            || material._specularMap
+            || material._glossinessMap
+            || material._specularGlossinessMap
+            || material._alphaMap)) {
             src.push("vec4 texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);");
             src.push("vec2 textureCoord;");
         }
 
-        if (geometry.uv && material.ambientMap) {
-            if (material.ambientMap.matrix) {
+        if (uvs && material._ambientMap) {
+            if (material._ambientMap._state.matrix) {
                 src.push("textureCoord = (ambientMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
             }
             src.push("vec4 ambientTexel = texture2D(ambientMap, textureCoord).rgb;");
-            src.push("ambientTexel = " + TEXTURE_DECODE_FUNCS[material.ambientMap.encoding] + "(ambientTexel);");
+            src.push("ambientTexel = " + TEXTURE_DECODE_FUNCS[material._ambientMap._state.encoding] + "(ambientTexel);");
             src.push("ambientColor *= ambientTexel.rgb;");
         }
 
-        if (geometry.uv && material.diffuseMap) {
-            if (material.diffuseMap.matrix) {
+        if (uvs && material._diffuseMap) {
+            if (material._diffuseMap._state.matrix) {
                 src.push("textureCoord = (diffuseMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
             }
             src.push("vec4 diffuseTexel = texture2D(diffuseMap, textureCoord);");
-            src.push("diffuseTexel = " + TEXTURE_DECODE_FUNCS[material.diffuseMap.encoding] + "(diffuseTexel);");
+            src.push("diffuseTexel = " + TEXTURE_DECODE_FUNCS[material._diffuseMap._state.encoding] + "(diffuseTexel);");
             src.push("diffuseColor *= diffuseTexel.rgb;");
             src.push("alpha *= diffuseTexel.a;");
         }
 
-        if (geometry.uv && material.baseColorMap) {
-            if (material.baseColorMap.matrix) {
+        if (uvs && material._baseColorMap) {
+            if (material._baseColorMap._state.matrix) {
                 src.push("textureCoord = (baseColorMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
             }
             src.push("vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);");
-            src.push("baseColorTexel = " + TEXTURE_DECODE_FUNCS[material.baseColorMap.encoding] + "(baseColorTexel);");
+            src.push("baseColorTexel = " + TEXTURE_DECODE_FUNCS[material._baseColorMap._state.encoding] + "(baseColorTexel);");
             src.push("diffuseColor *= baseColorTexel.rgb;");
             src.push("alpha *= baseColorTexel.a;");
         }
 
-        if (geometry.uv && material.emissiveMap) {
-            if (material.emissiveMap.matrix) {
+        if (uvs && material._emissiveMap) {
+            if (material._emissiveMap._state.matrix) {
                 src.push("textureCoord = (emissiveMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
             }
             src.push("vec4 emissiveTexel = texture2D(emissiveMap, textureCoord);");
-            src.push("emissiveTexel = " + TEXTURE_DECODE_FUNCS[material.emissiveMap.encoding] + "(emissiveTexel);");
+            src.push("emissiveTexel = " + TEXTURE_DECODE_FUNCS[material._emissiveMap._state.encoding] + "(emissiveTexel);");
             src.push("emissiveColor *= emissiveTexel.rgb;");
         }
 
-        if (geometry.uv && material.alphaMap) {
-            if (material.alphaMap.matrix) {
+        if (uvs && material._alphaMap) {
+            if (material._alphaMap._state.matrix) {
                 src.push("textureCoord = (alphaMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
@@ -1386,8 +1237,8 @@
             src.push("alpha *= texture2D(alphaMap, textureCoord).r;");
         }
 
-        if (geometry.uv && material.occlusionMap) {
-            if (material.occlusionMap.matrix) {
+        if (uvs && material._occlusionMap) {
+            if (material._occlusionMap._state.matrix) {
                 src.push("textureCoord = (occlusionMapMatrix * texturePos).xy;");
             } else {
                 src.push("textureCoord = texturePos.xy;");
@@ -1395,14 +1246,14 @@
             src.push("occlusion *= texture2D(occlusionMap, textureCoord).r;");
         }
 
-        if (geometry.normals && ((lights.length > 0) || scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
+        if (normals && ((lightsState.lights.length > 0) || lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0)) {
 
             //--------------------------------------------------------------------------------
             // SHADING
             //--------------------------------------------------------------------------------
 
-            if (geometry.uv && material.normalMap) {
-                if (material.normalMap.matrix) {
+            if (uvs && material._normalMap) {
+                if (material._normalMap._state.matrix) {
                     src.push("textureCoord = (normalMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -1412,8 +1263,8 @@
                 src.push("vec3 viewNormal = normalize(vViewNormal);");
             }
 
-            if (geometry.uv && material.specularMap) {
-                if (material.specularMap.matrix) {
+            if (uvs && material._specularMap) {
+                if (material._specularMap._state.matrix) {
                     src.push("textureCoord = (specularMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -1421,8 +1272,8 @@
                 src.push("specular *= texture2D(specularMap, textureCoord).rgb;");
             }
 
-            if (geometry.uv && material.glossinessMap) {
-                if (material.glossinessMap.matrix) {
+            if (uvs && material._glossinessMap) {
+                if (material._glossinessMap._state.matrix) {
                     src.push("textureCoord = (glossinessMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -1430,8 +1281,8 @@
                 src.push("glossiness *= texture2D(glossinessMap, textureCoord).r;");
             }
 
-            if (geometry.uv && material.specularGlossinessMap) {
-                if (material.specularGlossinessMap.matrix) {
+            if (uvs && material._specularGlossinessMap) {
+                if (material._specularGlossinessMap._state.matrix) {
                     src.push("textureCoord = (materialSpecularGlossinessMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -1441,8 +1292,8 @@
                 src.push("glossiness *= specGlossRGB.a;");
             }
 
-            if (geometry.uv && material.metallicMap) {
-                if (material.metallicMap.matrix) {
+            if (uvs && material._metallicMap) {
+                if (material._metallicMap._state.matrix) {
                     src.push("textureCoord = (metallicMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -1450,8 +1301,8 @@
                 src.push("metallic *= texture2D(metallicMap, textureCoord).r;");
             }
 
-            if (geometry.uv && material.roughnessMap) {
-                if (material.roughnessMap.matrix) {
+            if (uvs && material._roughnessMap) {
+                if (material._roughnessMap._state.matrix) {
                     src.push("textureCoord = (roughnessMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -1459,8 +1310,8 @@
                 src.push("roughness *= texture2D(roughnessMap, textureCoord).r;");
             }
 
-            if (geometry.uv && material.metallicRoughnessMap) {
-                if (material.metallicRoughnessMap.matrix) {
+            if (uvs && material._metallicRoughnessMap) {
+                if (material._metallicRoughnessMap._state.matrix) {
                     src.push("textureCoord = (metallicRoughnessMapMatrix * texturePos).xy;");
                 } else {
                     src.push("textureCoord = texturePos.xy;");
@@ -1472,23 +1323,21 @@
 
             src.push("vec3 viewEyeDir = normalize(-vViewPosition);");
 
-            if (material.diffuseFresnel || material.specularFresnel || material.alphaFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
-                if (material.diffuseFresnel) {
-                    src.push("float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);");
-                    src.push("diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);");
-                }
-                if (material.specularFresnel) {
-                    src.push("float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);");
-                    src.push("specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);");
-                }
-                if (material.alphaFresnel) {
-                    src.push("float alphaFresnel = fresnel(viewEyeDir, viewNormal, alphaFresnelEdgeBias, alphaFresnelCenterBias, alphaFresnelPower);");
-                    src.push("alpha *= mix(alphaFresnelEdgeColor.r, alphaFresnelCenterColor.r, alphaFresnel);");
-                }
-                if (material.emissiveFresnel) {
-                    src.push("float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);");
-                    src.push("emissiveColor *= mix(emissiveFresnelEdgeColor, emissiveFresnelCenterColor, emissiveFresnel);");
-                }
+            if (material._diffuseFresnel) {
+                src.push("float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);");
+                src.push("diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);");
+            }
+            if (material._specularFresnel) {
+                src.push("float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);");
+                src.push("specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);");
+            }
+            if (material._alphaFresnel) {
+                src.push("float alphaFresnel = fresnel(viewEyeDir, viewNormal, alphaFresnelEdgeBias, alphaFresnelCenterBias, alphaFresnelPower);");
+                src.push("alpha *= mix(alphaFresnelEdgeColor.r, alphaFresnelCenterColor.r, alphaFresnel);");
+            }
+            if (material._emissiveFresnel) {
+                src.push("float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);");
+                src.push("emissiveColor *= mix(emissiveFresnelEdgeColor, emissiveFresnelCenterColor, emissiveFresnel);");
             }
 
             src.push("if (materialAlphaModeCutoff[1] == 1.0 && alpha < materialAlphaModeCutoff[2]) {"); // ie. (alphaMode == "mask" && alpha < alphaCutoff)
@@ -1503,20 +1352,20 @@
             src.push("ReflectedLight reflectedLight = ReflectedLight(vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0));");
             src.push("vec3           viewLightDir;");
 
-            if (cfg.phongMaterial) {
+            if (phongMaterial) {
                 src.push("material.diffuseColor      = diffuseColor;");
                 src.push("material.specularColor     = specular;");
                 src.push("material.shine             = materialShininess;");
             }
 
-            if (cfg.specularMaterial) {
+            if (specularMaterial) {
                 src.push("float oneMinusSpecularStrength = 1.0 - max(max(specular.r, specular.g ),specular.b);"); // Energy conservation
                 src.push("material.diffuseColor      = diffuseColor * oneMinusSpecularStrength;");
                 src.push("material.specularRoughness = clamp( 1.0 - glossiness, 0.04, 1.0 );");
                 src.push("material.specularColor     = specular;");
             }
 
-            if (cfg.metallicMaterial) {
+            if (metallicMaterial) {
                 src.push("float dielectricSpecular = 0.16 * specularF0 * specularF0;");
                 src.push("material.diffuseColor      = diffuseColor * (1.0 - dielectricSpecular) * (1.0 - metallic);");
                 src.push("material.specularRoughness = clamp(roughness, 0.04, 1.0);");
@@ -1524,7 +1373,7 @@
             }
 
             src.push("geometry.position      = vViewPosition;");
-            if (scene.lights.lightMaps.length > 0) {
+            if (lightsState.lightMaps.length > 0) {
                 src.push("geometry.worldNormal   = normalize(vWorldNormal);");
             }
             src.push("geometry.viewNormal    = viewNormal;");
@@ -1532,21 +1381,19 @@
 
             // ENVIRONMENT AND REFLECTION MAP SHADING
 
-            if ((cfg.phongMaterial) && (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
+            if ((phongMaterial) && (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0)) {
                 src.push("computePhongLightMapping(geometry, material, reflectedLight);");
             }
 
-            if ((cfg.specularMaterial || cfg.metallicMaterial) && (scene.lights.lightMaps.length > 0 || scene.lights.reflectionMaps.length > 0)) {
+            if ((specularMaterial || metallicMaterial) && (lightsState.lightMaps.length > 0 || lightsState.reflectionMaps.length > 0)) {
                 src.push("computePBRLightMapping(geometry, material, reflectedLight);");
             }
 
             // LIGHT SOURCE SHADING
 
-            var light;
-
             src.push("float shadow = 1.0;");
 
-            // if (cfg.receiveShadow) {
+            // if (receiveShadow) {
             //
             //     src.push("float lightDepth2 = clamp(length(lightPos)/40.0, 0.0, 1.0);");
             //     src.push("float illuminated = VSM(sLightDepth, lightUV, lightDepth2);");
@@ -1561,9 +1408,9 @@
             // }
 
             var numShadows = 0;
-            for (i = 0, len = lights.length; i < len; i++) {
+            for (i = 0, len = lightsState.lights.length; i < len; i++) {
 
-                light = lights[i];
+                light = lightsState.lights[i];
 
                 if (light.type === "ambient") {
                     continue;
@@ -1578,7 +1425,7 @@
                     src.push("viewLightDir = normalize(vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
                 }
 
-                if (cfg.receiveShadow && light.shadow) {
+                if (receiveShadow && light.shadow) {
 
                     // if (true) {
                     //     src.push('shadowCoord = (vShadowPosFromLight' + i + '.xyz/vShadowPosFromLight' + i + '.w)/2.0 + 0.5;');
@@ -1627,11 +1474,11 @@
                 src.push("light.direction = viewLightDir;");
 
 
-                if (cfg.phongMaterial) {
+                if (phongMaterial) {
                     src.push("computePhongLighting(light, geometry, material, reflectedLight);");
                 }
 
-                if (cfg.specularMaterial || cfg.metallicMaterial) {
+                if (specularMaterial || metallicMaterial) {
                     src.push("computePBRLighting(light, geometry, material, reflectedLight);");
                 }
             }
@@ -1644,7 +1491,7 @@
 
             // COMBINE TERMS
 
-            if (cfg.phongMaterial) {
+            if (phongMaterial) {
 
                 src.push("ambientColor *= (lightAmbient.rgb * lightAmbient.a);");
 
@@ -1669,7 +1516,7 @@
 
         src.push("gl_FragColor = vec4(outgoingLight, alpha) * colorize;");
 
-        if (cfg.gammaOutput) {
+        if (gammaOutput) {
             src.push("gl_FragColor = linearToGamma(gl_FragColor, gammaFactor);");
         }
 

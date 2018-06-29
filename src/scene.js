@@ -632,10 +632,163 @@
                 alert("xeogl failed to find WebGL!");
             });
 
-            this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this.canvas.canvas, this.canvas.gl, {
+            this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this, {
                 transparent: transparent
             });
 
+            this._clipsState = new (function () {
+
+                this.clips = [];
+
+                var hash = null;
+
+                this.getHash = function () {
+                    if (hash) {
+                        return hash;
+                    }
+                    var clips = this.clips;
+                    if (clips.length === 0) {
+                        return this.hash = ";";
+                    }
+                    var clip;
+                    var hashParts = [];
+                    for (var i = 0, len = clips.length; i < len; i++) {
+                        clip = clips[i];
+                        hashParts.push("cp");
+                    }
+                    hashParts.push(";");
+                    hash = hashParts.join("");
+                    return hash;
+                };
+
+                this.addClip = function (clip) {
+                    this.clips.push(clip);
+                    hash = null;
+                };
+
+                this.removeClip = function (clip) {
+                    for (var i = 0, len = this.clips.length; i < len; i++) {
+                        if (this.clips[i].id === clip.id) {
+                            this.clips.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+            })();
+
+            this._lightsState = new (function () {
+
+                const DEFAULT_AMBIENT = xeogl.math.vec3([0, 0, 0]);
+                var ambientColor = xeogl.math.vec3();
+
+                this.lights = [];
+                this.reflectionMaps = [];
+                this.lightMaps = [];
+
+                var hash = null;
+                var ambientLight = null;
+
+                this.getHash = function () {
+                    if (hash) {
+                        return hash;
+                    }
+                    var hashParts = [];
+                    var lights = this.lights;
+                    var light;
+                    for (var i = 0, len = lights.length; i < len; i++) {
+                        light = lights[i];
+                        hashParts.push("/");
+                        hashParts.push(light.type);
+                        hashParts.push((light.space === "world") ? "w" : "v");
+                        if (light.shadow) {
+                            hashParts.push("sh");
+                        }
+                    }
+                    if (this.lightMaps.length > 0) {
+                        hashParts.push("/lm");
+                    }
+                    if (this.reflectionMaps.length > 0) {
+                        hashParts.push("/rm");
+                    }
+                    hashParts.push(";");
+                    hash = hashParts.join("");
+                    return hash;
+                };
+
+                this.addLight = function (state) {
+                    this.lights.push(state);
+                    ambientLight = null;
+                    hash = null;
+                };
+
+                this.removeLight = function (state) {
+                    for (var i = 0, len = this.lights.length; i < len; i++) {
+                        var light = this.lights[i];
+                        if (light.id === state.id) {
+                            this.lights.splice(i, 1);
+                            if (ambientLight && ambientLight.id === state.id) {
+                                ambientLight = null;
+                            }
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.addReflectionMap = function (state) {
+                    this.reflectionMaps.push(state);
+                    hash = null;
+                };
+
+                this.removeReflectionMap = function (state) {
+                    for (var i = 0, len = this.reflectionMaps.length; i < len; i++) {
+                        if (this.reflectionMaps[i].id === state.id) {
+                            this.reflectionMaps.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.addLightMap = function (state) {
+                    this.lightMaps.push(state);
+                    hash = null;
+                };
+
+                this.removeLightMap = function (state) {
+                    for (var i = 0, len = this.lightMaps.length; i < len; i++) {
+                        if (this.lightMaps[i].id === state.id) {
+                            this.lightMaps.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.getAmbientColor = function () {
+                    if (!ambientLight) {
+                        for (var i = 0, len = this.lights.length; i < len; i++) {
+                            var light = this.lights[i];
+                            if (light.type === "ambient") {
+                                ambientLight = light;
+                                break;
+                            }
+                        }
+                    }
+                    if (ambientLight) {
+                        var color = ambientLight.color;
+                        var intensity = ambientLight.intensity;
+                        ambientColor[0] = color[0] * intensity;
+                        ambientColor[1] = color[1] * intensity;
+                        ambientColor[2] = color[2] * intensity;
+                        return ambientColor;
+                    } else {
+                        return DEFAULT_AMBIENT;
+                    }
+                };
+
+            })();
             /**
              Publishes input events that occur on this Scene's canvas.
 
@@ -716,13 +869,7 @@
             var renderer = this._renderer;
             var camera = this._camera;
 
-            renderer.viewport = viewport._state;
-            renderer.projTransform = camera[camera.projection]._state;
-            renderer.viewTransform = camera._state;
-
             camera.on("dirty", function () {
-                renderer.projTransform = camera.project._state;
-                renderer.viewTransform = camera._state;
                 renderer.imageDirty();
             });
 
@@ -746,96 +893,140 @@
             dummy = this.outlineMaterial;
         },
 
-        // Called by each component that is created with this Scene as parent.
-        // Registers the component in this scene.
-
         _addComponent: function (c) {
-
-            if (c.id) {
-
-                // User-supplied ID
-
+            if (c.id) { // Manual ID
                 if (this.components[c.id]) {
                     this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
-                    //        c.id = this._componentIDMap.addItem(c);
-                    return;
+                    c.id = null;
                 }
-            } else {
-
-                // Auto-generated ID
-
+            }
+            if (!c.id) { // Auto ID
                 if (window.nextID === undefined) {
                     window.nextID = 0;
                 }
                 //c.id = xeogl.math.createUUID();
                 c.id = "_" + window.nextID++;
-
                 while (this.components[c.id]) {
                     c.id = xeogl.math.createUUID();
                 }
             }
-
             this.components[c.id] = c;
-
             // Register for class type
-
             var type = c.type;
-
             var types = this.types[c.type];
-
             if (!types) {
                 types = this.types[type] = {};
             }
-
             types[c.id] = c;
+        },
 
-            c.on("destroyed", function () {
-                this._componentDestroyed(c);
-            }, this);
-
-            if (c.isType("xeogl.Clip")) {
-                this._needRecompileMeshes = true;
-                this.clips[c.id] = c;
-
-            } else if (c.isType("xeogl.PointLight") || c.isType("xeogl.DirLight") || c.isType("xeogl.SpotLight")) {
-                this._needRecompileMeshes = true;
-                this.lights[c.id] = c;
-
-            } else if (c.isType("xeogl.LightLight")) {
-                this._needRecompileMeshes = true;
-                this.lightMaps[c.id] = c;
-
-            } else if (c.isType("xeogl.ReflectionLight")) {
-                this._needRecompileMeshes = true;
-                this.reflectionMaps[c.id] = c;
-
-            } else {
-
-                if (c.isType("xeogl.Mesh")) {
-                    c.on("boundary", this._setBoundaryDirty, this);
-                    this.meshes[c.id] = c;
-                    xeogl.stats.components.meshes++;
-                }
-
-                if (c.isType("xeogl.Model")) {
-                    this.models[c.id] = c;
-                    xeogl.stats.components.models++;
-                }
-                if (c.isType("xeogl.Object")) {
-                    this.objects[c.id] = c;
-                    if (c.guid) {
-                        this.guidObjects[c.id] = c;
-                        this._objectGUIDs = null; // To lazy-rebuild
-                    }
-                    if (!c.parent) {
-                        this.rootObjects[c.id] = c; // TODO: What about when a root Object is added as child to another?
-                    }
-                    xeogl.stats.components.objects++;
+        _removeComponent: function (c) {
+            delete this.components[c.id];
+            var types = this.types[c.type];
+            if (types) {
+                delete types[c.id];
+                if (xeogl._isEmptyObject(types)) {
+                    delete this.types[c.type];
                 }
             }
         },
 
-        // Methods to register entity Objects and their most pertinent state updates
+        // Methods below are called by various component types to register themselves on their
+        // Scene. Violates Hollywood Principle, where we could just filter on type in _addComponent,
+        // but this is faster than checking the type of each component in such a filter.
+
+        _clipCreated: function (clip) {
+            this.clips[clip.id] = clip;
+            this.scene._clipsState.addClip(clip._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightCreated: function (light) {
+            this.lights[light.id] = light;
+            this.scene._lightsState.addLight(light._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightMapCreated: function (lightMap) {
+            this.lightMaps[lightMap.id] = lightMap;
+            this.scene._lightsState.addLightMap(lightMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _reflectionMapCreated: function (reflectionMap) {
+            this.reflectionMaps[reflectionMap.id] = reflectionMap;
+            this.scene._lightsState.addReflectionMap(reflectionMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _objectCreated: function (object) {
+            this.objects[object.id] = object;
+            if (object.guid) {
+                this.guidObjects[object.id] = object;
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
+            if (!object.parent) {
+                this.rootObjects[object.id] = object; // TODO: What about when a root Object is added as child to another?
+            }
+            xeogl.stats.components.objects++;
+        },
+
+        _meshCreated: function (mesh) {
+            this.meshes[mesh.id] = mesh;
+            xeogl.stats.components.meshes++;
+        },
+
+        _modelCreated: function (model) {
+            this.models[model.id] = model;
+            xeogl.stats.components.models++;
+        },
+
+        _clipDestroyed: function (clip) {
+            delete this.clips[clip.id];
+            this.scene._clipsState.removeClip(clip._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightDestroyed: function (light) {
+            delete this.lights[light.id];
+            this.scene._lightsState.removeLight(light._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightMapDestroyed: function (lightMap) {
+            delete this.lightMaps[lightMap.id];
+            this.scene._lightsState.removeLightMap(lightMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _reflectionMapDestroyed: function (reflectionMap) {
+            delete this.reflectionMaps[reflectionMap.id];
+            this.scene._lightsState.removeReflectionMap(reflectionMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _objectDestroyed: function (object) {
+            delete this.objects[object.id];
+            if (object.guid) {
+                delete this.guidObjects[object.guid];
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
+            if (!object.parent) {
+                delete this.rootObjects[object.id];
+            }
+            xeogl.stats.components.objects--;
+        },
+
+        _meshDestroyed: function (mesh) {
+            xeogl.stats.components.meshes--;
+            delete this.meshes[mesh.id];
+            xeogl.stats.components.meshes--;
+        },
+
+        _modelDestroyed: function (model) {
+            this.models[model.id] = model;
+            xeogl.stats.components.models++;
+        },
 
         _entityTypeAssigned: function (object, newEntityType) {
             this.entities[object.id] = object;
@@ -895,65 +1086,6 @@
             this._selectedEntityIds = null; // Lazy regenerate
         },
 
-        // Callbacks as members to reduce GC churn
-
-        _componentDestroyed: function (c) {
-
-            delete this.components[c.id];
-
-            var types = this.types[c.type];
-            if (types) {
-                delete types[c.id];
-                if (xeogl._isEmptyObject(types)) {
-                    delete this.types[c.type];
-                }
-            }
-
-            if (c.isType("xeogl.Clip")) {
-                delete this.clips[c.id];
-                this._needRecompileMeshes = true;
-
-            } else if (c.isType("xeogl.PointLight") || c.isType("xeogl.DirLight") || c.isType("xeogl.SpotLight")) {
-                delete this.lights[c.id];
-                this._needRecompileMeshes = true;
-
-            } else if (c.isType("xeogl.LightLight")) {
-                delete this.lightMaps[c.id];
-                this._needRecompileMeshes = true;
-
-            } else if (c.isType("xeogl.ReflectionLight")) {
-                delete this.reflectionMaps[c.id];
-                this._needRecompileMeshes = true;
-
-            } else {
-
-                if (c.isType("xeogl.Mesh")) {
-                    xeogl.stats.components.meshes--;
-                    delete this.meshes[c.id];
-                    xeogl.stats.components.meshes--;
-                }
-
-                if (c.isType("xeogl.Object")) {
-                    delete this.objects[c.id];
-                    if (c.guid) {
-                        delete this.guidObjects[c.guid];
-                        this._objectGUIDs = null; // To lazy-rebuild
-                    }
-                    if (!c.parent) {
-                        delete this.rootObjects[c.id];
-                    }
-                    xeogl.stats.components.objects--;
-                }
-
-                if (c.isType("xeogl.Model")) {
-                    delete this.models[c.id];
-                    xeogl.stats.components.models--;
-                }
-            }
-
-            //this.log("Destroyed " + c.type + " " + xeogl._inQuotes(c.id));
-        },
-
         /**
          * Renders a single frame of this Scene.
          *
@@ -969,24 +1101,25 @@
 
             var renderEvent = {
                 sceneId: null,
-                pass: null
+                pass: 0
             };
 
             return function (forceRender) {
-
-                // The renderer is suspended while a model loads, and when a Scene is made to load something
-                // as soon as it's instantiated, that means that its lights may not get a chance to set the
-                // canvas background until the model is loaded and the renderer is unsuspended again. Therefore,
-                // we have a special imageForceDirty flag that bypasses the suspension, which lights set when
-                // their properties are updated.
 
                 if (this._needRecompileMeshes) {
                     this._recompileMeshes();
                     this._needRecompileMeshes = false;
                 }
 
-                if (this.loading > 0) {
+                if (this.loading > 0 || this.canvas.spinner.processes > 0) {
+                    this.canvas.canvas.style.opacity = 0.0;
                     return;
+                }
+
+                var opacity = Number.parseFloat(this.canvas.canvas.style.opacity);
+                if (opacity < 1.0) {
+                    opacity  += 0.1;
+                    this.canvas.canvas.style.opacity = opacity;
                 }
 
                 renderEvent.sceneId = this.id;
@@ -1035,11 +1168,10 @@
             }
         },
 
-
         _saveAmbientColor: function () {
             var canvas = this.canvas;
             if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
-                var ambientColor = this._renderer.getAmbientColor();
+                var ambientColor = this._lightsState.getAmbientColor();
                 if (!this._lastAmbientColor ||
                     this._lastAmbientColor[0] !== ambientColor[0] ||
                     this._lastAmbientColor[1] !== ambientColor[1] ||
@@ -1171,27 +1303,19 @@
              @type Number
              */
             ticksPerRender: {
-
                 set: function (value) {
-
                     if (value === undefined || value === null) {
                         value = 1;
-
                     } else if (!xeogl._isNumeric(value) || value <= 0) {
-
                         this.error("Unsupported value for 'ticksPerRender': '" + value +
                             "' - should be an integer greater than zero.");
-
                         value = 1;
                     }
-
                     if (value === this._ticksPerRender) {
                         return;
                     }
-
                     this._ticksPerRender = value;
                 },
-
                 get: function () {
                     return this._ticksPerRender;
                 }
@@ -1205,29 +1329,20 @@
              @type Number
              */
             passes: {
-
                 set: function (value) {
-
                     if (value === undefined || value === null) {
                         value = 1;
-
                     } else if (!xeogl._isNumeric(value) || value <= 0) {
-
                         this.error("Unsupported value for 'passes': '" + value +
                             "' - should be an integer greater than zero.");
-
                         value = 1;
                     }
-
                     if (value === this._passes) {
                         return;
                     }
-
                     this._passes = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._passes;
                 }
@@ -1242,20 +1357,14 @@
              @type Boolean
              */
             clearEachPass: {
-
                 set: function (value) {
-
                     value = !!value;
-
                     if (value === this._clearEachPass) {
                         return;
                     }
-
                     this._clearEachPass = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._clearEachPass;
                 }
@@ -1269,20 +1378,14 @@
              @type Boolean
              */
             gammaInput: {
-
                 set: function (value) {
-
                     value = value !== false;
-
                     if (value === this._renderer.gammaInput) {
                         return;
                     }
-
                     this._renderer.gammaInput = value;
-
                     this._needRecompileMeshes = true;
                 },
-
                 get: function () {
                     return this._renderer.gammaInput;
                 }
@@ -1296,20 +1399,14 @@
              @type Boolean
              */
             gammaOutput: {
-
                 set: function (value) {
-
                     value = value !== false;
-
                     if (value === this._renderer.gammaOutput) {
                         return;
                     }
-
                     this._renderer.gammaOutput = value;
-
                     this._needRecompileMeshes = true;
                 },
-
                 get: function () {
                     return this._renderer.gammaOutput;
                 }
@@ -1323,20 +1420,14 @@
              @type Number
              */
             gammaFactor: {
-
                 set: function (value) {
-
                     value = (value === undefined || value === null) ? 2.2 : value;
-
                     if (value === this._renderer.gammaFactor) {
                         return;
                     }
-
                     this._renderer.gammaFactor = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._renderer.gammaFactor;
                 }
@@ -1460,6 +1551,33 @@
             },
 
             /**
+             The Scene's default {{#crossLink "EdgeMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when edges are emphasized.
+
+             This {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} has
+             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.edgeMaterial", with all
+             other properties initialised to their default values.
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} by default.
+             @property edgeMaterial
+             @final
+             @type EdgeMaterial
+             */
+            edgeMaterial: {
+                get: function () {
+                    return this.components["default.edgeMaterial"] ||
+                        new xeogl.EdgeMaterial(this, {
+                            id: "default.edgeMaterial",
+                            preset: "default",
+                            edgeColor: [0.0, 0.0, 0.0],
+                            edgeAlpha: 1.0,
+                            edgeWidth: 1,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
              The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are outlined.
 
              This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
@@ -1516,22 +1634,16 @@
              @type {Float32Array}
              */
             center: {
-
                 get: function () {
-
                     if (this._aabbDirty || !this._center) {
-
                         if (!this._center || !this._center) {
                             this._center = xeogl.math.vec3();
                         }
-
                         var aabb = this.aabb;
-
                         this._center[0] = (aabb[0] + aabb[3] ) / 2;
                         this._center[1] = (aabb[1] + aabb[4] ) / 2;
                         this._center[2] = (aabb[2] + aabb[5] ) / 2;
                     }
-
                     return this._center;
                 }
             },
@@ -1547,43 +1659,28 @@
              @type {Float32Array}
              */
             aabb: {
-
                 get: function () {
-
+                    //   console.log("get aabb")
                     if (this._aabbDirty) {
-
                         if (!this._aabb) {
                             this._aabb = xeogl.math.AABB3();
                         }
-
                         var xmin = xeogl.math.MAX_DOUBLE;
                         var ymin = xeogl.math.MAX_DOUBLE;
                         var zmin = xeogl.math.MAX_DOUBLE;
                         var xmax = -xeogl.math.MAX_DOUBLE;
                         var ymax = -xeogl.math.MAX_DOUBLE;
                         var zmax = -xeogl.math.MAX_DOUBLE;
-
                         var aabb;
-
                         var meshes = this.meshes;
                         var mesh;
-
                         for (var meshId in meshes) {
                             if (meshes.hasOwnProperty(meshId)) {
-
                                 mesh = meshes[meshId];
-
                                 if (!mesh.collidable) {
                                     continue;
                                 }
-
                                 aabb = mesh.aabb;
-
-                                if (!aabb) {
-                                    this.error("internal error: mesh without aabb: " + meshId);
-                                    continue;
-                                }
-
                                 if (aabb[0] < xmin) {
                                     xmin = aabb[0];
                                 }
@@ -1604,27 +1701,24 @@
                                 }
                             }
                         }
-
                         this._aabb[0] = xmin;
                         this._aabb[1] = ymin;
                         this._aabb[2] = zmin;
                         this._aabb[3] = xmax;
                         this._aabb[4] = ymax;
                         this._aabb[5] = zmax;
-
                         this._aabbDirty = false;
                     }
-
                     return this._aabb;
                 }
             }
         },
 
         _setBoundaryDirty: function () {
-            if (!this._aabbDirty) {
-                this._aabbDirty = true;
-                this.fire("boundary");
-            }
+            //if (!this._aabbDirty) {
+            this._aabbDirty = true;
+            this.fire("boundary");
+            // }
         },
 
         /**
@@ -1759,8 +1853,8 @@
             var tempVec3j = math.vec3();
             var tempVec3k = math.vec3();
 
-            function getRendererObjectIDs(scene, meshIds) {
-                var objectIds = {};
+            function getMeshIDMap(scene, meshIds) {
+                var map = {};
                 var meshId;
                 var mesh;
                 for (var i = 0, len = meshIds.length; i < len; i++) {
@@ -1770,12 +1864,12 @@
                         scene.warn("pick(): Mesh not found: " + meshId);
                         continue;
                     }
-                    objectIds[mesh._objectId] = true;
+                    map[meshId] = true;
                 }
-                return objectIds;
+                return map;
             }
 
-            function getRendererObjectIDsFromentityTypes(scene, entityTypes) {
+            function getMeshIDMapFromentityTypes(scene, entityTypes) {
                 // var objectIds = {};
                 // var entityType;
                 // var mesh;
@@ -1808,37 +1902,33 @@
 
                 var includeMeshes = params.includeMeshes || params.include; // Backwards compat
                 if (includeMeshes) {
-                    params.includeObjects = getRendererObjectIDs(this, includeMeshes);
+                    params.includeMeshIds = getMeshIDMap(this, includeMeshes);
                 }
 
                 var excludeMeshes = params.excludeMeshes || params.exclude; // Backwards compat
                 if (excludeMeshes) {
-                    params.excludeObjects = getRendererObjectIDs(this, excludeMeshes);
+                    params.excludeMeshIds = getMeshIDMap(this, excludeMeshes);
                 }
 
-                if (params.includeEntityTypes) {
-                    params.includeObjects = getRendererObjectIDsFromEntityTypes(this, params.includeEntityTypes);
-                }
-
-                if (params.excludeEntityTypes) {
-                    params.excludeObjects = getRendererObjectIDsFromEntityTypes(this, params.excludeEntityTypes);
-                }
-
+                // if (params.includeEntityTypes) {
+                //     params.includeObjects = getMeshIDMapFromEntityTypes(this, params.includeEntityTypes);
+                // }
+                //
+                // if (params.excludeEntityTypes) {
+                //     params.excludeObjects = getMeshIDMapFromEntityTypes(this, params.excludeEntityTypes);
+                // }
 
                 var hit = this._renderer.pick(params);
 
                 if (hit) {
 
-                    var mesh = this.meshes[hit.mesh];
-
-                    hit.mesh = mesh; // Swap string ID for xeogl.Mesh
-                    hit.object = hit.mesh;
+                    hit.object = hit.mesh; // Backwards compat
 
                     if (params.pickSurface) {
 
                         if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
-                            var geometry = mesh.geometry._state;
+                            var geometry = hit.mesh.geometry._state;
 
                             if (geometry.primitiveName === "triangles") {
 
@@ -1912,10 +2002,10 @@
                                 if (params.canvasPos) {
                                     canvasPos = params.canvasPos;
                                     hit.canvasPos = params.canvasPos;
-                                    math.canvasPosToLocalRay(this.camera, mesh, canvasPos, localRayOrigin, localRayDir);
+                                    math.canvasPosToLocalRay(this.camera, hit.mesh, canvasPos, localRayOrigin, localRayDir);
 
                                 } else if (params.origin && params.direction) {
-                                    math.worldRayToLocalRay(mesh, params.origin, params.direction, localRayOrigin, localRayDir);
+                                    math.worldRayToLocalRay(hit.mesh, params.origin, params.direction, localRayOrigin, localRayDir);
                                 }
 
                                 math.normalizeVec3(localRayDir);
@@ -1937,7 +2027,7 @@
 
                                 // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(mesh.worldMatrix || mesh.worldMatrix, tempVec4a, tempVec4b);
+                                math.transformVec4(hit.mesh.worldMatrix, tempVec4a, tempVec4b);
 
                                 worldPos[0] = tempVec4b[0];
                                 worldPos[1] = tempVec4b[1];
@@ -1947,7 +2037,7 @@
 
                                 // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(mesh.scene.camera.matrix, tempVec4b, tempVec4c);
+                                math.transformVec4(hit.mesh.scene.camera.matrix, tempVec4b, tempVec4c);
 
                                 viewPos[0] = tempVec4c[0];
                                 viewPos[1] = tempVec4c[1];
@@ -1999,7 +2089,7 @@
                                         math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
-                                    hit.normal = math.transformVec3(mesh.worldNormalMatrix, normal, tempVec3f);
+                                    hit.normal = math.transformVec3(hit.mesh.worldNormalMatrix, normal, tempVec3f);
                                 }
 
                                 // Get interpolated UV coordinates
@@ -2157,6 +2247,33 @@
         },
 
         /**
+         Convenience method that destroys all light sources.
+
+         Removes all {{#crossLink "AmbientLight"}}AmbientLights{{/crossLink}}, {{#crossLink "PointLight"}}PointLights{{/crossLink}},
+         {{#crossLink "DirLight"}}DirLights{{/crossLink}} and {{#crossLink "SpotLight"}}SpotLights{{/crossLink}}.
+
+         @method clearLights
+         */
+        clearLights: function () {
+            var ids = Object.keys(this.lights);
+            for (var i = 0, len = ids.length; i < len; i++) {
+                this.lights[ids[i]].destroy();
+            }
+        },
+
+        /**
+         Convenience method that destroys all {{#crossLink "Clip"}}Clips{{/crossLink}}.
+
+         @method clearClips
+         */
+        clearClips: function () {
+            var ids = Object.keys(this.clips);
+            for (var i = 0, len = ids.length; i < len; i++) {
+                this.clips[ids[i]].destroy();
+            }
+        },
+
+        /**
          Shows or hides a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          Each Object indicates its visibility status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
@@ -2298,6 +2415,29 @@
         })(),
 
         /**
+         Shows or hides wireeframe edges for batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         @method setEdges
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param edges {Float32Array} Whether to show or hide edges.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed edges state, else false if all updates were redundant and not applied.
+         */
+        setEdges: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.edges != newValue);
+                object.edges = newValue;
+                return changed;
+            }
+
+            return function (ids, edges) {
+                newValue = edges;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
          Shows or hides an outline around a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          Each Object indicates its outlined status in its {{#crossLink "Object/outlined:property"}}{{/crossLink}} property.
@@ -2390,15 +2530,18 @@
                 return this.withObjects(ids, callback);
             };
         })(),
-        
+
         /**
          Iterates with a callback over {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          @method withObjects
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param ids {String|Array} One or more {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
          @param callback {Function} The callback, which takes each object as its argument.
          */
         withObjects: function (ids, callback) {
+            if (xeogl._isString(ids)) {
+                ids = [ids];
+            }
             var changed = false;
             for (var i = 0, len = ids.length; i < len; i++) {
                 var id = ids[i];

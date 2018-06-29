@@ -6,30 +6,24 @@
 
     "use strict";
 
-    xeogl.renderer.PickTriangleRenderer = function (gl, hash, scene, object) {
-
-        this._gl = gl;
+    xeogl.renderer.PickTriangleRenderer = function (hash, mesh) {
+        var gl = mesh.scene.canvas.gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.PickTriangleShaderSource(gl, scene, object);
+        this._shaderSource = new xeogl.renderer.PickTriangleShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = scene;
+        this._scene = mesh.scene;
         this._useCount = 0;
-
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-
         var program = this._program;
-
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
-
         this._uClips = [];
-        var clips = scene.clips.clips;
+        var clips = mesh.scene._clipsState.clips;
         for (var i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
@@ -37,7 +31,6 @@
                 dir: program.getLocation("clipDir" + i)
             });
         }
-
         this._aPosition = program.getAttribute("position");
         this._aColor = program.getAttribute("color");
         this._uClippable = program.getLocation("clippable");
@@ -45,10 +38,20 @@
 
     var renderers = {};
 
-    xeogl.renderer.PickTriangleRenderer.create = function (gl, hash, scene, object) {
+    xeogl.renderer.PickTriangleRenderer.get = function (mesh) {
+        var hash = [
+            mesh.scene.canvas.canvas.id,
+            mesh.scene._clipsState.getHash(),
+            mesh._geometry._state.quantized ? "cp" : "",
+            mesh._state.hash
+        ].join(";");
         var renderer = renderers[hash];
         if (!renderer) {
-            renderer = new xeogl.renderer.PickTriangleRenderer(gl, hash, scene, object);
+            renderer = new xeogl.renderer.PickTriangleRenderer(hash, mesh);
+            if (renderer.errors) {
+                console.log(renderer.errors.join("\n"));
+                return null;
+            }
             renderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
@@ -56,7 +59,7 @@
         return renderer;
     };
 
-    xeogl.renderer.PickTriangleRenderer.prototype.destroy = function () {
+    xeogl.renderer.PickTriangleRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             this._program.destroy();
             delete renderers[this._hash];
@@ -64,22 +67,26 @@
         }
     };
 
-    xeogl.renderer.PickTriangleRenderer.prototype.drawObject = function (frame, object) {
-
-        // Only rendering one object within a surface picking pass
-
-        var gl = this._gl;
+    xeogl.renderer.PickTriangleRenderer.prototype.drawMesh = function (frame, mesh) {
         var scene = this._scene;
-
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
+        var materialState = mesh._material._state;
+        var meshState = mesh._state;
+        var geometry = mesh._geometry;
+        var geometryState = mesh._geometry._state;
+        var backfaces = materialState.backfaces;
+        var frontface = materialState.frontface;
+        var positionsBuf = geometry._getPickTrianglePositions();
+        var pickColorsBuf = geometry._getPickTriangleColors();
+        var camera = scene.camera;
+        var cameraState = camera._state;
         this._program.bind();
-
         frame.useProgram++;
-
-        gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || scene.viewTransform.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || scene.projTransform.matrix);
-
-        if (scene.clips.clips.length > 0) {
-            var clips = scene.clips.clips;
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        if (clipsState.clips.length > 0) {
+            var clips = clipsState.clips;
             var clipUniforms;
             var uClipActive;
             var clip;
@@ -102,12 +109,6 @@
                 }
             }
         }
-
-        var material = object.material;
-        var modelTransform = object.modelTransform;
-        var geometry = object.geometry;
-
-        var backfaces = material.backfaces;
         if (frame.backfaces !== backfaces) {
             if (backfaces) {
                 gl.disable(gl.CULL_FACE);
@@ -116,8 +117,6 @@
             }
             frame.backfaces = backfaces;
         }
-
-        var frontface = material.frontface;
         if (frame.frontface !== frontface) {
             if (frontface) {
                 gl.frontFace(gl.CCW);
@@ -126,30 +125,21 @@
             }
             frame.frontface = frontface;
         }
-
-        this._lastMaterialId = material.id;
-
-        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, modelTransform.getMatrix());
-
+        this._lastMaterialId = materialState.id;
+        gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
         if (this._uClippable) {
-            gl.uniform1i(this._uClippable, object.modes.clippable);
+            gl.uniform1i(this._uClippable, mesh._state.clippable);
         }
-
-        var positions = geometry.getPickTrianglePositions();
-
         if (this._uPositionsDecodeMatrix) {
-            gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
-            this._aPosition.bindArrayBuffer(positions, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+            gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
+            this._aPosition.bindArrayBuffer(positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
         } else {
-            this._aPosition.bindArrayBuffer(positions);
+            this._aPosition.bindArrayBuffer(positionsBuf);
         }
-
-        var pickColorsBuf = geometry.getPickTriangleColors();
         pickColorsBuf.bind();
         gl.enableVertexAttribArray(this._aColor.location);
-        this._gl.vertexAttribPointer(this._aColor.location, pickColorsBuf.itemSize, pickColorsBuf.itemType, true, 0, 0); // Normalize
-
-        gl.drawArrays(geometry.primitive, 0, positions.numItems / 3);
+        gl.vertexAttribPointer(this._aColor.location, pickColorsBuf.itemSize, pickColorsBuf.itemType, true, 0, 0); // Normalize
+        gl.drawArrays(geometryState.primitive, 0, positionsBuf.numItems / 3);
     };
 })();
 

@@ -562,9 +562,7 @@
 
         _init: function (cfg) {
 
-            var self = this;
-
-            this._state = new xeogl.renderer.Modes({
+            this._state = new xeogl.renderer.State({ // NOTE: Renderer gets modeling and normal matrices from xeogl.Object#matrix and xeogl.Object.#normalMatrix
                 visible: true,
                 culled: false,
                 pickable: null,
@@ -577,47 +575,36 @@
                 ghosted: false,
                 highlighted: false,
                 selected: false,
+                edges: false,
                 layer: null,
                 billboard: this._checkBillboard(cfg.billboard),
                 stationary: !!cfg.stationary,
                 hash: ""
             });
 
-            this._modelTransformState = new xeogl.renderer.Transform({
-                getMatrix: function () {
-                    return self.worldMatrix;
-                },
-                getNormalMatrix: function () {
-                    return self.worldNormalMatrix;
-                }
-            });
+            this._drawRenderer = null;
+            this._emphasisFillRenderer = null;
+            this._emphasisEdgesRenderer = null;
+            this._emphasisVerticesRenderer = null;
+            this._pickMeshRenderer = null;
+            this._pickTriangleRenderer = null;
 
-            this._objectId = null; // Renderer object
-            this._loading = cfg.loading !== false;
             this._worldPositions = null;
             this._worldPositionsDirty = true;
-
-            // TODO check in same Scene:
-
-            if (cfg.baseColorMap) {
-                this._baseColorMap = this._checkComponent("xeogl.Texture", cfg.baseColorMap);
-                this._state.baseColorMap = this._baseColorMap ? this._baseColorMap._state : null;
-            }
-
             this._geometry = cfg.geometry ? this._checkComponent("xeogl.Geometry", cfg.geometry) : this.scene.geometry;
+            this._vertexBufs = this._geometry._getVertexBufs();
             this._material = cfg.material ? this._checkComponent("xeogl.Material", cfg.material) : this.scene.material;
             this._ghostMaterial = cfg.ghostMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.ghostMaterial) : this.scene.ghostMaterial;
             this._outlineMaterial = cfg.outlineMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.outlineMaterial) : this.scene.outlineMaterial;
             this._highlightMaterial = cfg.highlightMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.highlightMaterial) : this.scene.highlightMaterial;
             this._selectedMaterial = cfg.selectedMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.selectedMaterial) : this.scene.selectedMaterial;
+            this._edgeMaterial = cfg.edgeMaterial ? this._checkComponent("xeogl.EdgeMaterial", cfg.edgeMaterial) : this.scene.edgeMaterial;
 
-            this._makeHash(); // Mesh is immutable, only make once
             this._compile();
 
-            // xeogl.Mesh overrides xeogl.Object's state properties, (eg. visible, ghosted etc)
-            // and those redefined properties are being set here through the super constructor.
-
             this._super(cfg); // Call xeogl.Object._init()
+
+            this.scene._meshCreated(this);
         },
 
         _checkBillboard: function (value) {
@@ -628,6 +615,18 @@
                 value = "none";
             }
             return value;
+        },
+
+        _compile: function () {
+            this._putRenderers();
+            this._makeHash();
+            this._drawRenderer = xeogl.renderer.DrawRenderer.get(this);
+            this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this);
+            this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this);
+            this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this);
+            this._pickMeshRenderer = xeogl.renderer.PickMeshRenderer.get(this);
+
+            this._renderer.meshListDirty();
         },
 
         _makeHash: function () {
@@ -650,58 +649,163 @@
             this._state.hash = hash.join("");
         },
 
-        _compile: function () {
-            if (this._objectId) { // Support recompile when global scene state changes
-                this._renderer.destroyObject(this._objectId);
-                this._objectId = null;
-            }
-            var result = this._renderer.createObject(this.id,
-                this._material._state,
-                this._ghostMaterial._state,
-                this._outlineMaterial._state,
-                this._highlightMaterial._state,
-                this._selectedMaterial._state,
-                this._geometry._getVertexBufs(),
-                this._geometry._state,
-                this._modelTransformState,
-                this._state);
-            if (this._loading) {
-                this._loading = false;
-                this.fire("loaded", true);
-            }
-            if (result.objectId) {
-                this._objectId = result.objectId;
-            } else if (result.errors) {
-                var errors = result.errors.join("\n");
-                this.error(errors);
-                this.fire("error", errors);
+        _buildMeshAABB: (function () {
+            var math = xeogl.math;
+            var obb = math.OBB3();
+            return function (worldMatrix, aabb) { // TODO: factor out into class member
+                math.transformOBB3(worldMatrix, this._geometry.obb, obb);
+                math.OBB3ToAABB3(obb, aabb);
+            };
+        })(),
+
+        _getSceneHash: function () {
+            return (this.scene.gammaInput ? "gi;" : ";") + (this.scene.gammaOutput ? "go" : "");
+        },
+
+        //--------------------- Rendering ------------------------------------------------------------------------------
+
+        _draw: function (frame) {
+            if (this._drawRenderer || (this._drawRenderer = xeogl.renderer.DrawRenderer.get(this))) {
+                this._drawRenderer.drawMesh(frame, this);
             }
         },
 
-        _updateAABB: function () { // Overrides xeogl.Object._updateAABB
-            if (this._aabbDirty) {
-                var math = xeogl.math;
-                var geometry = this._geometry;
-                if (!this._aabb) {
-                    this._aabb = math.AABB3();
-                }
-                if (!this._obb) {
-                    this._obb = math.OBB3();
-                }
-                math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                math.OBB3ToAABB3(this._obb, this._aabb);
-                this._aabbDirty = false;
+        _drawGhostFill: function (frame) {
+            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
+                this._emphasisFillRenderer.drawMesh(frame, this, 0); // 0 == ghost
             }
         },
 
-        _updateOBB: function () { // Overrides xeogl.Object._updateOBB
-            if (this._obbDirty) {
-                var geometry = this._geometry;
-                if (!this._obb) {
-                    this._obb = xeogl.math.OBB3();
-                }
-                xeogl.math.transformOBB3(this.worldMatrix, geometry.obb, this._obb);
-                this._obbDirty = false;
+        _drawGhostEdges: function (frame) {
+            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
+                this._emphasisEdgesRenderer.drawMesh(frame, this, 0); // 0 == ghost
+            }
+        },
+
+        _drawGhostVertices: function (frame) {
+            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
+                this._emphasisVerticesRenderer.drawMesh(frame, this, 0); // 0 == ghost
+            }
+        },
+
+        _drawHighlightFill: function (frame) {
+            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
+                this._emphasisFillRenderer.drawMesh(frame, this, 1); // 1 == highlight
+            }
+        },
+
+        _drawHighlightEdges: function (frame) {
+            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
+                this._emphasisEdgesRenderer.drawMesh(frame, this, 1); // 1 == highlight
+            }
+        },
+
+        _drawHighlightVertices: function (frame) {
+            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
+                this._emphasisVerticesRenderer.drawMesh(frame, this, 1); // 1 == highlight
+            }
+        },
+
+        _drawSelectedFill: function (frame) {
+            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
+                this._emphasisFillRenderer.drawMesh(frame, this, 2); // 2 == selected
+            }
+        },
+
+        _drawSelectedEdges: function (frame) {
+            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
+                this._emphasisEdgesRenderer.drawMesh(frame, this, 2); // 2 == selected
+            }
+        },
+
+        _drawSelectedVertices: function (frame) {
+            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
+                this._emphasisVerticesRenderer.drawMesh(frame, this, 2); // 2 == selected
+            }
+        },
+
+        _drawEdges: function (frame) {
+            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
+                this._emphasisEdgesRenderer.drawMesh(frame, this, 3); // 3 == edges
+            }
+        },
+
+        _drawShadow: function (frame, light) {
+            if (this._shadowRenderer || (this._shadowRenderer = xeogl.renderer.ShadowRenderer.get(this))) {
+                this._shadowRenderer.drawMesh(frame, this, light);
+            }
+        },
+
+        _drawOutline: function (frame) {
+            if (this._shadowRenderer || (this._outlineRenderer = xeogl.renderer.OutlineRenderer.get(this))) {
+                this._outlineRenderer.drawMesh(frame, this);
+            }
+        },
+
+        _pickMesh: function (frame) {
+            if (this._pickMeshRenderer || (this._pickMeshRenderer = xeogl.renderer.PickMeshRenderer.get(this))) {
+                this._pickMeshRenderer.drawMesh(frame, this);
+            }
+        },
+
+        _pickTriangle: function (frame) {
+            if (this._pickTriangleRenderer || (this._pickTriangleRenderer = xeogl.renderer.PickTriangleRenderer.get(this))) {
+                this._pickTriangleRenderer.drawMesh(frame, this);
+            }
+        },
+
+        _pickVertex: function (frame) {
+            if (this._pickVertexRenderer || (this._pickVertexRenderer = xeogl.renderer.PickVertexRenderer.get(this))) {
+                this._pickVertexRenderer.drawMesh(frame, this);
+            }
+        },
+
+        _getOutlineRenderer: function () {
+            this._outlineRenderer = xeogl.renderer.OutlineRenderer.get(this);
+            if (this._outlineRenderer.errors) {
+                this.errors = (this.errors || []).concat(this._outlineRenderer.errors);
+                this.error(this._outlineRenderer.errors.join("\n"));
+                return false;
+            }
+            return true;
+        },
+
+        _putRenderers: function () {
+            if (this._drawRenderer) {
+                this._drawRenderer.put();
+                this._drawRenderer = null;
+            }
+            if (this._emphasisFillRenderer) {
+                this._emphasisFillRenderer.put();
+                this._emphasisFillRenderer = null;
+            }
+            if (this._emphasisEdgesRenderer) {
+                this._emphasisEdgesRenderer.put();
+                this._emphasisEdgesRenderer = null;
+            }
+            if (this._emphasisVerticesRenderer) {
+                this._emphasisVerticesRenderer.put();
+                this._emphasisVerticesRenderer = null;
+            }
+            if (this._outlineRenderer) {
+                this._outlineRenderer.put();
+                this._outlineRenderer = null;
+            }
+            if (this._shadowRenderer) {
+                this._shadowRenderer.put();
+                this._shadowRenderer = null;
+            }
+            if (this._pickMeshRenderer) {
+                this._pickMeshRenderer.put();
+                this._pickMeshRenderer = null;
+            }
+            if (this._pickTriangleRenderer) {
+                this._pickTriangleRenderer.put();
+                this._pickTriangleRenderer = null;
+            }
+            if (this._pickVertexRenderer) {
+                this._pickVertexRenderer.put();
+                this._pickVertexRenderer = null;
             }
         },
 
@@ -798,6 +902,18 @@
             selectedMaterial: {
                 get: function () {
                     return this._selectedMaterial;
+                }
+            },
+
+            /**
+             Defines surface appearance when edges are shown.
+
+             @property edgeMaterial
+             @type EdgeMaterial
+             */
+            edgeMaterial: {
+                get: function () {
+                    return this._edgeMaterial;
                 }
             },
 
@@ -928,6 +1044,29 @@
                 },
                 get: function () {
                     return this._state.selected;
+                }
+            },
+
+            /**
+             Indicates if edges are shown.
+
+             The edges appearance is configured by {{#crossLink "Mesh/edgeMaterial:property"}}edgeMaterial{{/crossLink}}.
+
+             @property edges
+             @default false
+             @type Boolean
+             */
+            edges: {
+                set: function (edges) {
+                    edges = !!edges;
+                    if (edges === this._state.edges) {
+                        return;
+                    }
+                    this._state.edges = edges;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.edges;
                 }
             },
 
@@ -1209,11 +1348,18 @@
         },
 
         _destroy: function () {
-            this._super();
-            if (this._objectId) {
-                this._renderer.destroyObject(this._objectId);
-                this._objectId = null;
-            }
+            this._super(); // xeogl.Object
+            this._putRenderers();
+            this._renderer.meshListDirty();
+            this.scene._meshDestroyed(this);
         }
     });
+
+    xeogl.Mesh._compareState = function (a, b) {
+        return (a._state.layer - b._state.layer)
+            || (a._drawRenderer.id - b._drawRenderer.id) // Program state
+            || (a._material._state.id - b._material._state.id) // Material state
+            || (a._vertexBufs.id - b._vertexBufs.id)  // SHared vertex bufs
+            || (a._geometry._state.id - b._geometry._state.id); // Geometry state
+    };
 })();

@@ -76,7 +76,7 @@ TODO
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.LambertMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "LambertMaterial",
                 ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([1.0, 1.0, 1.0]),
@@ -256,7 +256,7 @@ TODO
             /**
              Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
-             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
              the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces

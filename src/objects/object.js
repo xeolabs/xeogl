@@ -168,6 +168,7 @@
  * {{#crossLink "Object/highlighted:property"}}highlighted{{/crossLink}}
  * {{#crossLink "Object/ghosted:property"}}ghosted{{/crossLink}}
  * {{#crossLink "Object/selected:property"}}selected{{/crossLink}}
+ * {{#crossLink "Object/edges:property"}}edges{{/crossLink}}
  * {{#crossLink "Object/colorize:property"}}colorize{{/crossLink}}
  * {{#crossLink "Object/opacity:property"}}opacity{{/crossLink}}
  * {{#crossLink "Object/clippable:property"}}clippable{{/crossLink}}
@@ -593,8 +594,8 @@
  @param [cfg.ghosted=false] {Boolean}       Indicates if ghosted.
  @param [cfg.highlighted=false] {Boolean}   Indicates if highlighted.
  @param [cfg.selected=false] {Boolean}      Indicates if selected.
+ @param [cfg.edges=false] {Boolean}         Indicates if edges are emphasized.
  @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
- @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
  @param [cfg.opacity=1.0] {Number}          Opacity factor, multiplies by the rendered fragment alpha.
  @param [cfg.children] {Array(Object)}      Children to add. Children must be in the same {{#crossLink "Scene"}}{{/crossLink}} and will be removed from whatever parents they may already have.
@@ -619,6 +620,8 @@ xeogl.Object = xeogl.Component.extend({
 
         var math = xeogl.math;
 
+        this._guid = cfg.guid;
+
         this._parent = null;
         this._childList = [];
         this._childMap = {};
@@ -626,15 +629,13 @@ xeogl.Object = xeogl.Component.extend({
 
         this._aabb = null;
         this._aabbDirty = true;
-        this._obb = null;
-        this._obbDirty = true;
+        this.scene._aabbDirty = true;
 
         this._scale = math.vec3();
         this._quaternion = math.identityQuaternion();
         this._rotation = math.vec3();
         this._position = math.vec3();
 
-        this._localMatrix = math.identityMat4();
         this._worldMatrix = math.identityMat4();
         this._worldNormalMatrix = math.identityMat4();
 
@@ -642,11 +643,8 @@ xeogl.Object = xeogl.Component.extend({
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
 
-        this._guid = cfg.guid;
-
         if (cfg.matrix) {
             this.matrix = cfg.matrix;
-
         } else {
             this.scale = cfg.scale;
             this.position = cfg.position;
@@ -654,6 +652,11 @@ xeogl.Object = xeogl.Component.extend({
             } else {
                 this.rotation = cfg.rotation;
             }
+        }
+
+        if (cfg.entityType) {
+            this._entityType = cfg.entityType;
+            this.scene._entityTypeAssigned(this, this._entityType); // Must assign type before setting properties
         }
 
         // Properties
@@ -670,15 +673,16 @@ xeogl.Object = xeogl.Component.extend({
         this.castShadow = cfg.castShadow;
         this.receiveShadow = cfg.receiveShadow;
         this.outlined = cfg.outlined;
-        this.layer = cfg.layer;
         this.solid = cfg.solid;
         this.ghosted = cfg.ghosted;
         this.highlighted = cfg.highlighted;
         this.selected = cfg.selected;
+        this.edges = cfg.edges;
+        this.aabbVisible = cfg.aabbVisible;
+
+        this.layer = cfg.layer;
         this.colorize = cfg.colorize;
         this.opacity = cfg.opacity;
-        this.aabbVisible = cfg.aabbVisible;
-        this.obbVisible = cfg.obbVisible;
 
         // Add children, which inherit state from this Object
 
@@ -693,38 +697,17 @@ xeogl.Object = xeogl.Component.extend({
             cfg.parent.addChild(this);
         }
 
-        this._entityType = cfg.entityType;
-        if (this._entityType) {
-            this.scene._entityTypeAssigned(this, this._entityType);
-            if (this._visible) {
-                this.scene._entityVisibilityUpdated(this, true);
-            }
-            if (this._ghosted) {
-                this.scene._entityGhostedUpdated(this, true);
-            }
-            if (this._selected) {
-                this.scene._entitySelectedUpdated(this, true);
-            }
-            if (this._highlighted) {
-                this.scene._entityHighlightedUpdated(this, true);
-            }
-        }
+        this.scene._objectCreated(this);
     },
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Transform management
-    //------------------------------------------------------------------------------------------------------------------
-
-    _setLocalMatrixDirty: function () { // Invalidates Local matrix of the Object and invalidates World matrix of child Objects
+    _setLocalMatrixDirty: function () {
         this._localMatrixDirty = true;
         this._setWorldMatrixDirty();
     },
 
-    _setWorldMatrixDirty: function () { // Invalidates World matrix of the Object and child Objects
+    _setWorldMatrixDirty: function () {
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
-        this._aabbDirty = true;
-        this._obbDirty = true;
         if (this._childList) {
             for (var i = 0, len = this._childList.length; i < len; i++) {
                 this._childList[i]._setWorldMatrixDirty();
@@ -732,27 +715,19 @@ xeogl.Object = xeogl.Component.extend({
         }
     },
 
-    _buildLocalMatrix: function () { // Rebuilds and validates the Object's Local matrix
-        xeogl.math.composeMat4(this._position, this._quaternion, this._scale, this._localMatrix);
-        this._localMatrixDirty = false;
-    },
-
-    _buildWorldMatrix: function () { // Rebuilds and validates Local matrix of the Object, then rebuilds and validates World matrices of the Object and parent Objects
-        if (this._localMatrixDirty) {
-            this._buildLocalMatrix();
-        }
+    _buildWorldMatrix: function () {
+        var localMatrix = this.matrix;
         if (!this._parent) {
-            for (var i = 0, len = this._localMatrix.length; i < len; i++) {
-                this._worldMatrix[i] = this._localMatrix[i];
+            for (var i = 0, len = localMatrix.length; i < len; i++) {
+                this._worldMatrix[i] = localMatrix[i];
             }
         } else {
-            xeogl.math.mulMat4(this._parent.worldMatrix, this._localMatrix, this._worldMatrix);
-            //  xeogl.math.mulMat4(this._localMatrix, this._parent.worldMatrix, this._worldMatrix);
+            xeogl.math.mulMat4(this._parent.worldMatrix, localMatrix, this._worldMatrix);
         }
         this._worldMatrixDirty = false;
     },
 
-    _buildWorldNormalMatrix: function () { // Rebuilds and validates World matrix of the Object, then builds and revalidates World normal matrix of the Object
+    _buildWorldNormalMatrix: function () {
         if (this._worldMatrixDirty) {
             this._buildWorldMatrix();
         }
@@ -764,85 +739,53 @@ xeogl.Object = xeogl.Component.extend({
         this._worldNormalMatrixDirty = false;
     },
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Boundary methods
-    //------------------------------------------------------------------------------------------------------------------
+    _setAABBDirty: (function () {
 
-    _setBoundaryDirty: (function () {
-
-        var notifications = [];
-        var lenNotifications = 0;
-
-        function setParentBoundariesDirty(object) {
-            for (; object; object = object._parent) {
-                if (object._aabbDirty) {
-                    object._aabbDirty = true;
-                    object._obbDirty = true;
-                    notifications[lenNotifications++] = object;
-                }
-            }
-        }
-
-        function setSubtreeBoundariesDirty(object) {
+        function setSubtreeAABBsDirty(object) {
+            object._aabbDirty = true;
+            object.fire("boundary", true);
             if (object._childList) {
                 for (var i = 0, len = object._childList.length; i < len; i++) {
-                    setSubtreeBoundariesDirty(object._childList[i]);
+                    setSubtreeAABBsDirty(object._childList[i]);
                 }
-            }
-            if (object._aabbDirty) {
-                object._aabbDirty = true;
-                object._obbDirty = true;
-                notifications[lenNotifications++] = object;
             }
         }
 
-        return function () { // Invalidates AABB and OBB boundaries of the Object and parent Objects
-            lenNotifications = 0;
-            setSubtreeBoundariesDirty(this);
-            setParentBoundariesDirty(this);
-            for (var i = 0; i < lenNotifications; i++) {
-                notifications[i].fire("boundary");
+        return function () {
+            setSubtreeAABBsDirty(this);
+            if (this.collidable) {
+                for (var object = this; object; object = object._parent) {
+                    object._aabbDirty = true;
+                    object.fire("boundary", true);
+                }
             }
         };
     })(),
 
-
     _updateAABB: function () {
+        this.scene._aabbDirty = true;
         if (!this._aabb) {
             this._aabb = xeogl.math.AABB3();
-            this._aabbDirty = true;
         }
-        if (this._aabbDirty) {
+        if (this._buildMeshAABB) {
+            this._buildMeshAABB(this.worldMatrix, this._aabb); // Geometry
+        } else { // Object | Group | Model
             xeogl.math.collapseAABB3(this._aabb);
+            var object;
             for (var i = 0, len = this._childList.length; i < len; i++) {
-                xeogl.math.expandAABB3(this._aabb, this._childList[i].aabb);
+                object = this._childList[i];
+                if (!object.collidable) {
+                    continue;
+                }
+                xeogl.math.expandAABB3(this._aabb, object.aabb);
             }
             if (!this._aabbCenter) {
                 this._aabbCenter = new Float32Array(3);
             }
             xeogl.math.getAABB3Center(this._aabb, this._aabbCenter);
-            this._aabbDirty = false;
         }
+        this._aabbDirty = false;
     },
-
-    _updateOBB: function () {
-        if (!this._obb) {
-            this._obb = xeogl.math.OBB3();
-            this._obbDirty = true;
-        }
-        if (this._obbDirty) {
-            if (this._childList.length === 1) {
-                this._obb.set(this._childList[0].obb);
-            } else {
-                xeogl.math.AABB3ToOBB3(this.aabb, this._obb);
-            }
-            this._obbDirty = false;
-        }
-    },
-
-    //------------------------------------------------------------------------------------------------------------------
-    // Child management methods
-    //------------------------------------------------------------------------------------------------------------------
 
     /**
      Adds a child.
@@ -858,7 +801,7 @@ xeogl.Object = xeogl.Component.extend({
      {{#crossLink "Object/visible:property"}}{{/crossLink}}, {{#crossLink "Object/culled:property"}}{{/crossLink}}, {{#crossLink "Object/pickable:property"}}{{/crossLink}},
      {{#crossLink "Object/clippable:property"}}{{/crossLink}}, {{#crossLink "Object/castShadow:property"}}{{/crossLink}}, {{#crossLink "Object/receiveShadow:property"}}{{/crossLink}},
      {{#crossLink "Object/outlined:property"}}{{/crossLink}}, {{#crossLink "Object/ghosted:property"}}{{/crossLink}}, {{#crossLink "Object/highlighted:property"}}{{/crossLink}},
-     {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
+     {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/edges:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
      @returns {Object} The child object.
      */
     addChild: function (object, inheritStates) {
@@ -870,6 +813,7 @@ xeogl.Object = xeogl.Component.extend({
                 return;
             }
         } else if (xeogl._isObject(object)) {
+            throw "addChild( * ) not implemented";
             var cfg = object;
             // object = new xeogl.Group(this.scene, cfg);
             if (!object) {
@@ -890,12 +834,12 @@ xeogl.Object = xeogl.Component.extend({
         }
         var id = object.id;
         if (object.scene.id !== this.scene.id) {
-            this.error("Object not in same Scene: " + id);
+            this.error("Object not in same Scene: " + object.id);
             return;
         }
-        delete this.scene.rootObjects[id];
+        delete this.scene.rootObjects[object.id];
         this._childList.push(object);
-        this._childMap[id] = object;
+        this._childMap[object.id] = object;
         this._childIDs = null;
         object._parent = this;
         if (!!inheritStates) {
@@ -904,6 +848,7 @@ xeogl.Object = xeogl.Component.extend({
             object.ghosted = this.ghosted;
             object.highlited = this.highlighted;
             object.selected = this.selected;
+            object.edges = this.edges;
             object.outlined = this.outlined;
             object.clippable = this.clippable;
             object.pickable = this.pickable;
@@ -914,7 +859,7 @@ xeogl.Object = xeogl.Component.extend({
             object.opacity = this.opacity;
         }
         object._setWorldMatrixDirty();
-        object._setBoundaryDirty(); // Propagates up to this as parent
+        object._setAABBDirty();
         return object;
     },
 
@@ -925,17 +870,16 @@ xeogl.Object = xeogl.Component.extend({
      @param {Object} object Child to remove.
      */
     removeChild: function (object) {
-        var id = object.id;
         for (var i = 0, len = this._childList.length; i < len; i++) {
-            if (this._childList[i].id === id) {
+            if (this._childList[i].id === object.id) {
                 object._parent = null;
                 this._childList = this._childList.splice(i, 1);
-                delete this._childMap[id];
+                delete this._childMap[object.id];
                 this._childIDs = null;
                 this.scene.rootObjects[object.id] = object;
                 object._setWorldMatrixDirty();
-                object._setBoundaryDirty();
-                this._setBoundaryDirty();
+                object._setAABBDirty();
+                this._setAABBDirty();
                 return;
             }
         }
@@ -953,12 +897,12 @@ xeogl.Object = xeogl.Component.extend({
             object._parent = null;
             this.scene.rootObjects[object.id] = object;
             object._setWorldMatrixDirty();
-            object._setBoundaryDirty();
+            object._setAABBDirty();
         }
         this._childList = [];
         this._childMap = {};
         this._childIDs = null;
-        this._setBoundaryDirty();
+        this._setAABBDirty();
     },
 
     /**
@@ -981,7 +925,7 @@ xeogl.Object = xeogl.Component.extend({
             xeogl.math.mulQuaternions(this.quaternion, q1, q2);
             this.quaternion = q2;
             this._setLocalMatrixDirty();
-            this._setBoundaryDirty();
+            this._setAABBDirty();
             this._renderer.imageDirty();
             return this;
         };
@@ -1049,7 +993,7 @@ xeogl.Object = xeogl.Component.extend({
     })(),
 
     /**
-     Translates in local by the given increment.
+     Translates along local space vector by the given increment.
 
      @method translate
      @param {Float32Array} axis Normalized local space 3D vector along which to translate.
@@ -1063,7 +1007,7 @@ xeogl.Object = xeogl.Component.extend({
             xeogl.math.mulVec3Scalar(veca, distance, vecb);
             xeogl.math.addVec3(this.position, vecb, this.position);
             this._setLocalMatrixDirty();
-            this._setBoundaryDirty();
+            this._setAABBDirty();
             this._renderer.imageDirty();
             return this;
         };
@@ -1251,7 +1195,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (value) {
                 this._position.set(value || [0, 0, 0]);
                 this._setLocalMatrixDirty();
-                this._setBoundaryDirty();
+                this._setAABBDirty();
                 this._renderer.imageDirty();
             },
             get: function () {
@@ -1271,7 +1215,7 @@ xeogl.Object = xeogl.Component.extend({
                 this._rotation.set(value || [0, 0, 0]);
                 xeogl.math.eulerToQuaternion(this._rotation, "XYZ", this._quaternion);
                 this._setLocalMatrixDirty();
-                this._setBoundaryDirty();
+                this._setAABBDirty();
                 this._renderer.imageDirty();
             },
             get: function () {
@@ -1291,7 +1235,7 @@ xeogl.Object = xeogl.Component.extend({
                 this._quaternion.set(value || [0, 0, 0, 1]);
                 xeogl.math.quaternionToEuler(this._quaternion, "XYZ", this._rotation);
                 this._setLocalMatrixDirty();
-                this._setBoundaryDirty();
+                this._setAABBDirty();
                 this._renderer.imageDirty();
             },
             get: function () {
@@ -1303,14 +1247,14 @@ xeogl.Object = xeogl.Component.extend({
          Local scale.
 
          @property scale
-         @default [0,0,0]
+         @default [1,1,1]
          @type {Float32Array}
          */
         scale: {
             set: function (value) {
                 this._scale.set(value || [1, 1, 1]);
                 this._setLocalMatrixDirty();
-                this._setBoundaryDirty();
+                this._setAABBDirty();
                 this._renderer.imageDirty();
             },
             get: function () {
@@ -1329,19 +1273,26 @@ xeogl.Object = xeogl.Component.extend({
             set: (function () {
                 var identityMat = xeogl.math.identityMat4();
                 return function (value) {
-                    this._localMatrix.set(value || identityMat);
-                    xeogl.math.decomposeMat4(this._localMatrix, this._position, this._quaternion, this._scale);
+                    if (!this.__localMatrix) {
+                        this.__localMatrix = xeogl.math.identityMat4();
+                    }
+                    this.__localMatrix.set(value || identityMat);
+                    xeogl.math.decomposeMat4(this.__localMatrix, this._position, this._quaternion, this._scale);
                     this._localMatrixDirty = false;
                     this._setWorldMatrixDirty();
-                    this._setBoundaryDirty();
+                    this._setAABBDirty();
                     this._renderer.imageDirty();
                 };
             })(),
             get: function () {
                 if (this._localMatrixDirty) {
-                    this._buildLocalMatrix();
+                    if (!this.__localMatrix) {
+                        this.__localMatrix = xeogl.math.identityMat4();
+                    }
+                    xeogl.math.composeMat4(this._position, this._quaternion, this._scale, this.__localMatrix);
+                    this._localMatrixDirty = false;
                 }
-                return this._localMatrix;
+                return this.__localMatrix;
             }
         },
 
@@ -1448,28 +1399,9 @@ xeogl.Object = xeogl.Component.extend({
         aabb: {
             get: function () {
                 if (this._aabbDirty) {
-                    this._updateAABB();  // Could be xeogl.Mesh._updateAABB()
+                    this._updateAABB();
                 }
                 return this._aabb;
-            }
-        },
-
-        /**
-         World-space 3D oriented bounding box (OBB).
-
-         Represented by a 32-element Float32Array containing the eight vertices of the box,
-         where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
-
-         @property obb
-         @final
-         @type {Float32Array}
-         */
-        obb: {
-            get: function () {
-                if (this._obbDirty) {
-                    this._updateOBB(); // Could be xeogl.Mesh._updateAABB()
-                }
-                return this._obb;
             }
         },
 
@@ -1597,6 +1529,26 @@ xeogl.Object = xeogl.Component.extend({
             },
             get: function () {
                 return this._selected;
+            }
+        },
+
+        /**
+         Indicates if edges are emphasized.
+
+         @property edges
+         @default false
+         @type Boolean
+         */
+        edges: {
+            set: function (edges) {
+                edges = !!edges;
+                this._edges = edges;
+                for (var i = 0, len = this._childList.length; i < len; i++) {
+                    this._childList[i].edges = edges;
+                }
+            },
+            get: function () {
+                return this._edges;
             }
         },
 
@@ -1836,37 +1788,6 @@ xeogl.Object = xeogl.Component.extend({
             get: function () {
                 return this._aabbHelper ? this._aabbHelper.visible : false;
             }
-        },
-
-        /**
-         Indicates if the World-space 3D object-aligned bounding box (OBB) is visible.
-
-         @property obbVisible
-         @default false
-         @type {Boolean}
-         */
-        obbVisible: {
-            set: function (show) {
-                if (!show && !this._obbHelper) {
-                    return;
-                }
-                if (!this._obbHelper) {
-                    this._obbHelper = new xeogl.Mesh(this, {
-                        geometry: new xeogl.OBBGeometry(this, {
-                            target: this
-                        }),
-                        material: new xeogl.PhongMaterial(this, {
-                            diffuse: [0.5, 1.0, 0.5],
-                            emissive: [0.5, 1.0, 0.5],
-                            lineWidth: 2
-                        })
-                    });
-                }
-                this._obbHelper.visible = show;
-            },
-            get: function () {
-                return this._obbHelper ? this._obbHelper.visible : false;
-            }
         }
     },
 
@@ -1892,5 +1813,7 @@ xeogl.Object = xeogl.Component.extend({
                 scene._entityHighlightedUpdated(this, false);
             }
         }
+        this.scene._aabbDirty = true;
+        this.scene._objectDestroyed(this);
     }
 });

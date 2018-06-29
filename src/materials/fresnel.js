@@ -66,7 +66,7 @@
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.Fresnel({
+            this._state = new xeogl.renderer.State({
                 edgeColor: xeogl.math.vec3([0, 0, 0]),
                 centerColor: xeogl.math.vec3([1, 1, 1]),
                 edgeBias: 0,

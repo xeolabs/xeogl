@@ -35,43 +35,42 @@
         type: "xeogl.CustomProjection",
 
         _init: function (cfg) {
-
-            this._state = new xeogl.renderer.ProjTransform({
+            this._state = new xeogl.renderer.State({
                 matrix: xeogl.math.mat4()
             });
-
             this.matrix = cfg.matrix;
         },
 
         _props: {
 
             /**
-             * The CustomProjection's projection transform matrix.
-             *
-             * Fires a {{#crossLink "CustomProjection/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Float32Array}
+             The CustomProjection's projection transform matrix.
+
+             Fires a {{#crossLink "CustomProjection/matrix:event"}}{{/crossLink}} event on change.
+
+             @property matrix
+             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             @type {Float32Array}
              */
             matrix: {
-
-                set: function(matrix) {
+                set: function (matrix) {
                     this._state.matrix.set(matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-
                     /**
-                     * Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event matrix
-                     * @param value The property's new value
+                     Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
+
+                     @event matrix
+                     @param value The property's new value
                      */
                     this.fire("far", this._state.matrix);
                 },
-
                 get: function () {
                     return this._state.matrix;
                 }
             }
+        },
+
+        _destroy: function () {
+            this._state.destroy();
         }
     });
 })();

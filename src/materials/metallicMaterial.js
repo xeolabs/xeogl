@@ -309,7 +309,7 @@
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.MetallicMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "MetallicMaterial",
                 baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
@@ -317,14 +317,6 @@
                 roughness: null,
                 specularF0: null,
                 alpha: null,
-                baseColorMap: null,
-                alphaMap: null,
-                metallicMap: null,
-                roughnessMap: null,
-                metallicRoughnessMap: null,
-                emissiveMap: null,
-                occlusionMap: null,
-                normalMap: null,
                 alphaMode: null, // "opaque"
                 alphaCutoff: null,
                 lineWidth: null,
@@ -343,36 +335,28 @@
 
             if (cfg.baseColorMap) {
                 this._baseColorMap = this._checkComponent("xeogl.Texture", cfg.baseColorMap);
-                this._state.baseColorMap = this._baseColorMap ? this._baseColorMap._state : null;
             }
             if (cfg.metallicMap) {
                 this._metallicMap = this._checkComponent("xeogl.Texture", cfg.metallicMap);
-                this._state.metallicMap = this._metallicMap ? this._metallicMap._state : null;
 
             }
             if (cfg.roughnessMap) {
                 this._roughnessMap = this._checkComponent("xeogl.Texture", cfg.roughnessMap);
-                this._state.roughnessMap = this._roughnessMap ? this._roughnessMap._state : null;
             }
             if (cfg.metallicRoughnessMap) {
                 this._metallicRoughnessMap = this._checkComponent("xeogl.Texture", cfg.metallicRoughnessMap);
-                this._state.metallicRoughnessMap = this._metallicRoughnessMap ? this._metallicRoughnessMap._state : null;
             }
             if (cfg.emissiveMap) {
                 this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
-                this._state.emissiveMap = this._emissiveMap ? this._emissiveMap._state : null;
             }
             if (cfg.occlusionMap) {
                 this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
-                this._state.occlusionMap = this._occlusionMap ? this._occlusionMap._state : null;
             }
             if (cfg.alphaMap) {
                 this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
-                this._state.alphaMap = this._alphaMap ? this._alphaMap._state : null;
             }
             if (cfg.normalMap) {
                 this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
-                this._state.normalMap = this._normalMap ? this._normalMap._state : null;
             }
 
             this.alphaMode = cfg.alphaMode;
@@ -388,52 +372,52 @@
         _makeHash: function () {
             var state = this._state;
             var hash = ["/met"];
-            if (state.baseColorMap) {
+            if (this._baseColorMap) {
                 hash.push("/bm");
-                if (state.baseColorMap.hasMatrix) {
+                if (this._baseColorMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
-                hash.push("/" + state.baseColorMap.encoding);
+                hash.push("/" + this._baseColorMap._state.encoding);
             }
-            if (state.metallicMap) {
+            if (this._metallicMap) {
                 hash.push("/mm");
-                if (state.metallicMap.hasMatrix) {
+                if (this._metallicMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.roughnessMap) {
+            if (this._roughnessMap) {
                 hash.push("/rm");
-                if (state.roughnessMap.hasMatrix) {
+                if (this._roughnessMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.metallicRoughnessMap) {
+            if (this._metallicRoughnessMap) {
                 hash.push("/mrm");
-                if (state.metallicRoughnessMap.hasMatrix) {
+                if (this._metallicRoughnessMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.emissiveMap) {
+            if (this._emissiveMap) {
                 hash.push("/em");
-                if (state.emissiveMap.hasMatrix) {
+                if (this._emissiveMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.occlusionMap) {
+            if (this._occlusionMap) {
                 hash.push("/ocm");
-                if (state.occlusionMap.hasMatrix) {
+                if (this._occlusionMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.alphaMap) {
+            if (this._alphaMap) {
                 hash.push("/am");
-                if (state.alphaMap.hasMatrix) {
+                if (this._alphaMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }
-            if (state.normalMap) {
+            if (this._normalMap) {
                 hash.push("/nm");
-                if (state.normalMap.hasMatrix) {
+                if (this._normalMap._state.hasMatrix) {
                     hash.push("/mat");
                 }
             }

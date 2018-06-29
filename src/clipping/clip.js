@@ -22,15 +22,15 @@
  // Create a set of Clip planes in the default Scene
  scene.clips.clips = [
 
-     // Clip plane on negative diagonal
-     new xeogl.Clip({
+ // Clip plane on negative diagonal
+ new xeogl.Clip({
          pos: [1.0, 1.0, 1.0],
          dir: [-1.0, -1.0, -1.0],
          active: true
      }),
 
-     // Clip plane on positive diagonal
-     new xeogl.Clip({
+ // Clip plane on positive diagonal
+ new xeogl.Clip({
          pos: [-1.0, -1.0, -1.0],
          dir: [1.0, 1.0, 1.0],
          active: true
@@ -94,7 +94,7 @@
             this.pos = cfg.pos;
             this.dir = cfg.dir;
 
-            this._renderer.clips.addClip(this._state);
+            this.scene._clipCreated(this);
         },
 
         _props: {
@@ -109,7 +109,7 @@
             active: {
                 set: function (value) {
                     this._state.active = value !== false;
-
+                    this._renderer.imageDirty();
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/active:property"}}{{/crossLink}} property changes.
 
@@ -134,7 +134,6 @@
                 set: function (value) {
                     this._state.pos.set(value || [0, 0, 0]);
                     this._renderer.imageDirty();
-
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/pos:property"}}{{/crossLink}} property changes.
 
@@ -162,7 +161,6 @@
                 set: function (value) {
                     this._state.dir.set(value || [0, 0, -1]);
                     this._renderer.imageDirty();
-
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/dir:property"}}{{/crossLink}} property changes.
 
@@ -171,7 +169,6 @@
                      */
                     this.fire("dir", this._state.dir);
                 },
-
                 get: function () {
                     return this._state.dir;
                 }
@@ -179,7 +176,7 @@
         },
 
         _destroy: function () {
-            this._renderer.clips.removeClip(this._state);
+            this.scene._clipDestroyed(this);
         }
     });
 })();

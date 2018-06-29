@@ -6,11 +6,11 @@
 
     "use strict";
 
-    xeogl.renderer.PickVertexShaderSource = function (mesh) {
+    xeogl.renderer.PickMeshShaderSource = function (mesh) {
         this.vertex = buildVertex(mesh);
         this.fragment = buildFragment(mesh);
     };
-
+    
     function buildVertex(mesh) {
         var scene = mesh.scene;
         var clipping = scene._clipsState.clips.length > 0;
@@ -18,31 +18,54 @@
         var billboard = mesh._state.billboard;
         var stationary = mesh._state.stationary;
         var src = [];
-        src.push("// Surface picking vertex shader");
+        src.push("// mesh picking vertex shader");
         src.push("attribute vec3 position;");
-        src.push("attribute vec4 color;");
         src.push("uniform mat4 modelMatrix;");
         src.push("uniform mat4 viewMatrix;");
+        src.push("uniform mat4 viewNormalMatrix;");
         src.push("uniform mat4 projMatrix;");
-        if (clipping) {
-            src.push("uniform bool clippable;");
-            src.push("varying vec4 vWorldPosition;");
-        }
-        src.push("varying vec4 vColor;");
+        src.push("varying vec4 vViewPosition;");
         if (quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
+        }
+        if (clipping) {
+            src.push("varying vec4 vWorldPosition;");
+        }
+        if (billboard === "spherical" || billboard === "cylindrical") {
+            src.push("void billboard(inout mat4 mat) {");
+            src.push("   mat[0][0] = 1.0;");
+            src.push("   mat[0][1] = 0.0;");
+            src.push("   mat[0][2] = 0.0;");
+            if (billboard === "spherical") {
+                src.push("   mat[1][0] = 0.0;");
+                src.push("   mat[1][1] = 1.0;");
+                src.push("   mat[1][2] = 0.0;");
+            }
+            src.push("   mat[2][0] = 0.0;");
+            src.push("   mat[2][1] = 0.0;");
+            src.push("   mat[2][2] =1.0;");
+            src.push("}");
         }
         src.push("void main(void) {");
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         if (quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
-        src.push("   vec4 worldPosition = modelMatrix * localPosition; ");
-        src.push("   vec4 viewPosition = viewMatrix * worldPosition;");
+        src.push("mat4 viewMatrix2 = viewMatrix;");
+        src.push("mat4 modelMatrix2 = modelMatrix;");
+        if (stationary) {
+            src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
+        }
+        if (billboard === "spherical" || billboard === "cylindrical") {
+            src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
+            src.push("billboard(modelMatrix2);");
+            src.push("billboard(viewMatrix2);");
+        }
+        src.push("   vec4 worldPosition = modelMatrix2 * localPosition;");
+        src.push("   vec4 viewPosition = viewMatrix2 * worldPosition;");
         if (clipping) {
             src.push("   vWorldPosition = worldPosition;");
         }
-        src.push("   vColor = color;");
         src.push("   gl_Position = projMatrix * viewPosition;");
         src.push("}");
         return src;
@@ -53,9 +76,9 @@
         var clipsState = scene._clipsState;
         var clipping = clipsState.clips.length > 0;
         var src = [];
-        src.push("// Surface picking fragment shader");
+        src.push("// mesh picking fragment shader");
         src.push("precision lowp float;");
-        src.push("varying vec4 vColor;");
+        src.push("uniform vec4 pickColor;");
         if (clipping) {
             src.push("uniform bool clippable;");
             src.push("varying vec4 vWorldPosition;");
@@ -77,8 +100,7 @@
             src.push("  if (dist > 0.0) { discard; }");
             src.push("}");
         }
-
-        src.push("   gl_FragColor = vColor;");
+        src.push("   gl_FragColor = pickColor; ");
         src.push("}");
         return src;
     }

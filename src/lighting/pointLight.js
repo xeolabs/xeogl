@@ -13,6 +13,9 @@
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  * PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
+ * {{#crossLink "AmbientLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+ {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "PointLight"}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink "Scene/lights:property"}}Scene#lights{{/crossLink}} for convenient access.
 
  ## Examples
 
@@ -101,7 +104,7 @@
             this._shadowViewMatrixDirty = true;
             this._shadowProjMatrixDirty = true;
 
-            this._state = new xeogl.renderer.Light({
+            this._state = new xeogl.renderer.State({
                 type: "point",
                 pos: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([0.7, 0.7, 0.8]),
@@ -153,7 +156,7 @@
             this.quadraticAttenuation = cfg.quadraticAttenuation;
             this.shadow = cfg.shadow;
 
-            this._renderer.lights.addLight(this._state);
+            this.scene._lightCreated(this);
         },
 
         _props: {
@@ -292,7 +295,7 @@
             if (this._shadowRenderBuf) {
                 this._shadowRenderBuf.destroy();
             }
-            this._renderer.lights.removeLight(this._state);
+            this.scene._lightDestroyed(this);
         }
     });
 

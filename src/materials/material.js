@@ -10,6 +10,7 @@
  * {{#crossLink "LambertMaterial"}}{{/crossLink}} - material for fast, flat-shaded CAD rendering without textures. Use
  this for navigating huge CAD or BIM models interactively. This material gives the best rendering performance and uses the least memory.
  * {{#crossLink "EmphasisMaterial"}}{{/crossLink}} - defines the appearance of Meshes when "ghosted" or "highlighted".
+ * {{#crossLink "EdgeMaterial"}}{{/crossLink}} - defines the appearance of Meshes when edges are emphasized.
  * {{#crossLink "OutlineMaterial"}}{{/crossLink}} - defines the appearance of outlines drawn around Meshes.
 
  A {{#crossLink "Scene"}}Scene{{/crossLink}} is allowed to contain a mixture of these material types.

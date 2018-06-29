@@ -32,7 +32,7 @@
  ````javascript
  var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 1
+        edgeThreshold: 1
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -54,9 +54,9 @@
  });
  ````
 
- Note the **ghostEdgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
+ Note the **edgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
  Mesh. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
- adjacent co-planar triangles) removed for visual clarity. The ````ghostEdgeThreshold```` configuration indicates
+ adjacent co-planar triangles) removed for visual clarity. The ````edgeThreshold```` configuration indicates
  that, for this particular Geometry, an inner edge is one where the angle between the surface normals of adjacent triangles is not
  greater than ````5```` degrees. That's set to ````2```` by default, but we can override it to tweak the effect as needed for particular Geometries.
 
@@ -66,7 +66,7 @@
  ````javascript
  var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 5
+        edgeThreshold: 5
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -100,7 +100,7 @@
  ````javascript
  var model = new xeogl.GLTFModel({
      src: "models/gltf/gearbox_conical/scene.gltf",
-     ghostEdgeThreshold: 10
+     edgeThreshold: 10
  });
 
  model.on("loaded", function() {
@@ -190,7 +190,7 @@
  ````javascript
  var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 5
+        edgeThreshold: 5
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -214,21 +214,18 @@
  @param [cfg] {*} The EmphasisMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this EmphasisMaterial.
-
  @param [cfg.edges=true] {Boolean} Indicates whether or not ghost edges are visible.
  @param [cfg.edgeColor=[0.2,0.2,0.2]] {Array of Number}  RGB color of ghost edges.
  @param [cfg.edgeAlpha=0.5] {Number} Transparency of ghost edges. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
  @param [cfg.edgeWidth=1] {Number}  Width of ghost edges, in pixels.
-
  @param [cfg.vertices=false] {Boolean} Indicates whether or not ghost vertices are visible.
  @param [cfg.vertexColor=[0.4,0.4,0.4]] {Array of Number} Color of ghost vertices.
  @param [cfg.vertexAlpha=0.7] {Number}  Transparency of ghost vertices. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
  @param [cfg.vertexSize=4.0] {Number} Pixel size of ghost vertices.
-
  @param [cfg.fill=true] {Boolean} Indicates whether or not ghost surfaces are filled with color.
  @param [cfg.fillColor=[0.4,0.4,0.4]] {Array of Number} EmphasisMaterial fill color.
  @param [cfg.fillAlpha=0.2] {Number}  Transparency of filled ghost faces. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.preset] {String} Selects a preset EmphasisMaterial configuration - see {{#crossLink "EmphasisMaterial/preset:method"}}EmphasisMaterial#preset(){{/crossLink}}.
  */
 (function () {
@@ -243,7 +240,7 @@
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.EmphasisMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "EmphasisMaterial",
                 edges: null,
                 edgeColor: null,
@@ -255,7 +252,8 @@
                 vertexSize: null,
                 fill: null,
                 fillColor: null,
-                fillAlpha: null
+                fillAlpha: null,
+                backfaces: true
             });
 
             this._preset = "default";
@@ -275,6 +273,7 @@
                 if (cfg.fill !== undefined) this.fill = cfg.fill;
                 if (cfg.fillColor) this.fillColor = cfg.fillColor;
                 if (cfg.fillAlpha !== undefined) this.fillAlpha = cfg.fillAlpha;
+                if (cfg.backfaces !== undefined) this.backfaces = cfg.backfaces;
             } else {
                 this.edges = cfg.edges;
                 this.edgeColor = cfg.edgeColor;
@@ -287,6 +286,7 @@
                 this.fill = cfg.fill;
                 this.fillColor = cfg.fillColor;
                 this.fillAlpha = cfg.fillAlpha;
+                this.backfaces = cfg.backfaces;
             }
         },
 
@@ -551,6 +551,29 @@
                 }
             },
 
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+                set: function (value) {
+                    value = !!value;
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+                    this._state.backfaces = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
 
             /**
              Selects a preset EmphasisMaterial configuration.

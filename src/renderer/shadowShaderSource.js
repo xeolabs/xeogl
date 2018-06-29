@@ -6,30 +6,26 @@
 
     "use strict";
 
-    xeogl.renderer.ShadowShaderSource = function (gl, scene, object) {
-        var cfg = {
-            clipping: scene.clips.clips.length > 0,
-            quantizedGeometry: !!object.geometry.quantized
-        };
-        this.vertex = buildVertex(gl, cfg, scene, object);
-        this.fragment = buildFragment(gl, cfg, scene, object);
+    xeogl.renderer.ShadowShaderSource = function (mesh) {
+        this.vertex = buildVertex(mesh);
+        this.fragment = buildFragment(mesh);
     };
 
-    function hasTextures(object) {
-        if (!object.geometry.uv) {
+    function hasTextures(mesh) {
+        if (!mesh._geometry._state.uv) {
             return false;
         }
-        var material = object.material;
-        return material.alphaMap;
+        var materialState = mesh._material._state;
+        return materialState.alphaMap;
     }
     
-    function buildVertex(gl, cfg, scene, object) {
+    function buildVertex(mesh) {
 
         var i;
         var len;
         var lights = scene.lights.lights;
         var light;
-        var billboard = object.modes.billboard;
+        var billboard = mesh._state.billboard;
 
         var src = [];
 
@@ -49,7 +45,7 @@
             src.push("varying vec4 vWorldPosition;");
         }
 
-        if (object.geometry.primitiveName === "points") {
+        if (mesh._geometry._state.primitiveName === "points") {
             src.push("uniform float pointSize;");
         }
 
@@ -81,7 +77,7 @@
         src.push("mat4 viewMatrix2 = viewMatrix;");
         src.push("mat4 modelMatrix2 = modelMatrix;");
 
-        if (object.modes.stationary) {
+        if (mesh._state.stationary) {
             src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
         }
 
@@ -111,7 +107,7 @@
             src.push("vWorldPosition = worldPosition;");
         }
 
-        if (object.geometry.primitiveName === "points") {
+        if (mesh._geometry._state.primitiveName === "points") {
             src.push("gl_PointSize = pointSize;");
         }
 
@@ -122,7 +118,7 @@
         return src;
     }
 
-    function buildFragment(gl, cfg, scene, object) {
+    function buildFragment(mesh) {
 
         var i;
         var src = [];
@@ -165,7 +161,7 @@
             }
             src.push("}");
         }
-        if (object.geometry.primitiveName === "points") {
+        if (mesh._geometry._state.primitiveName === "points") {
             src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
             src.push("float r = dot(cxy, cxy);");
             src.push("if (r > 1.0) {");

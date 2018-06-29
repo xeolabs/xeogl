@@ -31,6 +31,7 @@
  @param [cfg.ghosted=false] {Boolean}       Indicates if rendered as ghosted.
  @param [cfg.highlighted=false] {Boolean}   Indicates if rendered as highlighted.
  @param [cfg.selected=false] {Boolean}      Indicates if rendered as selected.
+ @param [cfg.edges=false] {Boolean}         Indicates if edges are emphasized.
  @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
  @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
  @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.

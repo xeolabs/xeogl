@@ -38,12 +38,13 @@
         type: "xeogl.ReflectionMap",
         _init: function (cfg) {
             this._super(cfg);
-            this._renderer.lights.addReflectionMap(this._state);
+            this.scene._lightsState.addReflectionMap(this._state);
+            this.scene._reflectionMapCreated(this);
         },
 
         _destroy: function () {
-            this._renderer.lights.removeReflectionMap(this._state);
-            this._super(cfg);
+            this._super();
+            this.scene._reflectionMapDestroyed(this);
         }
     });
 })();

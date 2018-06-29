@@ -12,7 +12,9 @@
  * SpotLights have {{#crossLink "SpotLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "SpotLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "SpotLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
  * A SpotLight can also have a {{#crossLink "Shadow"}}{{/crossLink}} component, to configure it to cast a shadow.
-
+ * {{#crossLink "AmbientLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+ {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "PointLight"}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink "Scene/lights:property"}}Scene#lights{{/crossLink}} for convenient access.
  ## Examples
 
  TODO
@@ -24,31 +26,31 @@
 
  ````javascript
  new xeogl.AmbientLight({
-         color: [0.8, 0.8, 0.8],
-         intensity: 0.5
-     });
+     color: [0.8, 0.8, 0.8],
+     intensity: 0.5
+ });
 
  new xeogl.SpotLight({
-         pos: [0, 100, 100],
-         dir: [0, -1, 0],
-         color: [0.5, 0.7, 0.5],
-         intensity: 1
-         constantAttenuation: 0,
-         linearAttenuation: 0,
-         quadraticAttenuation: 0,
-         space: "view"
-     });
+     pos: [0, 100, 100],
+     dir: [0, -1, 0],
+     color: [0.5, 0.7, 0.5],
+     intensity: 1
+     constantAttenuation: 0,
+     linearAttenuation: 0,
+     quadraticAttenuation: 0,
+     space: "view"
+ });
 
  new xeogl.PointLight({
-         pos: [0, 100, 100],
-         dir: [0, -1, 0],
-         color: [0.5, 0.7, 0.5],
-         intensity: 1
-         constantAttenuation: 0,
-         linearAttenuation: 0,
-         quadraticAttenuation: 0,
-         space: "view"
-     });
+     pos: [0, 100, 100],
+     dir: [0, -1, 0],
+     color: [0.5, 0.7, 0.5],
+     intensity: 1
+     constantAttenuation: 0,
+     linearAttenuation: 0,
+     quadraticAttenuation: 0,
+     space: "view"
+ });
 
  // Create box mesh
  new xeogl.Mesh({
@@ -100,7 +102,7 @@
             this._shadowViewMatrixDirty = true;
             this._shadowProjMatrixDirty = true;
 
-            this._state = new xeogl.renderer.Light({
+            this._state = new xeogl.renderer.State({
                 type: "spot",
                 pos: math.vec3([1.0, 1.0, 1.0]),
                 dir: math.vec3([0.0, -1.0, 0.0]),
@@ -154,8 +156,7 @@
             this.linearAttenuation = cfg.linearAttenuation;
             this.quadraticAttenuation = cfg.quadraticAttenuation;
             this.shadow = cfg.shadow;
-
-            this._renderer.lights.addLight(this._state);
+            this.scene._lightCreated(this);
         },
 
         _props: {
@@ -315,7 +316,7 @@
             if (this._shadowRenderBuf) {
                 this._shadowRenderBuf.destroy();
             }
-            this._renderer.lights.removeLight(this._state);
+            this.scene._lightDestroyed(this);
         }
     });
 
