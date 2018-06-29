@@ -83,8 +83,8 @@
         var cameraState = camera._state;
         this._program.bind();
         frame.useProgram++;
-        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || camera.project._state.matrix);
         if (clipsState.clips.length > 0) {
             var clips = clipsState.clips;
             var clipUniforms;

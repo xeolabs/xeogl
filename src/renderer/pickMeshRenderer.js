@@ -6,7 +6,7 @@
 
     "use strict";
 
-    xeogl.renderer.PickMeshRenderer = function (hash,  mesh) {
+    xeogl.renderer.PickMeshRenderer = function (hash, mesh) {
         var gl = mesh.scene.canvas.gl;
         this._hash = hash;
         this._shaderSource = new xeogl.renderer.PickMeshShaderSource(mesh);
@@ -41,7 +41,7 @@
 
     var renderers = {};
 
-    xeogl.renderer.PickMeshRenderer.get = function ( mesh) {
+    xeogl.renderer.PickMeshRenderer.get = function (mesh) {
         var hash = [
             mesh.scene.canvas.canvas.id,
             mesh.scene._clipsState.getHash(),
@@ -81,8 +81,8 @@
         this._lastMaterialId = null;
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
-        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || camera.project._state.matrix);
         if (clipsState.clips.length > 0) {
             var clipUniforms;
             var uClipActive;

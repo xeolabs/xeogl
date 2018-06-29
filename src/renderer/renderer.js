@@ -761,8 +761,8 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
                 pickProjMatrix = pickFrustumMatrix;
 
-                canvasX = Math.floor(canvas.clientWidth * 0.5);
-                canvasY = Math.floor(canvas.clientHeight * 0.5);
+                canvasX = canvas.clientWidth * 0.5;
+                canvasY = canvas.clientHeight * 0.5;
             }
 
             pickBuf = pickBuf || new xeogl.renderer.RenderBuffer(canvas, gl);
@@ -798,6 +798,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
 
         frame.reset();
         frame.backfaces = true;
+        frame.frontface = true; // "ccw"
         frame.pickViewMatrix = pickViewMatrix;
         frame.pickProjMatrix = pickProjMatrix;
         frame.pickMeshIndex = 1;
@@ -834,7 +835,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
             mesh._pickMesh(frame);
         }
 
-        var pix = pickBuf.read(canvasX, canvasY);
+        var pix = pickBuf.read(Math.round(canvasX), Math.round(canvasY));
         var pickedMeshIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
 
         pickedMeshIndex--;
