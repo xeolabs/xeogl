@@ -2,26 +2,29 @@
 
     "use strict";
 
-    /**
+    /**s
 
      Helper widget that indicates the World coordinate axis.
+
+     The helper works by tracking updates on a xeogl.Camera and orienting a gnomon accordingly.
 
      @class AxisHelper
      @constructor
      @param cfg {*} Configuration
+     @param cfg.camera {xeogl.Camera} A {{#crossLink "xeogl.Camera"}}{{/crossLink}} to observe.
      @param [cfg.size] {Int16Array} Pixel dimensions of helper's canvas, [250, 250] by default.
      */
     xeogl.AxisHelper = function (cfg) {
 
-        var lookat = cfg.lookat;
+        var camera = cfg.camera;
 
-        if (!lookat) {
-            throw "Param expected: lookat";
+        if (!camera) {
+            throw "Param expected: camera";
         }
 
         var size = cfg.size || [250, 250];
 
-        var canvas = lookat.scene.canvas;
+        var canvas = camera.scene.canvas;
 
         // Create canvas for this helper
 
@@ -78,22 +81,22 @@
             })
         ];
 
-        // Rotate helper in synch with target lookat
+        // Rotate helper in synch with target camera
 
-        var helperLookat = scene.camera;
+        var helperCamera = scene.camera;
 
-        lookat.on("matrix",            function () {
+        camera.on("matrix", function () {
 
-                var eye = lookat.eye;
-                var look = lookat.look;
-                var up = lookat.up;
+            var eye = camera.eye;
+            var look = camera.look;
+            var up = camera.up;
 
-                var eyeLook = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, [])), 22);
+            var eyeLook = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, [])), 22);
 
-                helperLookat.look = [0, 0, 0];
-                helperLookat.eye = eyeLook;
-                helperLookat.up = up;
-            });
+            helperCamera.look = [0, 0, 0];
+            helperCamera.eye = eyeLook;
+            helperCamera.up = up;
+        });
 
         // ----------------- Components that are shared among more than one mesh ---------------
 
@@ -155,7 +158,7 @@
         });
 
 
-        var zAxisMaterial  = new xeogl.PhongMaterial(scene, { // Blue by convention
+        var zAxisMaterial = new xeogl.PhongMaterial(scene, { // Blue by convention
             diffuse: [0.3, 0.3, 1],
             ambient: [0.0, 0.0, 0.0],
             specular: [.6, .6, .3],
@@ -187,6 +190,7 @@
             // Sphere behind gnomon
 
             new xeogl.Mesh(scene, {
+                lights: new xeogl.Lights(scene),
                 geometry: new xeogl.SphereGeometry(scene, {
                     radius: 9.0,
                     heightSegments: 60,
@@ -196,7 +200,7 @@
                     diffuse: [0.0, 0.0, 0.0],
                     emissive: [0.1, 0.1, 0.1],
                     ambient: [0.1, 0.1, 0.2],
-                    specular: [0,0,0],
+                    specular: [0, 0, 0],
                     alpha: 0.4,
                     alphaMode: "blend",
                     frontface: "cw"
@@ -226,13 +230,8 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [0, 5, 0],
-                    parent: new xeogl.Rotate(scene, {
-                        xyz: [0, 0, 1],
-                        angle: 270
-                    })
-                })
+                position: [0, 5, 0],
+                rotation: [0, 0, 90]
             }),
 
             new xeogl.Mesh(scene, {  // Shaft
@@ -241,13 +240,8 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [0, 2, 0],
-                    parent: new xeogl.Rotate(scene, {
-                        xyz: [0, 0, 1],
-                        angle: 270
-                    })
-                })
+                position: [0, 2, 0],
+                rotation: [0, 0, 90]
             }),
 
             new xeogl.Mesh(scene, {  // Label
@@ -256,9 +250,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [7, 0, 0]
-                }),
+                position: [-7, 0, 0],
                 billboard: "spherical"
             }),
 
@@ -270,9 +262,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [0, 5, 0]
-                })
+                position: [0, 5, 0]
             }),
 
             new xeogl.Mesh(scene, {  // Shaft
@@ -281,9 +271,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [0, 2, 0]
-                })
+                position: [0, 2, 0]
             }),
 
             new xeogl.Mesh(scene, {  // Label
@@ -292,9 +280,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [0, 7, 0]
-                }),
+                position: [0, 7, 0],
                 billboard: "spherical"
             }),
 
@@ -306,13 +292,8 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [0, 5, 0],
-                    parent: new xeogl.Rotate(scene, {
-                        xyz: [1, 0, 0],
-                        angle: 90
-                    })
-                })
+                position: [0, 5, 0],
+                rotation: [90, 0, 0]
             }),
 
             new xeogl.Mesh(scene, {  // Shaft
@@ -321,13 +302,8 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [0, 2, 0],
-                    parent: new xeogl.Rotate(scene, {
-                        xyz: [1, 0, 0],
-                        angle: 90
-                    })
-                })
+                position: [0, 2, 0],
+                rotation: [90, 0, 0]
             }),
 
             new xeogl.Mesh(scene, {  // Label
@@ -336,9 +312,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                transform: new xeogl.Translate(scene, {
-                    xyz: [0, 0, 7]
-                }),
+                position: [0, 0, 7],
                 billboard: "spherical"
             })
         ];
@@ -351,83 +325,6 @@
             for (var i = 0; i < meshes.length; i++) {
                 meshes[i].visible = visible;
             }
-        };
-
-        this.setLocale = function (locale) {
-
-        };
-
-        this.show = function () {
-            this.setVisible(true);
-        };
-
-        this.hide = function () {
-            this.setVisible(false);
-        };
-
-        this.setVisible = function (visible) {
-            style.visibility = visible ? "visible" : "hidden";
-        };
-
-        this.getVisible = function () {
-            return cube.visible;
-        };
-
-        /**
-         * Sets the canvas size of the ViewCube.
-         * @param {Number} size Canvas size.
-         */
-        this.setSize = function (value) {
-            size = value || 200;
-            cubeCanvas.width = size;
-            cubeCanvas.height = size;
-            cubeCanvas.style.width = size + "px";
-            cubeCanvas.style.height = size + "px";
-        };
-
-        /**
-         * Gets the canvas size of the ViewCube.
-         * @returns {Number} Canvas size.
-         */
-        this.getSize = function () {
-            return size;
-        };
-
-        // /**
-        //  * Sets the top margin. Overrides the bottom margin if previously set.
-        //  * @param {Number} top Top margin in pixels.
-        //  */
-        // this.setTop = function(top) {
-        //     style.top = top + "px";
-        //     style.bottom = null;
-        // };
-        //
-        // /**
-        //  * Sets the bottom margin. Overrides the top margin if previously set.
-        //  * @param {Number} bottom Bottom margin in pixels.
-        //  */
-        // this.setBottom = function(bottom) {
-        //     style.top = null;
-        //     style.bottom = bottom + "px";
-        // };
-        //
-        // /**
-        //  * Sets the left margin. Overrides the right margin if previously set.
-        //  * @param {Number} left Left margin in pixels.
-        //  */
-        // this.setLeft = function(left) {
-        //     style.left = left + "px";
-        //     style.right = null;
-        // };
-        //
-        // /**
-        //  * Sets the right margin. Overrides the left margin if previously set.
-        //  * @param {Number} right Right margin in pixels.
-        //  */
-        // this.setRight = function(right) {
-        //     style.left = null;
-        //     style.right = right + "px";
-        // };
-        //
+        }
     };
 })();

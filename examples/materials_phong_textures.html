@@ -59,6 +59,7 @@
                 shininess: 20,
                 alpha: 1.0,
                 specularMap: {
+                    type: "xeogl.Texture",
                     src: "textures/diffuse/crossGridColorMap.jpg",
                     minFilter: "linearMipmapLinear",
                     magFiler: "linear",
@@ -82,6 +83,7 @@
                 specular: [1, 1, 1],
                 alpha: 1.0,
                 emissiveMap: {
+                    type: "xeogl.Texture",
                     src: "textures/emissive/emissiveMap.jpg",
                     minFilter: "linearMipmapLinear",
                     magFiler: "linear",
@@ -102,6 +104,7 @@
                 diffuse: [0.1, 0.1, 0.4],
                 alpha: 1.0,
                 alphaMap: {
+                    type: "xeogl.Texture",
                     src: "textures/diffuse/crossGridColorMap.jpg",
                     minFilter: "linearMipmapLinear",
                     magFiler: "linear",
@@ -118,11 +121,13 @@
             material: {
                 type: "xeogl.PhongMaterial",
                 diffuseMap: { // Just to help show the normal map
+                    type: "xeogl.Texture",
                     src: "textures/diffuse/chesterfieldDiffuseMap.png",
                     scale: [5, 5],
                     encoding: "sRGB"
                 },
                 normalMap: {
+                    type: "xeogl.Texture",
                     src: "textures/normal/chesterfieldNormalMap.png",
                     scale: [5, 5]
                 }
@@ -133,6 +138,7 @@
                 type: "xeogl.PhongMaterial",
                 id: "textureScaleMaterial",
                 diffuseMap: {
+                    type: "xeogl.Texture",
                     src: "textures/diffuse/crossGridColorMap.jpg",
                     encoding: "sRGB"
                 }

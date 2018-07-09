@@ -14,33 +14,34 @@ function materialGallery(menuId, cfg) {
     // Lighting applied to our spheres
     //-----------------------------------------------------------------------------------------------------
 
-    var dirLights = [
-        new xeogl.DirLight({
-            id: "keyLight",
-            dir: [0.8, -0.6, -0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "view"
-        }),
 
-        new xeogl.DirLight({
-            id: "fillLight",
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
-            intensity: 1.0,
-            space: "view"
-        }),
+    skybox.scene.clearLights();
 
-        new xeogl.DirLight({
-            id: "rimLight",
-            dir: [0.2, -0.8, 0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    new xeogl.DirLight({
+        id: "keyLight",
+        dir: [0.8, -0.6, -0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "view"
+    });
 
-    var lightMap = new xeogl.CubeTexture({
+    new xeogl.DirLight({
+        id: "fillLight",
+        dir: [-0.8, -0.4, -0.4],
+        color: [0.4, 0.4, 0.5],
+        intensity: 1.0,
+        space: "view"
+    });
+
+    new xeogl.DirLight({
+        id: "rimLight",
+        dir: [0.2, -0.8, 0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "view"
+    });
+
+    new xeogl.LightMap({
         src: [
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
@@ -51,7 +52,7 @@ function materialGallery(menuId, cfg) {
         ]
     });
 
-    var reflectionMap = new xeogl.CubeTexture({
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
@@ -62,11 +63,6 @@ function materialGallery(menuId, cfg) {
         ]
     });
 
-    var lights = new xeogl.Lights({
-        lights: dirLights,
-        //  lightMap: lightMap,
-        reflectionMap: reflectionMap
-    });
 
     //-----------------------------------------------------------------------------------------------------
     // Meshes showing our materials, with labels on wires
@@ -124,7 +120,6 @@ function materialGallery(menuId, cfg) {
 
         new xeogl.Mesh({
             id: id,
-            lights: lights,
             geometry: geometryCfg,
             material: materialCfg,
             position: [x, 0, 0]

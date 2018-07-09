@@ -21,7 +21,10 @@
 <script>
 
     var gearbox = new xeogl.GLTFModel({
-        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf",
+        combineGeometry: false,
+        quantizeGeometry: false
+
     });
 
     var scene = gearbox.scene;
@@ -124,7 +127,7 @@
 
                     hit.mesh.colorize = [0.0, 1.0, 0.0, 1.0];
 
-                 //   rayHelper.setHighlighted(true);
+                    //   rayHelper.setHighlighted(true);
 
                 }
 
@@ -135,7 +138,7 @@
                     lastEntity = null;
                 }
 
-               // rayHelper.setHighlighted(false);
+                // rayHelper.setHighlighted(false);
             }
         });
     });

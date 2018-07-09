@@ -9,9 +9,6 @@
 
     <script src="js/skyboxes/skybox.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
-    <script src="libs/gl-matrix-min.js"></script>
-    <script src="js/zspace/zSpaceEffect_complete.js"></script>
-    <script src="js/zspace/zSpaceStylusControl.js"></script>
     <script src="js/utils/materialGallery.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
@@ -42,6 +39,7 @@
     });
 
     var roughnessMap = new xeogl.Texture({
+        type: "xeogl.Texture",
         src: "textures/roughness/goldRoughness.jpg"
     });
 
@@ -61,8 +59,15 @@
                 type: "xeogl.MetallicMaterial",
                 roughness: 1.0,
                 metallic: 1.0,
-                baseColorMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg", encoding: "sRGB"},
-                roughnessMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_REFL_1K.jpg"}
+                baseColorMap: {
+                    type: "xeogl.Texture",
+                    src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg",
+                    encoding: "sRGB"
+                },
+                roughnessMap: {
+                    type: "xeogl.Texture",
+                    src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_REFL_1K.jpg"
+                }
             }
         },
         "Iron": {
@@ -150,13 +155,16 @@
                 metallic: 0.5,
                 roughness: 0.5,
                 baseColorMap: {
+                    type: "xeogl.Texture",
                     src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg",
                     encoding: "sRGB"
                 },
                 normalMap: {
+                    type: "xeogl.Texture",
                     src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_NRM_1K.jpg"
                 },
                 roughnessMap: {
+                    type: "xeogl.Texture",
                     src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_GLOSS_1K.jpg"
                 }
             }

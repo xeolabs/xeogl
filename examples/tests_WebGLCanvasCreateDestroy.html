@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        canvas {
+            width: 150px;
+            height: 150px;
+            border: 2px solid white;
+        }
+    </style>
+
+<body>
+
+<div id="info">
+    <h1>robustness test: repeated WebGL canvas creation and deletion</h1>
+
+    <p><a href="javascript:startTest()">START</a></p>
+    <p><a href="javascript:stopTest()">STOP</a></p>
+    <pre id="log">
+    </pre>
+    <div id="myDiv0"></div>
+    <div id="myDiv1"></div>
+    <div id="myDiv2"></div>
+    <div id="myDiv3"></div>
+    <div id="myDiv4"></div>
+    <div id="myDiv5"></div>
+</div>
+<br>
+
+<script>
+
+    const NUM_CONTEXTS = 6;
+    const INTERVAL = 500;
+    var contexts = [];
+    var interval;
+    var count = 0;
+    var i = 0;
+    var j = 0;
+    var testRuns = 0;
+
+    function createContext(idx) {
+        console.log("Creating canvas and WebGLContext in DIV " + idx);
+        var canvas = document.getElementById("myCanvas" + idx);
+        if (!canvas) {
+            var div = document.getElementById("myDiv" + idx);
+            canvas = document.createElement('canvas');
+            canvas.id = "myCanvas" + idx;
+            div.appendChild(canvas);
+        }
+        var context = {
+            canvas: canvas,
+            gl: canvas.getContext("webgl")
+        };
+        contexts[idx] = context;
+    }
+
+    function destroyContext(idx) {
+        console.log("Destroying context and canvas " + idx);
+        var context = contexts[idx];
+        if (context) {
+            context.canvas.parentNode.removeChild(context.canvas);
+            contexts[idx] = null;
+        }
+    }
+
+    function startTest() {
+        console.log("Starting test with " + NUM_CONTEXTS + " contexts");
+        console.log("New context every  " + (INTERVAL / 1000) + " seconds");
+        i = 0;
+        j = 0;
+        interval = window.setInterval(function () {
+            console.log("-------------------------------------------------------------");
+            console.log("Iteration #" + count);
+            if (count > 4) {
+                destroyContext(j);
+            }
+            createContext(i);
+            if (++i >= NUM_CONTEXTS) {
+                i = 0;
+            }
+            if (++j >= NUM_CONTEXTS) {
+                j = 0;
+            }
+            count++;
+        }, INTERVAL);
+        testRuns++;
+    }
+
+    function stopTest() {
+        window.clearInterval(interval);
+    }
+
+</script>
+</body>
+</html>
