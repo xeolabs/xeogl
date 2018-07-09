@@ -61,10 +61,16 @@
 
     xeogl.renderer.PickVertexRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
-            this._program.destroy();
+            if (this._program) {
+                this._program.destroy();
+            }
             delete renderers[this._hash];
             xeogl.stats.memory.programs--;
         }
+    };
+
+    xeogl.renderer.PickVertexRenderer.prototype.webglContextRestored = function () {
+        this._program = null;
     };
 
     xeogl.renderer.PickVertexRenderer.prototype._bindProgram = function (frame) {

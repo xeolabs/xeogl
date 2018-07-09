@@ -107,10 +107,6 @@
 
             this._matrixDirty = false;
 
-            // Handle WebGL context restore
-
-            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._webglContextRestored, this);
-
             // Transform
 
             this.translate = cfg.translate;
@@ -269,6 +265,7 @@
                     var image = new Image();
                     image.onload = function () {
                         image = xeogl.renderer.ensureImageSizePowerOfTwo(image);
+                        //self._image = image; // For faster WebGL context restore - memory inefficient?
                         self._state.texture.setImage(image, self._state);
                         self._state.texture.setProps(self._state); // Generate mipmaps
                         self.scene.loading--;
@@ -481,7 +478,6 @@
         },
 
         _destroy: function () {
-            this.scene.canvas.off(this._webglContextRestored);
             if (this._state.texture) {
                 this._state.texture.destroy();
             }

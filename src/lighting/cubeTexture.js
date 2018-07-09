@@ -32,7 +32,7 @@
             var gl = this.scene.canvas.gl;
 
             this._state = new xeogl.renderer.State({
-                texture : new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP),
+                texture: new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP),
                 flipY: this._checkFlipY(cfg.minFilter),
                 encoding: this._checkEncoding(cfg.encoding),
                 minFilter: "linearMipmapLinear",
@@ -44,8 +44,6 @@
 
             this._src = cfg.src;
             this._images = [];
-
-            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._webglContextRestored, this);
 
             this._loadSrc(cfg.src);
 
@@ -66,8 +64,16 @@
         },
 
         _webglContextRestored: function () {
+            var gl = this.scene.canvas.gl;
             this._state.texture = null;
-            // TODO
+            // if (this._images.length > 0) {
+            //     this._state.texture = new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
+            //     this._state.texture.setImage(this._images, this._state);
+            //     this._state.texture.setProps(this._state);
+            // } else
+            if (this._src) {
+                this._loadSrc(this._src);
+            }
         },
 
         _loadSrc: function (src) {
@@ -89,7 +95,6 @@
                         self._images[index] = _image;
                         numLoaded++;
                         if (numLoaded === 6) {
-                            self._imageDirty = true;
                             var texture = self._state.texture;
                             if (!texture) {
                                 texture = new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
@@ -115,7 +120,6 @@
         },
 
         _destroy: function () {
-            this.scene.canvas.off(this._webglContextRestored);
             if (this._state.texture) {
                 this._state.texture.destroy();
             }

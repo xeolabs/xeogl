@@ -6,37 +6,14 @@
 
     "use strict";
 
+    // No ID, because there is exactly one PickMeshRenderer per scene
+
     xeogl.renderer.PickMeshRenderer = function (hash, mesh) {
-        var gl = mesh.scene.canvas.gl;
         this._hash = hash;
         this._shaderSource = new xeogl.renderer.PickMeshShaderSource(mesh);
-        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
         this._scene = mesh.scene;
         this._useCount = 0;
-        if (this._program.errors) {
-            this.errors = this._program.errors;
-            return;
-        }
-        var program = this._program;
-        this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-        this._uModelMatrix = program.getLocation("modelMatrix");
-        this._uViewMatrix = program.getLocation("viewMatrix");
-        this._uProjMatrix = program.getLocation("projMatrix");
-        this._uClips = [];
-        var clips = mesh.scene._clipsState.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
-            this._uClips.push({
-                active: program.getLocation("clipActive" + i),
-                pos: program.getLocation("clipPos" + i),
-                dir: program.getLocation("clipDir" + i)
-            });
-        }
-        this._aPosition = program.getAttribute("position");
-        this._uClippable = program.getLocation("clippable");
-        this._uPickColor = program.getLocation("pickColor");
-        this._lastMaterialId = null;
-        this._lastVertexBufsId = null;
-        this._lastGeometryId = null;
+        this._allocate(mesh);
     };
 
     var renderers = {};
@@ -64,51 +41,22 @@
 
     xeogl.renderer.PickMeshRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
-            this._program.destroy();
+            if (this._program) {
+                this._program.destroy();
+            }
             delete renderers[this._hash];
             xeogl.stats.memory.programs--;
         }
     };
 
-    xeogl.renderer.PickMeshRenderer.prototype._bindProgram = function (frame) {
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var clipsState = scene._clipsState;
-        var camera = scene.camera;
-        var cameraState = camera._state;
-        this._program.bind();
-        frame.useProgram++;
-        this._lastMaterialId = null;
-        this._lastVertexBufsId = null;
-        this._lastGeometryId = null;
-        gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || cameraState.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || camera.project._state.matrix);
-        if (clipsState.clips.length > 0) {
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
-            for (var i = 0, len = this._uClips.length; i < len; i++) {
-                clipUniforms = this._uClips[i];
-                uClipActive = clipUniforms.active;
-                clip = clipsState.clips[i];
-                if (uClipActive) {
-                    gl.uniform1i(uClipActive, clip.active);
-                }
-                uClipPos = clipUniforms.pos;
-                if (uClipPos) {
-                    gl.uniform3fv(clipUniforms.pos, clip.pos);
-                }
-                uClipDir = clipUniforms.dir;
-                if (uClipDir) {
-                    gl.uniform3fv(clipUniforms.dir, clip.dir);
-                }
-            }
-        }
+    xeogl.renderer.PickMeshRenderer.prototype.webglContextRestored = function () {
+        this._program = null;
     };
 
     xeogl.renderer.PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
+        if (!this._program) {
+            this._allocate(mesh);
+        }
         var scene = this._scene;
         var gl = scene.canvas.gl;
         var materialState = mesh._material._state;
@@ -207,4 +155,75 @@
             }
         }
     };
+
+    xeogl.renderer.PickMeshRenderer.prototype._allocate = function (mesh) {
+        var gl = mesh.scene.canvas.gl;
+        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
+        if (this._program.errors) {
+            this.errors = this._program.errors;
+            return;
+        }
+        var program = this._program;
+        this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
+        this._uModelMatrix = program.getLocation("modelMatrix");
+        this._uViewMatrix = program.getLocation("viewMatrix");
+        this._uProjMatrix = program.getLocation("projMatrix");
+        this._uClips = [];
+        var clips = mesh.scene._clipsState.clips;
+        for (var i = 0, len = clips.length; i < len; i++) {
+            this._uClips.push({
+                active: program.getLocation("clipActive" + i),
+                pos: program.getLocation("clipPos" + i),
+                dir: program.getLocation("clipDir" + i)
+            });
+        }
+        this._aPosition = program.getAttribute("position");
+        this._uClippable = program.getLocation("clippable");
+        this._uPickColor = program.getLocation("pickColor");
+        this._lastMaterialId = null;
+        this._lastVertexBufsId = null;
+        this._lastGeometryId = null;
+    };
+
+    xeogl.renderer.PickMeshRenderer.prototype._bindProgram = function (frame) {
+        if (!this._program) {
+            this._allocate(mesh);
+        }
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
+        var camera = scene.camera;
+        var cameraState = camera._state;
+        this._program.bind();
+        frame.useProgram++;
+        this._lastMaterialId = null;
+        this._lastVertexBufsId = null;
+        this._lastGeometryId = null;
+        gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || camera.project._state.matrix);
+        if (clipsState.clips.length > 0) {
+            var clipUniforms;
+            var uClipActive;
+            var clip;
+            var uClipPos;
+            var uClipDir;
+            for (var i = 0, len = this._uClips.length; i < len; i++) {
+                clipUniforms = this._uClips[i];
+                uClipActive = clipUniforms.active;
+                clip = clipsState.clips[i];
+                if (uClipActive) {
+                    gl.uniform1i(uClipActive, clip.active);
+                }
+                uClipPos = clipUniforms.pos;
+                if (uClipPos) {
+                    gl.uniform3fv(clipUniforms.pos, clip.pos);
+                }
+                uClipDir = clipUniforms.dir;
+                if (uClipDir) {
+                    gl.uniform3fv(clipUniforms.dir, clip.dir);
+                }
+            }
+        }
+    };
+
 })();

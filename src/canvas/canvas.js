@@ -246,33 +246,55 @@
 
             // Get WebGL context
 
+            if (cfg.simulateWebGLContextLost) {
+                if (window.WebGLDebugUtils) {
+                    this.canvas = WebGLDebugUtils.makeLostContextSimulatingCanvas(this.canvas);
+                } else {
+                    this.error("To simulate context loss, please include WebGLDebugUtils");
+                }
+            }
+
             this._initWebGL(cfg);
 
             // Bind context loss and recovery handlers
 
             var self = this;
 
-            this.canvas.addEventListener("webglcontextlost", this._webglcontextlostListener = function () {
+            this.canvas.addEventListener("webglcontextlost", this._webglcontextlostListener = function (event) {
+
+                    console.time("webglcontextrestored");
+
+                    self.scene._webglContextLost();
 
                     /**
                      * Fired whenever the WebGL context has been lost
-                     * @event webglContextLost
+                     * @event webglcontextlost
                      */
-                    self.fire("webglContextLost");
+                    self.fire("webglcontextlost");
+
+
+                    event.preventDefault();
                 },
                 false);
 
-            this.canvas.addEventListener("webglcontextrestored", this._webglcontextrestoredListener = function () {
+            this.canvas.addEventListener("webglcontextrestored", this._webglcontextrestoredListener = function (event) {
+
                     self._initWebGL();
+
                     if (self.gl) {
+
+                        self.scene._webglContextRestored(self.gl);
 
                         /**
                          * Fired whenever the WebGL context has been restored again after having previously being lost
                          * @event webglContextRestored
                          * @param value The WebGL context object
                          */
-                        self.fire("webglContextRestored", self.gl);
+                        self.fire("webglcontextrestored", self.gl);
+                        event.preventDefault();
                     }
+
+                    console.timeEnd("webglcontextrestored");
                 },
                 false);
 
@@ -591,6 +613,15 @@
          */
         readPixels: function (pixels, colors, size, opaqueOnly) {
             return this.scene._renderer.readPixels(pixels, colors, size, opaqueOnly);
+        },
+
+        /**
+         * Simulates lost WebGL context.
+         */
+        loseWebGLContext: function () {
+            if (this.canvas.loseContext) {
+                this.canvas.loseContext();
+            }
         },
 
         _props: {

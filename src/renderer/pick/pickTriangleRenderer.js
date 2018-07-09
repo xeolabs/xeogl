@@ -7,33 +7,11 @@
     "use strict";
 
     xeogl.renderer.PickTriangleRenderer = function (hash, mesh) {
-        var gl = mesh.scene.canvas.gl;
         this._hash = hash;
-        this._shaderSource = new xeogl.renderer.PickTriangleShaderSource(mesh);
-        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
         this._scene = mesh.scene;
         this._useCount = 0;
-        if (this._program.errors) {
-            this.errors = this._program.errors;
-            return;
-        }
-        var program = this._program;
-        this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-        this._uModelMatrix = program.getLocation("modelMatrix");
-        this._uViewMatrix = program.getLocation("viewMatrix");
-        this._uProjMatrix = program.getLocation("projMatrix");
-        this._uClips = [];
-        var clips = mesh.scene._clipsState.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
-            this._uClips.push({
-                active: program.getLocation("clipActive" + i),
-                pos: program.getLocation("clipPos" + i),
-                dir: program.getLocation("clipDir" + i)
-            });
-        }
-        this._aPosition = program.getAttribute("position");
-        this._aColor = program.getAttribute("color");
-        this._uClippable = program.getLocation("clippable");
+        this._shaderSource = new xeogl.renderer.PickTriangleShaderSource(mesh);
+        this._allocate(mesh);
     };
 
     var renderers = {};
@@ -61,13 +39,22 @@
 
     xeogl.renderer.PickTriangleRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
-            this._program.destroy();
+            if (this._program) {
+                this._program.destroy();
+            }
             delete renderers[this._hash];
             xeogl.stats.memory.programs--;
         }
     };
 
+    xeogl.renderer.PickTriangleRenderer.prototype.webglContextRestored = function () {
+        this._program = null;
+    };
+
     xeogl.renderer.PickTriangleRenderer.prototype.drawMesh = function (frame, mesh) {
+        if (!this._program) {
+            this._allocate(mesh);
+        }
         var scene = this._scene;
         var gl = scene.canvas.gl;
         var clipsState = scene._clipsState;
@@ -140,6 +127,33 @@
         gl.enableVertexAttribArray(this._aColor.location);
         gl.vertexAttribPointer(this._aColor.location, pickColorsBuf.itemSize, pickColorsBuf.itemType, true, 0, 0); // Normalize
         gl.drawArrays(geometryState.primitive, 0, positionsBuf.numItems / 3);
+    };
+
+    xeogl.renderer.PickTriangleRenderer.prototype._allocate = function (mesh) {
+        var gl = mesh.scene.canvas.gl;
+        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
+        this._useCount = 0;
+        if (this._program.errors) {
+            this.errors = this._program.errors;
+            return;
+        }
+        var program = this._program;
+        this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
+        this._uModelMatrix = program.getLocation("modelMatrix");
+        this._uViewMatrix = program.getLocation("viewMatrix");
+        this._uProjMatrix = program.getLocation("projMatrix");
+        this._uClips = [];
+        var clips = mesh.scene._clipsState.clips;
+        for (var i = 0, len = clips.length; i < len; i++) {
+            this._uClips.push({
+                active: program.getLocation("clipActive" + i),
+                pos: program.getLocation("clipPos" + i),
+                dir: program.getLocation("clipDir" + i)
+            });
+        }
+        this._aPosition = program.getAttribute("position");
+        this._aColor = program.getAttribute("color");
+        this._uClippable = program.getLocation("clippable");
     };
 })();
 

@@ -96,6 +96,10 @@
         }
     };
 
+    xeogl.renderer.ShadowRenderer.prototype.webglContextRestored = function () {
+        this._program = null;
+    };
+
     xeogl.renderer.ShadowRenderer.prototype.drawMesh = function (frame, mesh, light) {
         var scene = this._scene;
         var gl = scene.canvas.gl;

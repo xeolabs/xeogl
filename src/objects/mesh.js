@@ -4,17 +4,17 @@
  ## Overview
 
  * A Mesh represents a WebGL draw call.
- * Each Mesh has five components: {{#crossLink "Geometry"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}},
- {{#crossLink "EmphasisMaterial"}}{{/crossLink}} for ghosting, an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} for highlighting,
- and an {{#crossLink "OutlineMaterial"}}{{/crossLink}} for outlining.
- * By default, Meshes in the same Scene share the same "global" flyweight instances of those components among themselves. The default
+ * Each Mesh has six components: {{#crossLink "Geometry"}}{{/crossLink}} for shape, {{#crossLink "Material"}}{{/crossLink}}
+ for normal rendered appearance, three {{#crossLink "EmphasisMaterial"}}EmphasisMaterials{{/crossLink}} for ghosted, highlighted and selected effects,
+ and {{#crossLink "EdgeMaterial"}}{{/crossLink}} for rendering emphasised edges.
+ * By default, Meshes in the same Scene share the same global scene flyweight instances of those components among themselves. The default
  component instances are provided by the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
- {{#crossLink "Scene/material:property"}}{{/crossLink}}, {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}, {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}},
- {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} properties, respectively.
+ {{#crossLink "Scene/material:property"}}{{/crossLink}}, {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}, {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}},
+ {{#crossLink "Scene/selectedMaterial:property"}}{{/crossLink}} and {{#crossLink "Scene/edgeMaterial:property"}}{{/crossLink}} properties.
  * A Mesh with all defaults is a white unit-sized box centered at the World-space origin.
  * Customize your Meshes by attaching your own instances of those component types, to override the defaults as needed.
  * For best performance, reuse as many of the same component instances among your Meshes as possible.
- * Use {{#crossLink "Object"}}Objects{{/crossLink}} to organize Meshes into hierarchies, if required.
+ * Use {{#crossLink "Group"}}Group{{/crossLink}} components to organize Meshes into hierarchies, if required.
 
  This page covers functionality specific to the Mesh component, while {{#crossLink "Object"}}{{/crossLink}} covers generic
  functionality inherited from the base class.
@@ -120,8 +120,8 @@
 
  ### Geometry
 
- A Mesh has a {{#crossLink "Geometry"}}{{/crossLink}} which describes its shape. When we don't provide it with a
- Geometry, it will automatically get its {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/geometry:property"}}{{/crossLink}} by default.
+ A Mesh has a {{#crossLink "Geometry"}}{{/crossLink}} which describes its shape. When we don't provide a Geometry,
+ a Mesh will automatically get its {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/geometry:property"}}{{/crossLink}} by default.
 
  Creating a Mesh with its own Geometry:
 
@@ -129,12 +129,6 @@
  var mesh = new xeogl.Mesh({
      geometry: new xeogl.TeapotGeometry()
  });
- ````
-
- Dynamically replacing the Geometry:
-
- ````javascript
- mesh.geometry = new xeogl.CylinderGeometry();
  ````
 
  Getting geometry arrays:
@@ -178,24 +172,12 @@
  });
  ````
 
- Dynamically replacing the {{#crossLink "MetallicMaterial"}}{{/crossLink}} with a {{#crossLink "SpecularMaterial"}}{{/crossLink}}:
-
- ````javascript
- mesh.material = new xeogl.SpecularMaterial({
-     diffuse: [1.0, 1.0, 1.0],
-     specular: [1.0, 1.0, 1.0],
-     glossiness: 1.0,
-     emissive: [0.0, 0.0, 0.0]
-     alpha: 1.0
- })
- ````
-
- Animating the {{#crossLink "SpecularMaterial"}}{{/crossLink}}'s diffuse color - making the Mesh rapidly pulse red:
+ Animating the {{#crossLink "MetallicMaterial"}}{{/crossLink}}'s diffuse color - making the Mesh rapidly pulse red:
 
  ````javascript
  mesh.scene.on("tick", function(e) {
     var t = e.time - e.startTime; // Millisecs
-    mesh.material.diffuse = [0.5 + Math.sin(t * 0.01), 0.0, 0.0]; // RGB
+    mesh.material.baseColor = [0.5 + Math.sin(t * 0.01), 0.0, 0.0]; // RGB
  });
  ````
 
@@ -203,7 +185,7 @@
 
  A Mesh can be positioned within the World-space coordinate system.
 
- TODO
+ See {{#crossLink "Object"}}{{/crossLink}}.
 
  ### Ghosting
 
@@ -211,7 +193,7 @@
  {{#crossLink "Mesh/ghostMaterial:property"}}{{/crossLink}} property holds the {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
  that controls its appearance while ghosted.
 
- When we don't provide it with a EmphasisMaterial, it will automatically get the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
+ When we don't provide it with a EmphasisMaterial, the Mesh will automatically get its Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
  by default.
 
  In the example below, we'll create a ghosted Mesh with its own EmphasisMaterial for ghosted appearance:
@@ -243,7 +225,7 @@
 
  #### Examples
 
- * [Ghosted teapot](../../examples/#effects_ghost)
+ * [Ghosted teapot](../../examples/#effects_demo_hoverToGhost)
 
  ### Highlighting
 
@@ -274,7 +256,7 @@
 
  #### Examples
 
- * [Ghost and highlight effects](../../examples/#effects_demo_gearbox)
+ * [Ghost and highlight effects](../../examples/#effects_demo_hoverToHighlight)
 
  ### Selecting
 
@@ -308,6 +290,34 @@
  * [Ghost and select effects](../../examples/#effects_demo_gearbox)
 
 
+ ### Edges
+
+ Emphasise a Mesh's edges by setting its {{#crossLink "Mesh/edges:property"}}{{/crossLink}} property true. The Mesh's
+ {{#crossLink "Mesh/edgeMaterial:property"}}{{/crossLink}} property holds the {{#crossLink "EdgeMaterial"}}{{/crossLink}}
+ that controls the appearance of the edges while they are emphasized.
+
+ When we don't provide it with an EdgeMaterial, the Mesh will automatically get its Scene's {{#crossLink "Scene/edgeMaterial:property"}}{{/crossLink}}
+ by default.
+
+ In the example below, we'll create a edges Mesh with its own EdgeMaterial for edges appearance:
+
+ <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/EdgeMaterial/teapot.png"></img></a>
+
+ ````javascript
+ var mesh = new xeogl.Mesh({
+    geometry: new xeogl.TeapotGeometry(),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    }),
+    edgeMaterial: new xeogl.EdgeMaterial({
+        edgeColor: [0.2, 1.0, 0.2],
+        edgeAlpha: 1.0,
+        edgeWidth: 2
+    }),
+    edges: true
+ });
+ ````
+ 
  ### Outlining
 
  Outline a Mesh by setting its {{#crossLink "Mesh/outlined:property"}}{{/crossLink}} property true. The Mesh's
@@ -627,6 +637,27 @@
             this._pickMeshRenderer = xeogl.renderer.PickMeshRenderer.get(this);
 
             this._renderer.meshListDirty();
+        },
+
+        _webglContextRestored: function() {
+            if (this._drawRenderer) {
+                this._drawRenderer.webglContextRestored();
+            }
+            if (this._emphasisFillRenderer) {
+                this._emphasisFillRenderer.webglContextRestored();
+            }
+            if (this._emphasisEdgesRenderer) {
+                this._emphasisEdgesRenderer.webglContextRestored();
+            }
+            if (this._emphasisVerticesRenderer) {
+                this._emphasisVerticesRenderer.webglContextRestored();
+            }
+            if (this._pickMeshRenderer) {
+                this._pickMeshRenderer.webglContextRestored();
+            }
+            if (this._pickTriangleRenderer) {
+                this._pickMeshRenderer.webglContextRestored();
+            }
         },
 
         _makeHash: function () {

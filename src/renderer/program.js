@@ -9,70 +9,58 @@
     var ids = new xeogl.utils.Map({});
 
     xeogl.renderer.Program = function (gl, shaderSource) {
-
         this.id = ids.addItem({});
-        this.gl = gl;
+        this.source = shaderSource;
+        this.init(gl);
+    };
 
+    xeogl.renderer.Program.prototype.init = function (gl) {
+        this.gl = gl;
         this.allocated = false;
         this.compiled = false;
         this.linked = false;
         this.validated = false;
         this.errors = null;
-
         this.uniforms = {};
         this.samplers = {};
         this.attributes = {};
-
-        this._vertexShader = new xeogl.renderer.Shader(gl, gl.VERTEX_SHADER, joinSansComments(shaderSource.vertex));
-        this._fragmentShader = new xeogl.renderer.Shader(gl, gl.FRAGMENT_SHADER, joinSansComments(shaderSource.fragment));
-
+        this._vertexShader = new xeogl.renderer.Shader(gl, gl.VERTEX_SHADER, joinSansComments(this.source.vertex));
+        this._fragmentShader = new xeogl.renderer.Shader(gl, gl.FRAGMENT_SHADER, joinSansComments(this.source.fragment));
         if (!this._vertexShader.allocated) {
             this.errors = ["Vertex shader failed to allocate"].concat(this._vertexShader.errors);
             return;
         }
-
         if (!this._fragmentShader.allocated) {
             this.errors = ["Fragment shader failed to allocate"].concat(this._fragmentShader.errors);
             return;
         }
-
         this.allocated = true;
-
         if (!this._vertexShader.compiled) {
             this.errors = ["Vertex shader failed to compile"].concat(this._vertexShader.errors);
             return;
         }
-
         if (!this._fragmentShader.compiled) {
             this.errors = ["Fragment shader failed to compile"].concat(this._fragmentShader.errors);
             return;
         }
-
         this.compiled = true;
-
         var a;
         var i;
         var u;
         var uName;
         var location;
-
         this.handle = gl.createProgram();
-
         if (!this.handle) {
             this.errors = ["Failed to allocate program"];
             return;
         }
-
         gl.attachShader(this.handle, this._vertexShader.handle);
         gl.attachShader(this.handle, this._fragmentShader.handle);
         gl.linkProgram(this.handle);
-
         this.linked = gl.getProgramParameter(this.handle, gl.LINK_STATUS);
-
         // HACK: Disable validation temporarily: https://github.com/xeolabs/xeogl/issues/5
         // Perhaps we should defer validation until render-time, when the program has values set for all inputs?
         this.validated = true;
-
         if (!this.linked || !this.validated) {
             this.errors = [];
             this.errors.push("");
@@ -83,7 +71,6 @@
             this.errors = this.errors.concat(shaderSource.fragment);
             return;
         }
-
         var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
         for (i = 0; i < numUniforms; ++i) {
             u = gl.getActiveUniform(this.handle, i);
@@ -100,7 +87,6 @@
                 }
             }
         }
-
         var numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
         for (i = 0; i < numAttribs; i++) {
             a = gl.getActiveAttrib(this.handle, i);
@@ -109,7 +95,6 @@
                 this.attributes[a.name] = new xeogl.renderer.Attribute(gl, location);
             }
         }
-
         this.allocated = true;
     };
 

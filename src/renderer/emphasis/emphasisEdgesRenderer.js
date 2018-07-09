@@ -9,10 +9,15 @@
     var ids = new xeogl.utils.Map({});
 
     xeogl.renderer.EmphasisEdgesRenderer = function (hash, mesh) {
-        this._init(hash, mesh);
+        this.id = ids.addItem({});
+        this._hash = hash;
+        this._scene = mesh.scene;
+        this._useCount = 0;
+        this._shaderSource = new xeogl.renderer.EmphasisEdgesShaderSource(mesh);
+        this._allocate(mesh);
     };
 
-    var ghostEdgesRenderers = {};
+    var renderers = {};
 
     xeogl.renderer.EmphasisEdgesRenderer.get = function (mesh) {
         var hash = [
@@ -22,10 +27,10 @@
             mesh._geometry._state.quantized ? "cp" : "",
             mesh._state.hash
         ].join(";");
-        var renderer = ghostEdgesRenderers[hash];
+        var renderer = renderers[hash];
         if (!renderer) {
             renderer = new xeogl.renderer.EmphasisEdgesRenderer(hash, mesh);
-            ghostEdgesRenderers[hash] = renderer;
+            renderers[hash] = renderer;
             xeogl.stats.memory.programs++;
         }
         renderer._useCount++;
@@ -35,91 +40,22 @@
     xeogl.renderer.EmphasisEdgesRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
-            this._program.destroy();
-            delete ghostEdgesRenderers[this._hash];
+            if (this._program) {
+                this._program.destroy();
+            }
+            delete renderers[this._hash];
             xeogl.stats.memory.programs--;
         }
     };
 
-    xeogl.renderer.EmphasisEdgesRenderer.prototype._init = function (hash, mesh) {
-        var gl = mesh.scene.canvas.gl;
-        var clipsState = mesh.scene._clipsState;
-        this.id = ids.addItem({});
-        this._hash = hash;
-        this._shaderSource = new xeogl.renderer.EmphasisEdgesShaderSource(mesh);
-        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = mesh.scene;
-        this._useCount = 0;
-        if (this._program.errors) {
-            this.errors = this._program.errors;
-            return;
-        }
-        var program = this._program;
-        this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-        this._uModelMatrix = program.getLocation("modelMatrix");
-        this._uViewMatrix = program.getLocation("viewMatrix");
-        this._uProjMatrix = program.getLocation("projMatrix");
-        this._uClips = [];
-        for (var i = 0, len = clipsState.clips.length; i < len; i++) {
-            this._uClips.push({
-                active: program.getLocation("clipActive" + i),
-                pos: program.getLocation("clipPos" + i),
-                dir: program.getLocation("clipDir" + i)
-            });
-        }
-        this._uEdgeColor = program.getLocation("edgeColor");
-        this._aPosition = program.getAttribute("position");
-        this._uClippable = program.getLocation("clippable");
-        this._uGammaFactor = program.getLocation("gammaFactor");
-        this._lastMaterialId = null;
-        this._lastVertexBufsId = null;
-        this._lastGeometryId = null;
-    };
-
-    xeogl.renderer.EmphasisEdgesRenderer.prototype._bindProgram = function (frame) {
-        var program = this._program;
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var clipsState = scene._clipsState;
-        var camera = scene.camera;
-        var cameraState = camera._state;
-        program.bind();
-        frame.useProgram++;
-        this._lastMaterialId = null;
-        this._lastVertexBufsId = null;
-        this._lastGeometryId = null;
-        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
-        if (clipsState.clips.length > 0) {
-            var clips = clipsState.clips;
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
-            for (var i = 0, len = this._uClips.length; i < len; i++) {
-                clipUniforms = this._uClips[i];
-                uClipActive = clipUniforms.active;
-                clip = clips[i];
-                if (uClipActive) {
-                    gl.uniform1i(uClipActive, clip.active);
-                }
-                uClipPos = clipUniforms.pos;
-                if (uClipPos) {
-                    gl.uniform3fv(clipUniforms.pos, clip.pos);
-                }
-                uClipDir = clipUniforms.dir;
-                if (uClipDir) {
-                    gl.uniform3fv(clipUniforms.dir, clip.dir);
-                }
-            }
-        }
-        if (this._uGammaFactor) {
-            gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
-        }
+    xeogl.renderer.EmphasisEdgesRenderer.prototype.webglContextRestored = function () {
+        this._program = null;
     };
 
     xeogl.renderer.EmphasisEdgesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
+        if (!this._program) {
+            this._allocate(mesh);
+        }
         var scene = this._scene;
         var gl = scene.canvas.gl;
         var materialState;
@@ -209,4 +145,78 @@
             frame.drawElements++;
         }
     };
+
+    xeogl.renderer.EmphasisEdgesRenderer.prototype._allocate = function (mesh) {
+        var gl = mesh.scene.canvas.gl;
+        var clipsState = mesh.scene._clipsState;
+        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
+        if (this._program.errors) {
+            this.errors = this._program.errors;
+            return;
+        }
+        var program = this._program;
+        this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
+        this._uModelMatrix = program.getLocation("modelMatrix");
+        this._uViewMatrix = program.getLocation("viewMatrix");
+        this._uProjMatrix = program.getLocation("projMatrix");
+        this._uClips = [];
+        for (var i = 0, len = clipsState.clips.length; i < len; i++) {
+            this._uClips.push({
+                active: program.getLocation("clipActive" + i),
+                pos: program.getLocation("clipPos" + i),
+                dir: program.getLocation("clipDir" + i)
+            });
+        }
+        this._uEdgeColor = program.getLocation("edgeColor");
+        this._aPosition = program.getAttribute("position");
+        this._uClippable = program.getLocation("clippable");
+        this._uGammaFactor = program.getLocation("gammaFactor");
+        this._lastMaterialId = null;
+        this._lastVertexBufsId = null;
+        this._lastGeometryId = null;
+    };
+
+    xeogl.renderer.EmphasisEdgesRenderer.prototype._bindProgram = function (frame) {
+        var program = this._program;
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var clipsState = scene._clipsState;
+        var camera = scene.camera;
+        var cameraState = camera._state;
+        program.bind();
+        frame.useProgram++;
+        this._lastMaterialId = null;
+        this._lastVertexBufsId = null;
+        this._lastGeometryId = null;
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
+        if (clipsState.clips.length > 0) {
+            var clips = clipsState.clips;
+            var clipUniforms;
+            var uClipActive;
+            var clip;
+            var uClipPos;
+            var uClipDir;
+            for (var i = 0, len = this._uClips.length; i < len; i++) {
+                clipUniforms = this._uClips[i];
+                uClipActive = clipUniforms.active;
+                clip = clips[i];
+                if (uClipActive) {
+                    gl.uniform1i(uClipActive, clip.active);
+                }
+                uClipPos = clipUniforms.pos;
+                if (uClipPos) {
+                    gl.uniform3fv(clipUniforms.pos, clip.pos);
+                }
+                uClipDir = clipUniforms.dir;
+                if (uClipDir) {
+                    gl.uniform3fv(clipUniforms.dir, clip.dir);
+                }
+            }
+        }
+        if (this._uGammaFactor) {
+            gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
+        }
+    };
+
 })();

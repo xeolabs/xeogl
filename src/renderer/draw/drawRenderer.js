@@ -9,10 +9,16 @@
     var ids = new xeogl.utils.Map({});
 
     xeogl.renderer.DrawRenderer = function (hash, mesh) {
-        this._init(hash, mesh);
+        this.id = ids.addItem({});
+        this._hash = hash;
+        this._scene = mesh.scene;
+        this._useCount = 0;
+        this._shaderSource = new xeogl.renderer.DrawShaderSource(mesh);
+        this._allocate(mesh);
     };
 
     var drawRenderers = {};
+
 
     xeogl.renderer.DrawRenderer.get = function (mesh) {
         var scene = mesh.scene;
@@ -42,409 +48,22 @@
     xeogl.renderer.DrawRenderer.prototype.put = function () {
         if (--this._useCount === 0) {
             ids.removeItem(this.id);
-            this._program.destroy();
+            if (this._program) {
+                this._program.destroy();
+            }
             delete drawRenderers[this._hash];
             xeogl.stats.memory.programs--;
         }
     };
 
-    xeogl.renderer.DrawRenderer.prototype._init = function (hash, mesh) {
-        var gl = mesh.scene.canvas.gl;
-        var material = mesh._material;
-        var lightsState = mesh.scene._lightsState;
-        var clipsState = mesh.scene._clipsState;
-        var materialState = mesh._material._state;
-        this.id = ids.addItem({});
-        this._hash = hash;
-        this._shaderSource = new xeogl.renderer.DrawShaderSource(mesh);
-        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
-        this._scene = mesh.scene;
-        this._useCount = 0;
-        if (this._program.errors) {
-            this.errors = this._program.errors;
-            return;
-        }
-        var program = this._program;
-        this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-        this._uUVDecodeMatrix = program.getLocation("uvDecodeMatrix");
-        this._uModelMatrix = program.getLocation("modelMatrix");
-        this._uModelNormalMatrix = program.getLocation("modelNormalMatrix");
-        this._uViewMatrix = program.getLocation("viewMatrix");
-        this._uViewNormalMatrix = program.getLocation("viewNormalMatrix");
-        this._uProjMatrix = program.getLocation("projMatrix");
-        this._uGammaFactor = program.getLocation("gammaFactor");
-        this._uLightAmbient = [];
-        this._uLightColor = [];
-        this._uLightDir = [];
-        this._uLightPos = [];
-        this._uLightAttenuation = [];
-        this._uShadowViewMatrix = [];
-        this._uShadowProjMatrix = [];
-
-        var lights = lightsState.lights;
-        var light;
-
-        for (var i = 0, len = lights.length; i < len; i++) {
-            light = lights[i];
-            switch (light.type) {
-
-                case "ambient":
-                    this._uLightAmbient[i] = program.getLocation("lightAmbient");
-                    break;
-
-                case "dir":
-                    this._uLightColor[i] = program.getLocation("lightColor" + i);
-                    this._uLightPos[i] = null;
-                    this._uLightDir[i] = program.getLocation("lightDir" + i);
-                    break;
-
-                case "point":
-                    this._uLightColor[i] = program.getLocation("lightColor" + i);
-                    this._uLightPos[i] = program.getLocation("lightPos" + i);
-                    this._uLightDir[i] = null;
-                    this._uLightAttenuation[i] = program.getLocation("lightAttenuation" + i);
-                    break;
-
-                case "spot":
-                    this._uLightColor[i] = program.getLocation("lightColor" + i);
-                    this._uLightPos[i] = program.getLocation("lightPos" + i);
-                    this._uLightDir[i] = program.getLocation("lightDir" + i);
-                    this._uLightAttenuation[i] = program.getLocation("lightAttenuation" + i);
-                    break;
-            }
-
-            if (light.shadow) {
-                this._uShadowViewMatrix[i] = program.getLocation("shadowViewMatrix" + i);
-                this._uShadowProjMatrix[i] = program.getLocation("shadowProjMatrix" + i);
-            }
-        }
-
-        if (lightsState.lightMaps.length > 0) {
-            this._uLightMap = "lightMap";
-        }
-
-        if (lightsState.reflectionMaps.length > 0) {
-            this._uReflectionMap = "reflectionMap";
-        }
-
-        this._uClips = [];
-        var clips = clipsState.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
-            this._uClips.push({
-                active: program.getLocation("clipActive" + i),
-                pos: program.getLocation("clipPos" + i),
-                dir: program.getLocation("clipDir" + i)
-            });
-        }
-
-        this._uPointSize = program.getLocation("pointSize");
-
-        switch (materialState.type) {
-            case "LambertMaterial":
-                this._uMaterialColor = program.getLocation("materialColor");
-                this._uMaterialEmissive = program.getLocation("materialEmissive");
-                this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-                break;
-
-            case "PhongMaterial":
-                this._uMaterialAmbient = program.getLocation("materialAmbient");
-                this._uMaterialDiffuse = program.getLocation("materialDiffuse");
-                this._uMaterialSpecular = program.getLocation("materialSpecular");
-                this._uMaterialEmissive = program.getLocation("materialEmissive");
-                this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-                this._uMaterialShininess = program.getLocation("materialShininess");
-                if (material._ambientMap) {
-                    this._uMaterialAmbientMap = "ambientMap";
-                    this._uMaterialAmbientMapMatrix = program.getLocation("ambientMapMatrix");
-                }
-                if (material._diffuseMap) {
-                    this._uDiffuseMap = "diffuseMap";
-                    this._uDiffuseMapMatrix = program.getLocation("diffuseMapMatrix");
-                }
-                if (material._specularMap) {
-                    this._uSpecularMap = "specularMap";
-                    this._uSpecularMapMatrix = program.getLocation("specularMapMatrix");
-                }
-                if (material._emissiveMap) {
-                    this._uEmissiveMap = "emissiveMap";
-                    this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
-                }
-                if (material._alphaMap) {
-                    this._uAlphaMap = "alphaMap";
-                    this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
-                }
-                if (material._reflectivityMap) {
-                    this._uReflectivityMap = "reflectivityMap";
-                    this._uReflectivityMapMatrix = program.getLocation("reflectivityMapMatrix");
-                }
-                if (material._normalMap) {
-                    this._uNormalMap = "normalMap";
-                    this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
-                }
-                if (material._occlusionMap) {
-                    this._uOcclusionMap = "occlusionMap";
-                    this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
-                }
-                if (material._diffuseFresnel) {
-                    this._uDiffuseFresnelEdgeBias = program.getLocation("diffuseFresnelEdgeBias");
-                    this._uDiffuseFresnelCenterBias = program.getLocation("diffuseFresnelCenterBias");
-                    this._uDiffuseFresnelEdgeColor = program.getLocation("diffuseFresnelEdgeColor");
-                    this._uDiffuseFresnelCenterColor = program.getLocation("diffuseFresnelCenterColor");
-                    this._uDiffuseFresnelPower = program.getLocation("diffuseFresnelPower");
-                }
-                if (material._specularFresnel) {
-                    this._uSpecularFresnelEdgeBias = program.getLocation("specularFresnelEdgeBias");
-                    this._uSpecularFresnelCenterBias = program.getLocation("specularFresnelCenterBias");
-                    this._uSpecularFresnelEdgeColor = program.getLocation("specularFresnelEdgeColor");
-                    this._uSpecularFresnelCenterColor = program.getLocation("specularFresnelCenterColor");
-                    this._uSpecularFresnelPower = program.getLocation("specularFresnelPower");
-                }
-                if (material._alphaFresnel) {
-                    this._uAlphaFresnelEdgeBias = program.getLocation("alphaFresnelEdgeBias");
-                    this._uAlphaFresnelCenterBias = program.getLocation("alphaFresnelCenterBias");
-                    this._uAlphaFresnelEdgeColor = program.getLocation("alphaFresnelEdgeColor");
-                    this._uAlphaFresnelCenterColor = program.getLocation("alphaFresnelCenterColor");
-                    this._uAlphaFresnelPower = program.getLocation("alphaFresnelPower");
-                }
-                if (material._reflectivityFresnel) {
-                    this._uReflectivityFresnelEdgeBias = program.getLocation("reflectivityFresnelEdgeBias");
-                    this._uReflectivityFresnelCenterBias = program.getLocation("reflectivityFresnelCenterBias");
-                    this._uReflectivityFresnelEdgeColor = program.getLocation("reflectivityFresnelEdgeColor");
-                    this._uReflectivityFresnelCenterColor = program.getLocation("reflectivityFresnelCenterColor");
-                    this._uReflectivityFresnelPower = program.getLocation("reflectivityFresnelPower");
-                }
-                if (material._emissiveFresnel) {
-                    this._uEmissiveFresnelEdgeBias = program.getLocation("emissiveFresnelEdgeBias");
-                    this._uEmissiveFresnelCenterBias = program.getLocation("emissiveFresnelCenterBias");
-                    this._uEmissiveFresnelEdgeColor = program.getLocation("emissiveFresnelEdgeColor");
-                    this._uEmissiveFresnelCenterColor = program.getLocation("emissiveFresnelCenterColor");
-                    this._uEmissiveFresnelPower = program.getLocation("emissiveFresnelPower");
-                }
-                break;
-
-            case "MetallicMaterial":
-                this._uBaseColor = program.getLocation("materialBaseColor");
-                this._uMaterialMetallic = program.getLocation("materialMetallic");
-                this._uMaterialRoughness = program.getLocation("materialRoughness");
-                this._uMaterialSpecularF0 = program.getLocation("materialSpecularF0");
-                this._uMaterialEmissive = program.getLocation("materialEmissive");
-                this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-                if (material._baseColorMap) {
-                    this._uBaseColorMap = "baseColorMap";
-                    this._uBaseColorMapMatrix = program.getLocation("baseColorMapMatrix");
-                }
-                if (material._metallicMap) {
-                    this._uMetallicMap = "metallicMap";
-                    this._uMetallicMapMatrix = program.getLocation("metallicMapMatrix");
-                }
-                if (material._roughnessMap) {
-                    this._uRoughnessMap = "roughnessMap";
-                    this._uRoughnessMapMatrix = program.getLocation("roughnessMapMatrix");
-                }
-                if (material._metallicRoughnessMap) {
-                    this._uMetallicRoughnessMap = "metallicRoughnessMap";
-                    this._uMetallicRoughnessMapMatrix = program.getLocation("metallicRoughnessMapMatrix");
-                }
-                if (material._emissiveMap) {
-                    this._uEmissiveMap = "emissiveMap";
-                    this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
-                }
-                if (material._occlusionMap) {
-                    this._uOcclusionMap = "occlusionMap";
-                    this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
-                }
-                if (material._alphaMap) {
-                    this._uAlphaMap = "alphaMap";
-                    this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
-                }
-                if (material._normalMap) {
-                    this._uNormalMap = "normalMap";
-                    this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
-                }
-                break;
-
-            case "SpecularMaterial":
-                this._uMaterialDiffuse = program.getLocation("materialDiffuse");
-                this._uMaterialSpecular = program.getLocation("materialSpecular");
-                this._uMaterialGlossiness = program.getLocation("materialGlossiness");
-                this._uMaterialReflectivity = program.getLocation("reflectivityFresnel");
-                this._uMaterialEmissive = program.getLocation("materialEmissive");
-                this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
-                if (material._diffuseMap) {
-                    this._uDiffuseMap = "diffuseMap";
-                    this._uDiffuseMapMatrix = program.getLocation("diffuseMapMatrix");
-                }
-                if (material._specularMap) {
-                    this._uSpecularMap = "specularMap";
-                    this._uSpecularMapMatrix = program.getLocation("specularMapMatrix");
-                }
-                if (material._glossinessMap) {
-                    this._uGlossinessMap = "glossinessMap";
-                    this._uGlossinessMapMatrix = program.getLocation("glossinessMapMatrix");
-                }
-                if (material._specularGlossinessMap) {
-                    this._uSpecularGlossinessMap = "materialSpecularGlossinessMap";
-                    this._uSpecularGlossinessMapMatrix = program.getLocation("materialSpecularGlossinessMapMatrix");
-                }
-                if (material._emissiveMap) {
-                    this._uEmissiveMap = "emissiveMap";
-                    this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
-                }
-                if (material._occlusionMap) {
-                    this._uOcclusionMap = "occlusionMap";
-                    this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
-                }
-                if (material._alphaMap) {
-                    this._uAlphaMap = "alphaMap";
-                    this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
-                }
-                if (material._normalMap) {
-                    this._uNormalMap = "normalMap";
-                    this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
-                }
-                break;
-        }
-
-        this._aPosition = program.getAttribute("position");
-        this._aNormal = program.getAttribute("normal");
-        this._aUV = program.getAttribute("uv");
-        this._aColor = program.getAttribute("color");
-        this._aFlags = program.getAttribute("flags");
-
-        this._uClippable = program.getLocation("clippable");
-        this._uColorize = program.getLocation("colorize");
-
-        this._lastMaterialId = null;
-        this._lastVertexBufsId = null;
-        this._lastGeometryId = null;
-
-        this._lastColorize = new Float32Array(4);
-
-        this._baseTextureUnit = 0;
-
-    };
-
-    xeogl.renderer.DrawRenderer.prototype._bindProgram = function (frame) {
-
-        var math = xeogl.math;
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var lightsState = scene._lightsState;
-        var clipsState = scene._clipsState;
-        var lights = lightsState.lights;
-        var light;
-
-        var program = this._program;
-
-        program.bind();
-
-        frame.useProgram++;
-        frame.textureUnit = 0;
-
-        this._lastMaterialId = null;
-        this._lastVertexBufsId = null;
-        this._lastGeometryId = null;
-
-        this._lastColorize[0] = -1;
-        this._lastColorize[1] = -1;
-        this._lastColorize[2] = -1;
-        this._lastColorize[3] = -1;
-
-        var camera = scene.camera;
-        var cameraState = camera._state;
-
-        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
-        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
-        gl.uniformMatrix4fv(this._uProjMatrix, false, camera._project._state.matrix);
-
-        for (var i = 0, len = lightsState.lights.length; i < len; i++) {
-
-            light = lightsState.lights[i];
-
-            if (this._uLightAmbient[i]) {
-                gl.uniform4f(this._uLightAmbient[i], light.color[0], light.color[1], light.color[2], light.intensity);
-
-            } else {
-
-                if (this._uLightColor[i]) {
-                    gl.uniform4f(this._uLightColor[i], light.color[0], light.color[1], light.color[2], light.intensity);
-                }
-
-                if (this._uLightPos[i]) {
-                    gl.uniform3fv(this._uLightPos[i], light.pos);
-                    if (this._uLightAttenuation[i]) {
-                        gl.uniform1f(this._uLightAttenuation[i], light.attenuation);
-                    }
-                }
-
-                if (this._uLightDir[i]) {
-                    gl.uniform3fv(this._uLightDir[i], light.dir);
-                }
-
-                if (light.shadow) {
-                    if (this._uShadowViewMatrix[i]) {
-                        gl.uniformMatrix4fv(this._uShadowViewMatrix[i], false, light.getShadowViewMatrix());
-                    }
-                    if (this._uShadowProjMatrix[i]) {
-                        gl.uniformMatrix4fv(this._uShadowProjMatrix[i], false, light.getShadowProjMatrix());
-                    }
-                    var shadowRenderBuf = light.getShadowRenderBuf();
-                    if (shadowRenderBuf) {
-                        program.bindTexture("shadowMap" + i, shadowRenderBuf.getTexture(), frame.textureUnit);
-                        frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
-                        frame.bindTexture++;
-                    }
-                }
-            }
-        }
-
-        if (lightsState.lightMaps.length > 0 && lightsState.lightMaps[0].texture && this._uLightMap) {
-            program.bindTexture(this._uLightMap, lightsState.lightMaps[0].texture, frame.textureUnit);
-            frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
-            frame.bindTexture++;
-        }
-
-        if (lightsState.reflectionMaps.length > 0 && lightsState.reflectionMaps[0].texture && this._uReflectionMap) {
-            program.bindTexture(this._uReflectionMap, lightsState.reflectionMaps[0].texture, frame.textureUnit);
-            frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
-            frame.bindTexture++;
-        }
-
-        if (clipsState.clips.length > 0) {
-            var clips = scene._clipsState.clips;
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
-            for (var i = 0, len = this._uClips.length; i < len; i++) {
-                clipUniforms = this._uClips[i];
-                uClipActive = clipUniforms.active;
-                clip = clips[i];
-                if (uClipActive) {
-                    gl.uniform1i(uClipActive, clip.active);
-                }
-                uClipPos = clipUniforms.pos;
-                if (uClipPos) {
-                    gl.uniform3fv(clipUniforms.pos, clip.pos);
-                }
-                uClipDir = clipUniforms.dir;
-                if (uClipDir) {
-                    gl.uniform3fv(clipUniforms.dir, clip.dir);
-                }
-            }
-        }
-
-        if (this._uGammaFactor) {
-            gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
-        }
-
-        this._baseTextureUnit = frame.textureUnit;
+    xeogl.renderer.DrawRenderer.prototype.webglContextRestored = function () {
+        this._program = null;
     };
 
     xeogl.renderer.DrawRenderer.prototype.drawMesh = function (frame, mesh) {
-
+        if (!this._program) {
+            this._allocate(mesh);
+        }
         var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
         var scene = mesh.scene;
         var material = mesh._material;
@@ -996,4 +615,395 @@
             }
         }
     };
+
+    xeogl.renderer.DrawRenderer.prototype._allocate = function (mesh) {
+        var gl = mesh.scene.canvas.gl;
+        var material = mesh._material;
+        var lightsState = mesh.scene._lightsState;
+        var clipsState = mesh.scene._clipsState;
+        var materialState = mesh._material._state;
+        this._program = new xeogl.renderer.Program(gl, this._shaderSource);
+        if (this._program.errors) {
+            this.errors = this._program.errors;
+            return;
+        }
+        var program = this._program;
+        this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
+        this._uUVDecodeMatrix = program.getLocation("uvDecodeMatrix");
+        this._uModelMatrix = program.getLocation("modelMatrix");
+        this._uModelNormalMatrix = program.getLocation("modelNormalMatrix");
+        this._uViewMatrix = program.getLocation("viewMatrix");
+        this._uViewNormalMatrix = program.getLocation("viewNormalMatrix");
+        this._uProjMatrix = program.getLocation("projMatrix");
+        this._uGammaFactor = program.getLocation("gammaFactor");
+        this._uLightAmbient = [];
+        this._uLightColor = [];
+        this._uLightDir = [];
+        this._uLightPos = [];
+        this._uLightAttenuation = [];
+        this._uShadowViewMatrix = [];
+        this._uShadowProjMatrix = [];
+
+        var lights = lightsState.lights;
+        var light;
+
+        for (var i = 0, len = lights.length; i < len; i++) {
+            light = lights[i];
+            switch (light.type) {
+
+                case "ambient":
+                    this._uLightAmbient[i] = program.getLocation("lightAmbient");
+                    break;
+
+                case "dir":
+                    this._uLightColor[i] = program.getLocation("lightColor" + i);
+                    this._uLightPos[i] = null;
+                    this._uLightDir[i] = program.getLocation("lightDir" + i);
+                    break;
+
+                case "point":
+                    this._uLightColor[i] = program.getLocation("lightColor" + i);
+                    this._uLightPos[i] = program.getLocation("lightPos" + i);
+                    this._uLightDir[i] = null;
+                    this._uLightAttenuation[i] = program.getLocation("lightAttenuation" + i);
+                    break;
+
+                case "spot":
+                    this._uLightColor[i] = program.getLocation("lightColor" + i);
+                    this._uLightPos[i] = program.getLocation("lightPos" + i);
+                    this._uLightDir[i] = program.getLocation("lightDir" + i);
+                    this._uLightAttenuation[i] = program.getLocation("lightAttenuation" + i);
+                    break;
+            }
+
+            if (light.shadow) {
+                this._uShadowViewMatrix[i] = program.getLocation("shadowViewMatrix" + i);
+                this._uShadowProjMatrix[i] = program.getLocation("shadowProjMatrix" + i);
+            }
+        }
+
+        if (lightsState.lightMaps.length > 0) {
+            this._uLightMap = "lightMap";
+        }
+
+        if (lightsState.reflectionMaps.length > 0) {
+            this._uReflectionMap = "reflectionMap";
+        }
+
+        this._uClips = [];
+        var clips = clipsState.clips;
+        for (var i = 0, len = clips.length; i < len; i++) {
+            this._uClips.push({
+                active: program.getLocation("clipActive" + i),
+                pos: program.getLocation("clipPos" + i),
+                dir: program.getLocation("clipDir" + i)
+            });
+        }
+
+        this._uPointSize = program.getLocation("pointSize");
+
+        switch (materialState.type) {
+            case "LambertMaterial":
+                this._uMaterialColor = program.getLocation("materialColor");
+                this._uMaterialEmissive = program.getLocation("materialEmissive");
+                this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
+                break;
+
+            case "PhongMaterial":
+                this._uMaterialAmbient = program.getLocation("materialAmbient");
+                this._uMaterialDiffuse = program.getLocation("materialDiffuse");
+                this._uMaterialSpecular = program.getLocation("materialSpecular");
+                this._uMaterialEmissive = program.getLocation("materialEmissive");
+                this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
+                this._uMaterialShininess = program.getLocation("materialShininess");
+                if (material._ambientMap) {
+                    this._uMaterialAmbientMap = "ambientMap";
+                    this._uMaterialAmbientMapMatrix = program.getLocation("ambientMapMatrix");
+                }
+                if (material._diffuseMap) {
+                    this._uDiffuseMap = "diffuseMap";
+                    this._uDiffuseMapMatrix = program.getLocation("diffuseMapMatrix");
+                }
+                if (material._specularMap) {
+                    this._uSpecularMap = "specularMap";
+                    this._uSpecularMapMatrix = program.getLocation("specularMapMatrix");
+                }
+                if (material._emissiveMap) {
+                    this._uEmissiveMap = "emissiveMap";
+                    this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
+                }
+                if (material._alphaMap) {
+                    this._uAlphaMap = "alphaMap";
+                    this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
+                }
+                if (material._reflectivityMap) {
+                    this._uReflectivityMap = "reflectivityMap";
+                    this._uReflectivityMapMatrix = program.getLocation("reflectivityMapMatrix");
+                }
+                if (material._normalMap) {
+                    this._uNormalMap = "normalMap";
+                    this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
+                }
+                if (material._occlusionMap) {
+                    this._uOcclusionMap = "occlusionMap";
+                    this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
+                }
+                if (material._diffuseFresnel) {
+                    this._uDiffuseFresnelEdgeBias = program.getLocation("diffuseFresnelEdgeBias");
+                    this._uDiffuseFresnelCenterBias = program.getLocation("diffuseFresnelCenterBias");
+                    this._uDiffuseFresnelEdgeColor = program.getLocation("diffuseFresnelEdgeColor");
+                    this._uDiffuseFresnelCenterColor = program.getLocation("diffuseFresnelCenterColor");
+                    this._uDiffuseFresnelPower = program.getLocation("diffuseFresnelPower");
+                }
+                if (material._specularFresnel) {
+                    this._uSpecularFresnelEdgeBias = program.getLocation("specularFresnelEdgeBias");
+                    this._uSpecularFresnelCenterBias = program.getLocation("specularFresnelCenterBias");
+                    this._uSpecularFresnelEdgeColor = program.getLocation("specularFresnelEdgeColor");
+                    this._uSpecularFresnelCenterColor = program.getLocation("specularFresnelCenterColor");
+                    this._uSpecularFresnelPower = program.getLocation("specularFresnelPower");
+                }
+                if (material._alphaFresnel) {
+                    this._uAlphaFresnelEdgeBias = program.getLocation("alphaFresnelEdgeBias");
+                    this._uAlphaFresnelCenterBias = program.getLocation("alphaFresnelCenterBias");
+                    this._uAlphaFresnelEdgeColor = program.getLocation("alphaFresnelEdgeColor");
+                    this._uAlphaFresnelCenterColor = program.getLocation("alphaFresnelCenterColor");
+                    this._uAlphaFresnelPower = program.getLocation("alphaFresnelPower");
+                }
+                if (material._reflectivityFresnel) {
+                    this._uReflectivityFresnelEdgeBias = program.getLocation("reflectivityFresnelEdgeBias");
+                    this._uReflectivityFresnelCenterBias = program.getLocation("reflectivityFresnelCenterBias");
+                    this._uReflectivityFresnelEdgeColor = program.getLocation("reflectivityFresnelEdgeColor");
+                    this._uReflectivityFresnelCenterColor = program.getLocation("reflectivityFresnelCenterColor");
+                    this._uReflectivityFresnelPower = program.getLocation("reflectivityFresnelPower");
+                }
+                if (material._emissiveFresnel) {
+                    this._uEmissiveFresnelEdgeBias = program.getLocation("emissiveFresnelEdgeBias");
+                    this._uEmissiveFresnelCenterBias = program.getLocation("emissiveFresnelCenterBias");
+                    this._uEmissiveFresnelEdgeColor = program.getLocation("emissiveFresnelEdgeColor");
+                    this._uEmissiveFresnelCenterColor = program.getLocation("emissiveFresnelCenterColor");
+                    this._uEmissiveFresnelPower = program.getLocation("emissiveFresnelPower");
+                }
+                break;
+
+            case "MetallicMaterial":
+                this._uBaseColor = program.getLocation("materialBaseColor");
+                this._uMaterialMetallic = program.getLocation("materialMetallic");
+                this._uMaterialRoughness = program.getLocation("materialRoughness");
+                this._uMaterialSpecularF0 = program.getLocation("materialSpecularF0");
+                this._uMaterialEmissive = program.getLocation("materialEmissive");
+                this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
+                if (material._baseColorMap) {
+                    this._uBaseColorMap = "baseColorMap";
+                    this._uBaseColorMapMatrix = program.getLocation("baseColorMapMatrix");
+                }
+                if (material._metallicMap) {
+                    this._uMetallicMap = "metallicMap";
+                    this._uMetallicMapMatrix = program.getLocation("metallicMapMatrix");
+                }
+                if (material._roughnessMap) {
+                    this._uRoughnessMap = "roughnessMap";
+                    this._uRoughnessMapMatrix = program.getLocation("roughnessMapMatrix");
+                }
+                if (material._metallicRoughnessMap) {
+                    this._uMetallicRoughnessMap = "metallicRoughnessMap";
+                    this._uMetallicRoughnessMapMatrix = program.getLocation("metallicRoughnessMapMatrix");
+                }
+                if (material._emissiveMap) {
+                    this._uEmissiveMap = "emissiveMap";
+                    this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
+                }
+                if (material._occlusionMap) {
+                    this._uOcclusionMap = "occlusionMap";
+                    this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
+                }
+                if (material._alphaMap) {
+                    this._uAlphaMap = "alphaMap";
+                    this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
+                }
+                if (material._normalMap) {
+                    this._uNormalMap = "normalMap";
+                    this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
+                }
+                break;
+
+            case "SpecularMaterial":
+                this._uMaterialDiffuse = program.getLocation("materialDiffuse");
+                this._uMaterialSpecular = program.getLocation("materialSpecular");
+                this._uMaterialGlossiness = program.getLocation("materialGlossiness");
+                this._uMaterialReflectivity = program.getLocation("reflectivityFresnel");
+                this._uMaterialEmissive = program.getLocation("materialEmissive");
+                this._uAlphaModeCutoff = program.getLocation("materialAlphaModeCutoff");
+                if (material._diffuseMap) {
+                    this._uDiffuseMap = "diffuseMap";
+                    this._uDiffuseMapMatrix = program.getLocation("diffuseMapMatrix");
+                }
+                if (material._specularMap) {
+                    this._uSpecularMap = "specularMap";
+                    this._uSpecularMapMatrix = program.getLocation("specularMapMatrix");
+                }
+                if (material._glossinessMap) {
+                    this._uGlossinessMap = "glossinessMap";
+                    this._uGlossinessMapMatrix = program.getLocation("glossinessMapMatrix");
+                }
+                if (material._specularGlossinessMap) {
+                    this._uSpecularGlossinessMap = "materialSpecularGlossinessMap";
+                    this._uSpecularGlossinessMapMatrix = program.getLocation("materialSpecularGlossinessMapMatrix");
+                }
+                if (material._emissiveMap) {
+                    this._uEmissiveMap = "emissiveMap";
+                    this._uEmissiveMapMatrix = program.getLocation("emissiveMapMatrix");
+                }
+                if (material._occlusionMap) {
+                    this._uOcclusionMap = "occlusionMap";
+                    this._uOcclusionMapMatrix = program.getLocation("occlusionMapMatrix");
+                }
+                if (material._alphaMap) {
+                    this._uAlphaMap = "alphaMap";
+                    this._uAlphaMapMatrix = program.getLocation("alphaMapMatrix");
+                }
+                if (material._normalMap) {
+                    this._uNormalMap = "normalMap";
+                    this._uNormalMapMatrix = program.getLocation("normalMapMatrix");
+                }
+                break;
+        }
+
+        this._aPosition = program.getAttribute("position");
+        this._aNormal = program.getAttribute("normal");
+        this._aUV = program.getAttribute("uv");
+        this._aColor = program.getAttribute("color");
+        this._aFlags = program.getAttribute("flags");
+
+        this._uClippable = program.getLocation("clippable");
+        this._uColorize = program.getLocation("colorize");
+
+        this._lastMaterialId = null;
+        this._lastVertexBufsId = null;
+        this._lastGeometryId = null;
+
+        this._lastColorize = new Float32Array(4);
+
+        this._baseTextureUnit = 0;
+
+    };
+
+    xeogl.renderer.DrawRenderer.prototype._bindProgram = function (frame) {
+
+        var math = xeogl.math;
+        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+        var scene = this._scene;
+        var gl = scene.canvas.gl;
+        var lightsState = scene._lightsState;
+        var clipsState = scene._clipsState;
+        var lights = lightsState.lights;
+        var light;
+
+        var program = this._program;
+
+        program.bind();
+
+        frame.useProgram++;
+        frame.textureUnit = 0;
+
+        this._lastMaterialId = null;
+        this._lastVertexBufsId = null;
+        this._lastGeometryId = null;
+
+        this._lastColorize[0] = -1;
+        this._lastColorize[1] = -1;
+        this._lastColorize[2] = -1;
+        this._lastColorize[3] = -1;
+
+        var camera = scene.camera;
+        var cameraState = camera._state;
+
+        gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+        gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
+        gl.uniformMatrix4fv(this._uProjMatrix, false, camera._project._state.matrix);
+
+        for (var i = 0, len = lightsState.lights.length; i < len; i++) {
+
+            light = lightsState.lights[i];
+
+            if (this._uLightAmbient[i]) {
+                gl.uniform4f(this._uLightAmbient[i], light.color[0], light.color[1], light.color[2], light.intensity);
+
+            } else {
+
+                if (this._uLightColor[i]) {
+                    gl.uniform4f(this._uLightColor[i], light.color[0], light.color[1], light.color[2], light.intensity);
+                }
+
+                if (this._uLightPos[i]) {
+                    gl.uniform3fv(this._uLightPos[i], light.pos);
+                    if (this._uLightAttenuation[i]) {
+                        gl.uniform1f(this._uLightAttenuation[i], light.attenuation);
+                    }
+                }
+
+                if (this._uLightDir[i]) {
+                    gl.uniform3fv(this._uLightDir[i], light.dir);
+                }
+
+                if (light.shadow) {
+                    if (this._uShadowViewMatrix[i]) {
+                        gl.uniformMatrix4fv(this._uShadowViewMatrix[i], false, light.getShadowViewMatrix());
+                    }
+                    if (this._uShadowProjMatrix[i]) {
+                        gl.uniformMatrix4fv(this._uShadowProjMatrix[i], false, light.getShadowProjMatrix());
+                    }
+                    var shadowRenderBuf = light.getShadowRenderBuf();
+                    if (shadowRenderBuf) {
+                        program.bindTexture("shadowMap" + i, shadowRenderBuf.getTexture(), frame.textureUnit);
+                        frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
+                        frame.bindTexture++;
+                    }
+                }
+            }
+        }
+
+        if (lightsState.lightMaps.length > 0 && lightsState.lightMaps[0].texture && this._uLightMap) {
+            program.bindTexture(this._uLightMap, lightsState.lightMaps[0].texture, frame.textureUnit);
+            frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
+            frame.bindTexture++;
+        }
+
+        if (lightsState.reflectionMaps.length > 0 && lightsState.reflectionMaps[0].texture && this._uReflectionMap) {
+            program.bindTexture(this._uReflectionMap, lightsState.reflectionMaps[0].texture, frame.textureUnit);
+            frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
+            frame.bindTexture++;
+        }
+
+        if (clipsState.clips.length > 0) {
+            var clips = scene._clipsState.clips;
+            var clipUniforms;
+            var uClipActive;
+            var clip;
+            var uClipPos;
+            var uClipDir;
+            for (var i = 0, len = this._uClips.length; i < len; i++) {
+                clipUniforms = this._uClips[i];
+                uClipActive = clipUniforms.active;
+                clip = clips[i];
+                if (uClipActive) {
+                    gl.uniform1i(uClipActive, clip.active);
+                }
+                uClipPos = clipUniforms.pos;
+                if (uClipPos) {
+                    gl.uniform3fv(clipUniforms.pos, clip.pos);
+                }
+                uClipDir = clipUniforms.dir;
+                if (uClipDir) {
+                    gl.uniform3fv(clipUniforms.dir, clip.dir);
+                }
+            }
+        }
+
+        if (this._uGammaFactor) {
+            gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
+        }
+
+        this._baseTextureUnit = frame.textureUnit;
+    };
+
 })();

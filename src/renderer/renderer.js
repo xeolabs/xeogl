@@ -63,16 +63,18 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
         blendOneMinusSrcAlpha = value;
     };
 
-    this.webglRestored = function (gl) {
-        // gl = gl;
-        // this._programFactory.webglRestored(gl);
-        // this._chunkFactory.webglRestored();
-        // if (pickBuf) {
-        //     pickBuf.webglRestored(gl);
-        // }
-        // imageDirty = true;
+    this.webglContextLost = function () {
     };
 
+    this.webglContextRestored = function (gl) {
+        if (pickBuf) {
+            pickBuf.webglContextRestored(gl);
+        }
+        if (readPixelBuf) {
+            readPixelBuf.webglContextRestored(gl);
+        }
+        imageDirty = true;
+    };
 
     /**
      * Clears the canvas.
@@ -124,7 +126,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
             imageDirty = true;
         }
         //  if (shadowsDirty) {
-    //    drawShadowMaps();
+        //    drawShadowMaps();
         // shadowsDirty = false;
         // }
     }

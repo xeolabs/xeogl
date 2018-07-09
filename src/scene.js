@@ -620,7 +620,8 @@
                 backgroundColor: cfg.backgroundColor,
                 backgroundImage: cfg.backgroundImage,
                 webgl2: cfg.webgl2 !== false,
-                contextAttr: cfg.contextAttr || {}
+                contextAttr: cfg.contextAttr || {},
+                simulateWebGLContextLost: cfg.simulateWebGLContextLost
             });
 
             // Redraw as canvas resized
@@ -1086,6 +1087,35 @@
             this._selectedEntityIds = null; // Lazy regenerate
         },
 
+        _webglContextLost: function () {
+          //  this.loading++;
+            this.canvas.spinner.processes++;
+            for (var id in this.components) {
+                if (this.components.hasOwnProperty(id)) {
+                    var c = this.components[id];
+                    if (c._webglContextLost) {
+                        c._webglContextLost();
+                    }
+                }
+            }
+            this._renderer.webglContextLost();
+        },
+
+        _webglContextRestored: function () {
+            var gl = this.canvas.gl;
+            for (var id in this.components) {
+                if (this.components.hasOwnProperty(id)) {
+                    var c = this.components[id];
+                    if (c._webglContextRestored) {
+                        c._webglContextRestored(gl);
+                    }
+                }
+            }
+            this._renderer.webglContextRestored(gl);
+            //this.loading--;
+            this.canvas.spinner.processes--;
+        },
+
         /**
          * Renders a single frame of this Scene.
          *
@@ -1118,7 +1148,7 @@
 
                 var opacity = Number.parseFloat(this.canvas.canvas.style.opacity);
                 if (opacity < 1.0) {
-                    opacity  += 0.1;
+                    opacity += 0.1;
                     this.canvas.canvas.style.opacity = opacity;
                 }
 
