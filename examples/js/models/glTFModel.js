@@ -1513,6 +1513,7 @@
                             };
                             xeogl._apply(groupCfg, meshCfg);
                             meshCfg.entityType = null;
+                            meshCfg.matrix = null; // Group has matrix
                             if (ctx.lambertMaterials) {
                                 if (!model.material) {
                                     model.material = new xeogl.LambertMaterial(ctx.scene, {
