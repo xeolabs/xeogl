@@ -911,7 +911,7 @@
                         return;
                     }
                 } else {
-                    component.type = "xeogl.Component";
+                    component.type = expectedType;
                 }
                 component = new window[component.type](this.scene, component);
             } else {
