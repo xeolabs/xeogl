@@ -558,7 +558,7 @@
          * @private
          */
         _isID: function (value) {
-            return xeogl._isString(value) || xeogl._isNumeric(value);
+            return xeogl.prototype._isString(value) || xeogl.prototype._isNumeric(value);
         },
 
         /**

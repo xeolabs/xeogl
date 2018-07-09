@@ -914,6 +914,15 @@
                     component.type = "xeogl.Component";
                 }
                 component = new window[component.type](this.scene, component);
+            } else {
+                if (xeogl._isID(component)) { // Expensive test
+                    var id = component;
+                    component = this.scene.components[id];
+                    if (!component) {
+                        this.error("Component not found: " + xeogl._inQuotes(component.id));
+                        return;
+                    }
+                }
             }
             if (component.scene.id !== this.scene.id) {
                 this.error("Not in same scene: " + component.type + " " + xeogl._inQuotes(component.id));
