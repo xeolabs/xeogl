@@ -84,11 +84,11 @@
 
         _init: function (cfg) {
 
-            this._state = {
+            this._state = new xeogl.renderer.State({
                 active: true,
                 pos: new Float32Array(3),
                 dir: new Float32Array(3)
-            };
+            });
 
             this.active = cfg.active;
             this.pos = cfg.pos;
