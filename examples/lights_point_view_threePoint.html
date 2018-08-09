@@ -21,32 +21,31 @@
 
     // Modify lights on default xeogl.Scene
 
-    xeogl.scene.lights.lights = [
+    xeogl.scene.clearLights();
 
-        new xeogl.PointLight({
-            id: "keyLight",
-            pos: [-80, 60, 80],
-            color: [1.0, 0.3, 0.3],
-            intensity: 1.0,
-            space: "view"
-        }),
+    new xeogl.PointLight({
+        id: "keyLight",
+        pos: [-80, 60, 80],
+        color: [1.0, 0.3, 0.3],
+        intensity: 1.0,
+        space: "view"
+    });
 
-        new xeogl.PointLight({
-            id: "fillLight",
-            pos: [80, 40, 40],
-            color: [0.3, 1.0, 0.3],
-            intensity: 1.0,
-            space: "view"
-        }),
+    new xeogl.PointLight({
+        id: "fillLight",
+        pos: [80, 40, 40],
+        color: [0.3, 1.0, 0.3],
+        intensity: 1.0,
+        space: "view"
+    });
 
-        new xeogl.PointLight({
-            id: "rimLight",
-            pos: [-20, 80, -80],
-            color: [0.6, 0.6, 0.6],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    new xeogl.PointLight({
+        id: "rimLight",
+        pos: [-20, 80, -80],
+        color: [0.6, 0.6, 0.6],
+        intensity: 1.0,
+        space: "view"
+    });
 
     // Sphere
 

@@ -28,34 +28,31 @@
     //        canvas: canvas
     //    });
 
-    xeogl.scene.lights.lights = [
+    xeogl.scene.clearLights();
 
+    new xeogl.DirLight({
+        dir: [-0.6, -0.9, -0.4],
+        color: [0.8, 1.0, 1.0],
+        intensity: 1.0,
+        shadow: true,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            dir: [-0.6, -0.9, -0.4],
-            color: [0.8, 1.0, 1.0],
-            intensity: 1.0,
-            shadow: true,
-            space: "world"
-        })
-        ,
+    new xeogl.DirLight({
+        dir: [0.6, -0.9, -0.6],
+        color: [0.8, 0.8, 0.6],
+        intensity: 1.0,
+        shadow: true,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            dir: [0.6, -0.9, -0.6],
-            color: [0.8, 0.8, 0.6],
-            intensity: 1.0,
-            shadow: true,
-            space: "world"
-        })
-// ,
-//        new xeogl.DirLight({
-//            dir: [-0.9, -0.9, 0.9],
-//            color: [1.0, 1.0, 1.3],
-//            intensity: 1.0,
-//            shadow: true,
-//            space: "world"
-//        })
-    ];
+    //        new xeogl.DirLight({
+    //            dir: [-0.9, -0.9, 0.9],
+    //            color: [1.0, 1.0, 1.3],
+    //            intensity: 1.0,
+    //            shadow: true,
+    //            space: "world"
+    //        });
 
 
     //   xeogl.scene.camera.projection="ortho";

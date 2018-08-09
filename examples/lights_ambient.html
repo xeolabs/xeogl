@@ -17,6 +17,8 @@
 
 <script>
 
+    xeogl.scene.clearLights();
+
     var material = new xeogl.PhongMaterial({
         ambient: [0.0, 0.7, 0.7],
         diffuse: [1, 1, 1]
@@ -32,11 +34,6 @@
         intensity: 1.0,
         space: "view"
     });
-
-    xeogl.scene.lights.lights = [
-        ambientLight,
-        dirLight
-    ];
 
     var mesh = new xeogl.Mesh({
         geometry: new xeogl.BoxGeometry(),

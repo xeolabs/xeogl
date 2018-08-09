@@ -21,6 +21,8 @@
 
 <script>
 
+    xeogl.scene.clearLights();
+
     // Lights for our normal-mapped objects, containing the PointLight
     var pointLight = new xeogl.PointLight({
         pos: [0, 0, 0],
@@ -31,13 +33,6 @@
 //        quadraticAttenuation: 0.0005,
         space: "world"
     });
-
-    xeogl.scene.lights.lights = [
-//            new xeogl.AmbientLight({
-//                color: [0.3, 0.3, 0.3]
-//            }),
-        pointLight
-    ];
 
     // Sphere for each of our normal-mapped objects
     var geometry = new xeogl.SphereGeometry({
