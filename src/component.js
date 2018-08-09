@@ -314,8 +314,8 @@
 
             // Event support - lazy creating these properties because
             // they are expensive to have around if not using them
-            this._handleMap = null; // Subscription handle pool
-            this._handleEvents = null; // Subscription handles mapped to event names
+            this._subIdMap = null; // Subscription subId pool
+            this._subIdEvents = null; // Subscription subIds mapped to event names
             this._eventSubs = null; // Event names mapped to subscribers
             this._events = null; // Maps names to events
             this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
@@ -469,9 +469,9 @@
             var subs = this._eventSubs[event];
             var sub;
             if (subs) { // Notify subscriptions
-                for (var handle in subs) {
-                    if (subs.hasOwnProperty(handle)) {
-                        sub = subs[handle];
+                for (var subId in subs) {
+                    if (subs.hasOwnProperty(subId)) {
+                        sub = subs[subId];
                         this._eventCallDepth++;
                         if (this._eventCallDepth < 300) {
                             sub.callback.call(sub.scope, value);
@@ -499,11 +499,11 @@
             if (!this._events) {
                 this._events = {};
             }
-            if (!this._handleMap) {
-                this._handleMap = new xeogl.utils.Map(); // Subscription handle pool
+            if (!this._subIdMap) {
+                this._subIdMap = new xeogl.utils.Map(); // Subscription subId pool
             }
-            if (!this._handleEvents) {
-                this._handleEvents = {};
+            if (!this._subIdEvents) {
+                this._subIdEvents = {};
             }
             if (!this._eventSubs) {
                 this._eventSubs = {};
@@ -513,17 +513,17 @@
                 subs = {};
                 this._eventSubs[event] = subs;
             }
-            var handle = this._handleMap.addItem(); // Create unique handle
-            subs[handle] = {
+            var subId = this._subIdMap.addItem(); // Create unique subId
+            subs[subId] = {
                 callback: callback,
                 scope: scope || this
             };
-            this._handleEvents[handle] = event;
+            this._subIdEvents[subId] = event;
             var value = this._events[event];
             if (value !== undefined) { // A publication exists, notify callback immediately
                 callback.call(scope || this, value);
             }
-            return handle;
+            return subId;
         },
         
         /**
@@ -531,28 +531,28 @@
          * {{#crossLink "Component/once:method"}}Component#once(){{/crossLink}}.
          *
          * @method off
-         * @param {String} handle Publication handle
+         * @param {String} subId Publication subId
          */
-        off: function (handle) {
-            if (handle === undefined || handle === null) {
+        off: function (subId) {
+            if (subId === undefined || subId === null) {
                 return;
             }
-            if (!this._handleEvents) {
+            if (!this._subIdEvents) {
                 return;
             }
-            var event = this._handleEvents[handle];
+            var event = this._subIdEvents[subId];
             if (event) {
-                delete this._handleEvents[handle];
-                var locSubs = this._eventSubs[event];
-                if (locSubs) {
-                    delete locSubs[handle];
+                delete this._subIdEvents[subId];
+                var subs = this._eventSubs[event];
+                if (subs) {
+                    delete subs[subId];
                 }
-                this._handleMap.removeItem(handle); // Release handle
+                this._subIdMap.removeItem(subId); // Release subId
             }
         },
 
         /**
-         * Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.
+         * Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is subIdd.
          *
          * This is equivalent to calling {{#crossLink "Component/on:method"}}Component#on(){{/crossLink}}, and then calling
          * {{#crossLink "Component/off:method"}}Component#off(){{/crossLink}} inside the callback function.
@@ -564,9 +564,9 @@
          */
         once: function (event, callback, scope) {
             var self = this;
-            var handle = this.on(event,
+            var subId = this.on(event,
                 function (value) {
-                    self.off(handle);
+                    self.off(subId);
                     callback(value);
                 },
                 scope);
@@ -867,21 +867,21 @@
                 if (on) {
 
                     var event;
-                    var handler;
+                    var subIdr;
                     var callback;
                     var scope;
 
                     for (event in on) {
                         if (on.hasOwnProperty(event)) {
 
-                            handler = on[event];
+                            subIdr = on[event];
 
-                            if (xeogl._isFunction(handler)) {
-                                callback = handler;
+                            if (xeogl._isFunction(subIdr)) {
+                                callback = subIdr;
                                 scope = null;
                             } else {
-                                callback = handler.callback;
-                                scope = handler.scope;
+                                callback = subIdr.callback;
+                                scope = subIdr.scope;
                             }
 
                             if (!callback) {
@@ -1110,8 +1110,8 @@
             // Memory leak avoidance
             this._attached = {};
             this._attachments = null;
-            this._handleMap = null;
-            this._handleEvents = null;
+            this._subIdMap = null;
+            this._subIdEvents = null;
             this._eventSubs = null;
             this._events = null;
             this._eventCallDepth = 0;
