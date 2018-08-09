@@ -245,6 +245,7 @@
             this.up = cfg.up;
             this.worldAxis = cfg.worldAxis;
             this.gimbalLock = cfg.gimbalLock;
+            this.constrainPitch = cfg.constrainPitch;
 
             this.projection = cfg.projection;
 
@@ -337,8 +338,15 @@
                 var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
                 math.rotationMat4v(angle * 0.0174532925, left, mat);
                 eye2 = math.transformPoint3(mat, eye2, tempVec3d);
-                this.eye = math.addVec3(eye2, this._look, tempVec3e);
-                this.up = math.transformPoint3(mat, this._up, tempVec3f);
+                var up = math.transformPoint3(mat, this._up, tempVec3e);
+                if (this._constrainPitch) {
+                    var angle = math.dotVec3(up, this._worldUp) / math.DEGTORAD;
+                    if (angle < 1) {
+                        return;
+                    }
+                }
+                this.up = up;
+                this.eye = math.addVec3(eye2, this._look, tempVec3f);
             };
         })(),
 
@@ -373,9 +381,16 @@
                 var look2 = math.subVec3(this._look, this._eye, tempVec3);
                 var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
                 math.rotationMat4v(angle * 0.0174532925, left, mat);
+                var up = math.transformPoint3(mat, this._up, tempVec3f);
+                if (this._constrainPitch) {
+                    var angle = math.dotVec3(up, this._worldUp) / math.DEGTORAD;
+                    if (angle < 1) {
+                        return;
+                    }
+                }
+                this.up = up;
                 look2 = math.transformPoint3(mat, look2, tempVec3d);
                 this.look = math.addVec3(look2, this._eye, tempVec3e);
-                this.up = math.transformPoint3(mat, this._up, tempVec3f);
             };
         })(),
 
@@ -641,6 +656,35 @@
                     return this._gimbalLock;
                 }
             },
+
+            /**
+             Whether to prevent camera from being pitched upside down.
+             
+             The camera is upside down when the angle 
+             between {{#crossLink "Camera/up:property"}}{{/crossLink}} and {{#crossLink "Camera/worldUp:property"}}{{/crossLink}} is less than one degree.
+
+             Fires a {{#crossLink "Camera/constrainPitch:event"}}{{/crossLink}} event on change.
+
+             @property constrainPitch
+             @default false
+             @type Boolean
+             */
+            constrainPitch: {
+                set: function (value) {
+                    this._constrainPitch = !!value;
+                    /**
+                     Fired whenever this Camera's  {{#crossLink "Camera/constrainPitch:property"}}{{/crossLink}} property changes.
+
+                     @event constrainPitch
+                     @param value The property's new value
+                     */
+                    this.fire("constrainPitch", this._constrainPitch);
+                },
+                get: function () {
+                    return this._constrainPitch;
+                }
+            },
+
 
             /**
              Distance from "look" to "eye".
