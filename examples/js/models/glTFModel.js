@@ -5,14 +5,10 @@
 
  ## Overview
 
- * A GLTFModel is essentially a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from a glTF file.
- * It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
- property to the location of a glTF file.
- * You can set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file at any time, which causes
- the GLTFModel to load itself afresh from the new file.
- * Optionally creates an {{#crossLink "Object"}}Object{{/crossLink}} hierarchy that represents the glTF scene node hierarchy.
- * Optionally stores geometry in quantized form for reduced memory use.
- * Optionally converts materials to {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}} for faster rendering.
+ * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} loaded from a glTF file.
+ * Contains child {{#crossLink "Object"}}Objects{{/crossLink}} that represent the glTF scene node hierarchy.
+ * Can store geometry in quantized form for reduced memory use.
+ * Can auto-convert the glTF's materials to {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}} for faster rendering.
 
  GLTFModel inherits these capabilities from its {{#crossLink "Group"}}{{/crossLink}} base class:
 
@@ -48,8 +44,7 @@
  * [Loading glTF](#loading-gltf)
  * [Parsing glTF](#parsing-gltf)
  * [Loading options](#loading-options)
- * [Finding Meshes in a GLTFModel](#finding-meshes-in-a-gltfmodel)
- * [Object hierarchies](#object-hierarchies)
+ * [handleNode callback](#handlenode-callback)
  * [Transforming a GLTFModel](#transforming-a-gltfmodel)
  * [Getting the World-space boundary of a GLTFModel](#getting-the-world-space-boundary-of-a-gltfmodel)
  * [Clearing a GLTFModel](#clearing-a-gltfmodel)
@@ -92,6 +87,24 @@
  model.src = "models/gltf/Buggy/glTF/Buggy.gltf"
  ````
 
+ #### Finding GLTFModels in Scenes
+
+ Our GLTFModel will now be registered by ID on its  {{#crossLink "Scene"}}{{/crossLink}}, so we can now find it like this:
+
+ ````javascript
+ model = xeogl.scene.models["gearbox"];
+ ````
+
+ That's assuming that we've created the GLTFModel in the default Scene, which we're doing in these examples.
+
+ We can also get all the GLTFModels in a Scene, using the Scene's {{#crossLink "Scene/types:property"}}{{/crossLink}} map:
+
+ ````javascript
+ var gltfModels = xeogl.scene.types["xeogl.GLTFModel"];
+
+ model = gltfModels["myModel"];
+ ````
+
  ### Parsing glTF
 
  If we have a glTF JSON with embedded assets in memory, then we can parse it straight into a GLTFModel using the
@@ -119,116 +132,79 @@
  | edges | Boolean |  | false | When true, emphasizes the edges on all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EdgeMaterial"}}{{/crossLink}}). |
  | edgeThreshold | Number | [0..180] | 20 | When ghosting, highlighting, selecting or edging, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  | maxObjects | Number | | | Optional maximum number of {{#crossLink "Mesh"}}{{/crossLink}}'s to load. |
- | handleNode | Function(objectId) | | null | Optional callback to mask which {{#crossLink "Object"}}Objects{{/crossLink}} are loaded. Each Object will only be loaded when this callback returns ````true``` for its ID. Only used when loading Objects. |
+ | handleNode | Function(object, object) | | null | Optional callback to mask which {{#crossLink "Object"}}Objects{{/crossLink}} are loaded. Each Object will only be loaded when this callback returns ````true```. |
 
- Using the ````handleNode```` option to load all {{#crossLink "Mesh"}}Meshes{{/crossLink}} except for those with IDs "gearbox#77.0" and "gearbox#79.0":
+ As mentioned above, GLTFModels are {{#crossLink "Object"}}Objects{{/crossLink}} that plug into the scene graph, containing
+ child Objects of their own, that represent their glTF
+ model's ````scene```` ````node```` elements.
+
+ GLTFModels can also be configured with a ````handleNode```` callback to determine how their child
+ {{#crossLink "Object"}}{{/crossLink}} hierarchies are created as they load the ````node```` elements.
+
+ #### handleNode callback
+
+ As a GLTFModel parses glTF, it creates child {{#crossLink "Object"}}Objects{{/crossLink}} from the ````node```` elements in the glTF ````scene````.
+
+ GLTFModel traverses the ````node```` elements in depth-first order. We can configure a GLTFModel with
+ a ````handleNode```` callback to call at each ````node````, to indicate how to process the ````node````.
+
+ Typically, we would use the callback to selectively create Objects from the glTF ````scene````, while maybe also
+ configuring those Objects depending on what the callback finds on their glTF ````node```` elements.
+
+ For example, we might want to load a building model and set all its wall objects initially highlighted. For ````node```` elements
+ that have some sort of attribute that indicate that they are walls, then the callback can indicate that the GLTFModel
+ should create Objects that are initially highlighted.
+
+ The callback accepts two arguments:
+
+ * ````nodeInfo```` - the glTF node element.
+ * ````actions```` - an object on to which the callback may attach optional configs for each Object to create.
+
+ When the callback returns nothing or ````false````, then GLTFModel skips the given ````node```` and its children.
+
+ When the callback returns ````true````, then the GLTFModel may process the ````node````.
+
+ For each Object to create, the callback can specify initial properties for it by creating a ````createObject```` on
+ its ````actions```` argument, containing values for those properties.
+
+ In the example below, we're loading a GLTF model of a building. We use the callback create Objects only
+ for ````node```` elements who name is not "dontLoadMe". For those Objects, we set them highlighted if
+ their ````node``` element's name happens to be "wall".
 
  ````javascript
  var model = new xeogl.GLTFModel({
-     id: "gearbox",
-     src: "models/gltf/gearbox_conical/scene.gltf",
-     handleNode: function(meshId) {
-        return id !== ("gearbox#77.0") &&  (id !== "gearbox#79.0");
-     }
- });
+    src: "models/myBuilding.gltf",
+
+    // Callback to intercept creation of objects while parsing glTF scene nodes
+
+    handleNode: function (nodeInfo, actions) {
+
+        var name = nodeInfo.name;
+
+        // Don't parse glTF scene nodes that have no "name" attribute,
+        // but do continue down to parse their children.
+        if (!name) {
+            return true; // Continue descending this node subtree
+        }
+
+        // Don't parse glTF scene nodes named "dontLoadMe",
+        // and skip their children as well.
+        if (name === "dontLoadMe") {
+            return false; // Stop descending this node subtree
+        }
+
+        // Create an Object for each glTF scene node.
+
+        // Highlight the Object if the name is "wall"
+
+        actions.createObject = {
+            highlighted: name === "wall"
+        };
+
+        return true; // Continue descending this glTF node subtree
+    }
+});
  ````
-
- Using the ````entities```` option to load an {{#crossLink "Object"}}{{/crossLink}} hierarchy, along with ````handleNode````, to prevent loading Objects "gearbox#77" and "gearbox#79":
-
- ````javascript
- var model = new xeogl.GLTFModel({
-     id: "gearbox",
-     src: "models/gltf/gearbox_conical/scene.gltf",
-     entities: true,
-     handleNode: function(objectId) {
-        return id !== ("gearbox#77") &&  (id !== "gearbox#79");
-     }
- });
- ````
-
- ### Finding GLTFModels in Scenes
-
- Our GLTFModel will now be registered by ID on its  {{#crossLink "Scene"}}{{/crossLink}}, so we can now find it like this:
-
- ````javascript
- model = xeogl.scene.models["gearbox"];
- ````
-
- That's assuming that we've created the GLTFModel in the default Scene, which we're doing in these examples.
-
- We can also get all the GLTFModels in a Scene, using the Scene's {{#crossLink "Scene/types:property"}}{{/crossLink}} map:
-
- ````javascript
- var gltfModels = xeogl.scene.types["xeogl.GLTFModel"];
-
- model = gltfModels["myModel"];
- ````
-
- ### Finding Meshes in a GLTFModel
-
- Once the GLTFModel has loaded, its {{#crossLink "Scene"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.
- We'll now access some of those components by ID, to query and update them programmatically.
-
- Let's highlight a couple of {{#crossLink "Mesh"}}Meshes{{/crossLink}} in our GLTFModel:
-
- ````javascript
- var meshes = scene.meshes;
-
- meshes["gearbox#77.0"].highlighted = true;
- meshes["gearbox#79.0"].highlighted = true;
- ````
-
- A GLTFModel also has ID maps of the components within it. Its components map contains all
- its {{#crossLink "Component"}}Components{{/crossLink}} in one big map:
-
- ````javascript
- model.components["gearbox#77.0"].highlighted = true;
- ````
-
- while its meshes map contains just the {{#crossLink "Mesh"}}Meshes{{/crossLink}}:
-
- ````javascript
- model.meshes["gearbox#77.0"].highlighted = true;
- ````
-
- Note the format of the {{#crossLink "Mesh"}}{{/crossLink}} IDs:
-
- ````<GLTFModel ID>#<glTF node ID>.<glTF primitive index>````
-
- Within the glTF, a node's mesh may contain multiple primitives. For each primitive, xeogl will create
- a separate {{#crossLink "Mesh"}}{{/crossLink}}. Within each Mesh's ID, the part before the hash is the ID of the GLTFModel,
- followed by the ID of the node, then ".", then the index of the primitive within the mesh.
-
- ### Object hierarchies
-
- A GLTFModel may be configured to load an {{#crossLink "Object"}}{{/crossLink}} hierarchy from the glTF scene node
- elements:
-
- ````JavaScript
- var myModel = new xeogl.GLTFModel({
-    id: "myModel",
-    src: "models/carModel.gltf",
-    entities: true
- });
- ````
-
- Once the GLTFModel has loaded, we can find each of those Objects by ID:
-
- ````JavaScript
- myModel.on("loaded", function() {
-    var myCar = myModel.rootObjects["myModel#myCar"];
-    var wheels = myCar.objects["myModel#wheels"];
-    var leftWheel = wheels.objects["myModel#leftWheel"];
-
-    // Highlight the wheels
-    wheels.highlighted = true;
-
-    // Hide the left wheel
-    leftWheel.visible = false;
- });
- ````
-
- Note that each Object's ID is a hash-delimited concatenation of the glTF node ID to the GLTFModel ID.
 
  ### Transforming a GLTFModel
 
@@ -243,28 +219,6 @@
  });
 
  model.position = [-20, 0, 0];
- ````
-
- We can also provide the {{#crossLink "Transform"}}{{/crossLink}} to the GLTFModel constructor, as either configuration
- objects or instances.
-
- Here we'll provide a Transform hierarchy as a configuration object:
-
- ```` Javascript
- // Model internally instantiates our transform components:
- var model = new xeogl.GLTFModel({
-     src: "models/gltf/gearbox_conical/scene.gltf",
-     transform: {
-        type: "xeogl.Translate",
-        xyz: [-35, 0, 0],
-        parent: {
-            type: "xeogl.Rotate",
-            xyz: [0, 1, 0],
-            angle: 45
-        }
-     }
- });
-
  ````
 
  ### Getting the World-space boundary of a GLTFModel
@@ -1418,6 +1372,7 @@
                                 }
                                 meshCfg.material = model.material;
                                 meshCfg.colorize = meshesInfoMesh.material;
+                                meshCfg.opacity = meshesInfoMesh.material[3];
                             } else {
                                 meshCfg.material = meshesInfoMesh.material;
                             }
@@ -1446,6 +1401,7 @@
                             }
                             meshCfg.material = model.material;
                             meshCfg.colorize = meshesInfoMesh.material; // [R,G,B,A]
+                            meshCfg.opacity = meshesInfoMesh.material[3];
                         } else {
                             meshCfg.material = meshesInfoMesh.material;
                         }
@@ -1482,6 +1438,7 @@
                                 }
                                 meshCfg.material = model.material;
                                 meshCfg.colorize = meshesInfoMesh.material;
+                                meshCfg.opacity = meshesInfoMesh.material[3];
                             } else {
                                 meshCfg.material = meshesInfoMesh.material;
                             }
@@ -1522,6 +1479,7 @@
                                 }
                                 meshCfg.material = model.material;
                                 meshCfg.colorize = meshesInfoMesh.material;
+                                meshCfg.opacity = meshesInfoMesh.material[3];
                             } else {
                                 meshCfg.material = meshesInfoMesh.material;
                             }
@@ -1582,6 +1540,7 @@
                                 }
                                 meshCfg.material = model.material;
                                 meshCfg.colorize = meshesInfoMesh.material; // [R,G,B,A]
+                                meshCfg.opacity = meshesInfoMesh.material[3];
                             } else {
                                 meshCfg.material = meshesInfoMesh.material;
                             }
