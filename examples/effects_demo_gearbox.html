@@ -38,30 +38,29 @@
 
     // Customize lights for default scene
 
-    lights.lights = [
-        new xeogl.AmbientLight({
-            color: [.7, .9, 1.0],
-            intensity: 0.8
-        }),
-        new xeogl.DirLight({
-            dir: [0.8, -0.6, -0.8],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        }),
-        new xeogl.DirLight({
-            dir: [-0.8, -0.4, -0.4],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        }),
-        new xeogl.DirLight({
-            dir: [0.2, -0.8, 0.8],
-            color: [0.6, 0.6, 0.6],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    xeogl.scene.clearLights();
+    new xeogl.AmbientLight({
+        color: [.7, .9, 1.0],
+        intensity: 0.8
+    });
+    new xeogl.DirLight({
+        dir: [0.8, -0.6, -0.8],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "view"
+    });
+    new xeogl.DirLight({
+        dir: [-0.8, -0.4, -0.4],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "view"
+    });
+    new xeogl.DirLight({
+        dir: [0.2, -0.8, 0.8],
+        color: [0.6, 0.6, 0.6],
+        intensity: 1.0,
+        space: "view"
+    });
 
     // Load glTF model
 
@@ -70,7 +69,18 @@
         src: "models/gltf/gearbox_conical/scene.gltf",
         lambertMaterials: true,
         edgeThreshold: 10,
-        scale: [100, 100, 100]
+        scale: [100, 100, 100],
+        handleNode: (function() {
+            var objectCount = 0;
+            return function (nodeInfo, actions) {
+                if (nodeInfo.mesh !== undefined) { // Node has a mesh
+                    actions.createObject = {
+                        id: "gearbox." + objectCount++
+                    };
+                }
+                return true;
+            };
+        })()
     });
 
     // Position the camera
@@ -103,8 +113,8 @@
     model.on("loaded", function () {
 
         var selectedMeshes = [
-            "gearbox#83.0",
-            "gearbox#81.0"
+            "gearbox.83",
+            "gearbox.81"
         ];
 
         model.ghosted = true;

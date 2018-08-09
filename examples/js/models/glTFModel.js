@@ -45,6 +45,7 @@
  * [Parsing glTF](#parsing-gltf)
  * [Loading options](#loading-options)
  * [handleNode callback](#handlenode-callback)
+ * [Generating IDs for loaded Objects](#generating-ids-for-loaded-objects)
  * [Transforming a GLTFModel](#transforming-a-gltfmodel)
  * [Getting the World-space boundary of a GLTFModel](#getting-the-world-space-boundary-of-a-gltfmodel)
  * [Clearing a GLTFModel](#clearing-a-gltfmodel)
@@ -206,9 +207,61 @@
 });
  ````
 
+ #### Generating IDs for loaded Objects
+
+ You can use the ````handleNodeNode```` callback to generate a unique and deterministic ID for each loaded {{#crossLink "Object"}}Object{{/crossLink}}:
+
+ ````javascript
+ var model = new xeogl.GLTFModel({
+    id: "gearbox",
+    src: "models/gltf/gearbox_conical/scene.gltf",
+    handleNode: (function() {
+        var objectCount = 0;
+        return function (nodeInfo, actions) {
+            if (nodeInfo.mesh !== undefined) { // Node has a mesh
+                actions.createObject = {
+                    id: "gearbox." + objectCount++
+                };
+            }
+            return true;
+        };
+    })()
+});
+
+ // Highlight a couple of Objects by ID
+ model.on("loaded", function () {
+    model.objects["gearbox.83"].highlighted = true;
+    model.objects["gearbox.81"].highlighted = true;
+});
+ ````
+
+ If the ````node```` elements have ````name```` attributes, then we can use those names with the ````handleNodeNode```` callback
+ to generate a (hopefully) unique ID for each loaded {{#crossLink "Object"}}Object{{/crossLink}}:
+
+ ````javascript
+ var adamModel = new xeogl.GLTFModel({
+    id: "adam",
+    src: "models/gltf/adamHead/adamHead.gltf",
+    handleNode: function (nodeInfo, actions) {
+        if (nodeInfo.name && nodeInfo.mesh !== undefined) { // Node has a name and a mesh
+            actions.createObject = {
+                id: "adam." + nodeInfo.name
+            };
+        }
+        return true;
+    }
+});
+
+ // Highlight a couple of Objects by ID
+ model.on("loaded", function () {
+    model.objects["adam.node_mesh_Adam_mask_-4108.0"].highlighted = true;
+    model.objects["adam.node_Object001_-4112.5"].highlighted = true;
+});
+ ````
+
  ### Transforming a GLTFModel
 
- A GLTFModel lets us transform its Meshes as a group:
+ A GLTFModel lets us transform its Objects as a group:
 
  ```` Javascript
  var model = new xeogl.GLTFModel({
@@ -237,7 +290,7 @@
  * the GLTFModel's {{#crossLink "Transform"}}{{/crossLink}} is updated,
  * components are added or removed, or
  * the GLTF model is reloaded from a different source,
- * the {{#crossLink "Geometry"}}Geometries{{/crossLink}} or {{#crossLink "Transform"}}Transforms{{/crossLink}} of its {{#crossLink "Mesh"}}Meshes{{/crossLink}} are updated.
+ * its {{#crossLink "Geometry"}}Geometries{{/crossLink}} or {{#crossLink "Object"}}Objects{{/crossLink}} are updated.
 
  ````javascript
  model.on("boundary", function() {

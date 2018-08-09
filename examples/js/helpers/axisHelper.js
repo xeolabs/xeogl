@@ -59,27 +59,26 @@
         });
 
         // Custom lights
-        scene.lights.lights = [
+        scene.clearLights();
 
-            new xeogl.AmbientLight(scene, {
-                color: [0.45, 0.45, 0.5],
-                intensity: 0.9
-            }),
+        new xeogl.AmbientLight(scene, {
+            color: [0.45, 0.45, 0.5],
+            intensity: 0.9
+        });
 
-            new xeogl.DirLight(scene, {
-                dir: [-0.5, 0.5, -0.6],
-                color: [0.8, 0.8, 0.7],
-                intensity: 1.0,
-                space: "view"
-            }),
+        new xeogl.DirLight(scene, {
+            dir: [-0.5, 0.5, -0.6],
+            color: [0.8, 0.8, 0.7],
+            intensity: 1.0,
+            space: "view"
+        });
 
-            new xeogl.DirLight(scene, {
-                dir: [0.5, -0.5, -0.6],
-                color: [0.8, 0.8, 0.8],
-                intensity: 1.0,
-                space: "view"
-            })
-        ];
+        new xeogl.DirLight(scene, {
+            dir: [0.5, -0.5, -0.6],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "view"
+        });
 
         // Rotate helper in synch with target camera
 

@@ -176,26 +176,25 @@
 
     // Custom lights
 
-    xeogl.scene.lights.lights = [
-        new xeogl.AmbientLight({
-            color: [1.0, 1.0, 1.0]
-        }),
-        new xeogl.PointLight({
-            pos: [-40, 30, 40],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        }),
-        new xeogl.PointLight({
-            pos: [40, 20, 20],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        }),
-        new xeogl.PointLight({
-            pos: [-20, 80, -80],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        })
-    ];
+    xeogl.scene.clearLights();
+    new xeogl.AmbientLight({
+        color: [1.0, 1.0, 1.0]
+    });
+    new xeogl.PointLight({
+        pos: [-40, 30, 40],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
+    new xeogl.PointLight({
+        pos: [40, 20, 20],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
+    new xeogl.PointLight({
+        pos: [-20, 80, -80],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
 
     // Load model
 

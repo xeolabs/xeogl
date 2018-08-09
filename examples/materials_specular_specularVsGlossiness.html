@@ -36,33 +36,33 @@
         active: false
     });
 
-    var dirLights = [
-        new xeogl.DirLight({
-            id: "keyLight",
-            dir: [0.8, -0.6, -0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "world"
-        }),
+    xeogl.scene.clearLights();
 
-        new xeogl.DirLight({
-            id: "fillLight",
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
-            intensity: 1.0,
-            space: "world"
-        }),
+    new xeogl.DirLight({
+        id: "keyLight",
+        dir: [0.8, -0.6, -0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            id: "rimLight",
-            dir: [0.2, -0.8, 0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "world"
-        })
-    ];
+    new xeogl.DirLight({
+        id: "fillLight",
+        dir: [-0.8, -0.4, -0.4],
+        color: [0.4, 0.4, 0.5],
+        intensity: 1.0,
+        space: "world"
+    });
 
-    var lightMap = new xeogl.CubeTexture({
+    new xeogl.DirLight({
+        id: "rimLight",
+        dir: [0.2, -0.8, 0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "world"
+    });
+
+    var lightMap = new xeogl.LightMap({
         src: [
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
@@ -73,7 +73,7 @@
         ]
     });
 
-    var reflectionMap = new xeogl.CubeTexture({
+    var reflectionMap = new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
@@ -83,14 +83,6 @@
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
         ]
     });
-
-    // Using the default Scene and it's default Lights
-
-    var lights = xeogl.scene.lights;
-
-    lights.lights = dirLights;
-    lights.lightMap = lightMap;
-    lights.reflectionMap = reflectionMap;
 
     //--------------------------------------------------------------------------------------
     //  Spheres
@@ -197,10 +189,6 @@
             this["diffuse"] = typedToJS(material.diffuse);
             this["emissive"] = typedToJS(material.emissive);
             this["alpha"] = material.alpha;
-
-            this["lightMap"] = !!lights.lightMap;
-            this["reflectionMap"] = !!lights.reflectionMap;
-            this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
             this["skybox"] = !!skybox.active;
 
             var self = this;
@@ -216,18 +204,6 @@
                     material.emissive = JSToTyped(self["emissive"]);
                     material.alpha = self["alpha"];
                     material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
-
-                    if (self["lightMap"] !== !!lights.lightMap) {
-                        lights.lightMap = self["lightMap"] ? lightMap : null;
-                    }
-
-                    if (self["reflectionMap"] !== !!lights.reflectionMap) {
-                        lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
-                    }
-
-                    if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
-                        lights.lights = self["dirLights"] ? dirLights : [];
-                    }
 
                     if (self["skybox"] !== skybox.active) {
                         skybox.active = self["skybox"];
@@ -253,9 +229,6 @@
         materialFolder.open();
 
         var lightsFolder = gui.addFolder('Environment');
-        lightsFolder.add(menu, 'lightMap', true);
-        lightsFolder.add(menu, 'reflectionMap', true);
-        lightsFolder.add(menu, 'dirLights', true);
         lightsFolder.add(menu, 'skybox', true);
         lightsFolder.open();
 

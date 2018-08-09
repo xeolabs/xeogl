@@ -130,30 +130,29 @@
     };
 
     // Custom lights
-    xeogl.scene.lights.lights = [
-        new xeogl.AmbientLight({
-            color: [0.4, 0.4, 0.45]
-        }),
-        new xeogl.PointLight({
-            pos: [-80, 60, 80],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        }),
-        new xeogl.PointLight({
-            pos: [80, 40, 40],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        }),
-        new xeogl.PointLight({
-            pos: [-20, 80, -80],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        })
-    ];
+    xeogl.scene.clearLights();
+    new xeogl.AmbientLight({
+        color: [0.4, 0.4, 0.45]
+    });
+    new xeogl.PointLight({
+        pos: [-80, 60, 80],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
+    new xeogl.PointLight({
+        pos: [80, 40, 40],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
+    new xeogl.PointLight({
+        pos: [-20, 80, -80],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
 
     // Load a model from glTF
     var gearbox = new xeogl.GLTFModel({
-            src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
 
     // Define a CameraPath

@@ -13,32 +13,32 @@
 
 <body>
 
-<div id="info"  class="dark">
+<div id="info" class="dark">
     <h1><a href="../docs/classes/OBJModel.html" target="_parent">OBJModel.parse</a> - parsing OBJ and MTL text</h1>
 </div>
 
 <script>
 
-    xeogl.scene.lights.lights = [
-        new xeogl.AmbientLight({
-            color: [0.9, 0.9, 0.9]
-        }),
-        new xeogl.PointLight({
-            pos: [-40, 30, 40],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        }),
-        new xeogl.PointLight({
-            pos: [40, 20, 20],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        }),
-        new xeogl.PointLight({
-            pos: [-20, 80, -80],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        })
-    ];
+    xeogl.scene.clearLights();
+
+    new xeogl.AmbientLight({
+        color: [0.9, 0.9, 0.9]
+    });
+    new xeogl.PointLight({
+        pos: [-40, 30, 40],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
+    new xeogl.PointLight({
+        pos: [40, 20, 20],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
+    new xeogl.PointLight({
+        pos: [-20, 80, -80],
+        color: [1.0, 1.0, 1.0],
+        space: "view"
+    });
 
 
     var model = new xeogl.Model();

@@ -22,8 +22,11 @@
         <li>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
         <li>highlight effect applied to some <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a>
         </li>
-        <li>customized by modifying the default <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterials</a> for ghosting and highlight</li>
-        <li>model by <a href="https://sketchfab.com/architect47" target="_parent">https://sketchfab.com/architect47</a></li>
+        <li>customized by modifying the default <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterials</a>
+            for ghosting and highlight
+        </li>
+        <li>model by <a href="https://sketchfab.com/architect47" target="_parent">https://sketchfab.com/architect47</a>
+        </li>
     </ul>
 </div>
 
@@ -40,30 +43,29 @@
 
     // Customize lights for default scene
 
-    lights.lights = [
-        new xeogl.AmbientLight({
-            color: [1, 1, 1],
-            intensity: 0.99
-        }),
-        new xeogl.DirLight({
-            dir: [-0.8, -0.6, 0.4],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [0.8, -0.4, 0.4],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [-0.2, -0.8, -0.8],
-            color: [0.6, 0.6, 0.6],
-            intensity: 1.0,
-            space: "world"
-        })
-    ];
+    xeogl.scene.clearLights();
+    new xeogl.AmbientLight({
+        color: [1, 1, 1],
+        intensity: 0.99
+    });
+    new xeogl.DirLight({
+        dir: [-0.8, -0.6, 0.4],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "world"
+    });
+    new xeogl.DirLight({
+        dir: [0.8, -0.4, 0.4],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "world"
+    });
+    new xeogl.DirLight({
+        dir: [-0.2, -0.8, -0.8],
+        color: [0.6, 0.6, 0.6],
+        intensity: 1.0,
+        space: "world"
+    });
 
     var model = new xeogl.GLTFModel({
         id: "house",
@@ -71,7 +73,18 @@
         lambertMaterials: true,
         edgeThreshold: 15,
         ghosted: false,
-        leafObjects: true
+        leafObjects: true,
+        handleNode: (function() {
+            var objectCount = 0;
+            return function (nodeInfo, actions) {
+                if (nodeInfo.mesh !== undefined) { // Node has a mesh
+                    actions.createObject = {
+                        id: "house." + objectCount++
+                    };
+                }
+                return true;
+            };
+        })()
     });
 
     // Position the camera
@@ -148,12 +161,12 @@
     model.on("loaded", function () {
 
         var selectedMeshes = [
-            "house#525.0",
-            "house#526.0",
-            "house#346.0",
-            "house#344.0",
-            "house#421.0",
-            "house#449.0"
+            "house.525",
+            "house.526",
+            "house.346",
+            "house.344",
+            "house.421",
+            "house.449"
         ];
 
         model.ghosted = true;

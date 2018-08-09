@@ -15,14 +15,15 @@
 <body>
 
 <div id="info" class="dark">
-    <h1>emphasis effects for CAD</h1>
+    <h1>ghost and highlight effects</h1>
     <br>
     <ul>
         <li>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
         <li>ghost effect disabled on face and neck <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a></li>
         <li>customized by modifying the default <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a>
             and <a href="../docs/classes/HighlightMaterial.html" target="_parent">HighlightMaterial</a></li>
-        <li>model by <a href="https://www.assetstore.unity3d.com/en/#!/content/74842" target="_parent">Unity Technologies</a></li>
+        <li>model by <a href="https://www.assetstore.unity3d.com/en/#!/content/74842" target="_parent">Unity
+            Technologies</a></li>
     </ul>
 </div>
 
@@ -37,30 +38,29 @@
 
     // Customize lights for default scene
 
-    lights.lights = [
-        new xeogl.AmbientLight({
-            color: [1, 1, 1],
-            intensity: 0.8
-        }),
-        new xeogl.DirLight({
-            dir: [0.8, -0.6, -0.8],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        }),
-        new xeogl.DirLight({
-            dir: [-0.8, -0.4, -0.4],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        }),
-        new xeogl.DirLight({
-            dir: [0.2, -0.8, 0.8],
-            color: [0.6, 0.6, 0.6],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    xeogl.scene.clearLights();
+    new xeogl.AmbientLight({
+        color: [1, 1, 1],
+        intensity: 0.8
+    });
+    new xeogl.DirLight({
+        dir: [0.8, -0.6, -0.8],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "view"
+    });
+    new xeogl.DirLight({
+        dir: [-0.8, -0.4, -0.4],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "view"
+    });
+    new xeogl.DirLight({
+        dir: [0.2, -0.8, 0.8],
+        color: [0.6, 0.6, 0.6],
+        intensity: 1.0,
+        space: "view"
+    });
 
     // Position camera
 
@@ -74,7 +74,15 @@
     var model = new xeogl.GLTFModel({
         id: "adam",
         src: "models/gltf/adamHead/adamHead.gltf",
-        edgeThreshold: 20
+        edgeThreshold: 20,
+        handleNode: function (nodeInfo, actions) {
+            if (nodeInfo.name && nodeInfo.mesh !== undefined) { // Node has a name and a mesh
+                actions.createObject = {
+                    id: "adam." + nodeInfo.name
+                };
+            }
+            return true;
+        }
     });
 
     // Handle user input
@@ -86,7 +94,7 @@
     });
 
     scene.on("tick", function () {
-        scene.camera.orbitYaw(0.2);
+          scene.camera.orbitYaw(0.2);
     });
 
     // When model loaded, set up effects and GUI
@@ -96,8 +104,8 @@
         // Meshes of interest
 
         var selectedMeshes = [
-            "adam#node_mesh_Adam_mask_-4108.0",
-            "adam#node_Object001_-4112.5"
+            "adam.node_mesh_Adam_mask_-4108.0",
+            "adam.node_Object001_-4112.5"
         ];
 
         // Customize the default ghost material
@@ -273,7 +281,7 @@
         ghostFolder.add(menu, 'ghostMaterial.fillAlpha', 0.0, 1.0).listen();
         ghostFolder.open();
 
-        var highlightFolder = gui.addFolder('scene.highlighted');
+        var highlightFolder = gui.addFolder('highlighted');
         highlightFolder.add(menu, 'highlighted', true);
         highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
         highlightFolder.add(menu, 'highlightMaterial.edges', true).listen();

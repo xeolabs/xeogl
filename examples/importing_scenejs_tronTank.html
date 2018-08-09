@@ -79,24 +79,23 @@
     (window);
 
     // Redefine default lights
-    scene.lights.lights = [
+    xeogl.scene.clearLights();
 
-        new xeogl.DirLight({
-            dir: [-0.5, -0.6, -0.0],
-            color: [1.0, 0.8, 0.8],
-            intensity: 0.6,
-            space: "world"
-        }),
+    new xeogl.DirLight({
+        dir: [-0.5, -0.6, -0.0],
+        color: [1.0, 0.8, 0.8],
+        intensity: 0.6,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            dir: [0.5, -0.6, -0.6],
-            color: [0.8, 0.8, 1.0],
-            intensity: 0.6,
-            space: "world"
-        })
-    ];
+    new xeogl.DirLight({
+        dir: [0.5, -0.6, -0.6],
+        color: [0.8, 0.8, 1.0],
+        intensity: 0.6,
+        space: "world"
+    });
 
-    scene.lights.lightMap = new xeogl.CubeTexture({
+    new xeogl.LightMap({
         src: [
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",

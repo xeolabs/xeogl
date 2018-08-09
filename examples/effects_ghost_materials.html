@@ -13,7 +13,9 @@
 <body>
 
 <div id="info" class="dark">
-    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, with two <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a> having custom <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterials</a></h1>
+    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, with two <a
+            href="../docs/classes/Mesh.html" target="_parent">Meshes</a> having custom <a
+            href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterials</a></h1>
     <pre id="log">model:  adam head - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/adamHead/README.md'
             target="_parent">model info</a>]</pre>
@@ -27,30 +29,29 @@
 
     // Customize lights for default scene
 
-    lights.lights = [
-        new xeogl.AmbientLight({
-            color: [.7, .9, 1.0],
-            intensity: 0.8
-        }),
-        new xeogl.DirLight({
-            dir: [0.8, -0.6, -0.8],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        }),
-        new xeogl.DirLight({
-            dir: [-0.8, -0.4, -0.4],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        }),
-        new xeogl.DirLight({
-            dir: [0.2, -0.8, 0.8],
-            color: [0.6, 0.6, 0.6],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    xeogl.scene.clearLights();
+    new xeogl.AmbientLight({
+        color: [.7, .9, 1.0],
+        intensity: 0.8
+    });
+    new xeogl.DirLight({
+        dir: [0.8, -0.6, -0.8],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "view"
+    });
+    new xeogl.DirLight({
+        dir: [-0.8, -0.4, -0.4],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "view"
+    });
+    new xeogl.DirLight({
+        dir: [0.2, -0.8, 0.8],
+        color: [0.6, 0.6, 0.6],
+        intensity: 1.0,
+        space: "view"
+    });
 
     // Position camera
 
