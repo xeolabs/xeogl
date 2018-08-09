@@ -121,7 +121,6 @@
 
  | Option | Type | Range | Default Value | Description |
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
- | entities | Boolean |  | false | When true, organizes the model's {{#crossLink "Mesh"}}Meshes{{/crossLink}} with a tree of {{#crossLink "Object"}}Objects{{/crossLink}} that represents the glTF scene node hierarchy. Objects will then be available in the GLTFModel's {{#crossLink "Model/objects:property"}}{{/crossLink}} property, mapped to their IDs.|
  | lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Mesh"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Mesh/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
  | quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
  | combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink "Geometry"}}{{/crossLink}}). |
@@ -132,7 +131,6 @@
  | highlighted | Boolean |  | false | When true, highlights all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
  | edges | Boolean |  | false | When true, emphasizes the edges on all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EdgeMaterial"}}{{/crossLink}}). |
  | edgeThreshold | Number | [0..180] | 20 | When ghosting, highlighting, selecting or edging, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
- | maxObjects | Number | | | Optional maximum number of {{#crossLink "Mesh"}}{{/crossLink}}'s to load. |
  | handleNode | Function(object, object) | | null | Optional callback to mask which {{#crossLink "Object"}}Objects{{/crossLink}} are loaded. Each Object will only be loaded when this callback returns ````true```. |
 
  As mentioned above, GLTFModels are {{#crossLink "Object"}}Objects{{/crossLink}} that plug into the scene graph, containing
@@ -339,7 +337,6 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} GLTFThe Model's local modelling transform matrix. Overrides the position, scale and rotation parameters.
  @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
  @param [cfg.loaded=true] {Boolean} Indicates whether this GLTFModel is loaded or not. If initially set false, then the GLTFModel will load as soon as you set it true while {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} is set to the location of a glTF file.
- @param [cfg.entities=false] {Boolean} When true, organizes the model's {{#crossLink "Mesh"}}Meshes{{/crossLink}} with a tree of {{#crossLink "Object"}}Objects{{/crossLink}} that represents the glTF scene node hierarchy. Use this if you want Objects for the whole node tree. Objects will then be available in the GLTFModel's {{#crossLink "Model/objects:property"}}{{/crossLink}}, mapped to their IDs.
  @param [cfg.lambertMaterials=false] {Boolean} When true, gives each {{#crossLink "Mesh"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Mesh/colorize:property"}}{{/crossLink}} value set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.
  @param [cfg.quantizeGeometry=true] {Boolean} When true, quantizes geometry to reduce memory and GPU bus usage.
  @param [cfg.combineGeometry=true] {Boolean} When true, combines geometry vertex buffers to improve rendering performance.
@@ -364,7 +361,6 @@
 
             this._src = null;
             this._options = {
-                entities: !!cfg.entities,
                 ignoreMaterials: !!cfg.ignoreMaterials,
                 combineGeometry: cfg.combineGeometry !== true,
                 quantizeGeometry: cfg.quantizeGeometry !== true,
@@ -382,14 +378,6 @@
             /**
              Array of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel.
 
-             When **entities** is set ````true```` in the GLTFModel's constructor, this will contain the root
-             {{#crossLink "Object"}}Objects{{/crossLink}} corresponding to root ````nodes```` within the glTF
-             ````scene```` graph.
-
-             When **entities** is omitted or set ````false```` in the GLTFModel's constructor, this will contain
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} corresponding to leaf ````nodes```` within the glTF
-             ````scene```` graph.
-
              @property children
              @final
              @type Array
@@ -397,14 +385,6 @@
 
             /**
              Map of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel, mapped to their IDs.
-
-             When **entities** is set ````true```` in the GLTFModel's constructor, this will contain the root
-             {{#crossLink "Object"}}Objects{{/crossLink}} corresponding to root ````nodes```` within the glTF
-             ````scene```` graph.
-
-             When **entities** is omitted or set ````false```` in the GLTFModel's constructor, this will contain
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} corresponding to leaf ````nodes```` within the glTF
-             ````scene```` graph.
 
              @property childMap
              @final
@@ -666,7 +646,6 @@
                 src: src,
                 loadBuffer: options.loadBuffer,
                 basePath: options.basePath,
-                entities: !!options.entities,
                 handleNode: options.handleNode,
                 ignoreMaterials: !!options.ignoreMaterials,
                 combineGeometry: options.combineGeometry,
