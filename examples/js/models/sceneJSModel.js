@@ -469,7 +469,7 @@
                         case "MetallicMaterial":
                             material = {
                                 id: this._createID(node),
-                                type: "xeogl.PhongMaterial",
+                                type: "xeogl.MetallicMaterial",
                                 baseColor: diffuse,
                                 metallic: 1.0,
                                 roughness: 0.4,
