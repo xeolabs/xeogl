@@ -1,10 +1,10 @@
 /*
- * xeogl V0.7.0
+ * xeogl V0.8
  *
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-08-09
+ * Built on 2018-08-10
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -34366,7 +34366,7 @@ TODO
 
             this._state = new xeogl.renderer.State({
                 texture: new xeogl.renderer.Texture2D(this.scene.canvas.gl),
-                matrix: null,   // Float32Array
+                matrix: xeogl.math.identityMat4(),   // Float32Array
                 hasMatrix: (cfg.translate && (cfg.translate[0] !== 0 || cfg.translate[1] !== 0)) || (!!cfg.rotate) || (cfg.scale && (cfg.scale[0] !== 0 || cfg.scale[1] !== 0)),
                 minFilter: this._checkMinFilter(cfg.minFilter),
                 magFilter: this._checkMagFilter(cfg.minFilter),
@@ -34489,7 +34489,7 @@ TODO
                 var matrix;
                 var t;
                 if (this._translate[0] !== 0 || this._translate[1] !== 0) {
-                    matrix = xeogl.math.translationMat4v([this._translate[0], this._translate[1], 0]);
+                    matrix = xeogl.math.translationMat4v([this._translate[0], this._translate[1], 0], this._state.matrix);
                 }
                 if (this._scale[0] !== 1 || this._scale[1] !== 1) {
                     t = xeogl.math.scalingMat4v([this._scale[0], this._scale[1], 1]);
@@ -34499,7 +34499,9 @@ TODO
                     t = xeogl.math.rotationMat4v(this._rotate * 0.0174532925, [0, 0, 1]);
                     matrix = matrix ? xeogl.math.mulMat4(matrix, t) : t;
                 }
-                state.matrix = matrix;
+                if (matrix) {
+                    state.matrix = matrix;
+                }
                 this._matrixDirty = false;
             }
             this._renderer.imageDirty();
@@ -36837,4 +36839,4 @@ TODO
         }
     });
 })();
-xeogl.version="0.7.0";
+xeogl.version="0.8";
