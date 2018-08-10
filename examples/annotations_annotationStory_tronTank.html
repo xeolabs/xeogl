@@ -172,18 +172,17 @@
         //----------------------------------
 
         model.addChild(new xeogl.Mesh({
-            type: "xeogl.Mesh",
             geometry: new xeogl.PlaneGeometry({
-                xSize: 16,
-                zSize: 22
+                xSize: 22,
+                zSize: 16
             }),
-            material: xeogl.PhongMaterial({
+            material: new xeogl.PhongMaterial({
                 diffuse: [0.0, 0.0, 0.0],
                 specular: [0, 0, 0],
                 alpha: 0.3,
                 alphaMode: "blend"
             }),
-            position: [-1, 0.1, -4]
+            position: [-1, 0.1, -2]
         }));
 
         //----------------------------------
