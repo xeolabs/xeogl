@@ -41,6 +41,12 @@ camera.up = [0.24, 0.72, 0.64];
  - [Download](https://github.com/xeolabs/xeogl/archive/master.zip)
  - [MIT License](https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE)
  
+## Change logs
+ 
+ - [v0.8](https://github.com/xeolabs/xeogl/wiki/Updates-in-xeogl-V0.8)
+ - [v0.7](https://github.com/xeolabs/xeogl/wiki/Updates-in-xeogl-V0.7)
+ - [v0.6](https://github.com/xeolabs/xeogl/wiki/API-Changes-7-Sep-2017)
+ 
 ## Building
  
 This project requires [Node.js](https://nodejs.org/en/download/) to be installed.
