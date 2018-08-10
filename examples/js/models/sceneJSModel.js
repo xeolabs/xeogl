@@ -467,32 +467,35 @@
 
                     switch (this._materialWorkflow) {
                         case "MetallicMaterial":
-                            material = this._addComponent(new xeogl.MetallicMaterial({
+                            material = {
                                 id: this._createID(node),
+                                type: "xeogl.PhongMaterial",
                                 baseColor: diffuse,
                                 metallic: 1.0,
                                 roughness: 0.4,
                                 emissive: emissive,
                                 alpha: node.alpha,
                                 alphaMode: "blend"
-                            }));
+                            };
                             break;
 
                         case "SpecularMaterial":
-                            material = this._addComponent(new xeogl.SpecularMaterial(this.scene, {
+                            material = {
                                 id: this._createID(node),
+                                type: "xeogl.SpecularMaterial",
                                 diffuse: diffuse,
                                 specular: specular,
                                 glossiness: 0.5,
                                 emissive: emissive,
                                 alpha: node.alpha,
                                 alphaMode: "blend"
-                            }));
+                            };
                             break;
 
                         default:
-                            material = this._addComponent(new xeogl.PhongMaterial(this.scene, {
+                            material = {
                                 id: this._createID(node),
+                                type: "xeogl.PhongMaterial",
                                 ambient: [.2, .2, .2],
                                 diffuse: diffuse,
                                 specular: specular,
@@ -500,7 +503,7 @@
                                 emissive: emissive,
                                 alpha: node.alpha,
                                 alphaMode: "blend"
-                            }));
+                            };
                     }
 
                     break;
@@ -674,10 +677,15 @@
                         material.backfaces = !!backfaces;
                     }
 
+                    var material2 = this.scene.components[material.id];
+                    if (!material2) {
+                        material2 = new window[material.type](this.scene, material);
+                    }
+
                     var mesh = new xeogl.Mesh(this.scene, {
                         id: this._createID(node),
                         geometry: geometry,
-                        material: material,
+                        material: material2,
                         layer: layer
                     });
 
