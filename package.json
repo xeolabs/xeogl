@@ -1,7 +1,7 @@
 {
   "name": "xeogl",
   "title": "xeogl",
-  "version": "0.7.0",
+  "version": "0.8",
   "description": "A WebGL-based 3D visualization engine from xeoLabs",
   "homepage": "http://xeogl.org/",
   "author": {
