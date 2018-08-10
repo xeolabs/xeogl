@@ -168,7 +168,7 @@
 
  In the example below, we're loading a GLTF model of a building. We use the callback create Objects only
  for ````node```` elements who name is not "dontLoadMe". For those Objects, we set them highlighted if
- their ````node``` element's name happens to be "wall".
+ their ````node```` element's name happens to be "wall".
 
  ````javascript
  var model = new xeogl.GLTFModel({
@@ -207,7 +207,7 @@
 
  #### Generating IDs for loaded Objects
 
- You can use the ````handleNodeNode```` callback to generate a unique and deterministic ID for each loaded {{#crossLink "Object"}}Object{{/crossLink}}:
+ You can use the ````handleNodeNode```` callback to generate a unique ID for each loaded {{#crossLink "Object"}}Object{{/crossLink}}:
 
  ````javascript
  var model = new xeogl.GLTFModel({
@@ -233,7 +233,7 @@
 });
  ````
 
- If the ````node```` elements have ````name```` attributes, then we can use those names with the ````handleNodeNode```` callback
+ If the ````node```` elements have ````name```` attributes, then we can also use those names with the ````handleNodeNode```` callback
  to generate a (hopefully) unique ID for each loaded {{#crossLink "Object"}}Object{{/crossLink}}:
 
  ````javascript
@@ -252,7 +252,7 @@
 
  // Highlight a couple of Objects by ID
  model.on("loaded", function () {
-    model.objects["adam.node_mesh_Adam_mask_-4108.0"].highlighted = true;
+    model.objects["adam.node_mesh_Adam_mask_-4108.0"].highlighted = true; // ID contains name
     model.objects["adam.node_Object001_-4112.5"].highlighted = true;
 });
  ````
@@ -342,7 +342,6 @@
  @param [cfg.combineGeometry=true] {Boolean} When true, combines geometry vertex buffers to improve rendering performance.
  @param [cfg.backfaces=false] {Boolean} When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces.
  @param [cfg.edgeThreshold=20] {Number} When ghosting, highlighting, selecting or edging, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
- @param [cfg.maxObjects] {Number} Optional maximum number of {{#crossLink "Object"}}Objects{{/crossLink}}'s to load.
  @param [cfg.handleNode] {Function} Optional callback to mask which {{#crossLink "Object"}}Objects{{/crossLink}} are loaded. Each Object will only be loaded when this callback returns ````true``` for its ID.
 
  @extends Model
@@ -366,7 +365,6 @@
                 quantizeGeometry: cfg.quantizeGeometry !== true,
                 edgeThreshold: cfg.edgeThreshold || 20,
                 lambertMaterials: !!cfg.lambertMaterials,
-                maxObjects: cfg.maxObjects,
                 handleNode: cfg.handleNode
             };
             this.loaded = cfg.loaded;
@@ -652,7 +650,6 @@
                 quantizeGeometry: options.quantizeGeometry,
                 edgeThreshold: options.edgeThreshold,
                 lambertMaterials: !!options.lambertMaterials,
-                maxObjects: options.maxObjects,
                 json: json,
                 scene: model.scene,
                 model: model,
