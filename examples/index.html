@@ -93,16 +93,18 @@
             "billboards_spherical_clouds"
         ],
         "Boundaries": [
-            "boundaries_entity_aabb",
-            "boundaries_entity_obb",
-            "boundaries_geometry_aabb",
-            "boundaries_geometry_obb",
-            "boundaries_model_aabb"
+            "boundaries_mesh_aabb",
+            "boundaries_model_aabb",
+            "boundaries_scene_aabb",
+            "effects_demo_hoverToShowAABB"
         ],
         "Camera": [
+            "camera_CameraControl",
             "camera_perspective",
             "camera_frustum",
             "camera_orthographic",
+            "camera_customProjection",
+            "camera_deviceMatrix",
             "camera_zAxisUp",
             "camera_yAxisUp",
             "camera_flight",
@@ -122,14 +124,21 @@
         "Effects": [
             "effects_clipping",
             "effects_colorize",
-            "effects_outline",
+//            "effects_outline",
             "effects_ghost",
             "effects_ghost_materials",
             "effects_highlight",
             "effects_stereo",
             "effects_stereo_custom",
+//            "effects_zSpace_gearbox",
+            "effects_demo_hoverToColorize",
+            "effects_demo_hoverToSetOpacity",
             "effects_demo_hoverToHighlight",
+            "effects_demo_hoverToSelect",
+            "effects_demo_hoverToGhost",
             "effects_demo_hoverToUnghost",
+            "effects_demo_hoverToShowEdges",
+            "effects_demo_hoverToShowAABB",
             "effects_demo_housePlan",
             "effects_demo_gearbox",
             "effects_demo_adam",
@@ -148,7 +157,6 @@
             "importing_scenejs_tronTank",
             "importing_obj_CyberCity3D",
             "featured_AdamHead",
-            "featured_VianneyHouse",
             "featured_VianneyHouse2",
             "featured_VanGoghRoom"
         ],
@@ -159,7 +167,6 @@
             "geometry_triangles_vertexColors",
             "geometry_lines",
             "geometry_points",
-            "geometry_modifying",
             "geometry_primitives_box",
             "geometry_primitives_cylinder",
             "geometry_primitives_plane",
@@ -191,6 +198,7 @@
             "importing_gltf_GearboxAssy",
             "importing_gltf_BananaTree",
             "importing_gltf_Schependomlaan",
+            "importing_gltf_WestRiverSideHospital",
             "importing_gltf_OfficePlan",
             "importing_gltf_BranchHouse",
             "importing_gltf_ModernOffice",
@@ -199,7 +207,6 @@
             "importing_gltf_parsing",
             "importing_gltf_parsing_embedded",
             "importing_gltf_options_ignoreMaterials",
-            "importing_gltf_options_flattenTransforms",
             "importing_gltf_options_lambertMaterials",
             "importing_gltf_options_maxPerformance",
             "importing_scenejs_pojo_textures",
@@ -223,8 +230,9 @@
             "lights_point_view_threePoint",
             "lights_point_world_threePoint",
             "lights_point_world_normalMap",
-            "lights_lightMap",
-            "lights_shadows"
+            "lights_lightMap"
+//            ,
+//            "lights_shadows"
         ],
         "Logging": [
             "logging_logging"
@@ -235,6 +243,7 @@
             "materials_metallic_samples_metals",
             "materials_metallic_textures",
             "materials_metallic_metallicVsRoughness",
+            "materials_specular_Hoverbike",
             "materials_specular_samples",
             "materials_specular_textures",
             "materials_specular_specularVsGlossiness",
@@ -249,20 +258,24 @@
             "models_generation_city",
             "models_generation_TestModel"
         ],
+        "Objects": [
+            "objects_hierarchy",
+            "objects_hierarchy_models",
+            "objects_entities"
+        ],
         "Picking": [
-            "picking_canvas_pickEntity",
+            "picking_canvas_pickMesh",
             "picking_canvas_pickSurface",
             "picking_canvas_pickSurfaceNormalAndUV",
             "picking_canvas_performanceTest",
-            "picking_raycast_pickEntity",
+            "picking_raycast_pickMesh",
             "picking_raycast_pickSurface",
             "picking_disabling",
-            "picking_masking_include",
-            "picking_masking_exclude"
+            "picking_masking_includeMeshes",
+            "picking_masking_excludeMeshes"
         ],
         "Profiling": [
-            "profiling_statistics",
-            "profiling_sceneRebuild"
+            "profiling_statistics"
         ],
         "Scenes": [
             "scenes_events_tick",
@@ -271,18 +284,19 @@
             "scenes_components_events",
             "scenes_components_finding_byID",
             "scenes_components_finding_byType",
-            "scenes_multipleScenes",
-            "scenes_convenienceAPI"
+            "scenes_multipleScenes"
         ],
         "Skyboxes": [
             "skyboxes_skybox",
             "skyboxes_skybox_custom"
         ],
+        "Tests": [
+            "tests_sceneCreateDestroy",
+            "tests_WebGLContextLostRecovery"
+        ],
         "Transforms": [
-            "transforms_entity_scale",
-            "transforms_entity_hierarchy",
-            "transforms_model_configureTransform",
-            "transforms_model_attachTransform"
+            "transforms_object_hierarchy",
+            "transforms_model"
         ]
     };
 

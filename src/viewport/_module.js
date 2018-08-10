@@ -1,5 +1,5 @@
 /**
- * Components that influence the way entities are rendered with WebGL.
+ * Components that influence the way meshes are rendered with WebGL.
  *
  * @module xeogl
  * @submodule rendering

@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -20,7 +20,9 @@
 <body>
 
 <div id="info">
-    <h1>oldschool 80's fly-through using <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, <a href="../docs/classes/CameraPathAnimation.html" target="_parent">CameraPathAnimation</a> and <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a></h1>
+    <h1>oldschool 80's fly-through using <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, <a
+            href="../docs/classes/CameraPathAnimation.html" target="_parent">CameraPathAnimation</a> and <a
+            href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a></h1>
     <h1>big model loading - be patient!</h1>
     <pre id="log">model: Modern Office - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/modern_office/AUTHOR'
@@ -33,7 +35,7 @@
 <script>
 
     xeogl.scene = new xeogl.Scene({
-        transparent: true
+        transparent: true // Faster - less pixels to render
     });
 
     var model = new xeogl.GLTFModel({
@@ -41,7 +43,10 @@
         src: "models/gltf/modern_office/scene.gltf",
         lambertMaterials: true,
         ghosted: true,
-        ghostEdgeThreshold: 20
+        edgeThreshold: 20,
+        quantizeGeometry: false,
+        combineGeometry: true
+
     });
 
     var scene = model.scene;
@@ -49,30 +54,34 @@
 
     // Customize lights for default scene
 
-    scene.lights.lights = [
-        new xeogl.AmbientLight({
-            color: [1, 1, 1],
-            intensity: 0.8
-        }),
-        new xeogl.DirLight({
-            dir: [0.8, -0.6, -0.8],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [-0.8, -0.4, -0.4],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [0.2, -0.8, 0.8],
-            color: [0.6, 0.6, 0.6],
-            intensity: 1.0,
-            space: "world"
-        })
-    ];
+    scene.clearLights();
+
+    //    new xeogl.AmbientLight({
+    //        color: [0.6, 0.8, 1],
+    //        intensity: 0.8
+    //    });
+    //
+    //    new xeogl.DirLight({
+    //        dir: [0.8, -0.6, -0.8],
+    //        color: [1.0, 1.0, 1.0],
+    //        intensity: 1.0,
+    //        space: "world"
+    //    });
+    //
+    //    new xeogl.DirLight({
+    //        dir: [-0.8, -0.4, -0.4],
+    //        color: [1.0, 1.0, 1.0],
+    //        intensity: 1.0,
+    //        space: "world"
+    //    });
+    //
+    //    new xeogl.DirLight({
+    //        dir: [0.2, -0.8, 0.8],
+    //        color: [0.6, 0.6, 0.6],
+    //        intensity: 1.0,
+    //        space: "world"
+    //    });
+
 
     camera.eye = [334.84033203125, 18.283493041992188, 538.8114013671875];
     camera.look = [58.12596130371094, -74.73777770996094, 278.8338928222656];

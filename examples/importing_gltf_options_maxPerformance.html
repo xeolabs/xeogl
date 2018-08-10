@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -13,7 +13,8 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF with all options for maximum performance</h1>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF with all options for
+        maximum performance</h1>
     <pre id="log">model:  reciprocating saw - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/ReciprocatingSaw/README.md'
             target="_parent">model info</a>]</pre>
@@ -25,16 +26,12 @@
         id: "saw",
         src: "models/gltf/ReciprocatingSaw/glTF-MaterialsCommon/ReciprocatingSaw.gltf",
 
-        flattenTransforms: true,
         lambertMaterials: true,
         combineGeometry: true,
         quantizeGeometry: true,
         backfaces: false,
 
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: 90
-        })
+        rotation: [90, 0, 0]
     });
 
     var camera = xeogl.scene.camera;

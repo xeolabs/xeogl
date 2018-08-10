@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/curves/curve.js"></script>
@@ -75,27 +75,27 @@
             }
             return xeogl.scene;
         }
-    })(window);
+    })
+    (window);
 
     // Redefine default lights
-    scene.lights.lights = [
+    xeogl.scene.clearLights();
 
-        new xeogl.DirLight({
-            dir: [-0.5, -0.6, -0.0],
-            color: [1.0, 0.8, 0.8],
-            intensity: 0.6,
-            space: "world"
-        }),
+    new xeogl.DirLight({
+        dir: [-0.5, -0.6, -0.0],
+        color: [1.0, 0.8, 0.8],
+        intensity: 0.6,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            dir: [0.5, -0.6, -0.6],
-            color: [0.8, 0.8, 1.0],
-            intensity: 0.6,
-            space: "world"
-        })
-    ];
+    new xeogl.DirLight({
+        dir: [0.5, -0.6, -0.6],
+        color: [0.8, 0.8, 1.0],
+        intensity: 0.6,
+        space: "world"
+    });
 
-    scene.lights.lightMap = new xeogl.CubeTexture({
+    new xeogl.LightMap({
         src: [
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
@@ -106,16 +106,16 @@
         ]
     });
 
-//            scene.lights.reflectionMap = new xeogl.CubeTexture({
-//                src: [
-//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-//                ]
-//            });
+    //            scene.lights.reflectionMap = new xeogl.CubeTexture({
+    //                src: [
+    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+    //                ]
+    //            });
 
     // Set initial camera position
     var camera = scene.camera;
@@ -132,37 +132,24 @@
     var tankModel = new xeogl.SceneJSModel({
         id: "tank",
         src: "models/scenejs/tronTank.min.json",
-        materialWorkflow: "MetallicMaterial", // "PhongMaterial" (default) | "MetallicMaterial" | "SpecularMaterial"
-        transform: new xeogl.Rotate({ // Tank direction
-            xyz: [0, 1, 0],
-            angle: 0,
-            parent: new xeogl.Translate({ // Tank position
-                xyz: [0, 0, 0]
-            })
-        })
+        materialWorkflow: "MetallicMaterial" // "PhongMaterial" (default) | "MetallicMaterial" | "SpecularMaterial"
     });
 
     // Add a shadow under the tank
     // insert it into the SceneJSModel so it rotates with the tank
-    tankModel.add({
-        type: "xeogl.Entity",
-        geometry: {
-            type: "xeogl.PlaneGeometry",
-            xSize: 16,
-            zSize: 22
-        },
-        material: {
-            type: "xeogl.PhongMaterial",
+    tankModel.addChild(new xeogl.Mesh({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 22,
+            zSize: 16
+        }),
+        material: new xeogl.PhongMaterial({
             diffuse: [0.0, 0.0, 0.0],
             specular: [0, 0, 0],
             alpha: 0.3,
             alphaMode: "blend"
-        },
-        transform: {
-            type: "xeogl.Translate",
-            xyz: [-1, 0.1, -4]
-        }
-    });
+        }),
+        position: [-1, 0.1, -2]
+    }));
 
     // Follow the tank with the camera; don't keep tank fitted to view
     follow(tankModel);
@@ -192,16 +179,15 @@
 
     // Helper to show the tank animation path
     // leave it here and set visible whenever we need to edit the path in future
-    new xeogl.Entity({
-        geometry: {
+    new xeogl.Mesh({
+        geometry: new xeogl.Geometry({
             positions: xeogl.math.flatten(path.getPoints(100))
-        },
-        material: {
-            type: "xeogl.PhongMaterial",
+        }),
+        material: new xeogl.PhongMaterial({
             diffuse: [0.3, 1, 0.3],
             emissive: [0.4, 1, 0.4],
             lineWidth: 6
-        },
+        }),
         visible: false,
         pickable: false, // Can't be picked
         collidable: false // Does not contribute to overall scene boundary
@@ -210,8 +196,8 @@
     // Attach tank to the path; move it along path and
     // keep it pointing along the path
     path.on("t", function () {
-        tankModel.transform.parent.xyz = this.point;
-        tankModel.transform.angle = 360 - (Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) + 270;
+        tankModel.position = this.point;
+        tankModel.rotation = [0, 360 - ((Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) - 180), 0];
     });
 
 
@@ -263,25 +249,22 @@
         box(560, -400, 0);
 
 
-
-
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: new xeogl.Geometry(geometryBuilder.build()),
-            material: {
-                type: "xeogl.SpecularMaterial",
+            material: new xeogl.SpecularMaterial({
                 diffuse: [0.7, 0.7, 0.7],
                 specular: [0.3, 0.3, 0.2],
                 glossiness: 0.1,
                 emissive: [0.1, 0.1, 0.1],
-                diffuseMap: {
+                diffuseMap: new xeogl.Texture({
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [1, 1],
                     format: "gamma"
-                },
+                }),
                 backfaces: false // Don't show backfaces, so that if camera gets buried in a box we can still see out
-            },
+            }),
             pickable: false, // Can't be picked
             collidable: false // Does not contribute to overall scene boundary
         });
@@ -290,27 +273,25 @@
         // Ground plane
         //---------------------------------------------------------------------------------
 
-        new xeogl.Entity({
-            geometry: {
-                type: "xeogl.PlaneGeometry",
+        new xeogl.Mesh({
+            geometry: new xeogl.PlaneGeometry({
                 xSize: 3000,
                 zSize: 3000
-            },
-            material: {
-                type: "xeogl.SpecularMaterial",
+            }),
+            material: new xeogl.SpecularMaterial({
                 diffuse: [0.5, 0.5, 0.5],
                 specular: [0.2, 0.2, 0.2],
                 glossiness: 0.0,
 //                emissive: [0.1, 0.1, 0.1],
-                diffuseMap: {
+                diffuseMap: new xeogl.Texture({
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [30, 30],
                     format: "gamma"
-                },
+                }),
                 backfaces: true // Show backfaces
-            },
+            }),
             pickable: false, // Can't be picked
             collidable: false // Does not contribute to overall scene boundary
         });
@@ -326,7 +307,7 @@
 
         // Slowly rotate the tank and gun
         var gunDir = 0;
-        var gunDirInc = -0.3;
+        var gunDirInc = -0.4;
         var zoom = 100;
 
         // Game loop
@@ -335,12 +316,12 @@
             gunDir += gunDirInc;
 
             if (gunDir < -60 || gunDir > 60) {
-                gunDirInc *= -1;
+                gunDirInc *= -1.0;
             }
 
             // Access the gun rotation in the Model;
             // the first part of the IDs is the ID of the Model
-            tankModel.components["tank.gunDir"].angle = gunDir;
+            tankModel.components["tank.gunDir"].rotation = [0, 0, gunDir];
 
             // Update the path animation
             path.t = (path.t + 0.0002) % 1.0;

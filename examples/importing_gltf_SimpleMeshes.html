@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -25,8 +25,6 @@
     var model = new xeogl.GLTFModel({
         src: "models/gltf/SimpleMeshes/glTF/SimpleMeshes.gltf"
     });
-
-    model.scene.lights.lights = []; // glTF file doesn't have lights and this is a test
 
     var camera = model.scene.camera;
 

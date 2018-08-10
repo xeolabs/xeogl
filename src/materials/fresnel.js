@@ -6,18 +6,16 @@
  ## Overview
 
  * Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  ## Examples
 
  * [PhongMaterials with Fresnels](../../examples/#materials_phong_fresnel)
 
- <img src="../../../assets/images/Fresnel.png"></img>
-
  ## Usage
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
 
      material: new xeogl.PhongMaterial({
          ambient: [0.3, 0.3, 0.3],
@@ -68,7 +66,7 @@
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.Fresnel({
+            this._state = new xeogl.renderer.State({
                 edgeColor: xeogl.math.vec3([0, 0, 0]),
                 centerColor: xeogl.math.vec3([1, 1, 1]),
                 edgeBias: 0,
@@ -93,14 +91,10 @@
              @type Float32Array
              */
             edgeColor: {
-
                 set: function (value) {
-
                     this._state.edgeColor.set(value || [0.0, 0.0, 0.0]);
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeColor;
                 }
@@ -114,14 +108,10 @@
              @type Float32Array
              */
             centerColor: {
-
                 set: function (value) {
-
                     this._state.centerColor.set(value || [1.0, 1.0, 1.0]);
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.centerColor;
                 }
@@ -135,14 +125,10 @@
              * @type Number
              */
             edgeBias: {
-
                 set: function (value) {
-
                     this._state.edgeBias = value || 0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeBias;
                 }
@@ -156,14 +142,10 @@
              * @type Number
              */
             centerBias: {
-
                 set: function (value) {
-
                     this._state.centerBias = (value !== undefined && value !== null) ? value : 1;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.centerBias;
                 }
@@ -177,14 +159,10 @@
              * @type Number
              */
             power: {
-
                 set: function (value) {
-
                     this._state.power = (value !== undefined && value !== null) ? value : 1;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.power;
                 }

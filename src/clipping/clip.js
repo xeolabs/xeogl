@@ -13,50 +13,50 @@
 
  ## Usage
 
- In the example below, we have an {{#crossLink "Entity"}}{{/crossLink}} that's attached by a {{#crossLink "Clips"}}{{/crossLink}}
+ In the example below, we have an {{#crossLink "Mesh"}}{{/crossLink}} that's attached by a {{#crossLink "Clips"}}{{/crossLink}}
  that contains two {{#crossLink "Clip"}}{{/crossLink}} components.  The first {{#crossLink "Clip"}}{{/crossLink}} is on the
- positive diagonal, while the second is on the negative diagonal. The {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
+ positive diagonal, while the second is on the negative diagonal. The {{#crossLink "Mesh"}}Mesh's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
  is a box, which will get two of its corners clipped off.
 
  ````javascript
  // Create a set of Clip planes in the default Scene
  scene.clips.clips = [
 
-     // Clip plane on negative diagonal
-     new xeogl.Clip({
+ // Clip plane on negative diagonal
+ new xeogl.Clip({
          pos: [1.0, 1.0, 1.0],
          dir: [-1.0, -1.0, -1.0],
          active: true
      }),
 
-     // Clip plane on positive diagonal
-     new xeogl.Clip({
+ // Clip plane on positive diagonal
+ new xeogl.Clip({
          pos: [-1.0, -1.0, -1.0],
          dir: [1.0, 1.0, 1.0],
          active: true
      })
  ];
 
- // Create an Entity in the default Scene, that will be clipped by our Clip planes
- var entity = new xeogl.Entity({
+ // Create a Mesh in the default Scene, that will be clipped by our Clip planes
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.SphereGeometry(),
      clippable: true // Enable clipping (default)
  });
  ````
 
- ### Switching clipping on and off for an Entity
+ ### Switching clipping on and off for a Mesh
 
- An {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/clippable:property"}}{{/crossLink}} property indicates
+ An {{#crossLink "Mesh"}}{{/crossLink}}'s {{#crossLink "Mesh/clippable:property"}}{{/crossLink}} property indicates
  whether or not it is affected by Clip components.
 
  You can switch it at any time, like this:
 
  ```` javascript
- // Disable clipping for the Entity
- entity.clippable = false;
+ // Disable clipping for the Mesh
+ mesh.clippable = false;
 
- // Enable clipping for the Entity
- entity.clippable = true;
+ // Enable clipping for the Mesh
+ mesh.clippable = true;
  ````
 
  @class Clip
@@ -84,15 +84,17 @@
 
         _init: function (cfg) {
 
-            this._state = {
+            this._state = new xeogl.renderer.State({
                 active: true,
                 pos: new Float32Array(3),
                 dir: new Float32Array(3)
-            };
+            });
 
             this.active = cfg.active;
             this.pos = cfg.pos;
             this.dir = cfg.dir;
+
+            this.scene._clipCreated(this);
         },
 
         _props: {
@@ -100,18 +102,14 @@
             /**
              Indicates whether this Clip is active or not.
 
-             Fires a {{#crossLink "Clip/active:event"}}{{/crossLink}} event on change.
-
              @property active
              @default true
              @type Boolean
              */
             active: {
-
                 set: function (value) {
-
                     this._state.active = value !== false;
-
+                    this._renderer.imageDirty();
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/active:property"}}{{/crossLink}} property changes.
 
@@ -120,7 +118,6 @@
                      */
                     this.fire("active", this._state.active);
                 },
-
                 get: function () {
                     return this._state.active;
                 }
@@ -129,20 +126,14 @@
             /**
              The World-space position of this Clip's plane.
 
-             Fires a {{#crossLink "Clip/pos:event"}}{{/crossLink}} event on change.
-
              @property pos
              @default [0, 0, 0]
              @type Float32Array
              */
             pos: {
-
                 set: function (value) {
-
                     this._state.pos.set(value || [0, 0, 0]);
-
                     this._renderer.imageDirty();
-
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/pos:property"}}{{/crossLink}} property changes.
 
@@ -151,7 +142,6 @@
                      */
                     this.fire("pos", this._state.pos);
                 },
-
                 get: function () {
                     return this._state.pos;
                 }
@@ -163,20 +153,14 @@
              The vector originates at {{#crossLink "Clip/pos:property"}}{{/crossLink}}. Elements on the
              same side of the vector are clipped.
 
-             Fires a {{#crossLink "Clip/dir:event"}}{{/crossLink}} event on change.
-
              @property dir
              @default [0, 0, -1]
              @type Float32Array
              */
             dir: {
-
                 set: function (value) {
-
                     this._state.dir.set(value || [0, 0, -1]);
-
                     this._renderer.imageDirty();
-
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/dir:property"}}{{/crossLink}} property changes.
 
@@ -185,11 +169,14 @@
                      */
                     this.fire("dir", this._state.dir);
                 },
-
                 get: function () {
                     return this._state.dir;
                 }
             }
+        },
+
+        _destroy: function () {
+            this.scene._clipDestroyed(this);
         }
     });
 })();

@@ -1,5 +1,5 @@
 /**
- A **TestModel** is a procedurally-generated test {{#crossLink "Model"}}{{/crossLink}} containing {{#crossLink "Entity"}}Entities{{/crossLink}} that represent city buildings.
+ A **TestModel** is a procedurally-generated test {{#crossLink "Model"}}{{/crossLink}} containing {{#crossLink "Mesh"}}Meshes{{/crossLink}} that represent city buildings.
 
  <a href="../../examples/#models_generation_TestModel"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a>
 
@@ -37,13 +37,14 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TestModel.
  @param [cfg.size] {Number} World-space width of each axis.
  @param [cfg.density] {Number} Number of buildings on each axis.
- @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this TestModel.
- Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this TestModel. Internally, the given
- {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
- that the TestModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ @param [cfg.position=[0,0,0]] {Float32Array} The TestModel's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The TestModel's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The TestModel's local rotation, as Euler angles given in degrees.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The TestModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
 (function () {
@@ -69,27 +70,27 @@
 
             // Create some geometry and material assets
 
-            this.asset("box", {
+            this.createAsset("box", {
                 type: "xeogl.BoxGeometry",
                 xSize: 1,
                 ySize: 1,
                 zSize: 1
             });
 
-            this.asset("asphalt", {
+            this.createAsset("asphalt", {
                 type: "xeogl.LambertMaterial",
                 diffuse: [0.2, 0.2, 0.2],
                 ambient: [0.2, 0.2, 0.2],
                 specular: [0.0, 0.0, 0.0]
             });
 
-            this.asset("lightConcrete", {
+            this.createAsset("lightConcrete", {
                 type: "xeogl.LambertMaterial",
                 diffuse: [0.6, 0.6, 0.6],
                 ambient: [0.2, 0.2, 0.2]
             });
 
-            this.asset("grass", {
+            this.createAsset("grass", {
                 type: "xeogl.LambertMaterial",
                 diffuse: [0, 0.5, 0.2],
                 ambient: [0.1, 0.1, 0.1]
@@ -97,11 +98,11 @@
 
             // Select a couple of assets and generate the asphalt ground
 
-            this.geometry("box");
-            this.material("asphalt");
-            this.pos(20, -.5, 20);
-            this.scale(140, 0.1, 140);
-            this.entity();
+            this.setGeometry("box");
+            this.setMaterial("asphalt");
+            this.setPosition(20, -.5, 20);
+            this.setScale(140, 0.1, 140);
+            this.createMesh();
 
             // Generate the buildings
 
@@ -125,12 +126,12 @@
 
             // Each building gets a green lawn under it
 
-            this.geometry("box");
-            this.material("grass");
-            this.pos(xpos, ypos, zpos);
-            this.scale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
-            this.colorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
-            this.entity();
+            this.setGeometry("box");
+            this.setMaterial("grass");
+            this.setPosition(xpos, ypos, zpos);
+            this.setScale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
+            this.setColorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
+            this.createMesh();
 
             // Now generate the building as a bunch of boxes
 
@@ -196,11 +197,11 @@
                         break;
                 }
 
-                this.geometry("box");
-                this.material("lightConcrete");
-                this.pos(xpos, ypos + ySize, zpos);
-                this.scale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
-                this.entity();
+                this.setGeometry("box");
+                this.setMaterial("lightConcrete");
+                this.setPosition(xpos, ypos + ySize, zpos);
+                this.setScale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
+                this.createMesh();
 
                 // Decrease current vertical box size
                 ySize -= (Math.random() * 5) + 2;

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+    <script src="js/models/STLModel.js"></script>
+    <script src="js/helpers/aabbHelper.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>using an <a href="../docs/classes/AABBGeometry.html" target="_parent">AABBGeometry</a> to show the axis-aligned
+        World-space boundary of
+        a <a href="../docs/classes/Scene.html" target="_parent">Scene</a></h1>
+    <br>
+    <pre id="log">
+    </pre>
+</div>
+
+<script>
+
+    var models = new xeogl.Group({
+
+        rotation: [0, 0, 0],
+        position: [0, 0, 0],
+        scale: [1, 1, 1],
+
+        children: [
+
+            new xeogl.GLTFModel({
+                id: "engine",
+                src: "models/gltf/2CylinderEngine/glTF/2CylinderEngine.gltf",
+                scale: [.2, .2, .2],
+                position: [-110, 0, 0],
+                rotation: [0, 90, 0],
+                entities: true
+            }),
+
+            new xeogl.GLTFModel({
+                id: "hoverBike",
+                src: "models/gltf/hover_bike/scene.gltf",
+                scale: [.5, .5, .5],
+                position: [0, -40, 0]
+            }),
+
+            new xeogl.STLModel({
+                id: "f1Car",
+                src: "models/stl/binary/F1Concept.stl",
+                smoothNormals: true,
+                scale: [3, 3, 3],
+                position: [110, -20, 60],
+                rotation: [0, 90, 0]
+            }),
+
+            new xeogl.Group({
+                id: "table",
+                rotation: [0, 50, 0],
+                position: [0, 150, 0],
+                scale: [6, 6, 6],
+                children: [
+                    new xeogl.Mesh({ // Red table leg
+                        id: "redLeg",
+                        position: [-4, -6, -4],
+                        scale: [1, 3, 1],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [1, 0.3, 0.3]
+                        })
+                    }),
+                    new xeogl.Mesh({ // Green table leg
+                        id: "greenLeg",
+                        position: [4, -6, -4],
+                        scale: [1, 3, 1],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [0.3, 1.0, 0.3]
+                        })
+                    }),
+                    new xeogl.Mesh({// Blue table leg
+                        id: "blueLeg",
+                        position: [4, -6, 4],
+                        scale: [1, 3, 1],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [0.3, 0.3, 1.0]
+                        })
+                    }),
+                    new xeogl.Mesh({  // Yellow table leg
+                        id: "yellowLeg",
+                        position: [-4, -6, 4],
+                        scale: [1, 3, 1],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [1.0, 1.0, 0.0]
+                        }),
+                        aabbVisible: true
+                    }),
+                    new xeogl.Mesh({ // Purple table top
+                        id: "tableTop",
+                        position: [0, -3, 0],
+                        scale: [6, 0.5, 6],
+                        rotation: [0, 0, 0],
+                        material: new xeogl.PhongMaterial({
+                            diffuse: [1.0, 0.3, 1.0]
+                        })
+                    })
+                ]
+            })
+        ]
+    });
+
+    new xeogl.CameraControl();
+
+    var scene = models.scene;
+    var camera = scene.camera;
+
+    camera.eye = [-4.13, 137.33, 344.18];
+    camera.look = [0, -7.69, 2.47];
+    camera.up = [0, 0.92, -0.38];
+
+    var engine = scene.models["engine"];
+
+    // Find Mesh by global ID on Scene
+    var table = scene.components["table"];
+
+    // Find Mesh by global ID on Scene
+    var redLeg = scene.components["redLeg"];
+
+    // Find mesh by global ID on parent Group
+    var greenLeg = table.childMap["greenLeg"];
+
+    // Find mesh by index in Group's child list
+    var blueLeg = table.children[2];
+
+    // Periodically update transforms
+    scene.on("tick", function () {
+
+        // Rotate legs
+        redLeg.rotateY(0.5);
+        greenLeg.rotateY(0.5);
+        blueLeg.rotateY(0.5);
+
+        // Rotate table
+        table.rotateY(0.5);
+        table.rotateX(0.3);
+
+        models.rotateY(.5); // Spin the whole group
+        engine.rotateZ(.5); // Spin one of the models
+    });
+
+    // Show AABB around Scene
+    new xeogl.Mesh({
+        geometry: new xeogl.AABBGeometry({
+            target: scene
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth: 2
+        }),
+        collidable: false  // <<------------------- Important! Don't contribute to the Scene boundary.
+    });
+
+    table.aabbVisible = true;
+
+    scene.models["f1Car"].on("loaded", function () {
+        this.aabbVisible = true;
+    });
+
+    scene.models["engine"].on("loaded", function () {
+        this.aabbVisible = true;
+    });
+
+    scene.models["hoverBike"].on("loaded", function () {
+        this.aabbVisible = true;
+    });
+
+</script>
+</body>
+</html>

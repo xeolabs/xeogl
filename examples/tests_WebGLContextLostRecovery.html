@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="libs/webgl-debug.js"></script> <!-- xeogl dependency when simulating WebGL context loss/restore -->
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/skyboxes/skybox.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>webgl context recovery test: lose and restore the WebGL context every 10 seconds</h1>
+    <pre id="log">
+    </pre>
+</div>
+<br>
+
+
+<script>
+
+    //-----------------------------------------------------------------------------------------------------
+    // Load glTF model
+    //-----------------------------------------------------------------------------------------------------
+
+    xeogl.scene = new xeogl.Scene({ // Override the default Scene
+        simulateWebGLContextLost: true
+    });
+
+    var model = new xeogl.GLTFModel({
+        id: "house",
+        src: "models/gltf/the_branch_house/scene.gltf",
+        //src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf",
+        edgeThreshold: 20,
+        combineGeometry: true,
+        quantizeGeometry: true
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Set up camera
+    //-----------------------------------------------------------------------------------------------------
+
+    var scene = model.scene;
+    var camera = scene.camera;
+
+    camera.eye = [-1.7671842575073242, 2.231440782546997, -4.35687780380249];
+    camera.look = [0.4531812071800232, 0.48309606313705444, -0.08688834309577942];
+    camera.up = [0.11574053764343262, 0.9680269956588745, 0.22258135676383972];
+
+    new xeogl.CameraControl();
+
+    //-----------------------------------------------------------------------------------------------------
+    // Ground plane
+    //-----------------------------------------------------------------------------------------------------
+
+    new xeogl.Mesh({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 100,
+            zSize: 100
+        }),
+        material: new xeogl.PhongMaterial({
+            shininess: 170,
+            specular: [0.1, 0.1, 0.3],
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                scale: [-25.0, 25.0]
+            }),
+            xalpha: 0.99,
+            backfaces: false
+        }),
+        collidable: false,
+        pickable: false,
+        colorize: [0.5, 1, 0.5, 1]
+    });
+
+    var spinning = true;
+    var SECONDS = 10;
+    var count = SECONDS;
+    var log = document.getElementById("log");
+
+
+    model.on("loaded", function () {
+
+        scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                camera.orbitYaw(-0.1);
+            }
+        });
+
+        setInterval(function () {
+            count--;
+            if (count > 0) {
+                log.innerHTML = "losing WebGL context in " + count + " seconds..";
+            } else {
+                log.innerHTML = "losing and restoring WebGL context now";
+
+                scene.canvas.canvas.loseContext();
+
+                count = SECONDS;
+            }
+        }, 1000)
+    });
+
+    //    new xeogl.LightMap({
+    //        src: [
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+    //        ],
+    //        encoding: "linear"
+    //    });
+
+    new xeogl.ReflectionMap({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ],
+        encoding: "sRGB"
+    });
+
+
+</script>
+</body>
+</html>

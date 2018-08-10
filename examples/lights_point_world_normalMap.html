@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/curves/curve.js"></script>
@@ -21,6 +21,8 @@
 
 <script>
 
+    xeogl.scene.clearLights();
+
     // Lights for our normal-mapped objects, containing the PointLight
     var pointLight = new xeogl.PointLight({
         pos: [0, 0, 0],
@@ -31,13 +33,6 @@
 //        quadraticAttenuation: 0.0005,
         space: "world"
     });
-
-    xeogl.scene.lights.lights = [
-//            new xeogl.AmbientLight({
-//                color: [0.3, 0.3, 0.3]
-//            }),
-        pointLight
-    ];
 
     // Sphere for each of our normal-mapped objects
     var geometry = new xeogl.SphereGeometry({
@@ -65,12 +60,10 @@
     for (var x = -15; x <= 15; x += 4) {
         for (var z = -15; z <= 15; z += 4) {
 
-            new xeogl.Entity({
+            new xeogl.Mesh({
                 geometry: geometry,
                 material: material,
-                transform: new xeogl.Translate({
-                    xyz: [x, 0, z]
-                })
+                position: [x, 0, z]
             });
         }
     }
@@ -96,8 +89,8 @@
         ]
     });
 
-    // Entity to show the SplineCurve
-    new xeogl.Entity({
+    // Mesh to show the SplineCurve
+    new xeogl.Mesh({
         geometry: new xeogl.Geometry({
             positions: xeogl.math.flatten(splineCurve.getPoints(100))
         }),
@@ -111,7 +104,7 @@
     });
 
     // Indicator sphere to show position of PointLight
-    var pointLightIndicator = new xeogl.Entity({
+    var pointLightIndicator = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: .5
         }),
@@ -119,13 +112,12 @@
             ambient: [0, 0, 0],
             diffuse: [0, 0, 0],
             emissive: [1.0, 0, 0]
-        }),
-        transform: new xeogl.Translate()
+        })
     });
 
     // Update position of indicator sphere in synch with PointLight's position
     pointLight.on("pos", function (pos) {
-        pointLightIndicator.transform.xyz = pos;
+        pointLightIndicator.position = pos;
     });
 
     // Update color of indicator sphere in synch with PointLight's color

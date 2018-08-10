@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -18,24 +18,23 @@
 
 
     // Override xeogl's default lights with some View-space directional lights,
-    // including one that shines from behind our torus Entity
+    // including one that shines from behind our torus Mesh
 
-    xeogl.scene.lights.lights = [
-        new xeogl.DirLight({
-            dir: [0.0, 0.0, -1.0],
-            color: [1.0, 1.0, 0.9],
-            intensity: 1.0,
-            space: "view"
-        }),
-        new xeogl.DirLight({
-            dir: [0.1, 0.1, 0.7],
-            color: [1.0, 1.0, 1.1],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    xeogl.scene.clearLights();
+    new xeogl.DirLight({
+        dir: [0.0, 0.0, -1.0],
+        color: [1.0, 1.0, 0.9],
+        intensity: 1.0,
+        space: "view"
+    });
+    new xeogl.DirLight({
+        dir: [0.1, 0.1, 0.7],
+        color: [1.0, 1.0, 1.1],
+        intensity: 1.0,
+        space: "view"
+    });
 
-    var wireframeTorus = new xeogl.Entity({
+    var wireframeTorus = new xeogl.Mesh({
         geometry: new xeogl.TorusGeometry({
             primitive: "lines",
             radius: 0.9,
@@ -55,7 +54,7 @@
         layer: 1.5
     });
 
-    var solidTorus = new xeogl.Entity({
+    var solidTorus = new xeogl.Mesh({
         geometry: new xeogl.TorusGeometry({
             radius: 0.9,
             tube: 0.3,
@@ -91,7 +90,7 @@
     });
 
 
-    var wireframeBox = new xeogl.Entity({
+    var wireframeBox = new xeogl.Mesh({
         geometry: new xeogl.Geometry({
             primitive: "lines",
             positions: [
@@ -124,7 +123,7 @@
         visible: true
     });
 
-    var solidBox = new xeogl.Entity({
+    var solidBox = new xeogl.Mesh({
         geometry: new xeogl.BoxGeometry({
             xSize: 10,
             ySize: 10,

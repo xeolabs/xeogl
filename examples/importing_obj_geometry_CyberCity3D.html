@@ -3,13 +3,13 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
-    <script src="js/geometry/objGeometry.js"></script>
+    <script src="js/geometry/objGeometryLoader.js"></script>
 <body>
 
 <div id="info">
@@ -24,91 +24,82 @@
 
 <script>
 
-    var miamiGeometry = new xeogl.OBJGeometry({
-        src: "models/obj/CyberCity3D/Miami_Sample.obj",
-        ghostEdgeThreshold: 20
-    });
+    xeogl.loadOBJGeometry(xeogl.scene, "models/obj/CyberCity3D/Miami_Sample.obj", function (miamiGeometry) {
 
-    // Entity on top of the "water", instancing the geometry
-    var city = new xeogl.Entity({
-        geometry: miamiGeometry,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.890196, 0.882353, 0.870588],
-            pointSize: 5
-        }),
-        transform: new xeogl.Scale({
-            xyz: [0.01, 0.01, 0.01]
-        }),
+        // Mesh on top of the "water", instancing the geometry
+        var city = new xeogl.Mesh({
+            geometry: miamiGeometry,
+            material: new xeogl.PhongMaterial({
+                diffuse: [0.890196, 0.882353, 0.870588],
+                pointSize: 5
+            }),
+            scale: [0.01, 0.01, 0.01],
 
-        ghosted: false,
+            ghosted: false,
 
-        ghostMaterial: new xeogl.EmphasisMaterial({
-            edges: true,
-            edgeAlpha: 1.0,
-            edgeColor: [0.2, 1.0, 0.2],
-            edgeWidth: 2,
-            vertices: true,
-            vertexAlpha: 1.0,
-            vertexColor: [0.6, 1.0, 0.6],
-            vertexSize: 8,
-            fill: true,
-            fillColor: [0, 0, 0],
-            fillAlpha: 0.7
-        })
-    });
-
-    // Entity below the "water" creating a fake reflection,
-    // also instancing the geometry by reflecting it in the Y-axis
-    var reflectedCity = new xeogl.Entity({
-        geometry: miamiGeometry,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.890196, 0.882353, 0.870588],
-            frontface: "cw"
-        }),
-        collidable: false,
-        pickable: false,
-        transform: new xeogl.Scale({  // Reflection transform
-            xyz: [0.01, -0.01, 0.01],
-            parent: new xeogl.Translate({
-                xyz: [0, -2.328, 0]
+            ghostMaterial: new xeogl.EmphasisMaterial({
+                edges: true,
+                edgeAlpha: 1.0,
+                edgeColor: [0.2, 1.0, 0.2],
+                edgeWidth: 2,
+                vertices: true,
+                vertexAlpha: 1.0,
+                vertexColor: [0.6, 1.0, 0.6],
+                vertexSize: 8,
+                fill: true,
+                fillColor: [0, 0, 0],
+                fillAlpha: 0.7
             })
-        })
+        });
+
+        // Mesh below the "water" creating a fake reflection,
+        // also instancing the geometry by reflecting it in the Y-axis
+        var reflectedCity = new xeogl.Mesh({
+            geometry: miamiGeometry,
+            material: new xeogl.PhongMaterial({
+                diffuse: [0.890196, 0.882353, 0.870588],
+                frontface: "cw"
+            }),
+            collidable: false,
+            pickable: false,
+            scale: [0.01, -0.01, 0.01],
+            position: [0, -2.328, 0]
+        });
+
+        // The water
+        var water = new xeogl.Mesh({
+            geometry: new xeogl.PlaneGeometry({
+                xSize: 550,
+                zSize: 550
+            }),
+            material: new xeogl.PhongMaterial({
+                diffuse: [0, 0, 0],
+                specular: [.3, .3, .3],
+                shininess: 150,
+                alpha: 0.6,
+                alphaMode: "blend",
+                backfaces: true
+            }),
+            collidable: false,
+            pickable: false,
+            position: [0, -1.185, 0]
+        });
+
+        // Initial camera pose
+        var camera = city.scene.camera;
+        camera.look = [0, -1.5, 0];
+        camera.eye = [0, -1.5, -10];
+        camera.orbitPitch(20);
+
+        // Orbit the camera
+        city.scene.on("tick", function () {
+            camera.orbitYaw(-0.1);
+        });
+
+        // Camera interaction
+        var cameraControl = new xeogl.CameraControl();
+
     });
-
-    // The water
-    var water = new xeogl.Entity({
-        geometry: new xeogl.PlaneGeometry({
-            xSize: 550,
-            zSize: 550
-        }),
-        material: new xeogl.PhongMaterial({
-            diffuse: [0, 0, 0],
-            specular: [.3, .3, .3],
-            shininess: 150,
-            alpha: 0.6,
-            alphaMode: "blend",
-            backfaces: true
-        }),
-        collidable: false,
-        pickable: false,
-        transform: new xeogl.Translate({
-            xyz: [0, -1.185, 0]
-        })
-    });
-
-    // Initial camera pose
-    var camera = city.scene.camera;
-    camera.look = [0, -1.5, 0];
-    camera.eye = [0, -1.5, -10];
-    camera.orbitPitch(20);
-
-    // Orbit the camera
-    city.scene.on("tick", function () {
-      //  camera.orbitYaw(-0.1);
-    });
-
-    // Camera interaction
-    var cameraControl = new xeogl.CameraControl();
 
 </script>
 </body>

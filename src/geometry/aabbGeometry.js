@@ -17,17 +17,17 @@
  ## Usage
 
  ````javascript
- // First Entity with a TorusGeometry
- var entity = new xeogl.Entity({
+ // First Mesh with a TorusGeometry
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.TorusGeometry()
  });
 
- // Second Entity with an AABBGeometry that shows a wireframe box
- // for the World-space axis-aligned boundary of the first Entity
- var boundaryHelper = new xeogl.Entity({
+ // Second Mesh with an AABBGeometry that shows a wireframe box
+ // for the World-space axis-aligned boundary of the first Mesh
+ var boundaryHelper = new xeogl.Mesh({
 
      geometry: new xeogl.AABBGeometry({
-         targetAABB: entity.aabb
+         targetAABB: mesh.aabb
      }),
 
      material: new xeogl.PhongMaterial({
@@ -38,16 +38,16 @@
  });
  ````
 
- Now whenever our entity {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our AABBGeometry will automatically
+ Now whenever our mesh {{#crossLink "Mesh"}}{{/crossLink}} changes shape or position, our AABBGeometry will automatically
  update to stay fitted to it.
 
- We could also directly configure the AABBGeometry with the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/aabb:property"}}AABB{{/crossLink}}:
+ We could also directly configure the AABBGeometry with the {{#crossLink "Mesh"}}{{/crossLink}}'s {{#crossLink "Mesh/aabb:property"}}AABB{{/crossLink}}:
 
  ````javascript
- var boundaryHelper2 = new xeogl.Entity({
+ var boundaryHelper2 = new xeogl.Mesh({
 
      geometry: new xeogl.AABBGeometry({
-         targetAABB: entity.aabb
+         targetAABB: mesh.aabb
      }),
 
      material: new xeogl.PhongMaterial({
@@ -85,7 +85,8 @@
 
             this._super(xeogl._apply(cfg, {
 
-                // combined: true,
+                combined: true,
+                quantized: true, // Quantized geometry is immutable
 
                 primitive: cfg.primitive || "lines",
                 indices: [

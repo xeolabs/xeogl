@@ -1,6 +1,6 @@
 /**
  An **EmphasisMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of attached
- {{#crossLink "Entity"}}Entities{{/crossLink}} when they are highlighted, selected or ghosted.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}} when they are highlighted, selected or ghosted.
 
  ## Examples
 
@@ -10,11 +10,11 @@
 
  ## Overview
 
- * Ghost an {{#crossLink "Entity"}}{{/crossLink}} by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property ````true````.
- * When ghosted, an Entity's appearance is controlled by its EmphasisMaterial.
+ * Ghost an {{#crossLink "Mesh"}}{{/crossLink}} by setting its {{#crossLink "Mesh/ghost:property"}}{{/crossLink}} property ````true````.
+ * When ghosted, a Mesh's appearance is controlled by its EmphasisMaterial.
  * An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink "EmphasisMaterial/preset:property"}}{{/crossLink}} to the preset's ID. A map of available presets is provided in {{#crossLink "EmphasisMaterial/presets:property"}}xeogl.EmphasisMaterial.presets{{/crossLink}}.
- * By default, an Entity uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.
- * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global EmphasisMaterial by default.
+ * By default, a Mesh uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Mesh its own EmphasisMaterial when you want to customize the effect per-Mesh.
+ * Ghost all Meshes in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Meshes in a Model have the Scene's global EmphasisMaterial by default.
  * Modify the Scene's global EmphasisMaterial to customize it.
 
  ## Usage
@@ -24,15 +24,15 @@
 
  ### Ghosting
 
- In the usage example below, we'll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
- has its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
+ In the usage example below, we'll create a Mesh with a ghost effect applied to it. The Mesh gets its own EmphasisMaterial for ghosting, and
+ has its {{#crossLink "Mesh/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
 
  <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a>
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 1
+        edgeThreshold: 1
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -54,9 +54,9 @@
  });
  ````
 
- Note the **ghostEdgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
- Entity. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
- adjacent co-planar triangles) removed for visual clarity. The ````ghostEdgeThreshold```` configuration indicates
+ Note the **edgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
+ Mesh. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
+ adjacent co-planar triangles) removed for visual clarity. The ````edgeThreshold```` configuration indicates
  that, for this particular Geometry, an inner edge is one where the angle between the surface normals of adjacent triangles is not
  greater than ````5```` degrees. That's set to ````2```` by default, but we can override it to tweak the effect as needed for particular Geometries.
 
@@ -64,9 +64,9 @@
  to customize the effect.
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 5
+        edgeThreshold: 5
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -74,7 +74,7 @@
     ghost: true
  });
 
- var ghostMaterial = entity.scene.ghostMaterial;
+ var ghostMaterial = mesh.scene.ghostMaterial;
 
  ghostMaterial.edges = true;
  ghostMaterial.edgeColor = [0.2, 1.0, 0.2];
@@ -92,26 +92,26 @@
  ### Highlighting
 
  In the next example, we'll use a ghosting in conjunction with highlighting, to emphasise a couple of objects within
- a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Entities except for two gears, which we'll highlight instead. The ghosted
- Entities have the Scene's global ghosting EmphasisMaterial, which we'll modify. The  highlighted Entities also have the Scene's global highlighting EmphasisMaterial, which we'll modify as well.
+ a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Meshes except for two gears, which we'll highlight instead. The ghosted
+ Meshes have the Scene's global ghosting EmphasisMaterial, which we'll modify. The  highlighted Meshes also have the Scene's global highlighting EmphasisMaterial, which we'll modify as well.
 
  <a href="../../examples/#effects_demo_gearbox"><img src="../../assets/images/screenshots/HighlightMaterial/gearbox.png"></img></a>
 
  ````javascript
  var model = new xeogl.GLTFModel({
      src: "models/gltf/gearbox_conical/scene.gltf",
-     ghostEdgeThreshold: 10
+     edgeThreshold: 10
  });
 
  model.on("loaded", function() {
 
     model.ghost = true;
 
-    model.entities["gearbox#77.0"].ghost = false;
-    model.entities["gearbox#79.0"].ghost = false;
+    model.meshes["gearbox#77.0"].ghost = false;
+    model.meshes["gearbox#79.0"].ghost = false;
 
-    model.entities["gearbox#77.0"].highlight = true;
-    model.entities["gearbox#79.0"].highlight = true;
+    model.meshes["gearbox#77.0"].highlight = true;
+    model.meshes["gearbox#79.0"].highlight = true;
 
     var ghostMaterial = model.scene.ghostMaterial;
 
@@ -188,9 +188,9 @@
  You can also just create an EmphasisMaterial from a preset:
 
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        ghostEdgeThreshold: 5
+        edgeThreshold: 5
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -214,22 +214,19 @@
  @param [cfg] {*} The EmphasisMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this EmphasisMaterial.
-
  @param [cfg.edges=true] {Boolean} Indicates whether or not ghost edges are visible.
  @param [cfg.edgeColor=[0.2,0.2,0.2]] {Array of Number}  RGB color of ghost edges.
  @param [cfg.edgeAlpha=0.5] {Number} Transparency of ghost edges. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
  @param [cfg.edgeWidth=1] {Number}  Width of ghost edges, in pixels.
-
  @param [cfg.vertices=false] {Boolean} Indicates whether or not ghost vertices are visible.
  @param [cfg.vertexColor=[0.4,0.4,0.4]] {Array of Number} Color of ghost vertices.
  @param [cfg.vertexAlpha=0.7] {Number}  Transparency of ghost vertices. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
  @param [cfg.vertexSize=4.0] {Number} Pixel size of ghost vertices.
-
  @param [cfg.fill=true] {Boolean} Indicates whether or not ghost surfaces are filled with color.
  @param [cfg.fillColor=[0.4,0.4,0.4]] {Array of Number} EmphasisMaterial fill color.
  @param [cfg.fillAlpha=0.2] {Number}  Transparency of filled ghost faces. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
- @param [cfg.preset] {String} Selects a preset EmphasisMaterial configuration - see {{#crossLink "EmphasisMaterial/preset:method"}}preset(){{/crossLink}}.
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+ @param [cfg.preset] {String} Selects a preset EmphasisMaterial configuration - see {{#crossLink "EmphasisMaterial/preset:method"}}EmphasisMaterial#preset(){{/crossLink}}.
  */
 (function () {
 
@@ -243,23 +240,20 @@
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.EmphasisMaterial({
-
+            this._state = new xeogl.renderer.State({
                 type: "EmphasisMaterial",
-
                 edges: null,
                 edgeColor: null,
                 edgeAlpha: null,
                 edgeWidth: null,
-
                 vertices: null,
                 vertexColor: null,
                 vertexAlpha: null,
                 vertexSize: null,
-
                 fill: null,
                 fillColor: null,
-                fillAlpha: null
+                fillAlpha: null,
+                backfaces: true
             });
 
             this._preset = "default";
@@ -279,6 +273,7 @@
                 if (cfg.fill !== undefined) this.fill = cfg.fill;
                 if (cfg.fillColor) this.fillColor = cfg.fillColor;
                 if (cfg.fillAlpha !== undefined) this.fillAlpha = cfg.fillAlpha;
+                if (cfg.backfaces !== undefined) this.backfaces = cfg.backfaces;
             } else {
                 this.edges = cfg.edges;
                 this.edgeColor = cfg.edgeColor;
@@ -291,6 +286,7 @@
                 this.fill = cfg.fill;
                 this.fillColor = cfg.fillColor;
                 this.fillAlpha = cfg.fillAlpha;
+                this.backfaces = cfg.backfaces;
             }
         },
 
@@ -304,7 +300,6 @@
              @type Boolean
              */
             edges: {
-
                 set: function (value) {
                     value = value !== false;
                     if (this._state.edges === value) {
@@ -313,7 +308,6 @@
                     this._state.edges = value;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edges;
                 }
@@ -327,32 +321,24 @@
              @type Float32Array
              */
             edgeColor: {
-
                 set: function (value) {
-
                     var edgeColor = this._state.edgeColor;
-
                     if (!edgeColor) {
                         edgeColor = this._state.edgeColor = new Float32Array(3);
-
                     } else if (value && edgeColor[0] === value[0] && edgeColor[1] === value[1] && edgeColor[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         edgeColor[0] = value[0];
                         edgeColor[1] = value[1];
                         edgeColor[2] = value[2];
-
                     } else {
                         edgeColor[0] = 0.2;
                         edgeColor[1] = 0.2;
                         edgeColor[2] = 0.2;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeColor;
                 }
@@ -368,20 +354,14 @@
              @type Number
              */
             edgeAlpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 0.5;
-
                     if (this._state.edgeAlpha === value) {
                         return;
                     }
-
                     this._state.edgeAlpha = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeAlpha;
                 }
@@ -395,14 +375,10 @@
              @type Number
              */
             edgeWidth: {
-
                 set: function (value) {
-
                     this._state.edgeWidth = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.edgeWidth;
                 }
@@ -416,7 +392,6 @@
              @type Boolean
              */
             vertices: {
-
                 set: function (value) {
                     value = !!value;
                     if (this._state.vertices === value) {
@@ -425,7 +400,6 @@
                     this._state.vertices = value;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.vertices;
                 }
@@ -439,7 +413,6 @@
              @type Float32Array
              */
             vertexColor: {
-
                 set: function (value) {
                     var vertexColor = this._state.vertexColor;
                     if (!vertexColor) {
@@ -458,7 +431,6 @@
                     }
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.vertexColor;
                 }
@@ -474,7 +446,6 @@
              @type Number
              */
             vertexAlpha: {
-
                 set: function (value) {
                     value = (value !== undefined && value !== null) ? value : 0.7;
                     if (this._state.vertexAlpha === value) {
@@ -483,7 +454,6 @@
                     this._state.vertexAlpha = value;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.vertexAlpha;
                 }
@@ -501,7 +471,6 @@
                     this._state.vertexSize = value || 4.0;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.vertexSize;
                 }
@@ -515,7 +484,6 @@
              @type Boolean
              */
             fill: {
-
                 set: function (value) {
                     value = value !== false;
                     if (this._state.fill === value) {
@@ -524,7 +492,6 @@
                     this._state.fill = value;
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.fill;
                 }
@@ -538,32 +505,24 @@
              @type Float32Array
              */
             fillColor: {
-
                 set: function (value) {
-
                     var fillColor = this._state.fillColor;
-
                     if (!fillColor) {
                         fillColor = this._state.fillColor = new Float32Array(3);
-
                     } else if (value && fillColor[0] === value[0] && fillColor[1] === value[1] && fillColor[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         fillColor[0] = value[0];
                         fillColor[1] = value[1];
                         fillColor[2] = value[2];
-
                     } else {
                         fillColor[0] = 0.4;
                         fillColor[1] = 0.4;
                         fillColor[2] = 0.4;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.fillColor;
                 }
@@ -579,25 +538,42 @@
              @type Number
              */
             fillAlpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 0.2;
-
                     if (this._state.fillAlpha === value) {
                         return;
                     }
-
                     this._state.fillAlpha = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.fillAlpha;
                 }
             },
 
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+                set: function (value) {
+                    value = !!value;
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+                    this._state.backfaces = value;
+                    this._renderer.imageDirty();
+                },
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
 
             /**
              Selects a preset EmphasisMaterial configuration.
@@ -618,7 +594,6 @@
              @type String
              */
             preset: {
-
                 set: function (value) {
                     value = value || "default";
                     if (this._preset === value) {
@@ -642,15 +617,10 @@
                     this.fillAlpha = preset.fillAlpha;
                     this._preset = value;
                 },
-
                 get: function () {
                     return this._preset;
                 }
             }
-        },
-
-        _getState: function () {
-            return this._state;
         },
 
         _destroy: function () {

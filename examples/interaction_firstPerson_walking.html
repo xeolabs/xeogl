@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -24,13 +24,11 @@
 
     var model = new xeogl.GLTFModel({
         src: "models/gltf/vianney_house_2/scene.gltf",
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90
-        })
+        rotation: [-90, 0, 0]
     });
 
-    var camera = xeogl.scene.camera;
+    var scene = model.scene;
+    var camera = scene.camera;
 
     camera.eye = [-58.023033142089844, 34.3411750793457, -25.53963851928711];
     camera.look = [27.641752243041992, 20.933584213256836, -19.75855827331543];
@@ -48,37 +46,37 @@
     // Customize lighting
     //-----------------------------------------------------------------------------------------------------
 
-    var lights = xeogl.scene.lights;
+    scene.clearLights();
 
-    lights.lights = [
+    new xeogl.DirLight({
+        dir: [-1116.85791015625, -4015.44873046875, -1726.414306640625],
+        color: [1, 1, 1],
+        intensity: 0.8,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            dir: [-1116.85791015625, -4015.44873046875, -1726.414306640625],
-            color: [1, 1, 1],
-            intensity: 0.8,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [0.6, -0.4, -0.2],
-            color: [0.90, 0.90, 0.90],
-            intensity: 0.6,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [-0.4, -0.1, -0.6],
-            color: [0.75, 0.75, 0.7],
-            intensity: 0.4,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-            dir: [0.6, -0.6, 0.6],
-            color: [0.70, 0.70, 0.93],
-            intensity: 0.3,
-            space: "world"
-        })
-    ];
+    new xeogl.DirLight({
+        dir: [0.6, -0.4, -0.2],
+        color: [0.90, 0.90, 0.90],
+        intensity: 0.6,
+        space: "world"
+    });
 
-    lights.reflectionMap = new xeogl.CubeTexture({
+    new xeogl.DirLight({
+        dir: [-0.4, -0.1, -0.6],
+        color: [0.75, 0.75, 0.7],
+        intensity: 0.4,
+        space: "world"
+    });
+
+    new xeogl.DirLight({
+        dir: [0.6, -0.6, 0.6],
+        color: [0.70, 0.70, 0.93],
+        intensity: 0.3,
+        space: "world"
+    });
+
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",

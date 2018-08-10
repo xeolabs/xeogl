@@ -3,63 +3,51 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
-    <script src="js/geometry/nintendo3DSGeometry.js"></script>
+    <script src="js/geometry/nintendo3DSGeometryLoader.js"></script>
 
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/Nintendo3DSGeometry.html" target="_parent">Nintendo3DSGeometry</a> imported from a Nintendo .3DS file</h1>
+    <h1><a href="../docs/classes/Nintendo3DSGeometry.html" target="_parent">Nintendo3DSGeometry</a> imported from a
+        Nintendo .3DS file</h1>
 </div>
 
 <script>
 
-    var entity = new xeogl.Entity({
+    xeogl.load3DSGeometry(xeogl.scene, "models/3ds/lexus.3ds", function (lexusGeometry) {
 
-        geometry: new xeogl.Nintendo3DSGeometry({
-            src: "models/3ds/lexus.3ds"
-        }),
+        var mesh = new xeogl.Mesh({
 
-        material: new xeogl.PhongMaterial({
-            emissive: [1, 1, 1],
-            emissiveMap: new xeogl.Texture({  // .3DS has no normals so relies on emissive illumination
-                src: "models/3ds/lexus.jpg"
-            })
-        }),
+            geometry: lexusGeometry,
 
-        // We need to rotate this particular .3DS model
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90,
-            parent: new xeogl.Rotate({
-                xyz: [0, 1, 0],
-                angle: 90
-            })
-        })
-    });
+            material: new xeogl.PhongMaterial({
+                emissive: [1, 1, 1],
+                emissiveMap: new xeogl.Texture({  // .3DS has no normals so relies on emissive illumination
+                    src: "models/3ds/lexus.jpg"
+                })
+            }),
 
-    // Allow user camera control
-    new xeogl.CameraControl();
-
-    // Fit to view as soon as the .3DS is loaded
-    entity.geometry.on("loaded", function () {
+            rotation: [-90, 0, 0]
+        });
 
         var cameraFlight = new xeogl.CameraFlightAnimation();
-        cameraFlight.jumpTo(entity);
+        cameraFlight.jumpTo(mesh);
 
-        // Start orbiting the camera
-        entity.scene.camera.orbitPitch(20);
-        entity.scene.camera.orbitYaw(130);
+        mesh.scene.camera.orbitPitch(20);
+        mesh.scene.camera.orbitYaw(130);
 
-        entity.scene.on("tick", function () {
-            entity.scene.camera.orbitYaw(-0.2);
+        mesh.scene.on("tick", function () {
+            mesh.scene.camera.orbitYaw(-0.2);
         });
+
+        new xeogl.CameraControl();
     });
 
 </script>

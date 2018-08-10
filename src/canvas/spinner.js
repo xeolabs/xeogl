@@ -157,6 +157,8 @@
                         return;
                     }
 
+                    var prevValue = this._processes;
+
                     this._processes = value;
 
                     this._element.style["visibility"] = (this._processes > 0) ? "visible" : "hidden";
@@ -168,6 +170,16 @@
                      @param value The property's new value
                      */
                     this.fire("processes", this._processes);
+
+                    if (this._processes === 0 && this._processes !== prevValue) {
+
+                        /**
+                         Fired whenever this Spinner's {{#crossLink "Spinner/visible:property"}}{{/crossLink}} property becomes zero.
+
+                         @event zeroProcesses
+                         */
+                        this.fire("zeroProcesses", this._processes);
+                    }
                 },
 
                 get: function () {
@@ -202,9 +214,10 @@
         },
 
         _spinnerCSS: ".sk-fading-circle {\
-        margin: 100px auto;\
-        width: 100px;\
-        height:100px;\
+        background: transparent;\
+        margin: 20px auto;\
+        width: 50px;\
+        height:50px;\
         position: relative;\
         }\
         .sk-fading-circle .sk-circle {\

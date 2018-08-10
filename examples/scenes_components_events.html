@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -17,36 +17,36 @@
 
 <script>
 
-    // Create a Entity with all defaults
-    var entity = new xeogl.Entity();
+    // Create a Mesh with all defaults
+    var mesh = new xeogl.Mesh();
 
-    // Subscribe to change of material on our Entity.
+    // Subscribe to change of material on our Mesh.
     // This will immediately fire a change event for the current value of that property.
 
-    entity.on("material", function (material) {
-        log("entity's material is: " + material.id);
+    mesh.on("material", function (material) {
+        log("mesh's material is: " + material.id);
     });
 
-    // Attach a new Material to the Entity.
+    // Attach a new Material to the Mesh.
     // This will fire another
 
-    entity.material = new xeogl.PhongMaterial({
+    mesh.material = new xeogl.PhongMaterial({
         id: "myMaterial",
         diffuse: [1.0, 1.0, 0.0]
     });
 
     // Subscribe to change of diffuse color on our material
-    entity.material.on("diffuse", function (diffuse) {
-        log("entity's material's diffuse color is: " + JSON.stringify(diffuse));
+    mesh.material.on("diffuse", function (diffuse) {
+        log("mesh's material's diffuse color is: " + JSON.stringify(diffuse));
     });
 
     // Change the material's diffuse color
-    entity.material.diffuse = [1.0, 0.0, 0.0];
+    mesh.material.diffuse = [1.0, 0.0, 0.0];
 
     // Orbit the eye position about the look position.
-    entity.scene.on("tick", function () {
+    mesh.scene.on("tick", function () {
 
-        var camera = entity.scene.camera;
+        var camera = mesh.scene.camera;
 
         camera.orbitYaw(-0.15);
         camera.orbitPitch(0.05);

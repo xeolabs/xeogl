@@ -13,20 +13,22 @@
  property to the location of a valid STL file.
  * You can set {{#crossLink "STLModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
  the STLModel to clear itself and load components from the new file.
- * For binary STL, has the option to create a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces
+ * For binary STL, has the option to create a separate {{#crossLink "Mesh"}}{{/crossLink}} for each group of faces
  that share the same vertex colors. This allows us to treat STL models as parts assemblies.
  * Can be configured to automatically smooth STL models by converting their face-oriented normals to vertex-oriented.
 
- It inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
+ STLModel inherits these capabilities from its {{#crossLink "Group"}}{{/crossLink}} base class:
 
- * Allows you to access and manipulate the components within it.
- * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
- * Provides its dynamic World-space axis-aligned boundary.
+ * Allows you to access and manipulate the {{#crossLink "Meshes"}}{{/crossLink}} within it.
+ * Can be transformed as a unit within World-space.
+ * Can be a child within a parent {{#crossLink "Group"}}{{/crossLink}}.
+ * Provides its World-space axis-aligned and object-aligned boundaries.
 
  ## Examples
 
  * [Simple shapes with smoothing](../../examples/#importing_stl_shapes)
  * [F1 concept car with smoothing](../../examples/#importing_stl_F1Concept)
+ * [Models within an object hierarchy](../../examples/#objects_hierarchy_models)
 
  ## Usage
 
@@ -34,9 +36,9 @@
  * [Parsing STL](#parsing-stl)
  * [Options](#options)
  * [Smoothing Normals](#smoothing-normals)
- * [Finding loaded Entities](#finding-loaded-entities)
+ * [Finding loaded Meshes](#finding-loaded-meshes)
  * [Transforming an STLModel](#transforming-a-gltfmodel)
- * [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-a-gltfmodel)
+ * [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-an-stlmodel)
  * [Clearing an STLModel](#clearing-a-gltfmodel)
  * [Destroying an STLModel](#destroying-a-gltfmodel)
 
@@ -112,11 +114,13 @@
  | smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See [Smoothing Normals](#smoothing-normals). |
  | smoothNormalsAngleThreshold | Number (degrees) | [0..180] | 20 | See [Smoothing Normals](#smoothing-normals). |
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
- | ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
- | outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
- | highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
- | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
- | splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
+ | ghosted | Boolean |  | false | When true, ghosts all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
+ | outlined | Boolean |  | false | When true, outlines all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
+ | highlighted | Boolean |  | false | When true, highlights all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
+ | selected | Boolean |  | false | When true, renders all the model's Meshes as selected (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
+ | edges | Boolean |  | false | When true, emphasizes the edges on all the model's Meshes (see {{#crossLink "Mesh"}}{{/crossLink}} and {{#crossLink "EdgeMaterial"}}{{/crossLink}}). |
+ | edgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ | splitMeshes | Boolean |  | true | When true, creates a separate {{#crossLink "Mesh"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
 
  ### Smoothing Normals
 
@@ -152,82 +156,44 @@
  model = stlModels["myModel"];
  ````
 
- ### Finding loaded Entities
+ ### Finding loaded Meshes
 
  Once the STLModel has loaded, its {{#crossLink "Scene"}}{{/crossLink}} will contain various components that represent the elements of the STL file.
  We'll now access some of those components by ID, to query and update them programmatically.
 
- Let's highlight an {{#crossLink "Entity"}}Entity{{/crossLink}} in our STLModel:
+ Let's highlight an {{#crossLink "Object"}}{{/crossLink}} in our STLModel:
 
  ````javascript
- var entities = scene.entities;
-
- entities["myModel#1"].highlighted = true;
+ scene.omponents["myModel#1"].highlighted = true;
  ````
 
- An STLModel also has an ID map of the components within it. Let's highlight an {{#crossLink "Entity"}}Entities{{/crossLink}}:
+ An STLModel also has an ID map of the components within it. Let's highlight another {{#crossLink "Object"}}{{/crossLink}} via the STLModel:
 
  ````javascript
- model.components["myModel#1"].highlighted = true;
+ model.components["myModel#2"].highlighted = true;
  ````
 
- An STLModel also has a map containing just the {{#crossLink "Entity"}}Entities{{/crossLink}}:
+ An STLModel also has a map containing just the {{#crossLink "Objects"}}Objects{{/crossLink}}:
 
  ````javascript
- model.entities["myModel#1"].highlighted = true;
+ model.objects["myModel#3"].highlighted = true;
  ````
 
  TODO: ID format description
 
  ### Transforming an STLModel
 
- An STLModel lets us transform its Entities as a group.
-
- We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}}, as a either a
- configuration object or a component instance:
+ An STLModel lets us transform its Meshes as a group:
 
  ```` Javascript
- // Attach transforms as a configuration object:
- model.transform = {
-        type: "xeogl.Translate",
-        xyz: [-35, 0, 0],
-        parent: {
-            type: "xeogl.Rotate",
-            xyz: [0, 1, 0],
-            angle: 45
-        }
-     };
-
- // Attach our own transform instances:
- model.transform = new xeogl.Translate({
-        xyz: [-35, 0, 0],
-        parent: new xeogl.Rotate({
-            xyz: [0, 1, 0],
-            angle: 45
-        })
-     });
- ````
-
- We can also provide the {{#crossLink "Transform"}}{{/crossLink}} to the STLModel constructor, as either configuration
- objects or instances.
-
- Here we'll provide a Transform hierarchy as a configuration object:
-
- ```` Javascript
- // Model internally instantiates our transform components:
  var model = new xeogl.STLModel({
      src: "models/stl/F1Concept.stl",
-     transform: {
-        type: "xeogl.Translate",
-        xyz: [-35, 0, 0],
-        parent: {
-            type: "xeogl.Rotate",
-            xyz: [0, 1, 0],
-            angle: 45
-        }
-     }
+     position: [-35, 0, 0],
+     rotation: [0, 45, 0],
+     scale: [0.5, 0.5, 0.5]
  });
 
+ model.position = [-20, 0, 0];
  ````
 
  ### Getting the World-space boundary of an STLModel
@@ -246,7 +212,7 @@
  * the STLModel's {{#crossLink "Transform"}}{{/crossLink}} is updated,
  * components are added or removed, or
  * the STLModel is reloaded from a different source,
- * the {{#crossLink "Geometry"}}Geometries{{/crossLink}} or {{#crossLink "Transform"}}Transforms{{/crossLink}} of its {{#crossLink "Entities"}}Entities{{/crossLink}} are updated.
+ * the {{#crossLink "Geometry"}}Geometries{{/crossLink}} or {{#crossLink "Transform"}}Transforms{{/crossLink}} of its {{#crossLink "Mesh"}}Meshes{{/crossLink}} are updated.
 
  ````javascript
  model.on("boundary", function() {
@@ -275,22 +241,27 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this STLModel.
  @param [cfg.src] {String} Path to an STL file. You can set this to a new file path at any time, which will cause the
- @param [cfg.quantizeGeometry=true] When true, quantizes geometry to reduce memory and GPU bus usage.
- @param [cfg.combineGeometry=true] When true, combines geometry vertex buffers to improve rendering performance.
+ @param [cfg.quantizeGeometry=true] {Boolean} When true, quantizes geometry to reduce memory and GPU bus usage.
+ @param [cfg.combineGeometry=true] {Boolean} When true, combines geometry vertex buffers to improve rendering performance.
  @param [cfg.smoothNormals=false] {Boolean} When true, automatically converts face-oriented normals to vertex normals for a smooth appearance - see <a href="#smoothing-normals">Smoothing Normals</a>.
  @param [cfg.smoothNormalsAngleThreshold=20] {Number} See <a href="#smoothing-normals">Smoothing Normals</a>.
- @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces.
- @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted.
- @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted.
- @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined.
- @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
+ @param [cfg.backfaces=false] {Boolean} When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces.
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Meshes initially ghosted.
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Meshes initially highlighted.
+ @param [cfg.outline=false] {Boolean} When true, sets all the Model's Meshes initially outlined.
+ @param [cfg.edgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this STLModel.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this STLModel. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
- that the STLModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
- @param [cfg.splitEntities=true] {Boolean} When true, creates a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
+ that the STLModel attaches to its {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+ @param [cfg.splitMeshes=true] {Boolean} When true, creates a separate {{#crossLink "Mesh"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
+ @param [cfg.position=[0,0,0]] {Float32Array} The STLModel's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The STLModel's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The STLModel's local rotation, as Euler angles given in degrees.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The STLModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
 (function () {
@@ -307,8 +278,8 @@
             this._options = {
                 combineGeometry: cfg.combineGeometry !== false,
                 quantizeGeometry: cfg.quantizeGeometry !== false,
-                ghostEdgeThreshold: cfg.ghostEdgeThreshold,
-                splitEntities: cfg.splitEntities,
+                edgeThreshold: cfg.edgeThreshold,
+                splitMeshes: cfg.splitMeshes,
                 smoothNormals: cfg.smoothNormals,
                 smoothNormalsAngleThreshold:cfg.smoothNormalsAngleThreshold
             };
@@ -347,7 +318,7 @@
                         this.fire("loaded", true, true);
                         return;
                     }
-                    this.destroyAll();
+                    this.clear();
                     this._src = value;
                     xeogl.STLModel.load(this, this._src, this._options);
                 },
@@ -487,11 +458,11 @@
             var lastR = null;
             var lastG = null;
             var lastB = null;
-            var newEntity = false;
+            var newMesh = false;
             var alpha;
             var indices;
             var geometry;
-            var entity;
+            var mesh;
             for (var index = 0; index < 80 - 10; index++) {
                 if (( reader.getUint32(index, false) == 0x434F4C4F /*COLO*/ ) &&
                     ( reader.getUint8(index + 4) == 0x52 /*'R'*/ ) &&
@@ -504,15 +475,20 @@
                     alpha = reader.getUint8(index + 9) / 255;
                 }
             }
-            var material = new xeogl.MetallicMaterial(model, { // Share material with all entities
+            var material = new xeogl.MetallicMaterial(model, { // Share material with all meshes
                 roughness: 0.5
             });
-            model.add(material);
+            // var material = new xeogl.PhongMaterial(model, { // Share material with all meshes
+            //     diffuse: [0.4, 0.4, 0.4],
+            //     reflectivity: 1,
+            //     specular: [0.5, 0.5, 1.0]
+            // });
+            model._addComponent(material);
             var dataOffset = 84;
             var faceLength = 12 * 4 + 2;
             var positions = [];
             var normals = [];
-            var splitEntities = options.splitEntities;
+            var splitMeshes = options.splitMeshes;
             for (var face = 0; face < faces; face++) {
                 var start = dataOffset + face * faceLength;
                 var normalX = reader.getFloat32(start, true);
@@ -529,9 +505,9 @@
                         g = defaultG;
                         b = defaultB;
                     }
-                    if (splitEntities && r !== lastR || g !== lastG || b !== lastB) {
+                    if (splitMeshes && r !== lastR || g !== lastG || b !== lastB) {
                         if (lastR !== null) {
-                            newEntity = true;
+                            newMesh = true;
                         }
                         lastR = r;
                         lastG = g;
@@ -550,16 +526,16 @@
                         colors.push(r, g, b, 1); // TODO: handle alpha
                     }
                 }
-                if (splitEntities && newEntity) {
-                    addEntity(model, positions, normals, colors, material, options);
+                if (splitMeshes && newMesh) {
+                    addMesh(model, positions, normals, colors, material, options);
                     positions = [];
                     normals = [];
                     colors = colors ? [] : null;
-                    newEntity = false;
+                    newMesh = false;
                 }
             }
             if (positions.length > 0) {
-                addEntity(model, positions, normals, colors, material, options);
+                addMesh(model, positions, normals, colors, material, options);
             }
         }
 
@@ -605,11 +581,16 @@
             var material = new xeogl.MetallicMaterial(model, {
                 roughness: 0.5
             });
-            model.add(material);
-            addEntity(model, positions, normals, colors, material, options);
+            // var material = new xeogl.PhongMaterial(model, {
+            //     diffuse: [0.4, 0.4, 0.4],
+            //     reflectivity: 1,
+            //     specular: [0.5, 0.5, 1.0]
+            // });
+            model._addComponent(material);
+            addMesh(model, positions, normals, colors, material, options);
         }
 
-        function addEntity(model, positions, normals, colors, material, options) {
+        function addMesh(model, positions, normals, colors, material, options) {
 
             var indices = new Int32Array(positions.length / 3);
             for (var ni = 0, len = indices.length; ni < len; ni++) {
@@ -632,14 +613,14 @@
                 indices: indices
             });
 
-            var entity = new xeogl.Entity(model, {
+            var mesh = new xeogl.Mesh(model, {
                 id: model.id + "#" + entityCount++,
                 geometry: geometry,
                 material: material
             });
 
-            model.add(geometry);
-            model.add(entity);
+            model._addComponent(geometry);
+            model.addChild(mesh);
         }
 
         function ensureString(buffer) {

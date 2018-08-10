@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -62,7 +62,6 @@
         annotations = [
 
             new xeogl.Annotation({
-                type: "xeogl.Annotation",
                 primIndex: 468,
                 bary: [0.05, 0.16, 0.79],
                 occludable: true,
@@ -74,10 +73,9 @@
                 up: [0.01, 0.97, 0.24],
                 pinShown: true,
                 labelShown: true,
-                entity: "tank.entity9"
+                mesh: "tank.mesh9"
             }),
             new xeogl.Annotation({
-                type: "xeogl.Annotation",
                 primIndex: 204,
                 bary: [0.05, 0.16, 0.79],
                 occludable: true,
@@ -89,10 +87,9 @@
                 up: [-0.09, 0.99, 0.11],
                 pinShown: true,
                 labelShown: false,
-                entity: "tank.entity2"
+                mesh: "tank.mesh2"
             }),
             new xeogl.Annotation({
-                type: "xeogl.Annotation",
                 primIndex: 216,
                 bary: [0.05, 0.16, 0.79],
                 occludable: true,
@@ -104,9 +101,9 @@
                 up: [0.01, 0.97, 0.24],
                 pinShown: true,
                 labelShown: false,
-                entity: "tank.entity6"
-            }), new xeogl.Annotation({
-                type: "xeogl.Annotation",
+                mesh: "tank.mesh6"
+            }),
+            new xeogl.Annotation({
                 primIndex: 4464,
                 bary: [0.05, 0.16, 0.79],
                 occludable: true,
@@ -118,7 +115,7 @@
                 up: [0.08, 0.99, 0.07],
                 pinShown: true,
                 labelShown: false,
-                entity: "tank.entity9"
+                mesh: "tank.mesh9"
             })];
 
         var cameraFlight = new xeogl.CameraFlightAnimation({
@@ -129,8 +126,7 @@
         // Faux shadow under the tank
         //----------------------------------
 
-        model.add({
-            type: "xeogl.Entity",
+        new xeogl.Mesh({
             geometry: {
                 type: "xeogl.PlaneGeometry",
                 xSize: 16,
@@ -143,10 +139,7 @@
                 alpha: 0.3,
                 alphaMode: "blend"
             },
-            transform: {
-                type: "xeogl.Translate",
-                xyz: [-1, 0.1, -4]
-            }
+            position: [-1, 0.1, -4]
         });
 
         //---------------------------------------------------------------------------------
@@ -247,13 +240,13 @@
 
     model.on("loaded", function () {
         var gunDir = 0;
-        var gunDirInc = -0.15;
+        var gunDirInc = -0.45;
         model.scene.on("tick", function () {
             gunDir += gunDirInc;
             if (gunDir < -50 || gunDir > 10) {
                 gunDirInc *= -1;
             }
-            model.components["tank.gunDir"].angle = gunDir;
+            model.components["tank.gunDir"].rotate([0, 0, 1], gunDirInc);
         });
     });
 
@@ -261,7 +254,7 @@
     // Ground plane
     //---------------------------------------------------------------------------------
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: {
             type: "xeogl.PlaneGeometry",
             xSize: 3000,

@@ -1,6 +1,6 @@
 /**
  A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
+ attached {{#crossLink "Mesh"}}Meshes{{/crossLink}} using
  the classic <a href="https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model">Blinn-Phong</a> lighting model.
 
  ## Examples
@@ -13,8 +13,6 @@
 
  * Used for rendering non-realistic objects such as "helpers", wireframe objects, labels etc.
  * Use the physically-based {{#crossLink "MetallicMaterial"}}{{/crossLink}} or {{#crossLink "SpecularMaterial"}}{{/crossLink}} when more realism is required.
-
- <img src="../../../assets/images/PhongMaterial.png"></img>
 
  The following table summarizes PhongMaterial properties:
 
@@ -47,14 +45,14 @@
 
  ## Usage
 
- In this example we have an Entity with
+ In this example we have a Mesh with
 
  * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
  * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  ```` javascript
- var torus = new xeogl.Entity({
+ var torus = new xeogl.Mesh({
 
     lights: new xeogl.Lights({
         lights: [
@@ -171,111 +169,153 @@
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.PhongMaterial({
-
+            this._state = new xeogl.renderer.State({
                 type: "PhongMaterial",
-
                 ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 diffuse: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
-
                 alpha: null,
                 shininess: null,
                 reflectivity: null,
-
                 alphaMode: null,
                 alphaCutoff: null,
-
                 lineWidth: null,
                 pointSize: null,
-
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-
                 hash: null
             });
-
-            this._hashDirty = true;
-
-            this.on("dirty", function () {
-
-                // This PhongMaterial is flagged dirty when a
-                // child component fires "dirty", which always
-                // means that a shader recompile will be needed.
-
-                this._hashDirty = true;
-            }, this);
 
             this.ambient = cfg.ambient;
             this.diffuse = cfg.diffuse;
             this.specular = cfg.specular;
             this.emissive = cfg.emissive;
-
             this.alpha = cfg.alpha;
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
-
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
 
             if (cfg.ambientMap) {
-                this.ambientMap = cfg.ambientMap;
+                this._ambientMap = this._checkComponent("xeogl.Texture", cfg.ambientMap);
             }
-
             if (cfg.diffuseMap) {
-                this.diffuseMap = cfg.diffuseMap;
+                this._diffuseMap = this._checkComponent("xeogl.Texture", cfg.diffuseMap);
             }
-
             if (cfg.specularMap) {
-                this.specularMap = cfg.specularMap;
+                this._specularMap = this._checkComponent("xeogl.Texture", cfg.specularMap);
             }
-
             if (cfg.emissiveMap) {
-                this.emissiveMap = cfg.emissiveMap;
+                this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
             }
-
             if (cfg.alphaMap) {
-                this.alphaMap = cfg.alphaMap;
+                this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
             }
-
             if (cfg.reflectivityMap) {
-                this.reflectivityMap = cfg.reflectivityMap;
+                this._reflectivityMap = this._checkComponent("xeogl.Texture", cfg.reflectivityMap);
             }
-
             if (cfg.normalMap) {
-                this.normalMap = cfg.normalMap;
+                this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
             }
-
             if (cfg.occlusionMap) {
-                this.occlusionMap = cfg.occlusionMap;
+                this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
             }
-
             if (cfg.diffuseFresnel) {
-                this.diffuseFresnel = cfg.diffuseFresnel;
+                this._diffuseFresnel = this._checkComponent("xeogl.Fresnel", cfg.diffuseFresnel);
             }
-
             if (cfg.specularFresnel) {
-                this.specularFresnel = cfg.specularFresnel;
+                this._specularFresnel = this._checkComponent("xeogl.Fresnel", cfg.specularFresnel);
             }
-
             if (cfg.emissiveFresnel) {
-                this.emissiveFresnel = cfg.emissiveFresnel;
+                this._emissiveFresnel = this._checkComponent("xeogl.Fresnel", cfg.emissiveFresnel);
             }
-
             if (cfg.alphaFresnel) {
-                this.alphaFresnel = cfg.alphaFresnel;
+                this._alphaFresnel = this._checkComponent("xeogl.Fresnel", cfg.alphaFresnel);
             }
-
             if (cfg.reflectivityFresnel) {
-                this.reflectivityFresnel = cfg.reflectivityFresnel;
+                this._reflectivityFresnel = this._checkComponent("xeogl.Fresnel", cfg.reflectivityFresnel);
             }
 
             this.alphaMode = cfg.alphaMode;
             this.alphaCutoff = cfg.alphaCutoff;
-
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
+
+            this._makeHash();
+        },
+
+        _makeHash: function () {
+            var state = this._state;
+            var hash = ["/p"]; // 'P' for Phong
+            if (this._normalMap) {
+                hash.push("/nm");
+                if (this._normalMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (this._ambientMap) {
+                hash.push("/am");
+                if (this._ambientMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+                hash.push("/" + this._ambientMap.encoding);
+            }
+            if (this._diffuseMap) {
+                hash.push("/dm");
+                if (this._diffuseMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+                hash.push("/" + this._diffuseMap.encoding);
+            }
+            if (this._specularMap) {
+                hash.push("/sm");
+                if (this._specularMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (this._emissiveMap) {
+                hash.push("/em");
+                if (this._emissiveMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+                hash.push("/" + this._emissiveMap.encoding);
+            }
+            if (this._alphaMap) {
+                hash.push("/opm");
+                if (this._alphaMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (this._reflectivityMap) {
+                hash.push("/rm");
+                if (this._reflectivityMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (this._occlusionMap) {
+                hash.push("/ocm");
+                if (this._occlusionMap.hasMatrix) {
+                    hash.push("/mat");
+                }
+            }
+            if (this._diffuseFresnel) {
+                hash.push("/df");
+            }
+            if (this._specularFresnel) {
+                hash.push("/sf");
+            }
+            if (this._emissiveFresnel) {
+                hash.push("/ef");
+            }
+            if (this._alphaFresnel) {
+                hash.push("/of");
+            }
+            if (this._reflectivityFresnel) {
+                hash.push("/rf");
+            }
+            hash.push(";");
+            state.hash = hash.join("");
         },
 
         _props: {
@@ -288,32 +328,24 @@
              @type Float32Array
              */
             ambient: {
-
                 set: function (value) {
-
                     var ambient = this._state.ambient;
-
                     if (!ambient) {
                         ambient = this._state.ambient = new Float32Array(3);
-
                     } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         ambient[0] = value[0];
                         ambient[1] = value[1];
                         ambient[2] = value[2];
-
                     } else {
                         ambient[0] = .2;
                         ambient[1] = .2;
                         ambient[2] = .2;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.ambient;
                 }
@@ -329,32 +361,24 @@
              @type Float32Array
              */
             diffuse: {
-
                 set: function (value) {
-
                     var diffuse = this._state.diffuse;
-
                     if (!diffuse) {
                         diffuse = this._state.diffuse = new Float32Array(3);
-
                     } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         diffuse[0] = value[0];
                         diffuse[1] = value[1];
                         diffuse[2] = value[2];
-
                     } else {
                         diffuse[0] = 1;
                         diffuse[1] = 1;
                         diffuse[2] = 1;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.diffuse;
                 }
@@ -370,32 +394,24 @@
              @type Float32Array
              */
             specular: {
-
                 set: function (value) {
-
                     var specular = this._state.specular;
-
                     if (!specular) {
                         specular = this._state.specular = new Float32Array(3);
-
                     } else if (value && specular[0] === value[0] && specular[1] === value[1] && specular[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         specular[0] = value[0];
                         specular[1] = value[1];
                         specular[2] = value[2];
-
                     } else {
                         specular[0] = 1;
                         specular[1] = 1;
                         specular[2] = 1;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.specular;
                 }
@@ -411,32 +427,24 @@
              @type Float32Array
              */
             emissive: {
-
                 set: function (value) {
-
                     var emissive = this._state.emissive;
-
                     if (!emissive) {
                         emissive = this._state.emissive = new Float32Array(3);
-
                     } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         emissive[0] = value[0];
                         emissive[1] = value[1];
                         emissive[2] = value[2];
-
                     } else {
                         emissive[0] = 0;
                         emissive[1] = 0;
                         emissive[2] = 0;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.emissive;
                 }
@@ -454,20 +462,14 @@
              @type Number
              */
             alpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 1.0;
-
                     if (this._state.alpha === value) {
                         return;
                     }
-
                     this._state.alpha = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.alpha;
                 }
@@ -485,14 +487,10 @@
              @type Number
              */
             shininess: {
-
                 set: function (value) {
-
                     this._state.shininess = value !== undefined ? value : 80;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.shininess;
                 }
@@ -506,14 +504,10 @@
              @type Number
              */
             lineWidth: {
-
                 set: function (value) {
-
                     this._state.lineWidth = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.lineWidth;
                 }
@@ -527,14 +521,10 @@
              @type Number
              */
             pointSize: {
-
                 set: function (value) {
-
                     this._state.pointSize = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.pointSize;
                 }
@@ -552,389 +542,217 @@
              @type Number
              */
             reflectivity: {
-
                 set: function (value) {
-
                     this._state.reflectivity = value !== undefined ? value : 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.reflectivity;
                 }
             },
 
             /**
-             A normal {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Normal map.
 
              @property normalMap
              @default undefined
              @type {Texture}
+             @final
              */
             normalMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} property changes.
-
-                     @event normalMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "normalMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.normalMap;
+                    return this._normalMap;
                 }
             },
 
             /**
-             An ambient {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             Ambient map.
 
-             This property multiplies by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} property.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Multiplies by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.
 
              @property ambientMap
              @default undefined
              @type {Texture}
+             @final
              */
             ambientMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/ambientMap:property"}}{{/crossLink}} property changes.
-
-                     @event ambientMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "ambientMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.ambientMap;
+                    return this._ambientMap;
                 }
             },
 
             /**
-             A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             Diffuse map.
 
-             This property multiplies by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Multiplies by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}.
 
              @property diffuseMap
              @default undefined
              @type {Texture}
+             @final
              */
             diffuseMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} property changes.
-
-                     @event diffuseMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "diffuseMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.diffuseMap;
+                    return this._diffuseMap;
                 }
             },
 
             /**
-             A specular {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             Specular map.
 
-             This property multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}.
 
              @property specularMap
              @default undefined
              @type {Texture}
+             @final
              */
             specularMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} property changes.
-
-                     @event specularMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "specularMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.specularMap;
+                    return this._specularMap;
                 }
             },
 
             /**
-             An emissive {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             Emissive map.
 
-             This property multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}.
 
              @property emissiveMap
              @default undefined
              @type {Texture}
+             @final
              */
             emissiveMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}} property changes.
-
-                     @event emissiveMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "emissiveMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.emissiveMap;
+                    return this._emissiveMap;
                 }
             },
 
             /**
-             An alpha {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             Alpha map.
 
-             This property multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}.
 
              @property alphaMap
              @default undefined
              @type {Texture}
+             @final
              */
             alphaMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} property changes.
-
-                     @event alphaMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.alphaMap;
+                    return this._alphaMap;
                 }
             },
 
             /**
-             A reflectivity {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             Reflectivity map.
 
-             This property multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}.
 
              @property reflectivityMap
              @default undefined
              @type {Texture}
+             @final
              */
             reflectivityMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} property changes.
-
-                     @event reflectivityMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "reflectivityMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.reflectivityMap;
-                }
-            },
-
-            /**
-             A reflection {{#crossLink "CubeMap"}}{{/crossLink}} attached to this PhongMaterial.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
-
-             @property reflection
-             @default undefined
-             @type {Reflect}
-             */
-            reflection: {
-
-                set: function (cubeMap) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} property changes.
-
-                     @event reflection
-                     @param value {Reflect} The property's new value
-                     */
-                    this._attachComponent("xeogl.Reflect", "reflection", cubeMap);
-                },
-
-                get: function () {
-                    return this._attached.reflection;
+                    return this._reflectivityMap;
                 }
             },
 
             /**
 
-             An occlusion map {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Occlusion map.
 
              @property occlusionMap
              @default undefined
              @type {Texture}
+             @final
              */
             occlusionMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/occlusionMap:property"}}{{/crossLink}} property changes.
-
-                     @event occlusionMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Texture", "occlusionMap", texture);
-                },
-
                 get: function () {
-                    return this._attached.occlusionMap;
+                    return this._occlusionMap;
                 }
             },
 
             /**
-             A diffuse {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
+             Diffuse Fresnel.
 
-             This property multiplies by {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Applies to {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}}.
 
              @property diffuseFresnel
              @default undefined
              @type {Fresnel}
+             @final
              */
             diffuseFresnel: {
-
-                set: function (fresnel) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} property changes.
-
-                     @event diffuseFresnel
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("xeogl.Fresnel", "diffuseFresnel", fresnel);
-                },
-
                 get: function () {
-                    return this._attached.diffuseFresnel;
+                    return this._diffuseFresnel;
                 }
             },
 
             /**
-             A specular {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
+             Specular Fresnel.
 
-             This property multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Applies to {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}.
 
              @property specularFresnel
              @default undefined
              @type {Fresnel}
+             @final
              */
             specularFresnel: {
-
-                set: function (fresnel) {
-                    this._attachComponent("xeogl.Fresnel", "specularFresnel", fresnel);
-                },
-
                 get: function () {
-                    return this._attached.specularFresnel;
+                    return this._specularFresnel;
                 }
             },
 
             /**
-             An emissive {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
+             Emissive Fresnel.
 
-             This property multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Applies to {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}.
 
              @property emissiveFresnel
              @default undefined
              @type {Fresnel}
+             @final
              */
             emissiveFresnel: {
-
-                set: function (fresnel) {
-                    this._attachComponent("xeogl.Fresnel", "emissiveFresnel", fresnel);
-                },
-
                 get: function () {
-                    return this._attached.emissiveFresnel;
+                    return this._emissiveFresnel;
                 }
             },
 
             /**
-             An alpha {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
+             Alpha Fresnel.
 
-             This property multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Applies to {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}.
 
              @property alphaFresnel
              @default undefined
              @type {Fresnel}
+             @final
              */
             alphaFresnel: {
-
-                set: function (fresnel) {
-                    this._attachComponent("xeogl.Fresnel", "alphaFresnel", fresnel);
-                },
-
                 get: function () {
-                    return this._attached.alphaFresnel;
+                    return this._alphaFresnel;
                 }
             },
 
             /**
-             A reflectivity {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
+             Reflectivity Fresnel.
 
-             This property multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+             Applies to {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}.
 
              @property reflectivityFresnel
              @default undefined
              @type {Fresnel}
+             @final
              */
             reflectivityFresnel: {
-
-                set: function (fresnel) {
-                    this._attachComponent("xeogl.Fresnel", "reflectivityFresnel", fresnel);
-                },
-
                 get: function () {
-                    return this._attached.reflectivityFresnel;
+                    return this._reflectivityFresnel;
                 }
             },
 
@@ -958,22 +776,16 @@
                 var modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
-
                         alphaMode = alphaMode || "opaque";
-
                         var value = modes[alphaMode];
-
                         if (value === undefined) {
                             this.error("Unsupported value for 'alphaMode': " + alphaMode + " - defaulting to 'opaque'");
                             value = "opaque";
                         }
-
                         if (this._state.alphaMode === value) {
                             return;
                         }
-
                         this._state.alphaMode = value;
-
                         this._renderer.imageDirty();
                     },
                     get: function () {
@@ -1000,15 +812,12 @@
              */
             alphaCutoff: {
                 set: function (alphaCutoff) {
-
                     if (alphaCutoff === null || alphaCutoff === undefined) {
                         alphaCutoff = 0.5;
                     }
-
                     if (this._state.alphaCutoff === alphaCutoff) {
                         return;
                     }
-
                     this._state.alphaCutoff = alphaCutoff;
                 },
                 get: function () {
@@ -1017,182 +826,52 @@
             },
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
              @type Boolean
              */
             backfaces: {
-
                 set: function (value) {
-
                     value = !!value;
-
                     if (this._state.backfaces === value) {
                         return;
                     }
-
                     this._state.backfaces = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.backfaces;
                 }
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"
              @type String
              */
             frontface: {
-
                 set: function (value) {
-
                     value = value !== "cw";
-
                     if (this._state.frontface === value) {
                         return;
                     }
-
                     this._state.frontface = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.frontface ? "ccw" : "cw";
                 }
             }
-        },
-
-        _attachComponent: function (expectedType, name, component) {
-            component = this._attach({
-                name: name,
-                type: expectedType,
-                component: component,
-                sceneDefault: false,
-                on: {
-                    destroyed: {
-                        callback: function () {
-                            this._state[name] = null;
-                            this._hashDirty = true;
-                        },
-                        scope: this
-                    }
-                }
-            });
-            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
-            this._hashDirty = true;
-        },
-
-        _getState: function () {
-            if (this._hashDirty) {
-                this._makeHash();
-                this._hashDirty = false;
-            }
-            return this._state;
-        },
-
-        _makeHash: function () {
-
-            var state = this._state;
-
-            var hash = ["/p"]; // 'P' for Phong
-
-            if (state.normalMap) {
-                hash.push("/nm");
-                if (state.normalMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.ambientMap) {
-                hash.push("/am");
-                if (state.ambientMap.matrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + state.ambientMap.encoding);
-            }
-
-            if (state.diffuseMap) {
-                hash.push("/dm");
-                if (state.diffuseMap.matrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + state.diffuseMap.encoding);
-            }
-
-            if (state.specularMap) {
-                hash.push("/sm");
-                if (state.specularMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.emissiveMap) {
-                hash.push("/em");
-                if (state.emissiveMap.matrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + state.emissiveMap.encoding);
-            }
-
-            if (state.alphaMap) {
-                hash.push("/opm");
-                if (state.alphaMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.reflectivityMap) {
-                hash.push("/rm");
-                if (state.reflectivityMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.occlusionMap) {
-                hash.push("/ocm");
-                if (state.occlusionMap.matrix) {
-                    hash.push("/mat");
-                }
-            }
-
-            if (state.diffuseFresnel) {
-                hash.push("/df");
-            }
-
-            if (state.specularFresnel) {
-                hash.push("/sf");
-            }
-
-            if (state.emissiveFresnel) {
-                hash.push("/ef");
-            }
-
-            if (state.alphaFresnel) {
-                hash.push("/of");
-            }
-
-            if (state.reflectivityFresnel) {
-                hash.push("/rf");
-            }
-
-            hash.push(";");
-
-            state.hash = hash.join("");
         },
 
         _destroy: function () {

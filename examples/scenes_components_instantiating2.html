@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -14,7 +14,7 @@
 <body>
 
 <div id="info">
-  <h1>instantiating an <a href="../docs/classes/Entity.html" target="_parent">Entity</a> with child components given as
+  <h1>instantiating an <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a> with child components given as
     configuration objects</h1>
 </div>
 
@@ -24,15 +24,15 @@
     // objects instead of component instances. This is handy when we want to build
     // scenes declaratively.
 
-    // Note how we provide this Entity with JavaScript configuration objects
+    // Note how we provide this Mesh with JavaScript configuration objects
     // for its Geometry, Material and Transform child components, instead of
     // supplying instances of those components.
 
-    // Note also that the Entity will instantiate those components and internally
+    // Note also that the Mesh will instantiate those components and internally
     // manage their life cycles, automatically destroying them when they are replaced,
-    // or the Entity itself is destroyed.
+    // or the Mesh itself is destroyed.
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
         geometry: {
             type: "xeogl.TorusGeometry",
             radius: 2.0,
@@ -50,19 +50,14 @@
             },
             frontface: "ccw" // Default
         },
-        transform: {
-            type: "xeogl.Rotate",
-            xyz: [0, 1, 0],
-            angle: 0
-        },
         frontface: "ccw" // Default
     });
 
     // We can also attach child components as config objects, which get
-    // auto-destroyed by the Entity in the same manner. We'll just replace
+    // auto-destroyed by the Mesh in the same manner. We'll just replace
     // the transform with one that rotates about a different axis.
 
-    entity.transform = {
+    mesh.transform = {
         type: "xeogl.Rotate",
         xyz: [1, 0, 0],
         angle: 0
@@ -72,9 +67,9 @@
     new xeogl.CameraControl();
 
     // Orbit the eye position about the look position.
-    entity.scene.on("tick", function () {
+    mesh.scene.on("tick", function () {
 
-        var camera = entity.scene.camera;
+        var camera = mesh.scene.camera;
 
         camera.orbitYaw(-0.15);
         camera.orbitPitch(0.05);

@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -13,7 +13,8 @@
 <body>
 
 <div id="info" class="dark">
-    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> with shadows</h1>
+    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> with shadows
+    </h1>
     <pre id="log">model: <a href="https://sketchfab.com/bimcc" target="_parent">https://sketchfab.com/bimcc</a></pre>
 </div>
 
@@ -21,14 +22,7 @@
 
     var model = new xeogl.GLTFModel({
         src: "models/gltf/vianney_house_2/scene.gltf",
-
-        combineGeometry: false,
-        quantizeGeometry : false,
-
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90
-        })
+        rotation: [-90, 0, 0]
     });
 
     var camera = xeogl.scene.camera;
@@ -53,36 +47,36 @@
         spinning = false;
     });
 
-    var lights = model.scene.lights;
+    xeogl.scene.clearLights();
 
-    lights.lights = [
-        new xeogl.AmbientLight({
-            color: [0.5, 0.5, 0.5],
-            intensity: 1.0
-        }),
-//        new xeogl.SpotLight({
-//            pos: [50, 50, 50],
-//            dir: [-1, -1, -1],
-//            color: [1.0, 1.0, 1.0],
-//            intensity: 1.0,
-//            space: "world",
-//            shadow: false
-//        }),
-//        new xeogl.PointLight({
-//            pos: [-5, 5, -5],
-//            color: [1.0, 1.0, 1.0],
-//            intensity: 1.0,
-//            space: "world",
-//            shadow: true
-//        })
-        new xeogl.DirLight({
-            dir: [.4, -1, .1],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "world",
-            shadow: true
-        })
-    ];
+    new xeogl.AmbientLight({
+        color: [0.5, 0.5, 0.5],
+        intensity: 1.0
+    });
+
+    //        new xeogl.SpotLight({
+    //            pos: [50, 50, 50],
+    //            dir: [-1, -1, -1],
+    //            color: [1.0, 1.0, 1.0],
+    //            intensity: 1.0,
+    //            space: "world",
+    //            shadow: false
+    //        });
+    //        new xeogl.PointLight({
+    //            pos: [-5, 5, -5],
+    //            color: [1.0, 1.0, 1.0],
+    //            intensity: 1.0,
+    //            space: "world",
+    //            shadow: true
+    //        });
+
+    new xeogl.DirLight({
+        dir: [.4, -1, .1],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+        space: "world",
+        shadow: true
+    });
 
     lights.reflectionMap = new xeogl.CubeTexture({
         src: [
@@ -94,7 +88,6 @@
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
         ]
     });
-
 
 
 </script>

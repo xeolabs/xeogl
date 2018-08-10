@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>custom stereo view using the <a href="../docs/classes/Camera.html" target="_parent">Camera</a> <b>deviceMatrix</b> property</h1>
+</div>
+
+<script>
+
+    // Load glTF model
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+    });
+
+    var scene = gearbox.scene;
+    var camera = scene.camera;
+
+    camera.eye = [184.21, 10.54, -7.03];
+    camera.look = [159.20, 17.02, 3.21];
+    camera.up = [-0.15, 0.97, 0.13];
+
+    scene.on("tick", function () {
+        camera.orbitYaw(0.2);
+    });
+
+    // Configure Scene to render twice for each frame
+    scene.passes = 2;
+
+    camera.projection = "frustum";
+
+    var frustum = camera.frustum;
+
+    var viewport = scene.viewport;
+    viewport.autoBoundary = false;
+    var canvas = scene.canvas;
+
+    var canvasBoundary;
+
+    var math = xeogl.math;
+
+    var eyeSep = 0.2; // Eye separation
+    var focalLength = 20.0;
+    var aperture = 45;
+    var near = 0.1;
+    var DTOR = 0.0174532925;
+    var radians = DTOR * aperture / 2;
+    var wd2 = near * Math.tan(radians);
+    var ndfl = near / focalLength;
+
+    var deviceMatrix = math.mat4();
+
+    scene.on("rendering", function (e) {
+
+        canvasBoundary = canvas.boundary;
+
+        var canvasWidth = canvasBoundary[2];
+        var canvasHeight = canvasBoundary[3];
+        var halfCanvasWidth = Math.round(canvasWidth / 2);
+        var canvasAspectRatio = canvasWidth / canvasHeight;
+
+        switch (e.pass) {
+
+            case 0:
+
+                // Set view to left side
+
+                camera.deviceMatrix = math.translationMat4v([-3, 0, 0], math.identityMat4(deviceMatrix));
+
+                // Set projection frustum to left half of view space
+
+                frustum.left = -canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
+                frustum.right = canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
+                frustum.top = wd2 * 2;
+                frustum.bottom = -wd2 * 2;
+
+                // Set viewport to left half of canvas
+
+                viewport.boundary = [0, 0, halfCanvasWidth, canvasHeight];
+
+                break;
+
+            case 1:
+
+                // Set view to right side
+
+                camera.deviceMatrix = math.translationMat4v([3, 0, 0], math.identityMat4(deviceMatrix));
+
+                // Set projection frustum to left half of view space
+
+                frustum.left = -canvasAspectRatio * wd2 + 0.5 * eyeSep * ndfl;
+                frustum.right = canvasAspectRatio * wd2 + 0.5 * eyeSep * ndfl;
+                frustum.top = wd2 * 2;
+                frustum.bottom = -wd2 * 2;
+
+                // Set viewport to right half of canvas
+
+                viewport.boundary = [halfCanvasWidth, 0, halfCanvasWidth, canvasHeight];
+
+                break;
+        }
+    });
+
+    // Intercept Scene after each render
+    // After the second pass we'll restore the viewpoint
+
+    scene.on("rendered", function (e) {
+        switch (e.pass) {
+            case 1:
+                break;
+        }
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

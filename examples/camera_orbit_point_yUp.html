@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+<body>
+
+<div id="info">
+    <h1>orbiting the <a href="../docs/classes/Camera.html" target="_parent">Camera</a> about an arbitrary pivot point</h1>
+    <ul><li>click and drag on model to orbit that point</li></ul>
+    <ul><li>world up direction is +Y axis</li></ul>
+    <ul><li>author: Der Schmale / <a href="http://www.derschmale.com/">http://www.derschmale.com</a></li></ul>
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/vianney_house_2/scene.gltf",
+        rotation: [-90, 0, 0]
+    });
+
+    // Position camera with "up" pointing along World +Z axis
+
+    var scene = model.scene;
+    var camera = scene.camera;
+
+    // Position camera with camera's "up" direction pointing along World +Y axis
+
+    camera.eye = [1.8160498142242432, 37.38420486450195, 251.0963897705078];
+    camera.look = [0, -0.0011444091796875, 11.182900428771973];
+    camera.up = [0, 1, 0];
+
+    // Configure camera for a World-space in which +Y is considered "up"
+
+    camera.worldAxis = [
+        1, 0, 0,    // Right
+        0, 1, 0,    // Up
+        0, 0, -1     // Forward
+    ];
+
+    //--------------------------------------------
+    // Create helper to show ray-Mesh hits
+    //--------------------------------------------
+
+
+    var hitHelper = new (function () {
+
+        var mesh = new xeogl.Mesh({
+            geometry: new xeogl.SphereGeometry({radius: 1}),
+            material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+            position: [0, 0, 0],
+            pickable: false,
+            visible: true
+        });
+
+        this.show = function (hit) {
+            mesh.position = hit.worldPos;
+            mesh.visible = true;
+        };
+
+        this.hide = function () {
+            mesh.visible = false;
+        };
+    })();
+
+    //--------------------------------------------------------------------
+
+    // Attempt to pick a Mesh on each mouse move.
+    // Highlight each Mesh that we successfully pick.
+
+    var input = scene.input;
+    var lastMouseCoords;
+    var pivotPoint;
+    var isDragging = false;
+    var cameraOffset;
+    var azimuth = 0, polar = 0, radius = 0;
+
+    input.on("mousedown", function (coords) {
+
+        var hit = scene.pick({
+            canvasPos: coords,
+            pickSurface: true  // <<------ This causes picking to find the intersection point on the mesh
+        });
+
+        if (hit) {
+
+            hitHelper.show(hit);
+
+            isDragging = true;
+
+            pivotPoint = hit.worldPos;
+
+            var lookat = xeogl.math.lookAtMat4v(camera.eye, camera.look, camera.worldUp);
+
+            // we need to find the offset between the pivotPoint in current view space, and that when looking straight at it
+            // this will allow applying the same offset during pivoting to keep it locked in the same view position
+
+            // find the position of the pivot point in current view space, which we'll need to place back
+            cameraOffset = xeogl.math.transformPoint3(lookat, pivotPoint);
+
+            // instead of calculating the lookat matrix for the pivotPoint, we just update the z component directly
+            // this is only possible because the X, Y components would be 0 anyway, since we're looking at it
+            cameraOffset[2] += xeogl.math.distVec3(camera.eye, pivotPoint);
+
+            lookat = xeogl.math.inverseMat4(lookat);
+            var offset = xeogl.math.transformVec3(lookat, cameraOffset);
+
+            var diff = xeogl.math.vec3();
+            xeogl.math.subVec3(camera.eye, pivotPoint, diff);
+
+            // find spherical coordinates relative to the pivot point *with the offset removed*, because the pivoting
+            // math all works without the offset (which is applied later)
+            xeogl.math.addVec3(diff, offset);
+
+            if (camera.worldUp[2] === 1) {
+                var t = diff[1];
+                diff[1] = diff[2];
+                diff[2] = t;
+            }
+
+            radius = xeogl.math.lenVec3(diff);
+            polar = Math.acos(diff[1] / radius);
+            azimuth = Math.atan2(diff[0], diff[2]);
+
+        } else {
+
+            pivotPoint = null;
+            isDragging = false;
+
+            hitHelper.hide();
+
+        }
+
+        lastMouseCoords = coords;
+    });
+
+    input.on("mouseup", function () {
+        pivotPoint = null;
+        isDragging = false;
+
+        hitHelper.hide();
+    });
+
+    input.on("mousewheel", function (delta) {
+        if (!lastMouseCoords) return;
+
+        var hit = scene.pick({
+            canvasPos: lastMouseCoords,
+            pickSurface: true  // <<------ This causes picking to find the intersection point on the mesh
+        });
+
+        if (hit) {
+            var pivotPoint = hit.worldPos;
+            // move closer to pivot
+            var diff = xeogl.math.vec3();
+            var lookDir = xeogl.math.vec3();
+            xeogl.math.subVec3(camera.look, camera.eye, lookDir);
+            xeogl.math.subVec3(camera.eye, pivotPoint, diff);
+            var dist = xeogl.math.lenVec3(diff);
+            var newDist = dist - delta * .2;
+            newDist = Math.max(newDist, 0.01);
+
+            xeogl.math.mulVec3Scalar(diff, newDist / dist, diff);
+            xeogl.math.addVec3(diff, pivotPoint);
+
+            // trigger update
+            camera.eye = diff;
+            xeogl.math.addVec3(lookDir, diff);
+            camera.look = lookDir;
+        }
+    });
+
+    input.on("mousemove", function (coords) {
+        if (isDragging) {
+            var dx = coords[0] - lastMouseCoords[0];
+            var dy = -(coords[1] - lastMouseCoords[1]);
+
+            if (camera.worldUp[2] === 1) {
+                dx = -dx;
+            }
+
+            // We'll need to preserve the eye->look distance,
+            // since in xeogl "look" is the point-of-interest, not the direction vector.
+            var eyeLookLen = xeogl.math.lenVec3(xeogl.math.subVec3(camera.look, camera.eye, xeogl.math.vec3()));
+
+            // update spherical coordinates based on mouse coordinates
+            azimuth += -dx * .01;
+            polar += dy * .01;
+
+            // clamp to top/bottom, taking into account the polar offset due to the pivot point offset
+            polar = xeogl.math.clamp(polar, .001, Math.PI - .001);
+            // polar = xeogl.math.clamp(polar, .001, Math.PI - .001);
+
+            // transform spherical back to euclidean
+            // this is the new offset relative to the pivot point in world space
+            var pos = [
+                radius * Math.sin(polar) * Math.sin(azimuth),
+                radius * Math.cos(polar),
+                radius * Math.sin(polar) * Math.cos(azimuth)
+            ];
+
+            // worldUp is z
+            if (camera.worldUp[2] === 1) {
+                var t = pos[1];
+                pos[1] = pos[2];
+                pos[2] = t;
+            }
+
+            // the absolute position in world space
+            xeogl.math.addVec3(pos, pivotPoint);
+
+            // the lookat matrix as is will place the point in the middle of the screen
+            var lookat = xeogl.math.lookAtMat4v(pos, pivotPoint, camera.worldUp);
+            // calculate the view -> world matrix
+            lookat = xeogl.math.inverseMat4(lookat);
+
+            // transform the offset from view space to current world space
+            var offset = xeogl.math.transformVec3(lookat, cameraOffset);
+
+            // apply the offset we calculated before, forcing the view position of the pivotPoint to remain constant
+            // of course, changing the coordinates here means the spherical coords are no longer correct
+            lookat[12] -= offset[0];
+            lookat[13] -= offset[1];
+            lookat[14] -= offset[2];
+
+            // grab the position from the matrix
+            var zAxis = [lookat[8], lookat[9], lookat[10]];
+
+            camera.eye = [lookat[12], lookat[13], lookat[14]];
+
+            // Z-axis points backwards, so a valid look position is Eye - Zaxis (any point on that line will do)
+            xeogl.math.subVec3(camera.eye, xeogl.math.mulVec3Scalar(zAxis, eyeLookLen), camera.look);
+            camera.up = [lookat[4], lookat[5], lookat[6]];
+        }
+
+        lastMouseCoords = coords;
+    });
+
+</script>
+</body>
+</html>

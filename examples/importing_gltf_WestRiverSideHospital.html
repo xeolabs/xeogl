@@ -3,37 +3,50 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
+    <!--<script src="js/models/glTFModel.js"></script>-->
     <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing Autodesk West Riverside Hospital IFC models from glTF</h1>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing Autodesk West Riverside
+        Hospital IFC models from glTF</h1>
+    <br>
     <ul>
-        <li><a class='code' href="javascript:scene.models['structure'].visible=true">scene.models['structure'].visible=true</a></li>
-        <li><a class='code' href="javascript:scene.models['fireAlarms'].visible=true">scene.models['fireAlarms'].visible=true</a></li>
+        <li>loading five large, unoptimized glTF models - be patient!</li>
+        <li>use the menu on the right to show/hide/emphasize each model</li>
+        <li>IFC models from <a href='http://openifcmodel.cs.auckland.ac.nz/Model/Details/305' target="_parent">openifcmodel.cs.auckland.ac.nz</a></li>
+        <li>IFC converted to COLLADA using <a href='http://ifcopenshell.org/ifcconvert.html' target="_parent">IfcConvert</a></li>
+        <li>COLLADA converted to glTF using <a href='https://github.com/KhronosGroup/COLLADA2GLTF' target="_parent">COLLADA2GLTF</a></li>
+        <li>viewed in xeogl using a <a href='../docs/classes/GLTFModel.html' target="_parent">xeogl.GLTFModel</a> components</li>
     </ul>
+</div>
 
+<div id="dat-gui-container">
 </div>
 
 <script>
 
     var structure = new xeogl.GLTFModel({
         id: "structure",
+        loaded: true,
         src: "models/gltf/WestRiverSideHospital/structure.gltf",
         lambertMaterials: true,
-        ghostEdgeThreshold: 3,
+        edgeThreshold: 3,
         ghosted: true
     });
 
     var sprinklers = new xeogl.GLTFModel({
         id: "sprinklers",
+        loaded: false,
         src: "models/gltf/WestRiverSideHospital/sprinklers.gltf",
         lambertMaterials: true,
         ghosted: false,
@@ -43,6 +56,7 @@
 
     var fireAlarms = new xeogl.GLTFModel({
         id: "fireAlarms",
+        loaded: false,
         src: "models/gltf/WestRiverSideHospital/fireAlarms.gltf",
         lambertMaterials: true,
         ghosted: false,
@@ -52,6 +66,7 @@
 
     var electrical = new xeogl.GLTFModel({
         id: "electrical",
+        loaded: false,
         src: "models/gltf/WestRiverSideHospital/electrical.gltf",
         lambertMaterials: true,
         ghosted: false,
@@ -60,6 +75,7 @@
 
     var plumbing = new xeogl.GLTFModel({
         id: "plumbing",
+        loaded: false,
         src: "models/gltf/WestRiverSideHospital/plumbing.gltf",
         lambertMaterials: true,
         ghosted: false,
@@ -71,33 +87,37 @@
     var camera = scene.camera;
     var input = scene.input;
 
-    scene.ghostMaterial.preset = "phosphorous";
+    scene.ghostMaterial.preset = "defaultDarkBG";
+    scene.ghostMaterial.edges = false;
+    scene.ghostMaterial.edgeAlpha = 0.3;
+    scene.ghostMaterial.fillAlpha = 0.3;
 
-    camera.eye = [118.22, 189.04, -190.18];
-    camera.look = [12.39, 145.16, -67.14];
-    camera.up = [-0.17, 0.96, 0.19];
+    camera.eye = [133.72, 235.56, -174.37];
+    camera.look = [8.71, 142.89, -73.77];
+    camera.up = [-0.38, 0.86, 0.30];
 
     var cameraControl = new xeogl.CameraControl({
-        doublePickFlyTo: false
+        doublePickFlyTo: false,
+        firstPerson: true
     });
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
     cameraControl.on("hoverEnter", function (hit) {
-        hit.entity.highlighted = true;
+        hit.mesh.highlighted = true;
     });
 
     cameraControl.on("hoverOut", function (hit) {
-        hit.entity.highlighted = false;
+        hit.mesh.highlighted = false;
     });
 
     cameraControl.on("picked", function (hit) {
-        var entity = hit.entity;
+        var mesh = hit.mesh;
         if (input.keyDown[input.KEY_SHIFT]) {
-            entity.selected = !entity.selected;
-            entity.highlighted = !entity.selected;
+            mesh.selected = !mesh.selected;
+            mesh.highlighted = !mesh.selected;
         } else {
-            cameraFlight.flyTo(entity);
+            cameraFlight.flyTo(mesh);
         }
     });
 
@@ -105,7 +125,7 @@
         cameraFlight.flyTo(scene);
     });
 
-    var culling = true;
+    var culling = false;
     var timeout;
     var culled = false;
 
@@ -137,6 +157,74 @@
             timeout = null;
         }, 100);
     });
+
+    var gui = new dat.GUI({autoPlace: false, top: 0, right: 10, width: 350});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var modelIds = Object.keys(scene.models);
+
+    var Menu = function () {
+
+        this.message = "Models";
+
+        for (var i = 0; i < modelIds.length; i++) {
+            var modelId = modelIds[i];
+            var model = scene.models[modelId];
+            this[modelId + ".id"] = model.id;
+            this[modelId + ".loaded"] = model.loaded;
+            this[modelId + ".visible"] = model.visible;
+            this[modelId + ".ghosted"] = model.ghosted;
+            this[modelId + ".selected"] = model.selected;
+            this[modelId + ".highlighted"] = model.highlighted;
+        }
+
+        var self = this;
+
+        var update = function () {
+            for (var i = 0; i < modelIds.length; i++) {
+                var modelId = modelIds[i];
+                var model = scene.models[modelId];
+                var loaded = self[modelId + ".loaded"];
+                if (model.loaded !== loaded) {
+                    model.loaded = loaded;
+                }
+                var visible = self[modelId + ".visible"];
+                if (model.visible !== visible) {
+                    model.visible = visible;
+                }
+                var ghosted = self[modelId + ".ghosted"];
+                if (model.ghosted !== ghosted) {
+                    model.ghosted = ghosted;
+                }
+                var selected = self[modelId + ".selected"];
+                if (model.selected !== selected) {
+                    model.selected = selected;
+                }
+                var highlighted = self[modelId + ".highlighted"];
+                if (model.highlighted !== highlighted) {
+                    model.highlighted = highlighted;
+                }
+            }
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var menu = new Menu();
+
+    for (var i = 0; i < modelIds.length; i++) {
+        var modelId = modelIds[i];
+        var model = scene.models[modelId];
+        var folder = gui.addFolder(modelId);
+        folder.add(menu, modelId + ".loaded", model.loaded);
+        folder.add(menu, modelId + ".visible", model.visible);
+        folder.add(menu, modelId + ".ghosted", model.ghosted);
+        folder.add(menu, modelId + ".selected", model.selected);
+        folder.add(menu, modelId + ".highlighted", model.highlighted);
+        folder.open();
+    }
 
 </script>
 </body>

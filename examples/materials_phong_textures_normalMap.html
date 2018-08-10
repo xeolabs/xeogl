@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -24,7 +24,7 @@
 
 <script>
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
 
         geometry: new xeogl.BoxGeometry(),
 
@@ -38,15 +38,15 @@
         })
     });
 
-    var scene = entity.scene;
+    var scene = mesh.scene;
 
     var camera = scene.camera;
 
     camera.eye = [0, 0, -4];
 
     scene.on("tick", function () {
-//        camera.orbitYaw(0.3);
-//        camera.orbitPitch(0.1);
+        camera.orbitYaw(0.3);
+        camera.orbitPitch(0.1);
     });
 
     new xeogl.CameraControl();
@@ -54,17 +54,17 @@
 
     var Menu = function () {
 
-        this["diffuseMap.encoding"] = entity.material.diffuseMap.encoding;
-        this["scene.gammaOutput"] = entity.scene.gammaOutput;
-        this["scene.gammaFactor"] = entity.scene.gammaFactor;
+        this["diffuseMap.encoding"] = mesh.material.diffuseMap.encoding;
+        this["scene.gammaOutput"] = mesh.scene.gammaOutput;
+        this["scene.gammaFactor"] = mesh.scene.gammaFactor;
 
         var self = this;
 
         var update = function () {
 
-            entity.material.diffuseMap.encoding = self["diffuseMap.encoding"];
-            entity.scene.gammaOutput = self["scene.gammaOutput"];
-            entity.scene.gammaFactor = self["scene.gammaFactor"];
+            mesh.material.diffuseMap.encoding = self["diffuseMap.encoding"];
+            mesh.scene.gammaOutput = self["scene.gammaOutput"];
+            mesh.scene.gammaFactor = self["scene.gammaFactor"];
 
             requestAnimationFrame(update);
         };

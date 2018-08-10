@@ -1,20 +1,16 @@
 /**
- A Scene represents a 3D world.
+ The container for all 3D graphical objects and state in a xeogl scene.
 
  ## Usage
 
  * [Creating a Scene](#creating-a-scene)
- * [Creating entities](#creating-entities)
- * [Loading models](#loading-models)
- * [Accessing content](#accessing-content)
+ * [Creating and accessing components](#creating-and-accessing-components)
  * [Controlling the camera](#controlling-the-camera)
  * [Taking snapshots](#taking-snapshots)
  * [Lighting](#lighting)
  * [Clipping](#clipping)
- * [Emphasis effects](#emphasis-effects)
  * [Picking](#picking)
- * [Pick masking](#pick-masking)
- * [Getting the World-space boundary](#getting-the-world-space-boundary)
+ * [Querying and tracking boundaries](#querying-and-tracking-boundaries)
  * [Controlling the viewport](#controlling-the-viewport)
  * [Controlling rendering](#controlling-rendering)
  * [Gamma correction](#gamma-correction)
@@ -39,85 +35,69 @@
  });
  ````
 
- ### Creating entities
+ ### Creating and accessing components
 
- Creating an {{#crossLink "Entity"}}{{/crossLink}} within a Scene:
+ As a brief introduction to creating Scene components, we'll create a {{#crossLink "Mesh"}}{{/crossLink}} that has a
+ {{#crossLink "TeapotGeometry"}}{{/crossLink}} and a {{#crossLink "PhongMaterial"}}{{/crossLink}}:
 
  <a href="../../examples/#geometry_primitives_teapot"><img src="../../assets/images/screenshots/Scene/teapot.png"></img></a>
 
  ````javascript
- var entity = new xeogl.Entity(scene, {
+ var teapotMesh = new xeogl.Mesh(scene, {
+    id: "myMesh",                               // <<---------- ID automatically generated if not provided
     geometry: new xeogl.TeapotGeometry(scene),
     material: new xeogl.PhongMaterial(scene, {
+        id: "myMaterial",
         diffuse: [0.2, 0.2, 1.0]
     })
  });
  ````
 
- Creating an entity within the default Scene (which will be automatically created if not yet existing):
+ Creating a {{#crossLink "Mesh"}}{{/crossLink}} within the default Scene (xeogl will automatically create the default Scene if it does not yet exist):
  ````javascript
- entity = new xeogl.Entity({
+ var teapotMesh = new xeogl.Mesh({
+    id: "myMesh",
     geometry: new xeogl.TeapotGeometry(),
     material: new xeogl.PhongMaterial({
+        id: "myMaterial",
         diffuse: [0.2, 0.2, 1.0]
     })
  });
 
- entity.scene.camera.eye = [45, 45, 45];
+ teapotMesh.scene.camera.eye = [45, 45, 45];
  ````
 
- The default Scene can be got from either the Entity or the xeogl namespace:
+ The default Scene can be got from either the Mesh or the xeogl namespace:
 
  ````javascript
- scene = entity.scene;
+ scene = teapotMesh.scene;
  scene = xeogl.scene;
  ````
-
- ### Loading models
-
- Use {{#crossLink "GLTFModel"}}{{/crossLink}} components to load glTF models into a Scene:
-
- ````javascript
- var model = new xeogl.GLTFModel(scene, { // If we don't provide the Scene, will create in default Scene
-    id: "gearbox",
-    src: "models/gltf/gearbox/gearbox_assy.gltf"
- });
- ````
-
- ### Accessing content
 
  Find components by ID in their Scene's {{#crossLink "Scene/components:property"}}{{/crossLink}} map:
 
  ````javascript
- var gear1 = scene.components["gearbox#gear99"];
- gear1.visible = false;
- //...
+ var teapotMesh = scene.components["myMesh"];
+ teapotMesh.visible = false;
+
+ var teapotMaterial = scene.components["myMaterial"];
+ teapotMaterial.diffuse = [1,0,0]; // Change to red
  ````
 
  A Scene also has a map of component instances for each {{#crossLink "Component"}}{{/crossLink}} subtype:
 
  ````javascript
- var entities = scene.types["xeogl.Entity"];
- var gear = entities["gearbox#gear99"];
- gear.ghost = true;
- //...
+ var meshes = scene.types["xeogl.Mesh"];
+ var teapotMesh = meshes["myMesh"];
+ teapotMesh.ghosted = true;
 
- var glTFModels = scene.types["xeogl.GLTFModel"];
- var gearbox = glTFModels["gearbox"];
- gearbox.visible = false;
- //...
- ````
- a map containing just the {{#crossLink "Model"}}{{/crossLink}} instances:
-
- ````javascript
- gearbox = scene.models["gearbox"];
+ var phongMaterials = scene.types["xeogl.PhongMaterial"];
+ var teapotMaterial = phongMaterials["myMaterial"];
+ teapotMaterial.diffuse = [0,1,0]; // Change to green
  ````
 
- and a map containing just the {{#crossLink "Entity"}}{{/crossLink}} instances:
-
- ````javascript
- gear = scene.entities["gearbox#gear99"];
- ````
+ See {{#crossLink "Object"}}{{/crossLink}}, {{#crossLink "Group"}}{{/crossLink}} and {{#crossLink "Model"}}{{/crossLink}}
+ for how to create and access more sophisticated content.
 
  ### Controlling the camera
 
@@ -185,40 +165,11 @@
  ];
  ````
 
- ### Emphasis effects
+ ### Picking
 
- The Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
- for controlling ghost effects:
+ Use the Scene's {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} method to pick and raycast meshes.
 
- ````javascript
- var ghostMaterial = scene.ghostMaterial;
- ghostMaterial.edgeColor = [0.9, 0.9, 0.0];
- //...
- ````
-
- The Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
- for controlling highlight effects:
-
- ````javascript
- var highlightMaterial = scene.highlightMaterial;
- highlightMaterial.color = [0.9, 0.9, 0.0];
- //...
- ````
-
- The Scene's {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "OutlineMaterial"}}{{/crossLink}}
- for controlling outline effects:
-
-
- ````javascript
- var outlineMaterial = scene.outlineMaterial;
- outlineMaterial.edgeWidth = 6;
- ````
-
- ### Picking entities
-
- Use the Scene's {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method to pick and raycast entities.
-
- For example, to pick a point on the surface of the closest entity at the given canvas coordinates:
+ For example, to pick a point on the surface of the closest mesh at the given canvas coordinates:
 
  ````javascript
  var hit = scene.pick({
@@ -226,12 +177,12 @@
      canvasPos: [23, 131]
  });
 
- if (hit) { // Picked an Entity
+ if (hit) { // Picked a Mesh
 
-      var entity = hit.entity;
+      var mesh = hit.mesh;
 
       var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
-      var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+      var primIndex = hit.primIndex; // Position of triangle's first index in the picked Mesh's Geometry's indices array
       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
       var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
@@ -242,76 +193,71 @@
  }
  ````
 
- ### Pick masking
+ #### Pick masking
 
- We can use the {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method's ````include```` and ````exclude````
- options to mask which Entities we attempt to pick.
+ We can use the {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} method's ````includeMeshes```` and ````excludeMeshes````
+ options to mask which Meshes we attempt to pick.
 
- This is useful for picking <em>through</em> things, to pick only the Entities of interest.
+ This is useful for picking <em>through</em> things, to pick only the Meshes of interest.
 
- #### Including entities
-
- To pick only Entities ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through any other Entities that are
+ To pick only Meshes ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through any other Meshes that are
  in the way, as if they weren't there:
 
  ````javascript
  var hit = scene.pick({
      canvasPos: [23, 131],
-     include: ["gearbox#77.0", "gearbox#79.0"]
+     includeMeshes: ["gearbox#77.0", "gearbox#79.0"]
  });
 
  if (hit) {
-      // Entity will always be either "gearbox#77.0" or "gearbox#79.0"
-      var entity = hit.entity;
+      // Mesh will always be either "gearbox#77.0" or "gearbox#79.0"
+      var mesh = hit.mesh;
  }
  ````
 
- #### Excluding entities
-
- To pick any pickable Entity, except for ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through those
- Entities if they happen to be in the way:
+ To pick any pickable Mesh, except for ````"gearbox#77.0"```` and ````"gearbox#79.0"````, picking through those
+ Meshes if they happen to be in the way:
 
  ````javascript
  var hit = scene.pick({
      canvasPos: [23, 131],
-     exclude: ["gearbox#77.0", "gearbox#79.0"]
+     excludeMeshes: ["gearbox#77.0", "gearbox#79.0"]
  });
 
  if (hit) {
-      // Entity will never be "gearbox#77.0" or "gearbox#79.0"
-      var entity = hit.entity;
+      // Mesh will never be "gearbox#77.0" or "gearbox#79.0"
+      var mesh = hit.mesh;
  }
  ````
 
- See {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} for more info on picking.
+ See {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} for more info on picking.
 
- ### Getting the World-space boundary
+ ### Querying and tracking boundaries
 
- Getting a Scene's World-space boundary as an AABB:
+ Getting a Scene's World-space axis-aligned boundary (AABB):
 
  ````javascript
  var aabb = scene.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
  ````
 
- Subscribing to updates to the World-space boundary, which occur whenever Entities are Transformed, or their Geometries have been updated.
+ Subscribing to updates to the AABB, which occur whenever {{#crossLink "Meshes"}}{{/crossLink}} are transformed, their
+ {{#crossLink "Geometry"}}Geometries{{/crossLink}} have been updated, or the {{#crossLink "Camera"}}Camera{{/crossLink}} has moved:
 
  ````javascript
  scene.on("boundary", function() {
      var aabb = scene.aabb;
-     var obb = scene.obb;
  });
  ````
 
- Getting the collective World-space axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
- and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
+ Getting the AABB of the {{#crossLink "Object"}}Objects{{/crossLink}} with the given IDs:
 
  ````JavaScript
- scene.getAABB(); // Gets collective boundary of all entities in the scene
- scene.getAABB("saw"); // Gets collective boundary of all entities in saw model
- scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all entities in saw and gearbox models
- scene.getAABB("saw#0.1"); // Get boundary of an entity in the saw model
- scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two entities in saw model
+ scene.getAABB(); // Gets collective boundary of all Mesh Objects in the scene
+ scene.getAABB("saw"); // Gets boundary of an Object
+ scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of two Objects
  ````
+
+ See {{#crossLink "Scene/getAABB:method"}}Scene#getAABB(){{/crossLink}} and {{#crossLink "Object"}}{{/crossLink}} for more info on querying and tracking boundaries.
 
  ### Managing the viewport
 
@@ -333,7 +279,7 @@
  two views to be shown on the canvas at the same time.
 
  ````Javascript
- // Load glTF model
+ // Load a glTF model
  var model = new xeogl.GLTFModel({
     src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
  });
@@ -379,8 +325,8 @@
 
  Within its shaders, xeogl performs shading calculations in linear space.
 
- By default, the Scene expects color textures (ie. {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}},
- {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} and {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}) to
+ By default, the Scene expects color textures (eg. {{#crossLink "PhongMaterial/diffuseMap:property"}}PhongMaterial#diffuseMap{{/crossLink}},
+ {{#crossLink "MetallicMaterial/baseColorMap:property"}}MetallicMaterial#baseColorMap{{/crossLink}} and {{#crossLink "SpecularMaterial/diffuseMap:property"}}SphericalMaterial#diffuseMap{{/crossLink}}) to
  be in pre-multipled gamma space, so will convert those to linear space before they are used in shaders. Other textures are
  always expected to be in linear space.
 
@@ -428,7 +374,7 @@
     "use strict";
 
     /**
-     * Fired whenever a debug message logged on a component within this Scene.
+     * Fired whenever a debug message is logged on a component within this Scene.
      * @event log
      * @param {String} value The debug message
      */
@@ -455,71 +401,218 @@
             var transparent = !!cfg.transparent;
 
             /**
-             * The number of models currently loading.
-             *
-             * @property loading
-             * @type {Number}
+             The number of models currently loading.
+
+             @property loading
+             @final
+             @type {Number}
              */
             this.loading = 0;
 
             /**
-             * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
-             *
-             * @property timeCreated
-             * @type {Number}
+             The epoch time (in milliseconds since 1970) when this Scene was instantiated.
+
+             @property timeCreated
+             @final
+             @type {Number}
              */
             this.startTime = (new Date()).getTime();
 
             /**
-             * The {{#crossLink "Component"}}Component{{/crossLink}}s within
-             * this Scene, mapped to their IDs.
-             *
-             * Will also contain the {{#crossLink "Entity"}}{{/crossLink}}s
-             * contained in {{#crossLink "Entity/components:property"}}{{/crossLink}}.
-             *
-             * @property components
-             * @type {String:xeogl.Component}
+             {{#crossLink "Model"}}{{/crossLink}}s in this Scene, mapped to their IDs.
+
+             @property models
+             @final
+             @type {String:xeogl.Model}
              */
-            this.components = {};
+            this.models = {};
 
             /**
-             * For each {{#crossLink "Component"}}Component{{/crossLink}} type, a map of
-             * IDs to instances.
-             *
-             * @property types
-             * @type {String:{String:xeogl.Component}}
+             The {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene, mapped to their IDs.
+
+             @property objects
+             @final
+             @type {{String:Object}}
              */
-            this.types = {};
+            this.objects = {};
 
             /**
-             * The {{#crossLink "Entity"}}{{/crossLink}}s within
-             * this Scene, mapped to their IDs.
-             *
-             * The {{#crossLink "Entity"}}{{/crossLink}}s in this map
-             * will also be contained in {{#crossLink "Entity/components:property"}}{{/crossLink}}.
-             *
-             * @property entities
-             * @type {String:xeogl.Entity}
+             {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene that have GUIDs, mapped to their GUIDs.
+
+             Each Object is registered in this map when its {{#crossLink "Object/guid:property"}}{{/crossLink}} is
+             assigned a value.
+
+             @property guidObjects
+             @final
+             @type {{String:Object}}
+             */
+            this.guidObjects = {};
+
+            /**
+             For each entity type, a map of IDs to {{#crossLink "Object"}}Objects{{/crossLink}} of that entity type.
+
+             Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
+             assigned a value.
+
+             @property entityTypes
+             @final
+             @type {String:{String:xeogl.Component}}
+             */
+            this.entityTypes = {};
+
+            /**
+             {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene that have entity types, mapped to their IDs.
+
+             Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
+             assigned a value.
+
+             @property entities
+             @final
+             @type {{String:Object}}
              */
             this.entities = {};
 
             /**
-             * The {{#crossLink "Model"}}{{/crossLink}}s within
-             * this Scene, mapped to their IDs.
-             *
-             * @property entities
-             * @type {String:xeogl.Model}
-             */
-            this.models = {};
+             Visible entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
-            // Contains xeogl.Entities that need to be recompiled back into this._renderer
-            this._dirtyEntities = {};
+             Each Object is registered in this map when its {{#crossLink "Object/visible:property"}}{{/crossLink}} property is true and its
+             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
+
+             @property visibleEntities
+             @final
+             @type {{String:Object}}
+             */
+            this.visibleEntities = {};
 
             /**
-             * Manages the HTML5 canvas for this Scene.
-             * @final
-             * @property canvas
-             * @type {Canvas}
+             Ghosted entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
+
+             Each Object is registered in this map when its {{#crossLink "Object/ghosted:property"}}{{/crossLink}} property is true and its
+             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
+
+             @property ghostedEntities
+             @final
+             @type {{String:Object}}
+             */
+            this.ghostedEntities = {};
+
+            /**
+             Highlighted entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
+
+             Each Object is registered in this map when its {{#crossLink "Object/highlighted:property"}}{{/crossLink}} property is true and its
+             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
+
+             @property highlightedEntities
+             @final
+             @type {{String:Object}}
+             */
+            this.highlightedEntities = {};
+
+            /**
+             Selected entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
+
+             Each Object is registered in this map when its {{#crossLink "Object/selected:property"}}{{/crossLink}} property is true and its
+             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
+
+             @property selectedEntities
+             @final
+             @type {{String:Object}}
+             */
+            this.selectedEntities = {};
+
+            // Cached ID arrays, lazy-rebuilt as needed when stale after map updates
+
+            /**
+             Lazy-regenerated ID lists.
+             */
+            this._objectGUIDs = null;
+            this._entityIds = null;
+            this._visibleEntityIds = null;
+            this._ghostedEntityIds = null;
+            this._highlightedEntityIds = null;
+            this._selectedEntityIds = null;
+
+            /**
+             The {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene, mapped to their IDs.
+
+             @property meshes
+             @final
+             @type {String:xeogl.Mesh}
+             */
+            this.meshes = {};
+
+            this._needRecompileMeshes = false;
+
+            /**
+             For each {{#crossLink "Component"}}{{/crossLink}} type, a map of
+             IDs to {{#crossLink "Component"}}Components{{/crossLink}} instances of that type.
+
+             @property types
+             @final
+             @type {String:{String:xeogl.Component}}
+             */
+            this.types = {};
+
+            /**
+             The {{#crossLink "Component"}}Component{{/crossLink}} within this Scene, mapped to their IDs.
+
+             @property components
+             @final
+             @type {String:xeogl.Component}
+             */
+            this.components = {};
+
+            /**
+             The root {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene, mapped to their IDs.
+
+             @property rootObjects
+             @final
+             @type {{String:Object}}
+             */
+            this.rootObjects = {};
+
+            /**
+             The {{#crossLink "Clip"}}Clip{{/crossLink}} components in this Scene, mapped to their IDs.
+
+             @property clips
+             @final
+             @type {{String:Clip}}
+             */
+            this.clips = {};
+
+            /**
+             The {{#crossLink "PointLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+             {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "AmbientLight"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+
+             @property lights
+             @final
+             @type {{String:Object}}
+             */
+            this.lights = {};
+
+            /**
+             The {{#crossLink "LightMap"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+
+             @property lightMaps
+             @final
+             @type {{String:LightMap}}
+             */
+            this.lightMaps = {};
+
+            /**
+             The {{#crossLink "ReflectionMap"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+
+             @property reflectionMaps
+             @final
+             @type {{String:ReflectionMap}}
+             */
+            this.reflectionMaps = {};
+
+            /**
+             Manages the HTML5 canvas for this Scene.
+             @final
+             @property canvas
+             @type {Canvas}
              */
             this.canvas = new xeogl.Canvas(this, {
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
@@ -527,30 +620,183 @@
                 backgroundColor: cfg.backgroundColor,
                 backgroundImage: cfg.backgroundImage,
                 webgl2: cfg.webgl2 !== false,
-                contextAttr: cfg.contextAttr || {}
+                contextAttr: cfg.contextAttr || {},
+                simulateWebGLContextLost: cfg.simulateWebGLContextLost
             });
 
             // Redraw as canvas resized
-            this.canvas.on("boundary",
-                function () {
-                    self._renderer.imageDirty();
-                });
+            this.canvas.on("boundary", function () {
+                self._renderer.imageDirty();
+            });
 
-            this.canvas.on("webglContextFailed",
-                function () {
-                    alert("xeogl failed to find WebGL!");
-                });
+            this.canvas.on("webglContextFailed", function () {
+                alert("xeogl failed to find WebGL!");
+            });
 
-            this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this.canvas.canvas, this.canvas.gl, {
+            this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this, {
                 transparent: transparent
             });
 
+            this._clipsState = new (function () {
+
+                this.clips = [];
+
+                var hash = null;
+
+                this.getHash = function () {
+                    if (hash) {
+                        return hash;
+                    }
+                    var clips = this.clips;
+                    if (clips.length === 0) {
+                        return this.hash = ";";
+                    }
+                    var clip;
+                    var hashParts = [];
+                    for (var i = 0, len = clips.length; i < len; i++) {
+                        clip = clips[i];
+                        hashParts.push("cp");
+                    }
+                    hashParts.push(";");
+                    hash = hashParts.join("");
+                    return hash;
+                };
+
+                this.addClip = function (clip) {
+                    this.clips.push(clip);
+                    hash = null;
+                };
+
+                this.removeClip = function (clip) {
+                    for (var i = 0, len = this.clips.length; i < len; i++) {
+                        if (this.clips[i].id === clip.id) {
+                            this.clips.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+            })();
+
+            this._lightsState = new (function () {
+
+                const DEFAULT_AMBIENT = xeogl.math.vec3([0, 0, 0]);
+                var ambientColor = xeogl.math.vec3();
+
+                this.lights = [];
+                this.reflectionMaps = [];
+                this.lightMaps = [];
+
+                var hash = null;
+                var ambientLight = null;
+
+                this.getHash = function () {
+                    if (hash) {
+                        return hash;
+                    }
+                    var hashParts = [];
+                    var lights = this.lights;
+                    var light;
+                    for (var i = 0, len = lights.length; i < len; i++) {
+                        light = lights[i];
+                        hashParts.push("/");
+                        hashParts.push(light.type);
+                        hashParts.push((light.space === "world") ? "w" : "v");
+                        if (light.shadow) {
+                            hashParts.push("sh");
+                        }
+                    }
+                    if (this.lightMaps.length > 0) {
+                        hashParts.push("/lm");
+                    }
+                    if (this.reflectionMaps.length > 0) {
+                        hashParts.push("/rm");
+                    }
+                    hashParts.push(";");
+                    hash = hashParts.join("");
+                    return hash;
+                };
+
+                this.addLight = function (state) {
+                    this.lights.push(state);
+                    ambientLight = null;
+                    hash = null;
+                };
+
+                this.removeLight = function (state) {
+                    for (var i = 0, len = this.lights.length; i < len; i++) {
+                        var light = this.lights[i];
+                        if (light.id === state.id) {
+                            this.lights.splice(i, 1);
+                            if (ambientLight && ambientLight.id === state.id) {
+                                ambientLight = null;
+                            }
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.addReflectionMap = function (state) {
+                    this.reflectionMaps.push(state);
+                    hash = null;
+                };
+
+                this.removeReflectionMap = function (state) {
+                    for (var i = 0, len = this.reflectionMaps.length; i < len; i++) {
+                        if (this.reflectionMaps[i].id === state.id) {
+                            this.reflectionMaps.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.addLightMap = function (state) {
+                    this.lightMaps.push(state);
+                    hash = null;
+                };
+
+                this.removeLightMap = function (state) {
+                    for (var i = 0, len = this.lightMaps.length; i < len; i++) {
+                        if (this.lightMaps[i].id === state.id) {
+                            this.lightMaps.splice(i, 1);
+                            hash = null;
+                            return;
+                        }
+                    }
+                };
+
+                this.getAmbientColor = function () {
+                    if (!ambientLight) {
+                        for (var i = 0, len = this.lights.length; i < len; i++) {
+                            var light = this.lights[i];
+                            if (light.type === "ambient") {
+                                ambientLight = light;
+                                break;
+                            }
+                        }
+                    }
+                    if (ambientLight) {
+                        var color = ambientLight.color;
+                        var intensity = ambientLight.intensity;
+                        ambientColor[0] = color[0] * intensity;
+                        ambientColor[1] = color[1] * intensity;
+                        ambientColor[2] = color[2] * intensity;
+                        return ambientColor;
+                    } else {
+                        return DEFAULT_AMBIENT;
+                    }
+                };
+
+            })();
             /**
-             * Publishes input events that occur on this Scene's canvas.
-             * @final
-             * @property input
-             * @type {Input}
-             * @final
+             Publishes input events that occur on this Scene's canvas.
+
+             @final
+             @property input
+             @type {Input}
+             @final
              */
             this.input = new xeogl.Input(this, {
                 element: this.canvas.canvas
@@ -595,34 +841,27 @@
                 id: "default.camera"
             });
 
-            this._clips = new xeogl.Clips(this, {
-                id: "default.clips"
+            // Default lights
+
+            new xeogl.DirLight(this, {
+                dir: [0.8, -0.6, -0.8],
+                color: [1.0, 1.0, 1.0],
+                intensity: 1.0,
+                space: "view"
             });
 
-            this._lights = new xeogl.Lights(this, {
-                id: "default.lights",
-                lights: [
-                    new xeogl.DirLight(this, {
-                        dir: [0.8, -0.6, -0.8],
-                        color: [1.0, 1.0, 1.0],
-                        intensity: 1.0,
-                        space: "view"
-                    }),
+            new xeogl.DirLight(this, {
+                dir: [-0.8, -0.4, -0.4],
+                color: [1.0, 1.0, 1.0],
+                intensity: 1.0,
+                space: "view"
+            });
 
-                    new xeogl.DirLight(this, {
-                        dir: [-0.8, -0.4, -0.4],
-                        color: [1.0, 1.0, 1.0],
-                        intensity: 1.0,
-                        space: "view"
-                    }),
-
-                    new xeogl.DirLight(this, {
-                        dir: [0.2, -0.8, 0.8],
-                        color: [0.6, 0.6, 0.6],
-                        intensity: 1.0,
-                        space: "view"
-                    })
-                ]
+            new xeogl.DirLight(this, {
+                dir: [0.2, -0.8, 0.8],
+                color: [0.6, 0.6, 0.6],
+                intensity: 1.0,
+                space: "view"
             });
 
             // Plug global components into renderer
@@ -630,42 +869,9 @@
             var viewport = this._viewport;
             var renderer = this._renderer;
             var camera = this._camera;
-            var clips = this._clips;
-            var lights = this._lights;
-
-            renderer.viewport = viewport._state;
-            renderer.projTransform = camera[camera.projection]._state;
-            renderer.viewTransform = camera._state;
-            renderer.lights = lights._getState();
-            renderer.clips = clips._getState();
 
             camera.on("dirty", function () {
-                renderer.projTransform = camera.project._state;
-                renderer.viewTransform = camera._state;
                 renderer.imageDirty();
-            });
-
-            clips.on("dirty", function () { // TODO: Buffer so we're not doing for every light
-                renderer.clips = clips._getState();
-                for (var entityId in self.entities) {
-                    if (self.entities.hasOwnProperty(entityId)) {
-                        self._entityDirty(self.entities[entityId]);
-                    }
-                }
-            });
-
-            lights.on("dirty", function () {
-                renderer.lights = lights._getState();
-                var updated = false;
-                for (var entityId in self.entities) {
-                    if (self.entities.hasOwnProperty(entityId)) {
-                        self._entityDirty(self.entities[entityId]);
-                        updated = true;
-                    }
-                }
-                // if (!updated || self.loading > 0 || self.canvas.spinner.processes > 0) {
-                //     renderer.clear({}); // TODO: multiple passes
-                // }
             });
 
             this.ticksPerRender = cfg.ticksPerRender;
@@ -686,127 +892,228 @@
             dummy = this.material;
             dummy = this.ghostMaterial;
             dummy = this.outlineMaterial;
-            dummy = this.transform;
         },
 
-        // Called by each component that is created with this Scene as parent.
-        // Registers the component within this scene.
-
         _addComponent: function (c) {
-
-            if (c.id) {
-
-                // User-supplied ID
-
+            if (c.id) { // Manual ID
                 if (this.components[c.id]) {
                     this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
-                    //        c.id = this._componentIDMap.addItem(c);
-                    return;
+                    c.id = null;
                 }
-            } else {
-
-                // Auto-generated ID
-
+            }
+            if (!c.id) { // Auto ID
                 if (window.nextID === undefined) {
                     window.nextID = 0;
                 }
                 //c.id = xeogl.math.createUUID();
                 c.id = "_" + window.nextID++;
-
                 while (this.components[c.id]) {
                     c.id = xeogl.math.createUUID();
                 }
             }
-
             this.components[c.id] = c;
-
             // Register for class type
-
             var type = c.type;
-
             var types = this.types[c.type];
-
             if (!types) {
                 types = this.types[type] = {};
             }
-
             types[c.id] = c;
-
-            c.on("destroyed", function () {
-                this._componentDestroyed(c);
-            }, this);
-
-            if (c.isType("xeogl.Entity")) {
-
-                // Component is a xeogl.Entity or subtype
-
-                c.on("dirty", this._entityDirty, this);
-
-                this.entities[c.id] = c;
-
-                // If we currently have a World-space Scene boundary, then invalidate
-                // it whenever Entity's World-space boundary updates
-
-                c.on("boundary", this._setBoundaryDirty, this);
-
-                // Update scene statistics
-
-                xeogl.stats.components.entities++;
-            }
-
-            if (c.isType("xeogl.Model")) {
-
-                this.models[c.id] = c;
-
-                // Update scene statistics
-
-                xeogl.stats.components.models++;
-            }
-
-            //self.log("Created " + c.type + " " + xeogl._inQuotes(c.id));
         },
 
-        // Callbacks as members to reduce GC churn
-
-        _componentDestroyed: function (c) {
-
+        _removeComponent: function (c) {
             delete this.components[c.id];
-
             var types = this.types[c.type];
-
             if (types) {
-
                 delete types[c.id];
-
                 if (xeogl._isEmptyObject(types)) {
                     delete this.types[c.type];
                 }
             }
-
-            if (c.isType("xeogl.Entity")) {
-
-                // Component is a xeogl.Entity or subtype
-
-                // Update scene statistics,
-                // Unschedule any pending recompilation of
-                // the Entity into the renderer
-
-                xeogl.stats.components.entities--;
-                delete this.entities[c.id];
-                delete this._dirtyEntities[c.id];
-                xeogl.stats.components.entities--;
-            }
-
-            if (c.isType("xeogl.Model")) {
-                delete this.models[c.id];
-                xeogl.stats.components.models--;
-            }
-
-            //this.log("Destroyed " + c.type + " " + xeogl._inQuotes(c.id));
         },
 
-        _entityDirty: function (entity) {
-            this._dirtyEntities[entity.id] = entity;
+        // Methods below are called by various component types to register themselves on their
+        // Scene. Violates Hollywood Principle, where we could just filter on type in _addComponent,
+        // but this is faster than checking the type of each component in such a filter.
+
+        _clipCreated: function (clip) {
+            this.clips[clip.id] = clip;
+            this.scene._clipsState.addClip(clip._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightCreated: function (light) {
+            this.lights[light.id] = light;
+            this.scene._lightsState.addLight(light._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightMapCreated: function (lightMap) {
+            this.lightMaps[lightMap.id] = lightMap;
+            this.scene._lightsState.addLightMap(lightMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _reflectionMapCreated: function (reflectionMap) {
+            this.reflectionMaps[reflectionMap.id] = reflectionMap;
+            this.scene._lightsState.addReflectionMap(reflectionMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _objectCreated: function (object) {
+            this.objects[object.id] = object;
+            if (object.guid) {
+                this.guidObjects[object.id] = object;
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
+            if (!object.parent) {
+                this.rootObjects[object.id] = object; // TODO: What about when a root Object is added as child to another?
+            }
+            xeogl.stats.components.objects++;
+        },
+
+        _meshCreated: function (mesh) {
+            this.meshes[mesh.id] = mesh;
+            xeogl.stats.components.meshes++;
+        },
+
+        _modelCreated: function (model) {
+            this.models[model.id] = model;
+            xeogl.stats.components.models++;
+        },
+
+        _clipDestroyed: function (clip) {
+            delete this.clips[clip.id];
+            this.scene._clipsState.removeClip(clip._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightDestroyed: function (light) {
+            delete this.lights[light.id];
+            this.scene._lightsState.removeLight(light._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _lightMapDestroyed: function (lightMap) {
+            delete this.lightMaps[lightMap.id];
+            this.scene._lightsState.removeLightMap(lightMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _reflectionMapDestroyed: function (reflectionMap) {
+            delete this.reflectionMaps[reflectionMap.id];
+            this.scene._lightsState.removeReflectionMap(reflectionMap._state);
+            this._needRecompileMeshes = true;
+        },
+
+        _objectDestroyed: function (object) {
+            delete this.objects[object.id];
+            if (object.guid) {
+                delete this.guidObjects[object.guid];
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
+            if (!object.parent) {
+                delete this.rootObjects[object.id];
+            }
+            xeogl.stats.components.objects--;
+        },
+
+        _meshDestroyed: function (mesh) {
+            xeogl.stats.components.meshes--;
+            delete this.meshes[mesh.id];
+            xeogl.stats.components.meshes--;
+        },
+
+        _modelDestroyed: function (model) {
+            this.models[model.id] = model;
+            xeogl.stats.components.models++;
+        },
+
+        _entityTypeAssigned: function (object, newEntityType) {
+            this.entities[object.id] = object;
+            var objectsOfType = this.entityTypes[newEntityType];
+            if (!objectsOfType) {
+                objectsOfType = {};
+                this.entityTypes[newEntityType] = objectsOfType;
+            }
+            objectsOfType[object.id] = object;
+            this._entityIds = null; // Lazy regenerate
+            this._entityTypeIds = null; // Lazy regenerate
+        },
+
+        _entityTypeRemoved: function (object, oldEntityType) {
+            delete this.entities[object.id];
+            var objectsOfType = this.entityTypes[oldEntityType];
+            if (objectsOfType) {
+                delete objectsOfType[object.id];
+            }
+            this._entityIds = null; // Lazy regenerate
+            this._entityTypeIds = null; // Lazy regenerate
+        },
+
+        _entityVisibilityUpdated: function (object, visible) {
+            if (visible) {
+                this.visibleEntities[object.id] = object;
+            } else {
+                delete this.visibleEntities[object.id];
+            }
+            this._visibleEntityIds = null; // Lazy regenerate
+        },
+
+        _entityGhostedUpdated: function (object, ghosted) {
+            if (ghosted) {
+                this.ghostedEntities[object.id] = object;
+            } else {
+                delete this.ghostedEntities[object.id];
+            }
+            this._ghostedEntityIds = null; // Lazy regenerate
+        },
+
+        _entityHighlightedUpdated: function (object, highlighted) {
+            if (highlighted) {
+                this.highlightedEntities[object.id] = object;
+            } else {
+                delete this.highlightedEntities[object.id];
+            }
+            this._highlightedEntityIds = null; // Lazy regenerate
+        },
+
+        _entitySelectedUpdated: function (object, selected) {
+            if (selected) {
+                this.selectedEntities[object.id] = object;
+            } else {
+                delete this.selectedEntities[object.id];
+            }
+            this._selectedEntityIds = null; // Lazy regenerate
+        },
+
+        _webglContextLost: function () {
+          //  this.loading++;
+            this.canvas.spinner.processes++;
+            for (var id in this.components) {
+                if (this.components.hasOwnProperty(id)) {
+                    var c = this.components[id];
+                    if (c._webglContextLost) {
+                        c._webglContextLost();
+                    }
+                }
+            }
+            this._renderer.webglContextLost();
+        },
+
+        _webglContextRestored: function () {
+            var gl = this.canvas.gl;
+            for (var id in this.components) {
+                if (this.components.hasOwnProperty(id)) {
+                    var c = this.components[id];
+                    if (c._webglContextRestored) {
+                        c._webglContextRestored(gl);
+                    }
+                }
+            }
+            this._renderer.webglContextRestored(gl);
+            //this.loading--;
+            this.canvas.spinner.processes--;
         },
 
         /**
@@ -824,30 +1131,26 @@
 
             var renderEvent = {
                 sceneId: null,
-                pass: null
+                pass: 0
             };
 
             return function (forceRender) {
 
-                // The renderer is suspended while a model loads, and when a Scene is made to load something
-                // as soon as it's instantiated, that means that its lights may not get a chance to set the
-                // canvas background until the model is loaded and the renderer is unsuspended again. Therefore,
-                // we have a special imageForceDirty flag that bypasses the suspension, which lights set when
-                // their properties are updated.
+                if (this._needRecompileMeshes) {
+                    this._recompileMeshes();
+                    this._needRecompileMeshes = false;
+                }
 
-                var imageForceDirty = this._renderer.imageForceDirty;
-
-                if (this.loading > 0 && !forceRender && !imageForceDirty) {
-                    this._compileDirtyEntities(100);
+                if (this.loading > 0 || this.canvas.spinner.processes > 0) {
+                    this.canvas.canvas.style.opacity = 0.0;
                     return;
                 }
 
-                if (this.canvas.spinner.processes > 0 && !imageForceDirty) {
-                    this._compileDirtyEntities(100);
-                    return;
+                var opacity = Number.parseFloat(this.canvas.canvas.style.opacity);
+                if (opacity < 1.0) {
+                    opacity += 0.1;
+                    this.canvas.canvas.style.opacity = opacity;
                 }
-
-                this._compileDirtyEntities(15);
 
                 renderEvent.sceneId = this.id;
 
@@ -887,20 +1190,10 @@
             }
         })(),
 
-        _compileDirtyEntities: function (timeBudget) {
-            var time1 = (new Date()).getTime();
-            var entity;
-            for (var id in this._dirtyEntities) {
-                if (this._dirtyEntities.hasOwnProperty(id)) {
-                    entity = this._dirtyEntities[id];
-                    if (entity._valid()) {
-                        entity._compile();
-                        delete this._dirtyEntities[id];
-                    }
-                    var time2 = (new Date()).getTime();
-                    if (time2 - time1 > timeBudget) {
-                        return;
-                    }
+        _recompileMeshes: function () {
+            for (var id in this.meshes) {
+                if (this.meshes.hasOwnProperty(id)) {
+                    this.meshes[id]._compile();
                 }
             }
         },
@@ -908,7 +1201,7 @@
         _saveAmbientColor: function () {
             var canvas = this.canvas;
             if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
-                var ambientColor = this._renderer.getAmbientColor();
+                var ambientColor = this._lightsState.getAmbientColor();
                 if (!this._lastAmbientColor ||
                     this._lastAmbientColor[0] !== ambientColor[0] ||
                     this._lastAmbientColor[1] !== ambientColor[1] ||
@@ -928,225 +1221,258 @@
         _props: {
 
             /**
-             * The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
-             *
-             * @property ticksPerRender
-             * @default 1
-             * @type Number
+             Convenience array of entity type IDs in {{#crossLink "Scene/entityTypes:property"}}{{/crossLink}}.
+             @property entityTypeIds
+             @final
+             @type {Array of String}
+             */
+            objectGUIDs: {
+                get: function () {
+                    if (!this._objectGUIDs) {
+                        this._objectGUIDs = Object.keys(this.guidObjects);
+                    }
+                    return this._objectGUIDs;
+                }
+            },
+
+            /**
+             Convenience array of entity type IDs in {{#crossLink "Scene/entityTypes:property"}}{{/crossLink}}.
+             @property entityTypeIds
+             @final
+             @type {Array of String}
+             */
+            entityTypeIds: {
+                get: function () {
+                    if (!this._entityTypeIds) {
+                        this._entityTypeIds = Object.keys(this.entityTypes);
+                    }
+                    return this._entityTypeIds;
+                }
+            },
+
+            /**
+             Convenience array of IDs in {{#crossLink "Scene/entities:property"}}{{/crossLink}}.
+             @property entityIds
+             @final
+             @type {Array of String}
+             */
+            entityIds: {
+                get: function () {
+                    if (!this._entityIds) {
+                        this._entityIds = Object.keys(this.entities);
+                    }
+                    return this._entityIds;
+                }
+            },
+
+            /**
+             Convenience array of IDs in {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}}.
+             @property visibleEntityIds
+             @final
+             @type {Array of String}
+             */
+            visibleEntityIds: {
+                get: function () {
+                    if (!this._visibleEntityIds) {
+                        this._visibleEntityIds = Object.keys(this.visibleEntities);
+                    }
+                    return this._visibleEntityIds;
+                }
+            },
+
+            /**
+             Convenience array of IDs in {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}}.
+             @property ghostedEntityIds
+             @final
+             @type {Array of String}
+             */
+            ghostedEntityIds: {
+                get: function () {
+                    if (!this._ghostedEntityIds) {
+                        this._ghostedEntityIds = Object.keys(this.ghostedEntities);
+                    }
+                    return this._ghostedEntityIds;
+                }
+            },
+
+            /**
+             Convenience array of IDs in {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}}.
+             @property highlightedEntityIds
+             @final
+             @type {Array of String}
+             */
+            highlightedEntityIds: {
+                get: function () {
+                    if (!this._highlightedEntityIds) {
+                        this._highlightedEntityIds = Object.keys(this.highlightedEntities);
+                    }
+                    return this._highlightedEntityIds;
+                }
+            },
+
+            /**
+             Convenience array of IDs in {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}}.
+             @property selectedEntityIds
+             @final
+             @type {Array of String}
+             */
+            selectedEntityIds: {
+                get: function () {
+                    if (!this._selectedEntityIds) {
+                        this._selectedEntityIds = Object.keys(this.selectedEntities);
+                    }
+                    return this._selectedEntityIds;
+                }
+            },
+
+            /**
+             The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+
+             @property ticksPerRender
+             @default 1
+             @type Number
              */
             ticksPerRender: {
-
                 set: function (value) {
-
                     if (value === undefined || value === null) {
                         value = 1;
-
                     } else if (!xeogl._isNumeric(value) || value <= 0) {
-
                         this.error("Unsupported value for 'ticksPerRender': '" + value +
                             "' - should be an integer greater than zero.");
-
                         value = 1;
                     }
-
                     if (value === this._ticksPerRender) {
                         return;
                     }
-
                     this._ticksPerRender = value;
                 },
-
                 get: function () {
                     return this._ticksPerRender;
                 }
             },
 
             /**
-             * The number of times this Scene renders per frame.
-             *
-             * @property passes
-             * @default 1
-             * @type Number
+             The number of times this Scene renders per frame.
+
+             @property passes
+             @default 1
+             @type Number
              */
             passes: {
-
                 set: function (value) {
-
                     if (value === undefined || value === null) {
                         value = 1;
-
                     } else if (!xeogl._isNumeric(value) || value <= 0) {
-
                         this.error("Unsupported value for 'passes': '" + value +
                             "' - should be an integer greater than zero.");
-
                         value = 1;
                     }
-
                     if (value === this._passes) {
                         return;
                     }
-
                     this._passes = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._passes;
                 }
             },
 
             /**
-             * When doing multiple passes per frame, specifies whether to clear the
-             * canvas before each pass (true) or just before the first pass (false).
-             *
-             * @property clearEachPass
-             * @default false
-             * @type Boolean
+             When doing multiple passes per frame, specifies whether to clear the
+             canvas before each pass (true) or just before the first pass (false).
+
+             @property clearEachPass
+             @default false
+             @type Boolean
              */
             clearEachPass: {
-
                 set: function (value) {
-
                     value = !!value;
-
                     if (value === this._clearEachPass) {
                         return;
                     }
-
                     this._clearEachPass = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._clearEachPass;
                 }
             },
 
             /**
-             * When true, expects all textures and colors are premultiplied gamma.
-             *
-             * @property gammaInput
-             * @default false
-             * @type Boolean
+             When true, expects all textures and colors are premultiplied gamma.
+
+             @property gammaInput
+             @default false
+             @type Boolean
              */
             gammaInput: {
-
                 set: function (value) {
-
                     value = value !== false;
-
                     if (value === this._renderer.gammaInput) {
                         return;
                     }
-
                     this._renderer.gammaInput = value;
-
-                    for (var entityId in this.entities) { // Needs all shaders recompiled
-                        if (this.entities.hasOwnProperty(entityId)) {
-                            this._entityDirty(this.entities[entityId]);
-                        }
-                    }
+                    this._needRecompileMeshes = true;
                 },
-
                 get: function () {
                     return this._renderer.gammaInput;
                 }
             },
 
             /**
-             * Whether or not to render pixels with pre-multiplied gama.
-             *
-             * @property gammaOutput
-             * @default true
-             * @type Boolean
+             Whether or not to render pixels with pre-multiplied gama.
+
+             @property gammaOutput
+             @default true
+             @type Boolean
              */
             gammaOutput: {
-
                 set: function (value) {
-
                     value = value !== false;
-
                     if (value === this._renderer.gammaOutput) {
                         return;
                     }
-
                     this._renderer.gammaOutput = value;
-
-                    for (var entityId in this.entities) { // Needs all shaders recompiled
-                        if (this.entities.hasOwnProperty(entityId)) {
-                            this._entityDirty(this.entities[entityId]);
-                        }
-                    }
+                    this._needRecompileMeshes = true;
                 },
-
                 get: function () {
                     return this._renderer.gammaOutput;
                 }
             },
 
             /**
-             * The gamma factor to use when {{#crossLink "Scene/property:gammaOutput"}}{{/crossLink}} is set true.
-             *
-             * @property gammaOutput
-             * @default 1.0
-             * @type Number
+             The gamma factor to use when {{#crossLink "Scene/property:gammaOutput"}}{{/crossLink}} is set true.
+
+             @property gammaOutput
+             @default 1.0
+             @type Number
              */
             gammaFactor: {
-
                 set: function (value) {
-
                     value = (value === undefined || value === null) ? 2.2 : value;
-
                     if (value === this._renderer.gammaFactor) {
                         return;
                     }
-
                     this._renderer.gammaFactor = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._renderer.gammaFactor;
                 }
             },
 
             /**
-             * The default modelling {{#crossLink "Transform"}}{{/crossLink}} for this Scene.
-             *
-             * This {{#crossLink "Transform"}}{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
-             * with all other properties initialised to their default values (ie. an identity matrix).
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to
-             * this {{#crossLink "Transform"}}{{/crossLink}} by default.
-             *
-             * @property transform
-             * @final
-             * @type Transform
-             */
-            transform: {
-                get: function () {
-                    return this.components["default.transform"] ||
-                        new xeogl.Transform(this, {
-                            id: "default.transform",
-                            isDefault: true
-                        });
-                }
-            },
+             The default geometry for this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
 
-            /**
-             * The default geometry for this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
-             *
-             * This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Geometry"}}Geometry{{/crossLink}} by default.
-             * @property geometry
-             * @final
-             * @type BoxGeometry
+             This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "Geometry"}}Geometry{{/crossLink}} by default.
+             @property geometry
+             @final
+             @type BoxGeometry
              */
             geometry: {
                 get: function () {
@@ -1159,17 +1485,17 @@
             },
 
             /**
-             * The default drawing material for this Scene, which is a {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}}.
-             *
-             * This {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
-             * other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} by default.
-             * @property material
-             * @final
-             * @type PhongMaterial
+             The default drawing material for this Scene, which is a {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}}.
+
+             This {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} has
+             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
+             other properties initialised to their default values.
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} by default.
+             @property material
+             @final
+             @type PhongMaterial
              */
             material: {
                 get: function () {
@@ -1183,17 +1509,17 @@
             },
 
             /**
-             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are ghosted.
-             *
-             * This {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
-             * other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} by default.
-             * @property ghostMaterial
-             * @final
-             * @type EmphasisMaterial
+             The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are ghosted.
+
+             This {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} has
+             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
+             other properties initialised to their default values.
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} by default.
+             @property ghostMaterial
+             @final
+             @type EmphasisMaterial
              */
             ghostMaterial: {
                 get: function () {
@@ -1207,17 +1533,17 @@
             },
 
             /**
-             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are highlighted.
-             *
-             * This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
-             * other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} by default.
-             * @property highlightMaterial
-             * @final
-             * @type HighlightMaterial
+             The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are highlighted.
+
+             This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
+             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
+             other properties initialised to their default values.
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} by default.
+             @property highlightMaterial
+             @final
+             @type HighlightMaterial
              */
             highlightMaterial: {
                 get: function () {
@@ -1231,17 +1557,17 @@
             },
 
             /**
-             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are selected.
-             *
-             * This {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.selectedMaterial", with all
-             * other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} by default.
-             * @property selectedMaterial
-             * @final
-             * @type SelectedMaterial
+             The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are selected.
+
+             This {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} has
+             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.selectedMaterial", with all
+             other properties initialised to their default values.
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} by default.
+             @property selectedMaterial
+             @final
+             @type SelectedMaterial
              */
             selectedMaterial: {
                 get: function () {
@@ -1255,17 +1581,44 @@
             },
 
             /**
-             * The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are outlined.
-             *
-             * This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outlineMaterial", with all
-             * other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} by default.
-             * @property outlineMaterial
-             * @final
-             * @type OutlineMaterial
+             The Scene's default {{#crossLink "EdgeMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when edges are emphasized.
+
+             This {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} has
+             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.edgeMaterial", with all
+             other properties initialised to their default values.
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} by default.
+             @property edgeMaterial
+             @final
+             @type EdgeMaterial
+             */
+            edgeMaterial: {
+                get: function () {
+                    return this.components["default.edgeMaterial"] ||
+                        new xeogl.EdgeMaterial(this, {
+                            id: "default.edgeMaterial",
+                            preset: "default",
+                            edgeColor: [0.0, 0.0, 0.0],
+                            edgeAlpha: 1.0,
+                            edgeWidth: 1,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
+             The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are outlined.
+
+             This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
+             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outlineMaterial", with all
+             other properties initialised to their default values.
+
+             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+             {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} by default.
+             @property outlineMaterial
+             @final
+             @type OutlineMaterial
              */
             outlineMaterial: {
                 get: function () {
@@ -1278,11 +1631,11 @@
             },
 
             /**
-             * The {{#crossLink "Viewport"}}{{/crossLink}} belonging to this Scene.
-             *
-             * @property viewport
-             * @final
-             * @type Viewport
+             The {{#crossLink "Viewport"}}{{/crossLink}} belonging to this Scene.
+
+             @property viewport
+             @final
+             @type Viewport
              */
             viewport: {
                 get: function () {
@@ -1291,24 +1644,11 @@
             },
 
             /**
-             * The {{#crossLink "Lights"}}Lights{{/crossLink}} belonging to this Scene.
-             *
-             * @property lights
-             * @final
-             * @type Lights
-             */
-            lights: {
-                get: function () {
-                    return this._lights;
-                }
-            },
+             The {{#crossLink "Camera"}}Camera{{/crossLink}} belonging to this Scene.
 
-            /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} belonging to this Scene.
-             *
-             * @property camera
-             * @final
-             * @type Camera
+             @property camera
+             @final
+             @type Camera
              */
             camera: {
                 get: function () {
@@ -1317,94 +1657,60 @@
             },
 
             /**
-             * The {{#crossLink "Clips"}}Clips{{/crossLink}} belonging to this Scene.
-             *
-             * @property clips
-             * @final
-             * @type Clips
-             */
-            clips: {
-                get: function () {
-                    return this._clips;
-                }
-            },
+             World-space 3D center of this Scene.
 
-            /**
-             * World-space 3D center of this Scene.
-             *
-             * @property center
-             * @final
-             * @type {Float32Array}
+             @property center
+             @final
+             @type {Float32Array}
              */
             center: {
-
                 get: function () {
-
-                    if (this._aabbDirty) {
-
-                        if (!this._center) {
-                            this._center = xeogl.math.AABB3();
+                    if (this._aabbDirty || !this._center) {
+                        if (!this._center || !this._center) {
+                            this._center = xeogl.math.vec3();
                         }
-
                         var aabb = this.aabb;
-
                         this._center[0] = (aabb[0] + aabb[3] ) / 2;
                         this._center[1] = (aabb[1] + aabb[4] ) / 2;
                         this._center[2] = (aabb[2] + aabb[5] ) / 2;
                     }
-
                     return this._center;
                 }
             },
 
             /**
-             * World-space axis-aligned 3D boundary (AABB) of this Scene.
-             *
-             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
-             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-             *
-             * @property aabb
-             * @final
-             * @type {Float32Array}
+             World-space axis-aligned 3D boundary (AABB) of this Scene.
+
+             The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+
+             @property aabb
+             @final
+             @type {Float32Array}
              */
             aabb: {
-
                 get: function () {
-
+                    //   console.log("get aabb")
                     if (this._aabbDirty) {
-
                         if (!this._aabb) {
                             this._aabb = xeogl.math.AABB3();
                         }
-
                         var xmin = xeogl.math.MAX_DOUBLE;
                         var ymin = xeogl.math.MAX_DOUBLE;
                         var zmin = xeogl.math.MAX_DOUBLE;
                         var xmax = -xeogl.math.MAX_DOUBLE;
                         var ymax = -xeogl.math.MAX_DOUBLE;
                         var zmax = -xeogl.math.MAX_DOUBLE;
-
                         var aabb;
-
-                        var entities = this.entities;
-                        var entity;
-
-                        for (var entityId in entities) {
-                            if (entities.hasOwnProperty(entityId)) {
-
-                                entity = entities[entityId];
-
-                                if (!entity.collidable) {
+                        var meshes = this.meshes;
+                        var mesh;
+                        for (var meshId in meshes) {
+                            if (meshes.hasOwnProperty(meshId)) {
+                                mesh = meshes[meshId];
+                                if (!mesh.collidable) {
                                     continue;
                                 }
-
-                                aabb = entity.aabb;
-
-                                if (!aabb) {
-                                    this.error("internal error: entity without aabb: " + entityId);
-                                    continue;
-                                }
-
+                                aabb = mesh.aabb;
                                 if (aabb[0] < xmin) {
                                     xmin = aabb[0];
                                 }
@@ -1425,114 +1731,114 @@
                                 }
                             }
                         }
-
                         this._aabb[0] = xmin;
                         this._aabb[1] = ymin;
                         this._aabb[2] = zmin;
                         this._aabb[3] = xmax;
                         this._aabb[4] = ymax;
                         this._aabb[5] = zmax;
-
                         this._aabbDirty = false;
                     }
-
                     return this._aabb;
                 }
             }
         },
 
         _setBoundaryDirty: function () {
-            if (!this._aabbDirty) {
-                this._aabbDirty = true;
-                this.fire("boundary");
-            }
+            //if (!this._aabbDirty) {
+            this._aabbDirty = true;
+            this.fire("boundary");
+            // }
         },
 
         /**
-         * Attempts to pick an {{#crossLink "Entity"}}Entity{{/crossLink}} in this Scene.
-         *
-         * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/pickable:property"}}pickable{{/crossLink}}
-         * set *false*.
-         *
-         * Picking the {{#crossLink "Entity"}}{{/crossLink}} at the given canvas coordinates:
-         *
-         * ````javascript
-         * var hit = scene.pick({
-         *     canvasPos: [23, 131]
-         *  });
-         *
-         * if (hit) { // Picked an Entity
-         *     var entity = hit.entity;
-         * }
-         * ````
-         *
-         * **Usage:**
-         *
-         * Picking the {{#crossLink "Entity"}}{{/crossLink}} that intersects a ray cast through the canvas:
-         *
-         * ````javascript
-         * var hit = scene.pick({
-         *     pickSurface: true,
-         *     canvasPos: [23, 131]
-         *  });
-         *
-         * if (hit) { // Picked an Entity
-         *
-         *     var entity = hit.entity;
-         *
-         *     // These properties are only on the hit result when we do a ray-pick:
-         *
-         *     var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
-         *     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
-         *     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
-         *     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
-         *     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
-         *     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
-         *     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
-         *     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
-         *     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
-         * }
-         * ````
-         *
-         * Picking the {{#crossLink "Entity"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:
-         *
-         * ````javascript
-         * var hit = scene.pick({
-         *     pickSurface: true,       // Picking with arbitrarily-positioned ray
-         *     origin: [0,0,-5],    // Ray origin
-         *     direction: [0,0,1]   // Ray direction
-         * });
-         *
-         * if (hit) { // Picked an Entity with the ray
-         *
-         *     var entity = hit.entity;
-         *
-         *     var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
-         *     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
-         *     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
-         *     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
-         *     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
-         *     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
-         *     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
-         *     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
-         *     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
-         *     var origin = hit.origin; // Float32Array containing the World-space ray origin
-         *     var direction = hit.direction; // Float32Array containing the World-space ray direction
-         * }
-         * ````
-         * @method pick
-         *
-         * @param {*} params Picking parameters.
-         * @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Entity.
-         * @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
-         * **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
-         * directly along the negative View-space Z-axis.
-         * @param {Float32Array} [params.origin] World-space ray origin when ray-picking. Ignored when canvasPos given.
-         * @param {Float32Array} [params.direction] World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.
-         * @param {Array} [params.include] IDs of {{#crossLink "Entity"}}Entities{{/crossLink}} to pick from amongst. When given, ignores {{#crossLink "Entity"}}Entities{{/crossLink}} whose IDs are not in this list.
-         * @param {Array} [params.exclude] IDs of {{#crossLink "Entity"}}Entities{{/crossLink}} to ignore. When given, will pick *through* these {{#crossLink "Entity"}}Entities{{/crossLink}}, as if they were not there.
-         * @returns {*} Hit record, returned when an {{#crossLink "Entity"}}{{/crossLink}} is picked, else null. See
-         * method comments for description.
+         Attempts to pick an {{#crossLink "Mesh"}}Mesh{{/crossLink}} in this Scene.
+
+         Ignores {{#crossLink "Mesh"}}Meshes{{/crossLink}} with {{#crossLink "Mesh/pickable:property"}}pickable{{/crossLink}}
+         set *false*.
+
+         When a {{#crossLink "Mesh"}}{{/crossLink}} is picked, fires a "pick" event on the {{#crossLink "Mesh"}}{{/crossLink}}
+         with the hit result as parameters.
+
+         Picking the {{#crossLink "Mesh"}}{{/crossLink}} at the given canvas coordinates:
+
+         ````javascript
+         var hit = scene.pick({
+              canvasPos: [23, 131]
+           });
+
+         if (hit) { // Picked a Mesh
+              var mesh = hit.mesh;
+          }
+         ````
+
+         **Usage:**
+
+         Picking the {{#crossLink "Mesh"}}{{/crossLink}} that intersects a ray cast through the canvas:
+
+         ````javascript
+         var hit = scene.pick({
+              pickSurface: true,
+              canvasPos: [23, 131]
+           });
+
+         if (hit) { // Picked a Mesh
+
+              var mesh = hit.mesh;
+
+              // These properties are only on the hit result when we do a ray-pick:
+
+              var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+              var primIndex = hit.primIndex; // Position of triangle's first index in the picked Mesh's Geometry's indices array
+              var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
+              var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+              var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+              var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+              var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+              var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+              var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+          }
+         ````
+
+         Picking the {{#crossLink "Mesh"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:
+
+         ````javascript
+         var hit = scene.pick({
+              pickSurface: true,       // Picking with arbitrarily-positioned ray
+              origin: [0,0,-5],    // Ray origin
+              direction: [0,0,1]   // Ray direction
+          });
+
+         if (hit) { // Picked a Mesh with the ray
+
+              var mesh = hit.mesh;
+
+              var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+              var primIndex = hit.primIndex; // Position of triangle's first index in the picked Mesh's Geometry's indices array
+              var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
+              var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+              var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+              var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+              var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+              var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+              var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+              var origin = hit.origin; // Float32Array containing the World-space ray origin
+              var direction = hit.direction; // Float32Array containing the World-space ray direction
+          }
+         ````
+         @method pick
+
+         @param {*} params Picking parameters.
+         @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Mesh.
+         @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
+         **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
+         directly along the negative View-space Z-axis.
+         @param {Float32Array} [params.origin] World-space ray origin when ray-picking. Ignored when canvasPos given.
+         @param {Float32Array} [params.direction] World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.
+         @param {Array} [params.includeMeshes] IDs of {{#crossLink "Mesh"}}Meshes{{/crossLink}} to restrict picking to. When given, ignores {{#crossLink "Mesh"}}Meshes{{/crossLink}} whose IDs are not in this list.
+         @param {Array} [params.excludeMeshes] IDs of {{#crossLink "Mesh"}}Meshes{{/crossLink}} to ignore. When given, will pick *through* these {{#crossLink "Mesh"}}Meshes{{/crossLink}}, as if they were not there.
+         @returns {*} Hit record, returned when an {{#crossLink "Mesh"}}{{/crossLink}} is picked, else null. See
+         method comments for description.
          */
         pick: (function () {
 
@@ -1577,20 +1883,36 @@
             var tempVec3j = math.vec3();
             var tempVec3k = math.vec3();
 
-            function entityIDsToObjectIDs(scene, entityIds) {
-                var objectIds = {};
-                var entityId;
-                var entity;
-                for (var i = 0, len = entityIds.length; i < len; i++) {
-                    entityId = entityIds[i];
-                    entity = scene.entities[entityId];
-                    if (!entity) {
-                        scene.warn("pick(): Entity not found: " + entityId);
+            function getMeshIDMap(scene, meshIds) {
+                var map = {};
+                var meshId;
+                var mesh;
+                for (var i = 0, len = meshIds.length; i < len; i++) {
+                    meshId = meshIds[i];
+                    mesh = scene.meshes[meshId];
+                    if (!mesh) {
+                        scene.warn("pick(): Mesh not found: " + meshId);
                         continue;
                     }
-                    objectIds[entity._objectId] = true;
+                    map[meshId] = true;
                 }
-                return objectIds;
+                return map;
+            }
+
+            function getMeshIDMapFromentityTypes(scene, entityTypes) {
+                // var objectIds = {};
+                // var entityType;
+                // var mesh;
+                // for (var i = 0, len = entityTypes.length; i < len; i++) {
+                //     entityType = entityTypes[i];
+                //     mesh = scene.meshes[entityType];
+                //     if (!mesh) {
+                //         scene.warn("pick(): Mesh not found: " + entityType);
+                //         continue;
+                //     }
+                //     objectIds[mesh._objectId] = true;
+                // }
+                // return objectIds;
             }
 
             return function (params) {
@@ -1608,32 +1930,40 @@
                     this.warn("picking without canvasPos or ray origin and direction");
                 }
 
-                if (params.include) {
-                    params.includeObjects = entityIDsToObjectIDs(this, params.include)
+                var includeMeshes = params.includeMeshes || params.include; // Backwards compat
+                if (includeMeshes) {
+                    params.includeMeshIds = getMeshIDMap(this, includeMeshes);
                 }
 
-                if (params.exclude) {
-                    params.excludeObjects = entityIDsToObjectIDs(this, params.exclude)
+                var excludeMeshes = params.excludeMeshes || params.exclude; // Backwards compat
+                if (excludeMeshes) {
+                    params.excludeMeshIds = getMeshIDMap(this, excludeMeshes);
                 }
+
+                // if (params.includeEntityTypes) {
+                //     params.includeObjects = getMeshIDMapFromEntityTypes(this, params.includeEntityTypes);
+                // }
+                //
+                // if (params.excludeEntityTypes) {
+                //     params.excludeObjects = getMeshIDMapFromEntityTypes(this, params.excludeEntityTypes);
+                // }
 
                 var hit = this._renderer.pick(params);
 
                 if (hit) {
 
-                    var entity = this.entities[hit.entity];
-
-                    hit.entity = entity; // Swap string ID for xeogl.Entity
+                    hit.object = hit.mesh; // Backwards compat
 
                     if (params.pickSurface) {
 
                         if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
-                            var geometry = entity.geometry._state;
+                            var geometry = hit.mesh.geometry._state;
 
                             if (geometry.primitiveName === "triangles") {
 
                                 // Triangle picked; this only happens when the
-                                // Entity has a Geometry that has primitives of type "triangle"
+                                // Mesh has a Geometry that has primitives of type "triangle"
 
                                 hit.primitive = "triangle";
 
@@ -1702,10 +2032,10 @@
                                 if (params.canvasPos) {
                                     canvasPos = params.canvasPos;
                                     hit.canvasPos = params.canvasPos;
-                                    math.canvasPosToLocalRay(this.camera, entity, canvasPos, localRayOrigin, localRayDir);
+                                    math.canvasPosToLocalRay(this.camera, hit.mesh, canvasPos, localRayOrigin, localRayDir);
 
                                 } else if (params.origin && params.direction) {
-                                    math.worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
+                                    math.worldRayToLocalRay(hit.mesh, params.origin, params.direction, localRayOrigin, localRayDir);
                                 }
 
                                 math.normalizeVec3(localRayDir);
@@ -1727,7 +2057,7 @@
 
                                 // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(entity.transform.leafMatrix, tempVec4a, tempVec4b);
+                                math.transformVec4(hit.mesh.worldMatrix, tempVec4a, tempVec4b);
 
                                 worldPos[0] = tempVec4b[0];
                                 worldPos[1] = tempVec4b[1];
@@ -1737,7 +2067,7 @@
 
                                 // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(entity.scene.camera.matrix, tempVec4b, tempVec4c);
+                                math.transformVec4(hit.mesh.scene.camera.matrix, tempVec4b, tempVec4c);
 
                                 viewPos[0] = tempVec4c[0];
                                 viewPos[1] = tempVec4c[1];
@@ -1789,7 +2119,7 @@
                                         math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
-                                    hit.normal = math.transformVec3(entity.transform.leafNormalMatrix, normal, tempVec3f);
+                                    hit.normal = math.transformVec3(hit.mesh.worldNormalMatrix, normal, tempVec3f);
                                 }
 
                                 // Get interpolated UV coordinates
@@ -1829,77 +2159,47 @@
                         }
                     }
 
+                    hit.mesh.fire("picked", hit);
+
                     return hit;
                 }
             };
         })(),
 
         /**
-         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
-         and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs.
+         Returns the collective axis-aligned bounding box of the {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
          When no arguments are given, returns the total boundary of all objects in the scene.
 
-         Only {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/collidable:property"}}collidable{{/crossLink}}
+         Only {{#crossLink "Mesh"}}Meshes{{/crossLink}} with {{#crossLink "Mesh/collidable:property"}}collidable{{/crossLink}}
          set ````true```` are included in the boundary.
-         
+
          ## Usage
-         
+
          ````JavaScript
          scene.getAABB(); // Gets collective boundary of all objects in the scene
          scene.getAABB("saw"); // Gets collective boundary of all objects in saw model
          scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all objects in saw and gearbox models
          scene.getAABB("saw#0.1"); // Get boundary of an object in the saw model
          scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two objects in saw model
+         scene.getAABB(["saw#0.1", "surface", "support"]); // Get collective boundary an object, and all objects of the given two entity classes.
          ````
 
          @method getAABB
-         @param {String|String[]} target IDs of models, objects and/or annotations
+         @param {String|String[]} target {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
          @returns {[Number, Number, Number, Number, Number, Number]} An axis-aligned World-space bounding box, given as elements ````[xmin, ymin, zmin, xmax, ymax, zmax]````.
          */
-        getAABB: function (target) {
-            if (arguments.length === 0 || target === undefined) {
-                return this.aabb;
-            }
-            if (xeogl._isArray(target) && (!xeogl._isString(target[0]))) {
-                return target; // AABB
-            }
-            if (xeogl._isString(target)) {
-                target = [target];
-            }
-            if (target.length === 0) {
-                return this.aabb;
-            }
-            var id;
-            var component;
-            if (target.length === 1) {
-                id = target[0];
-                component = this.components[id];
-                if (!component) {
-                    return this.aabb;
-                }
-                return component.aabb || this.aabb;
-            }
-            // Many ids given
-            var i;
-            var len;
+        getAABB: (function () {
             var xmin = 100000;
             var ymin = 100000;
             var zmin = 100000;
             var xmax = -100000;
             var ymax = -100000;
             var zmax = -100000;
-            var aabb;
-            var valid = false;
-            for (i = 0, len = target.length; i < len; i++) {
-                id = target[i];
-                component = this.components[id];
-                if (component) {
-                    aabb = component.aabb;
-                    if (!aabb) {
-                        continue;
-                    }
-                }
+            var valid;
+
+            function callback(object) {
+                var aabb = object.aabb;
                 if (aabb[0] < xmin) {
                     xmin = aabb[0];
                 }
@@ -1920,19 +2220,42 @@
                 }
                 valid = true;
             }
-            if (valid) {
-                var aabb2 = new xeogl.math.AABB3();
-                aabb2[0] = xmin;
-                aabb2[1] = ymin;
-                aabb2[2] = zmin;
-                aabb2[3] = xmax;
-                aabb2[1 + 3] = ymax;
-                aabb2[2 + 3] = zmax;
-                return aabb2;
-            } else {
-                return this.aabb;
-            }
-        },
+
+            return function (target) {
+                if (target === undefined) {
+                    return this.aabb;
+                }
+                if (xeogl._isString(target)) {
+                    var object = this.objects[target];
+                    if (object) {
+                        return object.aabb;
+                    }
+                    target = [target]; // Must be an entity type
+                }
+                if (target.length === 0) {
+                    return this.aabb;
+                }
+                xmin = 100000;
+                ymin = 100000;
+                zmin = 100000;
+                xmax = -100000;
+                ymax = -100000;
+                zmax = -100000;
+                this.withObjects(target, callback);
+                if (valid) {
+                    var aabb2 = new xeogl.math.AABB3();
+                    aabb2[0] = xmin;
+                    aabb2[1] = ymin;
+                    aabb2[2] = zmin;
+                    aabb2[3] = xmax;
+                    aabb2[4] = ymax;
+                    aabb2[5] = zmax;
+                    return aabb2;
+                } else {
+                    return this.aabb; // Scene AABB
+                }
+            };
+        })(),
 
         /**
          Resets this Scene to its default state.
@@ -1942,26 +2265,373 @@
          @method clear
          */
         clear: function () {  // FIXME: should only clear user-created components
-
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
-
                     // Each component fires "destroyed" as it is destroyed,
                     // which this Scene handles by removing the component
-
                     this.components[id].destroy();
                 }
             }
-
             // Reinitialise defaults
-
             this._initDefaults();
+        },
 
-            this._dirtyEntities = {};
+        /**
+         Convenience method that destroys all light sources.
+
+         Removes all {{#crossLink "AmbientLight"}}AmbientLights{{/crossLink}}, {{#crossLink "PointLight"}}PointLights{{/crossLink}},
+         {{#crossLink "DirLight"}}DirLights{{/crossLink}} and {{#crossLink "SpotLight"}}SpotLights{{/crossLink}}.
+
+         @method clearLights
+         */
+        clearLights: function () {
+            var ids = Object.keys(this.lights);
+            for (var i = 0, len = ids.length; i < len; i++) {
+                this.lights[ids[i]].destroy();
+            }
+        },
+
+        /**
+         Convenience method that destroys all {{#crossLink "Clip"}}Clips{{/crossLink}}.
+
+         @method clearClips
+         */
+        clearClips: function () {
+            var ids = Object.keys(this.clips);
+            for (var i = 0, len = ids.length; i < len; i++) {
+                this.clips[ids[i]].destroy();
+            }
+        },
+
+        /**
+         Shows or hides a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         Each Object indicates its visibility status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
+
+         Each visible Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is assigned a value.
+
+         @method setVisible
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param visible {Boolean} The new visibility state.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed visibility, else false if all updates were redundant and not applied.
+         */
+        setVisible: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.visible != newValue);
+                object.visible = newValue;
+                return changed;
+            }
+
+            return function (ids, visible) {
+                newValue = visible;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Culls or unculls a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         Each Object indicates its culled status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
+
+         @method setVisible
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param visible {Boolean} The new cull state.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed culled state, else false if all updates were redundant and not applied.
+         */
+        setCulled: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.culled != newValue);
+                object.culled = newValue;
+                return changed;
+            }
+
+            return function (ids, culled) {
+                newValue = culled;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Selects or de-selects a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         Each Object indicates its selected status in its {{#crossLink "Object/selected:property"}}{{/crossLink}} property.
+
+         Each selected Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is assigned a value.
+
+         @method setSelected
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param selected {Boolean} Whether to select or deselect.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed selection state, else false if all updates were redundant and not applied.
+         */
+        setSelected: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.selected != newValue);
+                object.selected = newValue;
+                return changed;
+            }
+
+            return function (ids, selected) {
+                newValue = selected;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Highlights or de-highlights a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         Each Object indicates its highlight status in its {{#crossLink "Object/highlighted:property"}}{{/crossLink}} property.
+
+         Each highlighted Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is assigned a value.
+
+         @method setHighlighted
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param highlighted {Boolean} Whether to highlight or un-highlight.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed highlighted state, else false if all updates were redundant and not applied.
+         */
+        setHighlighted: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.highlighted != newValue);
+                object.highlighted = newValue;
+                return changed;
+            }
+
+            return function (ids, highlighted) {
+                newValue = highlighted;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Ghosts or un-ghosts a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         Each Object indicates its ghosted status in its {{#crossLink "Object/ghosted:property"}}{{/crossLink}} property.
+
+         Each ghosted Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is assigned a value.
+
+         @method setGhosted
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param ghosted {Float32Array} Whether to ghost or un-ghost.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed ghosted state, else false if all updates were redundant and not applied.
+         */
+        setGhosted: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.ghosted != newValue);
+                object.ghosted = newValue;
+                return changed;
+            }
+
+            return function (ids, ghosted) {
+                newValue = ghosted;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Shows or hides wireeframe edges for batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         @method setEdges
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param edges {Float32Array} Whether to show or hide edges.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed edges state, else false if all updates were redundant and not applied.
+         */
+        setEdges: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.edges != newValue);
+                object.edges = newValue;
+                return changed;
+            }
+
+            return function (ids, edges) {
+                newValue = edges;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Shows or hides an outline around a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         Each Object indicates its outlined status in its {{#crossLink "Object/outlined:property"}}{{/crossLink}} property.
+
+         Each outlined Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+         {{#crossLink "Scene/outlinedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+         is assigned a value.
+
+         @method setOutlined
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param outlined {Float32Array} Whether to show or hide the outline.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed outlined state, else false if all updates were redundant and not applied.
+         */
+        setOutlined: (function () {
+            // var newValue;
+            //
+            // function callback(object) {
+            //     var changed = (object.outlined != newValue);
+            //     object.outlined = newValue;
+            //     return changed;
+            // }
+            //
+            // return function (ids, outlined) {
+            //     newValue = outlined;
+            //     return this.withObjects(ids, callback);
+            // };
+        })(),
+
+        /**
+         Colorizes a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         @method setColorize
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param [colorize=(1,1,1)] Float32Array RGB colorize factors, multiplied by the rendered pixel colors.
+         */
+        setColorize: (function () {
+            var newValue;
+
+            function callback(object) {
+                object.colorize = newValue;
+            }
+
+            return function (ids, colorize) {
+                newValue = colorize;
+                this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Updates opacities of a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         @method setOpacity
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param [opacity=1] Number Opacity factor in range ````[0..1]````, multiplies by the rendered pixel alphas.
+         */
+        setOpacity: (function () {
+            var newValue;
+
+            function callback(object) {
+                object.opacity = newValue;
+            }
+
+            return function (ids, opacity) {
+                newValue = opacity;
+                this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Sets a batch of {{#crossLink "Object"}}Objects{{/crossLink}} pickable or unpickable, specified by their IDs, GUIDs and/or entity types.
+
+         Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+         @method setPickable
+         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param pickable {Float32Array} Whether to ghost or un-ghost.
+         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed pickable state, else false if all updates were redundant and not applied.
+         */
+        setPickable: (function () {
+            var newValue;
+
+            function callback(object) {
+                var changed = (object.pickable != newValue);
+                object.pickable = newValue;
+                return changed;
+            }
+
+            return function (ids, pickable) {
+                newValue = pickable;
+                return this.withObjects(ids, callback);
+            };
+        })(),
+
+        /**
+         Iterates with a callback over {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+
+         @method withObjects
+         @param ids {String|Array} One or more {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+         @param callback {Function} The callback, which takes each object as its argument.
+         */
+        withObjects: function (ids, callback) {
+            if (xeogl._isString(ids)) {
+                ids = [ids];
+            }
+            var changed = false;
+            for (var i = 0, len = ids.length; i < len; i++) {
+                var id = ids[i];
+                var object = this.objects[id];
+                if (object) {
+                    changed = callback(object) || changed;
+                } else {
+                    object = this.guidObjects[id];
+                    if (object) {
+                        changed = callback(object) || changed;
+                    } else {
+                        var objects = this.entityTypes[id];
+                        if (objects) {
+                            for (var objectId in objects) {
+                                if (objects.hasOwnProperty(objectId)) {
+                                    changed = callback(objects[objectId]) || changed;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return changed;
         },
 
         _destroy: function () {
+
             this.clear();
+
+            this.canvas.gl = null;
+
+            // Memory leak prevention
+            this.models = null;
+            this.objects = null;
+            this.guidObjects = null;
+            this.entityTypes = null;
+            this.entities = null;
+            this.visibleEntities = null;
+            this.ghostedEntities = null;
+            this.highlightedEntities = null;
+            this.selectedEntities = null;
+            this.clips = null;
+            this.lights = null;
+            this.lightMaps = null;
+            this.reflectionMaps = null;
+            this._objectGUIDs = null;
+            this._entityIds = null;
+            this._visibleEntityIds = null;
+            this._ghostedEntityIds = null;
+            this._highlightedEntityIds = null;
+            this._selectedEntityIds = null;
+            this.meshes = null;
+            this.types = null;
+            this.components = null;
+            this.rootObjects = null;
+            this.canvas = null;
+            this._renderer = null;
+            this.input = null;
+            this._viewport = null;
+            this._camera = null;
         }
     });
 

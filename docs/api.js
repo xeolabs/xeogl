@@ -7,8 +7,10 @@ YUI.add("yuidoc-meta", function(Y) {
         "Annotation",
         "AnnotationStory",
         "AxisHelper",
+        "BIMServerModel",
         "BoxGeometry",
         "BuildableModel",
+        "Button",
         "Camera",
         "CameraControl",
         "CameraFlightAnimation",
@@ -17,36 +19,36 @@ YUI.add("yuidoc-meta", function(Y) {
         "CameraPathAnimation",
         "Canvas",
         "Clip",
+        "ClipControl",
         "ClipHelper",
-        "Clips",
         "Component",
         "CubeTexture",
         "CubicBezierCurve",
         "Curve",
+        "CustomProjection",
         "CylinderGeometry",
         "DirLight",
+        "EdgeMaterial",
         "EmphasisMaterial",
-        "Entity",
         "Fresnel",
         "Frustum",
         "GLTFModel",
         "Geometry",
         "GeometryBuilder",
+        "Group",
         "HeightmapGeometry",
         "Input",
         "LabelHelper",
         "LambertMaterial",
-        "Lights",
-        "LoadingEffect",
-        "Lookat",
+        "LightMap",
         "Material",
+        "Mesh",
         "MetallicMaterial",
         "Model",
-        "Nintendo3DSGeometry",
         "OBBGeometry",
         "OBBHelper",
-        "OBJGeometry",
         "OBJModel",
+        "Object",
         "Ortho",
         "OutlineMaterial",
         "Path",
@@ -58,10 +60,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "PlaneHelper",
         "PointLight",
         "QuadraticBezierCurve",
-        "Quaternion",
-        "Rotate",
+        "ReflectionMap",
         "STLModel",
-        "Scale",
         "Scene",
         "SceneJSModel",
         "Shadow",
@@ -78,10 +78,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "TestModel",
         "Texture",
         "TorusGeometry",
-        "Transform",
-        "Translate",
         "VectorTextGeometry",
         "Viewport",
+        "XML3DModel",
         "xeogl",
         "xeogl.math.math"
     ],
@@ -94,7 +93,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "controls",
         "curves",
         "effects",
-        "entities",
         "generation",
         "geometry",
         "helpers",
@@ -102,11 +100,12 @@ YUI.add("yuidoc-meta", function(Y) {
         "lighting",
         "materials",
         "math",
+        "meshes",
         "models",
+        "objects",
         "rendering",
         "skyboxes",
         "stories",
-        "transforms",
         "xeogl"
     ],
     "allModules": [
@@ -118,7 +117,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "annotations",
             "name": "annotations",
-            "description": "Components for annotating entities."
+            "description": "Components for annotating meshes."
         },
         {
             "displayName": "camera",
@@ -133,7 +132,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "clipping",
             "name": "clipping",
-            "description": "Components for cross-section views of Entities."
+            "description": "Components for cross-section views of meshes."
         },
         {
             "displayName": "controls",
@@ -149,11 +148,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "effects",
             "name": "effects",
             "description": "Components for viewing effects."
-        },
-        {
-            "displayName": "entities",
-            "name": "entities",
-            "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}"
         },
         {
             "displayName": "generation",
@@ -183,7 +177,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "materials",
             "name": "materials",
-            "description": "Components to define the surface appearance of Entities."
+            "description": "Components to define the surface appearance of Meshes."
         },
         {
             "displayName": "math",
@@ -191,14 +185,24 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Math utilities."
         },
         {
+            "displayName": "meshes",
+            "name": "meshes",
+            "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}"
+        },
+        {
             "displayName": "models",
             "name": "models",
             "description": "Models are units of xeogl content."
         },
         {
+            "displayName": "objects",
+            "name": "objects",
+            "description": "3D elements within xeogl Scenes."
+        },
+        {
             "displayName": "rendering",
             "name": "rendering",
-            "description": "Components that influence the way entities are rendered with WebGL."
+            "description": "Components that influence the way meshes are rendered with WebGL."
         },
         {
             "displayName": "skyboxes",
@@ -209,11 +213,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "stories",
             "name": "stories",
             "description": "UI presentation components."
-        },
-        {
-            "displayName": "transforms",
-            "name": "transforms",
-            "description": "Modelling transform components."
         },
         {
             "displayName": "xeogl",

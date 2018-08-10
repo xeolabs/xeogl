@@ -1,5 +1,5 @@
 /**
- A **Geometry** defines a mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Geometry** defines a mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  ## Usage
 
@@ -8,7 +8,7 @@
 
  ### Geometry compression
 
- Geometries are automatically quantized to reduce memory and GPU bus usage. Usually, geometry attributes such as positions
+ Geometries may be automatically quantized to reduce memory and GPU bus usage. Usually, geometry attributes such as positions
  and normals are stored as 32-bit floating-point numbers. Quantization compresses those attributes to 16-bit integers
  represented on a scale between the minimum and maximum values. Decompression is then done on the GPU, via a simple
  matrix multiplication in the vertex shader.
@@ -27,9 +27,9 @@
 });
 
  // Disable compression when creating a Geometry
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        quantized: false // Default is true
+        quantized: false // Default is false
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -41,7 +41,7 @@
 
  Geometries are automatically combined into the same vertex buffer objects (VBOs) so that we reduce the number of VBO
  binds done by WebGL on each frame. VBO binds are expensive, so this really makes a difference when we have large numbers
- of Entities that share similar Materials (as is often the case in CAD rendering).
+ of Meshes that share similar Materials (as is often the case in CAD rendering).
 
  #### Disabling
 
@@ -56,9 +56,9 @@
 });
 
  // Disable VBO combination for an individual Geometry
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TeapotGeometry({
-        combined: false // Default is true
+        combined: false // Default is false
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -84,11 +84,11 @@
  @param [cfg.indices] {Array of Number} Indices array.
  @param [cfg.autoVertexNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and
  indices, if those are supplied.
- @param [cfg.quantized=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
+ @param [cfg.quantized=false] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
  for reduced memory footprint and GPU bus usage.
  @param [cfg.combined=false] {Boolean} Combines positions, colors, normals and UVs into the same WebGL vertex buffers
  with other Geometries, in order to reduce the number of buffer binds performed per frame.
- @param [cfg.ghostEdgeThreshold=2] {Number} When a {{#crossLink "Entity"}}{{/crossLink}} renders this Geometry as wireframe,
+ @param [cfg.edgeThreshold=2] {Number} When a {{#crossLink "Mesh"}}{{/crossLink}} renders this Geometry as wireframe,
  this indicates the threshold angle (in degrees) between the face normals of adjacent triangles below which the edge is discarded.
  @extends Component
  */
@@ -96,287 +96,11 @@
 
     "use strict";
 
+    const CHUNK_LEN = bigIndicesSupported ? (Number.MAX_SAFE_INTEGER / 6) : (64000 * 4); // RGBA is largest item
     var memoryStats = xeogl.stats.memory;
     var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
     var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
-    var nullVertexBufs = new xeogl.renderer.VertexBufs({});
-
-    var SceneVertexBufs = function (scene,
-                                    hasPositions,
-                                    hasNormals,
-                                    hasColors,
-                                    hasUVs,
-                                    quantized) {
-
-        const CHUNK_LEN = bigIndicesSupported ? (Number.MAX_SAFE_INTEGER / 6) : (64000 * 4); // RGBA is largest item
-
-        var gl = scene.canvas.gl;
-        var geometries = {};
-        var geometryIndicesOffsets = {};
-        var newGeometries = [];
-        var geometryVertexBufs = {};
-        var needRebuild = false;
-        var needAppend = false;
-        var positions = [];
-        var normals = [];
-        var colors = [];
-        var uv = [];
-        var vertexBufs = null;
-
-        scene.canvas.on("webglContextRestored", build);
-
-        this.addGeometry = function (geometry) {
-            if (!geometry.positions || !geometry.indices) {
-                scene.warn("Ignoring geometry with no positions or indices: " + geometry.id);
-                return;
-            }
-            geometries[geometry.id] = geometry;
-            geometryIndicesOffsets[geometry.id] = 0; // Will initialize below
-            newGeometries.push(geometry);
-            needAppend = true;
-        };
-
-        this.getIndicesOffset = function (geometry) {
-            if (needRebuild || needAppend) {
-                build();
-            }
-            return geometryIndicesOffsets[geometry.id];
-        };
-
-        this.getVertexBufs = function (geometry) {
-            if (!geometries[geometry.id]) {
-                return nullVertexBufs;
-            }
-            if (needRebuild || needAppend) {
-                build();
-            }
-            return geometryVertexBufs[geometry.id];
-        };
-
-        this.setPositions = function (geometry) {
-            var vertexBufs = geometryVertexBufs[geometry.id];
-            if (!vertexBufs) {
-                return;
-            }
-            if (!geometry.positions) {
-                return;
-            }
-            var positionsBuf = vertexBufs.positionsBuf;
-            if (!positionsBuf) {
-                return;
-            }
-            positionsBuf.setData(geometry.positions, geometryIndicesOffsets[geometry.id] * 3);
-        };
-
-        this.setNormals = function (geometry) {
-            var vertexBufs = geometryVertexBufs[geometry.id];
-            if (!vertexBufs) {
-                return;
-            }
-            if (!geometry.normals) {
-                return;
-            }
-            var normalsBuf = vertexBufs.normalsBuf;
-            if (!normalsBuf) {
-                return;
-            }
-            normalsBuf.setData(geometry.normals, geometryIndicesOffsets[geometry.id] * 3);
-        };
-
-        this.setUVs = function (geometry) {
-            var vertexBufs = geometryVertexBufs[geometry.id];
-            if (!vertexBufs) {
-                return;
-            }
-            if (!geometry.uv) {
-                return;
-            }
-            var uvBuf = vertexBufs.uvBuf;
-            if (!uvBuf) {
-                return;
-            }
-            uvBuf.setData(geometry.uv, geometryIndicesOffsets[geometry.id] * 2);
-        };
-
-        this.setColors = function (geometry) {
-            var vertexBufs = geometryVertexBufs[geometry.id];
-            if (!vertexBufs) {
-                return;
-            }
-            if (!geometry.color) {
-                return;
-            }
-            var colorsBuf = vertexBufs.colorsBuf;
-            if (!colorsBuf) {
-                return;
-            }
-            colorsBuf.setData(geometry.colors, geometryIndicesOffsets[geometry.id] * 4);
-        };
-
-        this.removeGeometry = function (geometry) {
-            var id = geometry.id;
-            if (!geometries[id]) {
-                return;
-            }
-            delete geometries[id];
-            delete geometryIndicesOffsets[id];
-            needRebuild = true;
-        };
-
-        function build() {
-
-            geometryVertexBufs = {};
-
-            var id;
-            var geometry;
-            var indicesOffset = 0;
-
-            vertexBufs = null;
-
-            for (id in geometries) {
-                if (geometries.hasOwnProperty(id)) {
-
-                    geometry = geometries[id];
-
-                    var needNew = (!vertexBufs) || (positions.length + geometry.positions.length > CHUNK_LEN);
-
-                    if (needNew) {
-                        if (vertexBufs) {
-                            createBufs(vertexBufs);
-                        }
-                        vertexBufs = new xeogl.renderer.VertexBufs({
-                            positionsBuf: null,
-                            normalsBuf: null,
-                            uvBuf: null,
-                            colorsBuf: null,
-                            quantized: quantized
-                        });
-                        indicesOffset = 0;
-                    }
-
-                    geometryVertexBufs[id] = vertexBufs;
-
-                    if (hasPositions) {
-                        for (var i = 0, len = geometry.positions.length; i < len; i++) {
-                            positions.push(geometry.positions[i]);
-                        }
-                    }
-
-                    if (hasNormals) {
-                        for (var i = 0, len = geometry.normals.length; i < len; i++) {
-                            normals.push(geometry.normals[i]);
-                        }
-                    }
-
-                    if (hasColors) {
-                        for (var i = 0, len = geometry.colors.length; i < len; i++) {
-                            colors.push(geometry.colors[i]);
-                        }
-                    }
-
-                    if (hasUVs) {
-                        for (var i = 0, len = geometry.uv.length; i < len; i++) {
-                            uv.push(geometry.uv[i]);
-                        }
-                    }
-
-                    // Adjust geometry indices
-
-                    geometryIndicesOffsets[id] = indicesOffset;
-
-                    var indices;
-
-                    if (indicesOffset) {
-                        indices = new (bigIndicesSupported ? Uint32Array : Uint16Array)(geometry.indices);
-                        for (var i = 0, len = indices.length; i < len; i++) {
-                            indices[i] += indicesOffset;
-                            if (indices[i] > (CHUNK_LEN / 3)) {
-                                console.error("out of range: " + indices[i])
-                            }
-                        }
-                    } else {
-                        indices = geometry.indices;
-                    }
-
-                    // Update indices buffer, lazy-create first if necessary
-
-                    if (!geometry.indicesBufCombined) {
-                        geometry.indicesBufCombined = new xeogl.renderer.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, indices, indices.length, 1, gl.STATIC_DRAW);
-                    } else {
-                        geometry.indicesBufCombined.setData(indices);
-                    }
-
-                    indicesOffset += geometry.positions.length / 3;
-                }
-            }
-
-            if (vertexBufs) {
-                createBufs(vertexBufs);
-            }
-
-            needRebuild = false;
-            needAppend = false;
-        }
-
-        function createBufs(vertexBufs) {
-            var gl = scene.canvas.gl;
-            var array;
-            if (hasPositions) {
-                array = quantized ? new Uint16Array(positions) : new Float32Array(positions);
-                vertexBufs.positionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
-                memoryStats.positions += vertexBufs.positionsBuf.numItems;
-                positions = [];
-            }
-            if (hasNormals) {
-                array = quantized ? new Int8Array(normals) : new Float32Array(normals);
-                vertexBufs.normalsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
-                memoryStats.normals += vertexBufs.normalsBuf.numItems;
-                normals = [];
-            }
-            if (hasColors) {
-                array = new Float32Array(colors);
-                vertexBufs.colorsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 4, gl.STATIC_DRAW);
-                memoryStats.colors += vertexBufs.colorsBuf.numItems;
-                colors = [];
-            }
-            if (hasUVs) {
-                array = quantized ? new Uint16Array(uv) : new Float32Array(uv);
-                vertexBufs.uvBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 2, gl.STATIC_DRAW);
-                memoryStats.uvs += vertexBufs.uvBuf.numItems;
-                uv = [];
-            }
-        }
-    };
-
-    function getSceneVertexBufs(scene, geometry) {
-        var hasPositions = !!geometry.positions;
-        var quantized = !!geometry.quantized;
-        var hasNormals = !!geometry.normals;
-        var hasColors = !!geometry.colors;
-        var hasUVs = !!geometry.uv;
-        var hash = ([
-            hasPositions ? "p" : "",
-            quantized ? "c" : "",
-            hasNormals ? "n" : "",
-            hasColors ? "c" : "",
-            hasUVs ? "u" : ""
-        ]).join(";");
-        if (!scene._sceneVertexBufs) {
-            scene._sceneVertexBufs = {};
-        }
-        var sceneVertexBufs = scene._sceneVertexBufs[hash];
-        if (!sceneVertexBufs) {
-            sceneVertexBufs = new SceneVertexBufs(
-                scene,
-                hasPositions,
-                hasNormals,
-                hasColors,
-                hasUVs,
-                quantized);
-            scene._sceneVertexBufs[hash] = sceneVertexBufs;
-        }
-        return sceneVertexBufs;
-    }
+    var nullVertexBufs = new xeogl.renderer.State({});
 
     xeogl.Geometry = xeogl.Component.extend({
 
@@ -386,70 +110,29 @@
 
             var self = this;
 
-            this._state = new xeogl.renderer.Geometry({
-
+            this._state = new xeogl.renderer.State({ // Arrays for emphasis effects are got from xeogl.Geometry friend methods
                 combined: !!cfg.combined,
                 quantized: !!cfg.quantized,
                 autoVertexNormals: !!cfg.autoVertexNormals,
-
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
-
                 positions: null,    // Uint16Array when quantized == true, else Float32Array
                 normals: null,      // Uint8Array when quantized == true, else Float32Array
                 colors: null,
                 uv: null,           // Uint8Array when quantized == true, else Float32Array
                 indices: null,
-
                 positionsDecodeMatrix: null, // Set when quantized == true
                 uvDecodeMatrix: null, // Set when quantized == true
-
                 positionsBuf: null,
                 normalsBuf: null,
                 colorsbuf: null,
                 uvBuf: null,
                 indicesBuf: null,
                 indicesBufCombined: null, // Indices into a shared VertexBufs, set when combined == true
-
-                hash: "",
-
-                getGhostEdgesIndices: function () {
-                    if (!self._edgesIndicesBuf) {
-                        self._buildGhostEdgesIndices();
-                    }
-                    return self._edgesIndicesBuf;
-                },
-
-                getPickTrianglePositions: function () {
-                    if (!self._pickTrianglePositionsBuf) {
-                        self._buildPickTriangleVBOs();
-                    }
-                    return self._pickTrianglePositionsBuf;
-                },
-
-                getPickTriangleColors: function () {
-                    if (!self._pickTriangleColorsBuf) {
-                        self._buildPickTriangleVBOs();
-                    }
-                    return self._pickTriangleColorsBuf;
-                },
-
-                getPickVertexPositions: function () {
-                    if (!self._pickVertexPositionsBuf) {
-                        self._buildPickTriangleVBOs();
-                    }
-                    return self._pickVertexPositionsBuf;
-                },
-
-                getPickVertexColors: function () {
-                    if (!self._pickVertexColorsBuf) {
-                        self._buildPickTriangleVBOs();
-                    }
-                    return self._pickVertexColorsBuf;
-                }
+                hash: ""
             });
 
-            this._ghostEdgeThreshold = cfg.ghostEdgeThreshold || 2.0;
+            this._edgeThreshold = cfg.edgeThreshold || 2.0;
 
             // Lazy-generated VBOs
 
@@ -459,7 +142,6 @@
 
             // Local-space Boundary3D
 
-            this._localBoundary = null;
             this._boundaryDirty = true;
 
             this._aabb = null;
@@ -554,18 +236,16 @@
                 memoryStats.indices += state.indicesBuf.numItems;
             }
 
-            this._buildVBOs();
-
             this._buildHash();
-
-            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._buildVBOs, this);
 
             memoryStats.meshes++;
 
             if (this._state.combined) {
-                this._sceneVertexBufs = getSceneVertexBufs(this.scene, this._state);
+                this._sceneVertexBufs = xeogl.SceneVertexBufs.get(this.scene, this._state);
                 this._sceneVertexBufs.addGeometry(this._state);
             }
+
+            this._buildVBOs();
 
             self.fire("created", this.created = true);
         },
@@ -624,14 +304,40 @@
             state.hash = hash.join("");
         },
 
-        _buildGhostEdgesIndices: function () {
+        _getEdgesIndices: function () {
+            if (!this._edgesIndicesBuf) {
+                this._buildEdgesIndices();
+            }
+            return this._edgesIndicesBuf;
+        },
+
+        _getPickTrianglePositions: function () {
+            if (!this._pickTrianglePositionsBuf) {
+                this._buildPickTriangleVBOs();
+            }
+            return this._pickTrianglePositionsBuf;
+        },
+
+        _getPickTriangleColors: function () {
+            if (!this._pickTriangleColorsBuf) {
+                this._buildPickTriangleVBOs();
+            }
+            return this._pickTriangleColorsBuf;
+        },
+
+        _buildEdgesIndices: function () { // FIXME: Does not adjust indices after other objects are deleted from vertex buffer!!
             var state = this._state;
             if (!state.positions || !state.indices) {
                 return;
             }
             var gl = this.scene.canvas.gl;
-            var indicesOffset = state.combined ? this._sceneVertexBufs.getIndicesOffset(state) : 0;
-            var edgesIndices = buildEdgesIndices(state.positions, state.indices, state.positionsDecodeMatrix, indicesOffset, this._ghostEdgeThreshold);
+            var edgesIndices = buildEdgesIndices(state.positions, state.indices, state.positionsDecodeMatrix, this._edgeThreshold, state.combined);
+            if (state.combined) {
+                var indicesOffset = this._sceneVertexBufs.getIndicesOffset(state);
+                for (var i = 0, len = edgesIndices.length; i < len; i++) {
+                    edgesIndices[i] += indicesOffset;
+                }
+            }
             this._edgesIndicesBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, edgesIndices, edgesIndices.length, 1, gl.STATIC_DRAW);
             memoryStats.indices += this._edgesIndicesBuf.numItems;
         },
@@ -643,10 +349,10 @@
             }
             var gl = this.scene.canvas.gl;
             var arrays = xeogl.math.buildPickTriangles(state.positions, state.indices, state.quantized);
-            var pickTrianglePositions = arrays.positions;
-            var pickColors = arrays.colors;
-            this._pickTrianglePositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickTrianglePositions, pickTrianglePositions.length, 3, gl.STATIC_DRAW);
-            this._pickTriangleColorsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, gl.STATIC_DRAW, true);
+            var positions = arrays.positions;
+            var colors = arrays.colors;
+            this._pickTrianglePositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, positions, positions.length, 3, gl.STATIC_DRAW);
+            this._pickTriangleColorsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, colors, colors.length, 4, gl.STATIC_DRAW, true);
             memoryStats.positions += this._pickTrianglePositionsBuf.numItems;
             memoryStats.colors += this._pickTriangleColorsBuf.numItems;
         },
@@ -666,6 +372,24 @@
             // memoryStats.colors += this._pickVertexColorsBuf.numItems;
         },
 
+        _webglContextLost: function() {
+            if (this._sceneVertexBufs) {
+                this._sceneVertexBufs.webglContextLost();
+            }
+        },
+
+        _webglContextRestored: function () {
+            if (this._sceneVertexBufs) {
+                this._sceneVertexBufs.webglContextRestored();
+            }
+            this._buildVBOs();
+            this._edgesIndicesBuf = null;
+            this._pickVertexPositionsBuf = null;
+            this._pickTrianglePositionsBuf = null;
+            this._pickTriangleColorsBuf = null;
+            this._pickVertexPositionsBuf = null;
+            this._pickVertexColorsBuf = null;
+        },
 
         _props: {
 
@@ -679,7 +403,6 @@
              @type String
              */
             primitive: {
-
                 get: function () {
                     return this._state.primitiveName;
                 }
@@ -699,7 +422,6 @@
              @final
              */
             quantized: {
-
                 get: function () {
                     return this._state.quantized;
                 }
@@ -718,7 +440,6 @@
              @final
              */
             combined: {
-
                 get: function () {
                     return this._state.combined;
                 }
@@ -733,7 +454,6 @@
              @type Float32Array
              */
             positions: {
-
                 get: function () {
                     if (!this._state.positions) {
                         return;
@@ -749,10 +469,6 @@
                 },
 
                 set: function (newPositions) {
-                    if (this._state.quantized) {
-                        this.error("can't update geometry positions - quantized geometry is immutable"); // But will be eventually
-                        return;
-                    }
                     var state = this._state;
                     var positions = state.positions;
                     if (!positions) {
@@ -762,6 +478,12 @@
                     if (positions.length !== newPositions.length) {
                         this.error("can't update geometry positions - new positions are wrong length");
                         return;
+                    }
+                    if (this._state.quantized) {
+                        var bounds = getBounds(newPositions, 3);
+                        var quantized = quantizeVec3(newPositions, bounds.min, bounds.max);
+                        newPositions = quantized.quantized; // TODO: Copy in-place
+                        state.positionsDecodeMatrix = quantized.decode;
                     }
                     positions.set(newPositions);
                     if (state.positionsBuf) {
@@ -783,7 +505,6 @@
              @type Float32Array
              */
             normals: {
-
                 get: function () {
                     if (!this._state.normals) {
                         return;
@@ -834,7 +555,6 @@
              @type Float32Array
              */
             uv: {
-
                 get: function () {
                     if (!this._state.uv) {
                         return;
@@ -883,7 +603,6 @@
              @type Float32Array
              */
             colors: {
-
                 get: function () {
                     return this._state.colors;
                 },
@@ -1003,9 +722,6 @@
             this._boundaryDirty = true;
             this._aabbDirty = true;
             this._obbDirty = true;
-            if (this._localBoundary) {
-                this._localBoundary.fire("updated", true);
-            }
 
             /**
              Fired whenever this Geometry's boundary changes.
@@ -1028,48 +744,29 @@
         },
 
         _destroy: function () {
-
-            this.scene.canvas.off(this._webglContextRestored);
             var state = this._state;
-
             if (state.indicesBuf) {
                 state.indicesBuf.destroy();
             }
-
             if (this._edgesIndicesBuf) {
                 this._edgesIndicesBuf.destroy();
             }
-
-            if (state.indicesBufCombined) {
-                state.indicesBufCombined.destroy();
-            }
-
             if (this._pickTrianglePositionsBuf) {
                 this._pickTrianglePositionsBuf.destroy();
             }
-
             if (this._pickTriangleColorsBuf) {
                 this._pickTriangleColorsBuf.destroy();
             }
-
             if (this._pickVertexPositionsBuf) {
                 this._pickVertexPositionsBuf.destroy();
             }
-
             if (this._pickVertexColorsBuf) {
                 this._pickVertexColorsBuf.destroy();
             }
-
-            if (this._localBoundary) {
-                this._localBoundary.destroy();
-            }
-
             if (this._state.combined) {
                 this._sceneVertexBufs.removeGeometry(state);
             }
-
             state.destroy();
-
             memoryStats.meshes--;
         }
     });
@@ -1094,6 +791,7 @@
         };
     }
 
+    // http://cg.postech.ac.kr/research/mesh_comp_mobile/mesh_comp_mobile_conference.pdf
     var quantizeVec3 = (function () {
         var math = xeogl.math;
         var translate = math.mat4();
@@ -1157,6 +855,7 @@
         };
     })();
 
+    // http://jcgt.org/published/0003/02/01/
     function octEncode(array) {
         var encoded = new Int8Array(array.length * 2 / 3);
         var oct, dec, best, currentCos, bestCos;
@@ -1236,85 +935,46 @@
         return array[i] * vec3[0] + array[i + 1] * vec3[1] + array[i + 2] * vec3[2];
     }
 
-    /*
-     * Checks for duplicate vertices with hashmap.
-     * Duplicated vertices are removed
-     * and faces' vertices are updated.
-     */
-
-    // Should return { positions:  newPositions, indices: newIndices };
-    var mergeVertices = function (positions, indices) {
-
-        var verticesMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-        var unique = [], changes = [];
-
-        var v, key;
-        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-        var precision = Math.pow(10, precisionPoints);
-        var i, il, face;
-        var indices, j, jl;
-
-        for (i = 0, il = this.vertices.length; i < il; i++) {
-
-            v = this.vertices[i];
-            key = Math.round(v.x * precision) + '_' + Math.round(v.y * precision) + '_' + Math.round(v.z * precision);
-
-            if (verticesMap[key] === undefined) {
-
-                verticesMap[key] = i;
-                unique.push(this.vertices[i]);
-                changes[i] = unique.length - 1;
-
-            } else {
-
-                //console.log('Duplicate vertex found. ', i, ' could be using ', verticesMap[key]);
-                changes[i] = changes[verticesMap[key]];
-            }
-        }
-
-        // if faces are completely degenerate after merging vertices, we
-        // have to remove them from the geometry.
-        var faceIndicesToRemove = [];
-
-        for (i = 0, il = this.faces.length; i < il; i++) {
-
-            face = this.faces[i];
-
-            face.a = changes[face.a];
-            face.b = changes[face.b];
-            face.c = changes[face.c];
-
-            indices = [face.a, face.b, face.c];
-
-            // if any duplicate vertices are found in a Face3
-            // we have to remove the face as nothing can be saved
-            for (var n = 0; n < 3; n++) {
-                if (indices[n] === indices[( n + 1 ) % 3]) {
-                    faceIndicesToRemove.push(i);
-                    break;
-                }
-            }
-        }
-
-        for (i = faceIndicesToRemove.length - 1; i >= 0; i--) {
-            var idx = faceIndicesToRemove[i];
-            this.faces.splice(idx, 1);
-            for (j = 0, jl = this.faceVertexUvs.length; j < jl; j++) {
-                this.faceVertexUvs[j].splice(idx, 1);
-            }
-        }
-
-        // Use unique set of vertices
-
-        var diff = this.vertices.length - unique.length;
-        this.vertices = unique;
-        return diff;
-    };
-
-
     var buildEdgesIndices = (function () {
 
         var math = xeogl.math;
+
+        // TODO: Optimize with caching, but need to cater to both compressed and uncompressed positions
+
+        var uniquePositions = [];
+        var indicesLookup = [];
+        var indicesReverseLookup = [];
+        var weldedIndices = [];
+
+        function weldVertices(positions, indices) {
+            var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+            var vx;
+            var vy;
+            var vz;
+            var key;
+            var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+            var precision = Math.pow(10, precisionPoints);
+            var i;
+            var len;
+            var lenUniquePositions = 0;
+            for (i = 0, len = positions.length; i < len; i += 3) {
+                vx = positions[i];
+                vy = positions[i + 1];
+                vz = positions[i + 2];
+                key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
+                if (positionsMap[key] === undefined) {
+                    positionsMap[key] = lenUniquePositions / 3;
+                    uniquePositions[lenUniquePositions++] = vx;
+                    uniquePositions[lenUniquePositions++] = vy;
+                    uniquePositions[lenUniquePositions++] = vz;
+                }
+                indicesLookup[i / 3] = positionsMap[key];
+            }
+            for (i = 0, len = indices.length; i < len; i++) {
+                weldedIndices[i] = indicesLookup[indices[i]];
+                indicesReverseLookup[weldedIndices[i]] = indices[i];
+            }
+        }
 
         var faces = [];
         var numFaces = 0;
@@ -1329,98 +989,75 @@
         var cross = math.vec3();
         var normal = math.vec3();
 
-        function buildFaces(positions, indices, positionsDecodeMatrix) {
-
+        function buildFaces(numIndices, positionsDecodeMatrix) {
             numFaces = 0;
-
-            for (var i = 0, len = indices.length; i < len; i += 3) {
-
-                var ia = ((indices[i + 0]) * 3);
-                var ib = ((indices[i + 1]) * 3);
-                var ic = ((indices[i + 2]) * 3);
-
+            for (var i = 0, len = numIndices; i < len; i += 3) {
+                var ia = ((weldedIndices[i]) * 3);
+                var ib = ((weldedIndices[i + 1]) * 3);
+                var ic = ((weldedIndices[i + 2]) * 3);
                 if (positionsDecodeMatrix) {
-
-                    compa[0] = positions[ia];
-                    compa[1] = positions[ia + 1];
-                    compa[2] = positions[ia + 2];
-
-                    compb[0] = positions[ib];
-                    compb[1] = positions[ib + 1];
-                    compb[2] = positions[ib + 2];
-
-                    compc[0] = positions[ic];
-                    compc[1] = positions[ic + 1];
-                    compc[2] = positions[ic + 2];
-
+                    compa[0] = uniquePositions[ia];
+                    compa[1] = uniquePositions[ia + 1];
+                    compa[2] = uniquePositions[ia + 2];
+                    compb[0] = uniquePositions[ib];
+                    compb[1] = uniquePositions[ib + 1];
+                    compb[2] = uniquePositions[ib + 2];
+                    compc[0] = uniquePositions[ic];
+                    compc[1] = uniquePositions[ic + 1];
+                    compc[2] = uniquePositions[ic + 2];
                     // Decode
-
                     math.decompressPosition(compa, positionsDecodeMatrix, a);
                     math.decompressPosition(compb, positionsDecodeMatrix, b);
                     math.decompressPosition(compc, positionsDecodeMatrix, c);
-
                 } else {
-
-                    a[0] = positions[ia];
-                    a[1] = positions[ia + 1];
-                    a[2] = positions[ia + 2];
-
-                    b[0] = positions[ib];
-                    b[1] = positions[ib + 1];
-                    b[2] = positions[ib + 2];
-
-                    c[0] = positions[ic];
-                    c[1] = positions[ic + 1];
-                    c[2] = positions[ic + 2];
+                    a[0] = uniquePositions[ia];
+                    a[1] = uniquePositions[ia + 1];
+                    a[2] = uniquePositions[ia + 2];
+                    b[0] = uniquePositions[ib];
+                    b[1] = uniquePositions[ib + 1];
+                    b[2] = uniquePositions[ib + 2];
+                    c[0] = uniquePositions[ic];
+                    c[1] = uniquePositions[ic + 1];
+                    c[2] = uniquePositions[ic + 2];
                 }
-
                 math.subVec3(c, b, cb);
                 math.subVec3(a, b, ab);
                 math.cross3Vec3(cb, ab, cross);
                 math.normalizeVec3(cross, normal);
-
                 var face = faces[numFaces] || (faces[numFaces] = {normal: math.vec3()});
-
                 face.normal[0] = normal[0];
                 face.normal[1] = normal[1];
                 face.normal[2] = normal[2];
-
                 numFaces++;
             }
         }
 
-        return function (positions, indices, positionsDecodeMatrix, indicesOffset, ghostEdgeThreshold) {
-
-            var math = xeogl.math;
-
-            buildFaces(positions, indices, positionsDecodeMatrix);
-
+        return function (positions, indices, positionsDecodeMatrix, edgeThreshold, combined) {
+            weldVertices(positions, indices);
+            buildFaces(indices.length, positionsDecodeMatrix);
             var edgeIndices = [];
-            var thresholdDot = Math.cos(xeogl.math.DEGTORAD * ghostEdgeThreshold);
+            var thresholdDot = Math.cos(xeogl.math.DEGTORAD * edgeThreshold);
             var edges = {};
             var edge1;
             var edge2;
             var index1;
             var index2;
             var key;
-
-            var a = math.vec3();
-            var b = math.vec3();
-
+            var largeIndex = false;
+            var edge;
+            var normal1;
+            var normal2;
+            var dot;
+            var ia;
+            var ib;
             for (var i = 0, len = indices.length; i < len; i += 3) {
-
                 var faceIndex = i / 3;
-
                 for (var j = 0; j < 3; j++) {
-
-                    edge1 = indices[i + j];
-                    edge2 = indices[i + ((j + 1) % 3)];
-
+                    edge1 = weldedIndices[i + j];
+                    edge2 = weldedIndices[i + ((j + 1) % 3)];
                     index1 = Math.min(edge1, edge2);
                     index2 = Math.max(edge1, edge2);
-
                     key = index1 + "," + index2;
-
                     if (edges[key] === undefined) {
                         edges[key] = {
                             index1: index1,
@@ -1433,39 +1070,26 @@
                     }
                 }
             }
-
-            var largeIndex = false;
-
             for (key in edges) {
-
-                var e = edges[key];
-
+                edge = edges[key];
                 // an edge is only rendered if the angle (in degrees) between the face normals of the adjoining faces exceeds this value. default = 1 degree.
-
-                if (e.face2 !== undefined) {
-
-                    var normal1 = faces[e.face1].normal;
-                    var normal2 = faces[e.face2].normal;
-
-                    var dot = math.dotVec3(normal1, normal2);
-
+                if (edge.face2 !== undefined) {
+                    normal1 = faces[edge.face1].normal;
+                    normal2 = faces[edge.face2].normal;
+                    dot = math.dotVec3(normal1, normal2);
                     if (dot > thresholdDot) {
                         continue;
                     }
                 }
-
-                var ia = e.index1 + indicesOffset;
-                var ib = e.index2 + indicesOffset;
-
+                ia = edge.index1;
+                ib = edge.index2;
                 if (!largeIndex && ia > 65535 || ib > 65535) {
                     largeIndex = true;
                 }
-
-                edgeIndices.push(ia);
-                edgeIndices.push(ib);
+                edgeIndices.push(indicesReverseLookup[ia]);
+                edgeIndices.push(indicesReverseLookup[ib]);
             }
-
-            return largeIndex ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
+            return (largeIndex || combined) ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
         }
     })();
 })();

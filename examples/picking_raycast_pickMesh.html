@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+
+<body>
+
+<div id="info">
+    <h1>picking <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a> using an arbitrary World-space ray
+    </h1>
+</div>
+
+<script>
+
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf",
+        combineGeometry: false,
+        quantizeGeometry: false
+
+    });
+
+    var scene = gearbox.scene;
+
+    // Set initial camera position
+    var camera = scene.camera;
+    camera.eye = [174.46, 16.91, -21.92];
+    camera.look = [159.2, 17.02, 3.21];
+    camera.up = [-0.17, 0.89, 0.4];
+
+    // Set initial camera position
+    // Allow user camera control
+    new xeogl.CameraControl();
+
+    //--------------------------------------------
+    // Create helper to show the ray
+    //--------------------------------------------
+
+    var rayHelper = new (function () {
+
+        var mesh = new xeogl.Mesh({
+            geometry: new xeogl.Geometry({
+                primitive: "lines",
+                positions: [0, 0, 0, 0, 0, 0],
+                indices: [0, 1]
+            }),
+            material: new xeogl.PhongMaterial({
+                emissive: [1, 0.3, 0.3],
+                diffuse: [0, 0, 0],
+                ambient: [0, 0, 0],
+                lineWidth: 2
+            }),
+            pickable: false
+        });
+
+        var positions = new Float32Array(6);
+
+        this.setRay = function (pos, dir) {
+            positions[0] = pos[0]; // Origin
+            positions[1] = pos[1];
+            positions[2] = pos[2];
+            positions[3] = pos[0] + dir[0]; // Direction
+            positions[4] = pos[1] + dir[1];
+            positions[5] = pos[2] + dir[2];
+            mesh.geometry.positions = positions;
+        };
+
+        this.setHighlighted = function (highlighted) {
+            mesh.material.emissive = highlighted ? [0.5, 1.0, 0.5] : [0.5, 0.3, 0.3];
+            mesh.material.lineWidth = highlighted ? 6 : 2;
+        };
+    })();
+
+    //--------------------------------------------------------------------
+
+    var rayOrigin = new Float32Array([169.20, 17.02, -10.0]);
+    var rayDirection = new Float32Array([0, 10, 30]);
+
+    var xinc = -0.03;
+    var i = 0;
+
+    gearbox.on("loaded", function () {
+
+        var lastEntity = null;
+        var lastColorize = null;
+
+        scene.on("tick", function () {
+
+            // Orbit the camera
+            //  camera.orbitYaw(xinc < 0 ? 0.2 : -0.2);
+
+            rayOrigin[0] += xinc;
+            rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;
+
+            i++;
+
+            if (i < 0 || i > 1000) {
+                xinc = -xinc;
+                i = 0;
+            }
+
+            rayHelper.setRay(rayOrigin, rayDirection);
+
+            var hit = scene.pick({
+                pickSurface: false, // Default
+                origin: rayOrigin,
+                direction: rayDirection
+            });
+
+            if (hit) {
+
+                if (!lastEntity || hit.mesh.id !== lastEntity.id) {
+
+                    if (lastEntity) {
+                        lastEntity.colorize = lastColorize;
+                    }
+
+                    lastEntity = hit.mesh;
+                    lastColorize = lastEntity.colorize.slice();
+
+                    hit.mesh.colorize = [0.0, 1.0, 0.0, 1.0];
+
+                    //   rayHelper.setHighlighted(true);
+
+                }
+
+            } else {
+
+                if (lastEntity) {
+                    lastEntity.colorize = lastColorize;
+                    lastEntity = null;
+                }
+
+                // rayHelper.setHighlighted(false);
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

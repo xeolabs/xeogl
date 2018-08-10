@@ -77,7 +77,7 @@
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.Viewport({
+            this._state = new xeogl.renderer.State({
                 boundary: [0, 0, 100, 100]
             });
 

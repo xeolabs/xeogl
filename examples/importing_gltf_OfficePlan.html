@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -14,19 +14,31 @@
 
     <script src="js/libs/dat.gui.min.js"></script>
 
+    <style>
+        body {
+            background-color: black;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
 <body>
 
-<!--<div id="info">-->
-    <!--<h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF and applying ghost and-->
-        <!--highlight effects</h1>-->
-    <!--<pre id="log">model: <a href="https://sketchfab.com/scann3d"-->
-                            <!--target="_parent">sketchfab.com/scann3d</a></pre>-->
-<!--</div>-->
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF and applying ghost and
+        highlight effects</h1>
+    <pre id="log">model: <a href="https://sketchfab.com/scann3d"
+                            target="_parent">sketchfab.com/scann3d</a></pre>
+</div>
 
 <div id="dat-gui-container">
 </div>
 
 <script>
+
+    xeogl.scene = new xeogl.Scene({
+        transparent: true
+    });
 
     //---------------------------------------------------
     // Load the model
@@ -34,17 +46,13 @@
 
     var model = new xeogl.GLTFModel({
         id: "office",
-        // src: "models/gltf/shield_helicarrier_meeting_room/scene.gltf",
-        //src: "models/gltf/hover_bike/scene.gltf",
         src: "models/gltf/office/scene.gltf",
-        transform: new xeogl.Scale({
-            xyz: [.01, .01, .01]
-        }),
-        ghostEdgeThreshold: 20,
-        lambertMaterials: false
+        scale: [.01, .01, .01],
+        edgeThreshold: 20
     });
 
     var scene = model.scene;
+    var input = scene.input;
 
     //-----------------------------------------------------------------------------------------------------
     // Camera
@@ -63,74 +71,47 @@
         });
     });
 
-    var cameraControl = new xeogl.CameraControl();
+    var cameraControl = new xeogl.CameraControl({
+        panToPointer: true,
+        pivoting: true
+    });
 
-    //-----------------------------------------------------------------------------------------------------
-    // Customize lighting
-    //-----------------------------------------------------------------------------------------------------
+    var cameraFlight = new xeogl.CameraFlightAnimation();
 
-    var lights = scene.lights;
-    //
-    lights.lights = [
+//    cameraControl.on("hoverEnter", function (hit) {
+//        hit.mesh.highlighted = true;
+//    });
+//
+//    cameraControl.on("hoverOut", function (hit) {
+//        hit.mesh.highlighted = false;
+//    });
 
-//        new xeogl.AmbientLight({
-//            color: [1, 1, 1],
-//            intensity: 0.4
-//        }),
-        new xeogl.DirLight({
-            dir: [0.4, -0.7, -.7],
-            color: [1.0, 1.0, 0.9],
-            intensity: 1.0,
-            space: "world"
-        })
-        ,
-        new xeogl.DirLight({
-            dir: [-0.5, -0.6, 0.5],
-            color: [0.9, 0.9, 1.0],
-            intensity: 1.0,
-            space: "world"
-        })
-    ];
+    cameraControl.on("picked", function (hit) {
+        if (input.keyDown[input.KEY_SHIFT]) {
+            hit.mesh.selected = !hit.mesh.selected;
+        } else {
+            cameraFlight.flyTo(hit.mesh);
+        }
+    });
 
-    cameraControl.on("picked", function (e) {
-        console.log(e.entity.id)
+    cameraControl.on("pickedNothing", function (hit) {
+        cameraFlight.flyTo(model);
     });
 
 
-    model.on("loaded", function () {
+    cameraControl.on("picked", function (e) {
+        console.log(e.mesh.id)
+    });
 
-        var selectedEntities = [
-            "office#73.0",
-            "office#93.0",
-            "office#30.0",
-            "office#9.0",
-            "office#66.0",
-            "office#78.0",
-            "office#87.0",
-            "office#67.0",
-            "office#88.0",
-            "office#62.0",
-            "office#61.0",
-            "office#64.0",
-            "office#86.0",
-            "office#60.0",
-            "office#85.0",
-            "office#63.0",
-            "office#79.0",
-            "office#31.0",
-            "office#105.0",
-            "office#8.0",
-            "office#65.0"
-        ];
+    model.on("loaded", function () {
 
         model.ghosted = true;
 
-        for (var i = 0; i < selectedEntities.length; i++) {
-            var id = selectedEntities[i];
-            var entity = model.entities[id];
-            entity.ghosted = false;
-            entity.highlighted = true;
-        }
+        var selectedMeshes = [
+            "office#285.0",
+            "office#291.0",
+            "office#57.0"
+        ];
 
         var Menu = function () {
 
@@ -138,7 +119,7 @@
             var highlightMaterial = scene.highlightMaterial;
 
             this["ghosted"] = true;
-            this["ghostMaterial.preset"] = "defaultLightBG";
+            this["ghostMaterial.preset"] = "defaultDarkBG";
             this["ghostMaterial.edges"] = ghostMaterial.edges;
             this["ghostMaterial.fill"] = ghostMaterial.fill;
             this["ghostMaterial.vertices"] = ghostMaterial.vertices;
@@ -238,11 +219,13 @@
 
                 var highlighted = !!self["highlighted"];
 
-                for (var i = 0; i < selectedEntities.length; i++) {
-                    var id = selectedEntities[i];
-                    var entity = model.entities[id];
-                    entity.highlighted = highlighted;
-                    entity.ghosted = false;
+                for (var i = 0; i < selectedMeshes.length; i++) {
+                    var id = selectedMeshes[i];
+                    var mesh = model.meshes[id];
+                    if (mesh) {
+                        mesh.highlighted = highlighted;
+                        mesh.ghosted = false;
+                    }
                 }
 
                 model.scene.gammaOutput = self["scene.gammaOutput"];

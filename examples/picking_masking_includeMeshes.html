@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info" class="light">
+    <h1>pick masking - only the green objects are picked on mouseover</h1>
+    <br>
+    <ul>
+        <li>from model, build random list of meshes to be included in picking</li>
+        <li>ghost the excluded meshes, color the rest green</li>
+        <li>pick and highlight only the included meshes on mouse-over, don't attempt to pick the rest</li>
+        <li>model by <a href="https://sketchfab.com/tflexcad" target="_parent">https://sketchfab.com/tflexcad</a></li>
+    </ul>
+</div>
+
+
+<script>
+
+    var scene = xeogl.scene;
+    var camera = scene.camera;
+    var input = scene.input;
+
+    // Load glTF model
+
+    var model = new xeogl.GLTFModel({
+        id: "gearbox",
+        src: "models/gltf/gearbox_conical/scene.gltf",
+        lambertMaterials: true,
+        edgeThreshold: 10,
+        scale: [100, 100, 100]
+    });
+
+    // Position the camera
+
+    camera.eye = [14.70, 5.30, 15.27];
+    camera.look = [-2.54, -4.90, -0.10];
+    camera.up = [-0.28, 0.90, -0.26];
+
+    // Camera interaction
+
+    var cameraControl = new xeogl.CameraControl();
+
+    cameraControl.on("picked", function (e) {
+        console.log(e.mesh.id)
+    });
+
+    // Build random list of meshes included in picking;
+    // Ghost the non-pickable meshes and colorize and emphasise edges on the pickable ones
+
+    var includeMeshes = [];
+
+    model.on("loaded", function () {
+        for (var meshId in model.meshes) {
+            var mesh = model.meshes[meshId];
+            var pickable = Math.random() < 0.2;
+            mesh.pickable = pickable;
+            mesh.ghosted = !pickable;
+            mesh.edges = pickable;
+            if (pickable) {
+                mesh.colorize = [0.2, 1.0, 0.2];
+            }
+
+            if (pickable) {
+                includeMeshes.push(meshId);
+            }
+        }
+    });
+
+    // Highlight everything but the excluded Meshes on mouseover
+
+    var lastEntity = null;
+
+    input.on("mousemove", function (coords) {
+
+        var hit = scene.pick({
+            canvasPos: coords,
+            includeMeshes: includeMeshes
+        });
+
+        if (hit) {
+            if (lastEntity) {
+                if (lastEntity.id !== hit.mesh.id) {
+                    lastEntity.colorize = [0.2, 1.0, 0.2];
+                } else {
+                    return;
+                }
+            }
+            hit.mesh.colorize = [1.0, 1.0, 0.2];
+            lastEntity = hit.mesh;
+
+        } else if (lastEntity) {
+
+            lastEntity.colorize = [0.2, 1.0, 0.2];
+            lastEntity = null;
+        }
+    });
+
+
+</script>
+</body>
+</html>

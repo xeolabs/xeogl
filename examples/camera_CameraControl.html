@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+<body>
+
+<div id="info">
+    <h1>controling the <a href="../docs/classes/Camera.html" target="_parent">Camera</a> with a <a
+            href="../docs/classes/CameraControl.html" target="_parent">CameraControl</a></h1>
+    <ul>
+        <li>CameraControl pivoting mode only works when Camera is not in gimbalLock mode</li>
+        <li>CameraControl zooms to pointer position when firstPerson is enabled</li>
+        <li>CameraControl zoom-to-pointer in firstPerson does not work iin ortho</li>
+    </ul>
+    <h2>xeogl.CameraControl events:</h2>
+    <pre id="log"></pre>
+</div>
+
+<div id="dat-gui-container">
+</div>
+
+<script>
+var buf ={};
+    function log(event, params) { // Logs text to the page
+        var txt = event;
+        if (params) {
+            txt += ": " + JSON.stringify(params)
+        }
+        buf.push(txt);
+        if (buf.length > 30) {
+            buf.shift();
+        }
+        document.getElementById("log").innerText = buf.join("\n");
+    }
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/vianney_house_2/scene.gltf",
+        rotation: [-90, 0, 0]
+    });
+
+    var camera = model.scene.camera;
+
+    camera.eye = [1.81, 37.38, 251.09];
+    camera.look = [0, -0.00, 11.18];
+    camera.up = [0, 1, 0];
+
+    var cameraControl = new xeogl.CameraControl({});
+
+    cameraControl.on("picked", function (e) {
+        log("picked", {
+
+        });
+    });
+
+    //------------------------------------------------------------------------------------------------------------------
+    // GUI
+    //------------------------------------------------------------------------------------------------------------------
+
+    var Menu = function () {
+
+        this["active"] = cameraControl.active;
+        this["firstPerson"] = cameraControl.firstPerson;
+        this["pivoting"] = cameraControl.pivoting;
+        this["panToPointer"] = cameraControl.panToPointer;
+        this["panToPivot"] = cameraControl.panToPivot;
+        this["doublePickFlyTo"] = cameraControl.doublePickFlyTo;
+        this["inertia"] = cameraControl.inertia;
+        this["gimbalLock"] = camera.gimbalLock;
+        this["projection"] = camera.projection;
+
+        var self = this;
+
+        var update = function () {
+
+            cameraControl.active = self["active"];
+            cameraControl.firstPerson = self["firstPerson"];
+            cameraControl.pivoting = self["pivoting"];
+            cameraControl.panToPointer = self["panToPointer"];
+            cameraControl.panToPivot = self["panToPivot"];
+            cameraControl.doublePickFlyTo = self["doublePickFlyTo"];
+            cameraControl.inertia = self["inertia"];
+
+            camera.gimbalLock = self["gimbalLock"];
+            camera.projection = self["projection"];
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false, top: 0, width: 400});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var menu = new Menu();
+
+    var cameraControlFolder = gui.addFolder('CameraControl');
+    cameraControlFolder.add(menu, 'active', cameraControl.active);
+    cameraControlFolder.add(menu, 'firstPerson', cameraControl.firstPerson);
+    cameraControlFolder.add(menu, 'pivoting', cameraControl.pivoting);
+    cameraControlFolder.add(menu, 'panToPointer', cameraControl.panToPointer);
+    cameraControlFolder.add(menu, 'panToPivot', cameraControl.panToPivot);
+    cameraControlFolder.add(menu, 'doublePickFlyTo', cameraControl.doublePickFlyTo);
+    cameraControlFolder.add(menu, 'inertia', 0.0, 1.0);
+    cameraControlFolder.open();
+
+
+    var cameraFolder = gui.addFolder('Camera');
+    cameraFolder.add(menu, 'gimbalLock', camera.gimbalLock);
+    cameraFolder.add(menu, 'projection', ["perspective", "frustum", "ortho", "customProjection"]);
+    cameraFolder.open();
+
+</script>
+</body>
+</html>

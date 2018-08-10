@@ -215,10 +215,15 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink "Object"}}{{/crossLink}} documentation for usage.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SceneJSModel.
  @param [cfg.materialWorkflow] {String} Selects material workflow - "classic" | "pbrMatalness" | "pbrSpecular"
  @param [cfg.src] {String} Path to a SceneJS JSON scene description file.
  @param [cfg.data] {String} Path to a SceneJS JSON scene description file.
+ @param [cfg.position=[0,0,0]] {Float32Array} The Model's local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The SceneJSModel's local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The SceneJSModel's local rotation, as Euler angles given in degrees.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The SceneJSModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Geometry
  */
 (function () {
@@ -343,7 +348,9 @@
 
                     load(this._src, function (node) {
 
-                            self._parse(node, null, null, null);
+                            var group = self;
+
+                            self._parse(node, group, null, null);
 
                             // Decrement processes represented by loading spinner
                             // Spinner disappears if the count is now zero
@@ -400,7 +407,9 @@
 
                     this._data = value;
 
-                    this._parse(this._data, null, null, null);
+                    var group = this;
+
+                    this._parse(this._data, group, null, null);
 
                     var self = this;
 
@@ -428,7 +437,7 @@
         //---------------------------------------------------------------------------------------------------------------
 
         _parse: function (node,
-                          transform,
+                          group,
                           material,
                           diffuseMap,
                           specularMap,
@@ -458,82 +467,93 @@
 
                     switch (this._materialWorkflow) {
                         case "MetallicMaterial":
-                            material = this.add({
-                                type: "xeogl.MetallicMaterial",
+                            material = {
                                 id: this._createID(node),
+                                type: "xeogl.MetallicMaterial",
                                 baseColor: diffuse,
                                 metallic: 1.0,
                                 roughness: 0.4,
                                 emissive: emissive,
-                                alpha: node.alpha
-                            });
+                                alpha: node.alpha,
+                                alphaMode: "blend"
+                            };
                             break;
 
                         case "SpecularMaterial":
-                            material = this.add({
-                                type: "xeogl.SpecularMaterial",
+                            material = {
                                 id: this._createID(node),
+                                type: "xeogl.SpecularMaterial",
                                 diffuse: diffuse,
                                 specular: specular,
                                 glossiness: 0.5,
                                 emissive: emissive,
-                                alpha: node.alpha
-                            });
+                                alpha: node.alpha,
+                                alphaMode: "blend"
+                            };
                             break;
 
                         default:
-                            material = this.add({
-                                type: "xeogl.PhongMaterial",
+                            material = {
                                 id: this._createID(node),
+                                type: "xeogl.PhongMaterial",
                                 ambient: [.2, .2, .2],
                                 diffuse: diffuse,
                                 specular: specular,
                                 // shininess: node.shine,
                                 emissive: emissive,
-                                alpha: node.alpha
-                            });
+                                alpha: node.alpha,
+                                alphaMode: "blend"
+                            };
                     }
 
                     break;
 
                 case "translate":
 
-                    transform = this.add({
-                        type: "xeogl.Translate",
+                    group = group.addChild(new xeogl.Group(this.scene, {
                         id: this._createID(node),
-                        xyz: [node.x, node.y, node.z],
-                        parent: transform
-                    });
+                        position: [node.x, node.y, node.z]
+                    }));
+
+                    this._addComponent(group);
 
                     break;
 
                 case "scale":
 
-                    transform = this.add({
-                        type: "xeogl.Scale",
+                    group = group.addChild(new xeogl.Group(this.scene, {
                         id: this._createID(node),
-                        xyz: [node.x, node.y, node.z],
-                        parent: transform
-                    });
+                        scale: [node.x, node.y, node.z]
+                    }));
+
+                    this._addComponent(group);
 
                     break;
 
                 case "rotate":
 
-                    transform = this.add({
-                        type: "xeogl.Rotate",
-                        id: this._createID(node),
-                        xyz: [node.x, node.y, node.z],
-                        angle: node.angle,
-                        parent: transform
+                    var newGroup = new xeogl.Group(this.scene, {
+                        id: this._createID(node)
                     });
+
+                    newGroup.rotate([node.x, node.y, node.z], node.angle);
+
+                    group = group.addChild(newGroup);
+
+                    this._addComponent(group);
+
+                    // var localMatrix = xeogl.math.rotationMat4c(node.angle * xeogl.math.DEGTORAD, node.x, node.y, node.z);
+                    // if (matrix) {
+                    //     matrix = xeogl.math.mulMat4(matrix, localMatrix, xeogl.math.mat4());
+                    // } else {
+                    //     matrix = localMatrix;
+                    // }
 
                     break;
 
                 case "texture":
 
-                    var texture = this.add({
-                        type: "xeogl.Texture",
+                    var texture = new xeogl.Texture(this.scene, {
                         id: this._createID(node),
                         src: node.src,
                         wrapS: node.wrapS,
@@ -545,6 +565,8 @@
                         maxFilter: node.maxFilter,
                         encoding: "sRGB"
                     });
+
+                    this._addComponent(texture);
 
                     switch (node.applyTo) {
 
@@ -578,13 +600,12 @@
 
                 case "fresnel":
 
-                    var fresnel = this.add({
-                        type: "xeogl.Fresnel",
+                    var fresnel = new xeogl.Fresnel(this.scene, {
                         id: this._createID(node)
-
                         // TODO
-
                     });
+
+                    this._addComponent(fresnel);
 
                     switch (node.applyTo) {
 
@@ -626,8 +647,7 @@
 
                 case "geometry":
 
-                    var geometry = this.add({
-                        type: "xeogl.Geometry",
+                    var geometry = new xeogl.Geometry(this.scene, {
                         primitive: node.primitive,
                         positions: node.positions,
                         normals: node.normals,
@@ -635,7 +655,11 @@
                         indices: node.indices
                     });
 
+                    this._addComponent(geometry);
+
                     if (material) {
+
+                        // Set properties on material component
 
                         material.diffuseMap = diffuseMap;
                         material.specularMap = specularMap;
@@ -653,14 +677,25 @@
                         material.backfaces = !!backfaces;
                     }
 
-                    this.add({
-                        type: "xeogl.Entity",
+                    var material2 = this.scene.components[material.id];
+                    if (!material2) {
+                        material2 = new window[material.type](this.scene, material);
+                    }
+
+                    var mesh = new xeogl.Mesh(this.scene, {
                         id: this._createID(node),
                         geometry: geometry,
-                        transform: transform,
-                        material: material,
+                        material: material2,
                         layer: layer
                     });
+
+                    if (group) {
+                        group.addChild(mesh);
+                    } else {
+                        this.addChild(mesh);
+                    }
+
+                    this._addComponent(mesh);
 
                     break;
             }
@@ -671,7 +706,7 @@
                 for (var i = 0, len = nodes.length; i < len; i++) {
                     this._parse(
                         nodes[i],
-                        transform,
+                        group,
                         material,
                         diffuseMap,
                         specularMap,

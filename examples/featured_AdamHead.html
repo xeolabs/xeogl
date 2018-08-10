@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -35,13 +35,13 @@
 
     var camera = xeogl.scene.camera;
 
-    camera.eye = [2.44,0,4.24];
-    camera.look = [0,0,0];
-    camera.up = [0,1,0];
+    camera.eye = [2.44, 0, 4.24];
+    camera.look = [0, 0, 0];
+    camera.up = [0, 1, 0];
 
     var spinning = true;
 
-    model.on("loaded", function() {
+    model.on("loaded", function () {
         xeogl.scene.on("tick", function () { // Slowly orbit the camera
             model.scene.ticksPerRender = 1;
             if (spinning) {
@@ -56,31 +56,31 @@
     // Environment
     //-----------------------------------------------------------------------------------------------------
 
-    var dirLights = [
-        new xeogl.DirLight({
-            id: "keyLight",
-            dir: [0.8, -0.6, -0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "world"
-        }),
+    model.scene.clearLights();
 
-        new xeogl.DirLight({
-            id: "fillLight",
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
-            intensity: 1.0,
-            space: "world"
-        }),
+    new xeogl.DirLight({
+        id: "keyLight",
+        dir: [0.8, -0.6, -0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            id: "rimLight",
-            dir: [0.2, -0.8, 0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "world"
-        })
-    ];
+    new xeogl.DirLight({
+        id: "fillLight",
+        dir: [-0.8, -0.4, -0.4],
+        color: [0.4, 0.4, 0.5],
+        intensity: 1.0,
+        space: "world"
+    });
+
+    new xeogl.DirLight({
+        id: "rimLight",
+        dir: [0.2, -0.8, 0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "world"
+    });
 
     var lightMap = new xeogl.CubeTexture({
         src: [

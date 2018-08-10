@@ -150,7 +150,8 @@
             components: {
                 scenes: 0,
                 models: 0,
-                entities: 0
+                meshes: 0,
+                objects: 0
             },
             memory: {
 
@@ -368,7 +369,7 @@
          {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
 
          xeogl creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
-         reference this property for the first time, or create your first {{#crossLink "Entity"}}Entity{{/crossLink}} without
+         reference this property for the first time, or create your first {{#crossLink "Mesh"}}Mesh{{/crossLink}} without
          a specified {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
          @property scene
@@ -415,7 +416,7 @@
 
                 // Auto-generated ID
 
-                scene.id = this._sceneIDMap.addItem(scene);
+                scene.id = this._sceneIDMap.addItem({});
             }
 
             this.scenes[scene.id] = scene;
@@ -433,16 +434,15 @@
 
             // Unregister destroyed scenes
 
-            scene.on("destroyed",
-                function () {
+            scene.on("destroyed", function () {
 
-                    self._sceneIDMap.removeItem(scene.id);
+                self._sceneIDMap.removeItem(scene.id);
 
-                    delete self.scenes[scene.id];
-                    delete self._scenesRenderInfo[scene.id];
+                delete self.scenes[scene.id];
+                delete self._scenesRenderInfo[scene.id];
 
-                    self.stats.components.scenes--;
-                });
+                self.stats.components.scenes--;
+            });
         },
 
         /**
@@ -527,8 +527,8 @@
          * Tests if the given object is an array
          * @private
          */
-        _isArray: function (testEntity) {
-            return testEntity && !(testEntity.propertyIsEnumerable('length')) && typeof testEntity === 'object' && typeof testEntity.length === 'number';
+        _isArray: function (testMesh) {
+            return testMesh && !(testMesh.propertyIsEnumerable('length')) && typeof testMesh === 'object' && typeof testMesh.length === 'number';
         },
 
         /**
@@ -558,7 +558,7 @@
          * @private
          */
         _isID: function (value) {
-            return xeogl._isString(value) || xeogl._isNumeric(value);
+            return xeogl.prototype._isString(value) || xeogl.prototype._isNumeric(value);
         },
 
         /**

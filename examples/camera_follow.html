@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -17,7 +17,7 @@
 <div id="info">
 
     <h1><a href="../docs/classes/CameraFollowAnimation.html" target="_parent">CameraFollowAnimation</a> - tracking an
-        <a href="../docs/classes/Entity.html" target="_parent">Entity</a></h1>
+        <a href="../docs/classes/Object.html" target="_parent">Object</a></h1>
 
 </div>
 
@@ -27,7 +27,7 @@
 <script>
 
     // ------------------------------------------------------------------
-    // Create a cloud of entities
+    // Create a cloud of meshes
     // ------------------------------------------------------------------
 
     var torusGeometry = new xeogl.TorusGeometry({
@@ -37,25 +37,21 @@
 
     for (var i = 0; i < 20; i++) {
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
 
             geometry: torusGeometry,
 
-            transform: new xeogl.Rotate({
-                xyz: [
-                    Math.random(),
-                    Math.random(),
-                    Math.random()
-                ],
-                angle: Math.random() * 360,
-                parent: new xeogl.Translate({
-                    xyz: [
-                        Math.random() * 15 - 7,
-                        Math.random() * 15 - 7,
-                        Math.random() * 15 - 7
-                    ]
-                })
-            }),
+            rotation: [
+                Math.random() * 360,
+                Math.random() * 360,
+                Math.random() * 360
+            ],
+
+            position: [
+                Math.random() * 15 - 7,
+                Math.random() * 15 - 7,
+                Math.random() * 15 - 7
+            ],
 
             material: new xeogl.PhongMaterial({
                 diffuse: [
@@ -74,36 +70,18 @@
     // Save references to a couple of rotations within
     // its transform hierarchy so we can make it tumble
 
-    var rotate1;
-    var rotate2;
-    var rotate3;
-
-    var tumblingTorus = new xeogl.Entity({
-
-        geometry: torusGeometry,
-
-        material: new xeogl.PhongMaterial({
-            diffuse: [1, 0.3, 0.3]
-        }),
-
-        transform: new xeogl.Scale({
-            xyz: [0.5, 0.5, 0.5],
-            parent: rotate1 = new xeogl.Rotate({
-                xyz: [1, 1, 0],
-                angle: 45,
-                parent: rotate2 = new xeogl.Rotate({
-                    xyz: [1, 0, 1],
-                    angle: 25,
-                    parent: new xeogl.Translate({
-                        xyz: [5, 0, 0],
-                        parent: rotate3 = new xeogl.Rotate({
-                            xyz: [0, 0, 1],
-                            angle: 40
-                        })
-                    })
-                })
+    var tumblingTorus = new xeogl.Group({
+        rotation: [45, 45, 0],
+        children: [
+            new xeogl.Mesh({
+                geometry: torusGeometry,
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1, 0.3, 0.3]
+                }),
+                scale: [0.5, 0.5, 0.5],
+                position: [10, 0, 0]
             })
-        })
+        ]
     });
 
 
@@ -117,23 +95,21 @@
 
     scene.on("tick", function () {
         a += 3;
-        rotate1.angle = a * 0.1;
-        rotate2.angle = a * 0.2;
-        rotate3.angle = a * 0.3;
+        tumblingTorus.rotation = [a * 0.1, a * 0.2, a * 0.3];
     });
 
     // ------------------------------------------------------------------
     // Show the torus' World-space oriented bounding box (OBB)
     // ------------------------------------------------------------------
 
-    // Create a boundary entity that renders an
-    // axis-aligned bounding box (AABB) around the torus entity.
+    // Create a boundary mesh that renders an
+    // axis-aligned bounding box (AABB) around the torus mesh.
 
     // As the torus tumbles about, the geometry on the
-    // boundary entity will automatically update to the
+    // boundary mesh will automatically update to the
     // shape of the torus' World-space boundary.
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.AABBGeometry({
             target: tumblingTorus
         }),

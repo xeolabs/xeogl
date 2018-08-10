@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -27,59 +27,57 @@
     // Customize lighting
     //-----------------------------------------------------------------------------------------------------
 
-    var lights = xeogl.scene.lights;
+    xeogl.scene.clearLights();
+    xeogl.scene.gammaOutput = false;
+    xeogl.scene.gammaInput = false;
 
-    lights.lights = [
-
-        new xeogl.DirLight({
-
-            dir: [-3116.85791015625, -4015.44873046875, -1726.414306640625],
-            color: [1., 0.95, 0.85],
-            intensity: 1.0,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-
-            dir: [0.6, -0.4, -0.4],
-            color: [0.90, 0.90, 0.93],
-            intensity: 0.4,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-
-            dir: [0.2, -0.1, -0.6],
-            color: [0.55, 0.55, 0.5],
-            intensity: 0.4,
-            space: "world"
-        }),
-        new xeogl.DirLight({
-
-            dir: [0.3, 0.0, 0.6],
-            color: [0.55, 0.55, 0.5],
-            intensity: 0.4,
-            space: "world"
-        })
-    ];
-
-    lights.reflectionMap = new xeogl.CubeTexture({
-        src: [
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-        ]
+    new xeogl.DirLight({
+        dir: [-3116.85791015625, -4015.44873046875, -1726.414306640625],
+        color: [1., 0.95, 0.85],
+        intensity: 1.0,
+        space: "world"
     });
+
+    new xeogl.DirLight({
+
+        dir: [0.6, -0.4, -0.4],
+        color: [0.90, 0.90, 0.93],
+        intensity: 0.4,
+        space: "world"
+    });
+
+    new xeogl.DirLight({
+
+        dir: [0.2, -0.1, -0.6],
+        color: [0.55, 0.55, 0.5],
+        intensity: 0.4,
+        space: "world"
+    });
+
+    new xeogl.DirLight({
+        dir: [0.3, 0.0, 0.6],
+        color: [0.55, 0.55, 0.5],
+        intensity: 0.4,
+        space: "world"
+    });
+
+    //    new xeogl.ReflectionMap({
+    //        src: [
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+    //        ]
+    //    });
 
     //---------------------------------------------------
     // Load the model
     //---------------------------------------------------
 
     var model = new xeogl.GLTFModel({
-        src: "models/gltf/van_gogh_room/scene.gltf",
-        quantizeGeometry: true,
-        combineGeometry: true
+        src: "models/gltf/van_gogh_room/scene.gltf"
     });
 
     //-----------------------------------------------------------------------------------------------------
@@ -88,23 +86,37 @@
 
     var camera = xeogl.scene.camera;
 
-    camera.eye = [1.4904934167861938, 1.4698673486709595, 2.3580610752105713];
-    camera.look = [-0.09735000133514404, 1.406699776649475, 2.6095502376556396];
-    camera.up = [0.034530654549598694, 0.9992275238037109, -0.018670810386538506];
+    camera.eye = [0.8758724331855774, 1.4675921201705933, 1.8011291027069092];
+    camera.look = [5.207973480224609, 1.9065524339675903, 1.8830772638320923];
+    camera.up = [-0.10077526420354843, 0.9949073791503906, -0.0019063192885369062];
 
-    camera.orbitYaw(-140);
-
-    var spinning = true;
-
-    model.on("loaded", function () {
-        xeogl.scene.on("tick", function () { // Slowly orbit the camera
-            if (spinning) {
-                camera.orbitYaw(0.05);
-            }
-        });
+    var flight = new xeogl.CameraFlightAnimation({
+        duration: 4
     });
 
-    new xeogl.CameraControl();
+    model.on("loaded", function () {
+
+        setTimeout(function () {
+
+            flight.flyTo({
+                        eye: [-1.4904934167861938, 1.4698673486709595, 2.3580610752105713],
+                        look: [-0.09735000133514404, 1.406699776649475, 2.6095502376556396],
+                        up: [0.034530654549598694, 0.9992275238037109, -0.018670810386538506]
+                    },
+                    function () {
+                        model.scene.on("tick", function () {
+                            camera.orbitYaw(0.2);
+                        });
+                    });
+
+        }, 3000);
+    });
+
+    new xeogl.CameraControl({
+        ///firstPerson: true
+        panToPointer: true,
+        pivoting: false
+    });
 
 
 </script>

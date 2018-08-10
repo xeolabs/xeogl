@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/OBJModel.js"></script>
@@ -39,17 +39,17 @@
         // Make everything transparent except for the conference table and chairs
 
         var id;
-        var entities = confRoom.entities;
+        var meshes = confRoom.meshes;
 
-        for (id in entities) {
-            var entity = entities[id];
+        for (id in meshes) {
+            var mesh = meshes[id];
             switch (id) {
                 case "confRoom#mesh31":
                 case "confRoom#mesh29":
                     break;
                 default:
-                    entity.material.alpha = 0.5;
-                    entity.material.alphaMode = "blend";
+                    mesh.material.alpha = 0.5;
+                    mesh.material.alphaMode = "blend";
 
             }
         }

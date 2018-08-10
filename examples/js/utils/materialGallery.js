@@ -14,33 +14,34 @@ function materialGallery(menuId, cfg) {
     // Lighting applied to our spheres
     //-----------------------------------------------------------------------------------------------------
 
-    var dirLights = [
-        new xeogl.DirLight({
-            id: "keyLight",
-            dir: [0.8, -0.6, -0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "view"
-        }),
 
-        new xeogl.DirLight({
-            id: "fillLight",
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
-            intensity: 1.0,
-            space: "view"
-        }),
+    skybox.scene.clearLights();
 
-        new xeogl.DirLight({
-            id: "rimLight",
-            dir: [0.2, -0.8, 0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    new xeogl.DirLight({
+        id: "keyLight",
+        dir: [0.8, -0.6, -0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "view"
+    });
 
-    var lightMap = new xeogl.CubeTexture({
+    new xeogl.DirLight({
+        id: "fillLight",
+        dir: [-0.8, -0.4, -0.4],
+        color: [0.4, 0.4, 0.5],
+        intensity: 1.0,
+        space: "view"
+    });
+
+    new xeogl.DirLight({
+        id: "rimLight",
+        dir: [0.2, -0.8, 0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "view"
+    });
+
+    new xeogl.LightMap({
         src: [
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
@@ -51,7 +52,7 @@ function materialGallery(menuId, cfg) {
         ]
     });
 
-    var reflectionMap = new xeogl.CubeTexture({
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
@@ -62,14 +63,9 @@ function materialGallery(menuId, cfg) {
         ]
     });
 
-    var lights = new xeogl.Lights({
-        lights: dirLights,
-     //  lightMap: lightMap,
-        reflectionMap: reflectionMap
-    });
 
     //-----------------------------------------------------------------------------------------------------
-    // Entities showing our materials, with labels on wires
+    // Meshes showing our materials, with labels on wires
     //-----------------------------------------------------------------------------------------------------
 
     (function () {
@@ -84,8 +80,8 @@ function materialGallery(menuId, cfg) {
     })();
 
     var ids = Object.keys(cfg);
-    var numEntities = ids.length;
-    var numSide = numEntities;
+    var numMeshes = ids.length;
+    var numSide = numMeshes;
     var entityWidth = 2.5;
     var width = numSide * entityWidth;
     var halfWidth = width / 2;
@@ -122,33 +118,28 @@ function materialGallery(menuId, cfg) {
         materialCfg = entityCfg.material || material;
         geometryCfg = entityCfg.geometry || geometry;
 
-        var transform = new xeogl.Translate({
-            xyz: [x, 0, 0]
-        });
-
-        new xeogl.Entity({
+        new xeogl.Mesh({
             id: id,
-            lights: lights,
             geometry: geometryCfg,
             material: materialCfg,
-            transform: transform
+            position: [x, 0, 0]
         });
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: new xeogl.VectorTextGeometry({
                 text: id + "\n" + materialCfg.type.substring(6),
                 origin: [0, y + -1.5, 0],
                 size: .1
             }),
             material: textMaterial,
-            transform: transform,
+            position: [x, 0, 0],
             billboard: "spherical"
         });
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: wireGeometry,
             material: textMaterial,
-            transform: transform,
+            position: [x, 0, 0],
             billboard: "spherical"
         });
     }
@@ -168,15 +159,15 @@ function materialGallery(menuId, cfg) {
     });
 
     window.flyTo = function (id) {
-            var entity = xeogl.scene.entities[id];
-            if (entity) {
-                cameraFlight.flyTo({
-                    aabb: entity.aabb,
-                    fit: true,
-                    fitFOV: 30
-                });
-            }
-        };
+        var mesh = xeogl.scene.meshes[id];
+        if (mesh) {
+            cameraFlight.flyTo({
+                aabb: mesh.aabb,
+                fit: true,
+                fitFOV: 30
+            });
+        }
+    };
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control

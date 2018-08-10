@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -106,14 +106,8 @@
             ]
         },
 
-        // Remember that we can also attach modelling transforms to models;
-        // these are just here to illustrate.
-        transform: new xeogl.Scale({
-            xyz: [1, 1, 1],
-            parent: new xeogl.Translate({
-                xyz: [0, 0, 0]
-            })
-        })
+        scale: [1, 1, 1],
+        translate: [0, 0, 0]
     });
 
     // Set initial camera position
@@ -126,8 +120,7 @@
 
     // Spin the model
     model.scene.on("tick", function () {
-        var rotate = model.components["spinningBox.boxRotateY"];
-        rotate.angle += 0.2;
+        model.rotateY(.5);
     });
 
     // Allow user camera control

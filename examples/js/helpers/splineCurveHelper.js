@@ -2,7 +2,7 @@
  Shows the shape and control points of {{#crossLink "SplineCurve"}}{{/crossLink}}
 
  @class SplineCurveHelper
- @module entities
+ @module meshes
  @extends Component
  */
 xeogl.SplineCurveHelper = xeogl.Component.extend({
@@ -15,7 +15,7 @@ xeogl.SplineCurveHelper = xeogl.Component.extend({
 
         this._divisions = 100;
 
-        this._line = new xeogl.Entity(this.scene, {
+        this._line = new xeogl.Mesh(this.scene, {
             geometry: new xeogl.Geometry(this.scene, {
                 primitive: "lines",
                 positions: [0, 0, 0],

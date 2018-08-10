@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+<body>
+
+<div id="info">
+    <h1>using the <a href="../docs/classes/Camera.html" target="_parent">Camera</a> <b>constrainPitch</b> configuration to prevent the camera from being pitched upside-down</h1>
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/vianney_house_2/scene.gltf",
+        rotation: [-90, 0, 0]
+    });
+
+    var camera = model.scene.camera;
+
+    camera.eye = [1.81, 37.38, 251.09];
+    camera.look = [0, -0.00, 11.18];
+    camera.up = [0, 1, 0];
+
+    camera.constrainPitch = true;
+
+    var cameraControl = new xeogl.CameraControl({});
+
+</script>
+</body>
+</html>

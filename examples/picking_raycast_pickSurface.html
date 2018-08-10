@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -14,7 +14,7 @@
 <body>
 
 <div id="info">
-    <h1>picking surfaces of <a href="../docs/classes/Entity.html" target="_parent">Entities</a> using an arbitrary World-space ray
+    <h1>picking surfaces of <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a> using an arbitrary World-space ray
     </h1>
 </div>
 
@@ -44,7 +44,7 @@
 
     var rayHelper = new (function () {
 
-        var entity = new xeogl.Entity({
+        var mesh = new xeogl.Mesh({
             geometry: new xeogl.Geometry({
                 primitive: "lines",
                 positions: [0, 0, 0, 0, 0, 0],
@@ -68,36 +68,35 @@
             positions[3] = pos[0] + dir[0]; // Direction
             positions[4] = pos[1] + dir[1];
             positions[5] = pos[2] + dir[2];
-            entity.geometry.positions = positions;
+            mesh.geometry.positions = positions;
         };
 
         this.setHighlighted = function (highlighted) {
-            entity.material.emissive = highlighted ? [0.5, 1.0, 0.5] : [0.5, 0.3, 0.3];
-            entity.material.lineWidth = highlighted ? 6 : 2;
+            mesh.material.emissive = highlighted ? [0.5, 1.0, 0.5] : [0.5, 0.3, 0.3];
+            mesh.material.lineWidth = highlighted ? 6 : 2;
         };
     })();
 
     //--------------------------------------------
-    // Create helper to show ray-Entity hits
+    // Create helper to show ray-Mesh hits
     //--------------------------------------------
 
     var hitHelper = new (function () {
 
-        var entity = new xeogl.Entity({
+        var mesh = new xeogl.Mesh({
             geometry: new xeogl.SphereGeometry({radius: 0.35}),
             material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
-            transform: new xeogl.Translate(),
             pickable: false,
             visible: false
         });
 
         this.show = function (hit) {
-            entity.transform.xyz = hit.worldPos;
-            entity.visible = true;
+            mesh.position = hit.worldPos;
+            mesh.visible = true;
         };
 
         this.hide = function () {
-            entity.visible = false;
+            mesh.visible = false;
         };
     })();
 
@@ -133,7 +132,7 @@
             rayHelper.setRay(rayOrigin, rayDirection);
 
             var hit = scene.pick({
-                pickSurface: true,  // <<------ This causes picking to find the intersection point on the entity
+                pickSurface: true,  // <<------ This causes picking to find the intersection point on the mesh
                 origin: rayOrigin,
                 direction: rayDirection
             });
@@ -142,16 +141,16 @@
 
                 hitHelper.show(hit);
 
-                if (!lastEntity || hit.entity.id !== lastEntity.id) {
+                if (!lastEntity || hit.mesh.id !== lastEntity.id) {
 
                     if (lastEntity) {
                         lastEntity.colorize = lastColorize;
                     }
 
-                    lastEntity = hit.entity;
-                    lastColorize = hit.entity.colorize.slice();
+                    lastEntity = hit.mesh;
+                    lastColorize = hit.mesh.colorize.slice();
 
-                    hit.entity.colorize = [0.0, 1.0, 0.0, 1.0];
+                    hit.mesh.colorize = [0.0, 1.0, 0.0, 1.0];
 
                     rayHelper.setHighlighted(true);
                 }

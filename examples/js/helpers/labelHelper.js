@@ -21,7 +21,7 @@
                 diffuse: [0, 0, 0]
             });
 
-            this._label = new xeogl.Entity(this, {
+            this._label = new xeogl.Mesh(this, {
                 geometry: new xeogl.VectorTextGeometry(this, {
                     text: "",
                     origin: [0, 0],
@@ -35,7 +35,7 @@
 
             });
 
-            this._wire = new xeogl.Entity(this, {
+            this._wire = new xeogl.Mesh(this, {
                 geometry: new xeogl.Geometry(this, {
                     primitive: "lines",
                     positions: [0.0, 0.0, 0.0, 0.0, -1.3, 0.0],

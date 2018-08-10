@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -29,15 +29,13 @@
     });
 
     for (var i = 0; i < 40; i++) {
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: boxGeometry,
-            transform: new xeogl.Translate({
-                xyz: [
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7
-                ]
-            }),
+            position: [
+                Math.random() * 15 - 7,
+                Math.random() * 15 - 7,
+                Math.random() * 15 - 7
+            ],
             material: new xeogl.PhongMaterial({
                 diffuse: [
                     Math.random(),
@@ -50,7 +48,7 @@
 
     // Our custom skybox
 
-    var skybox = new xeogl.Entity({
+    var skybox = new xeogl.Mesh({
         geometry: new xeogl.Geometry({ // Box-shaped geometry
             primitive: "triangles",
             positions: [
@@ -109,9 +107,7 @@
                 20, 22, 23
             ]
         }),
-        transform: new xeogl.Scale({ // Scale the box
-            xyz: [2000, 2000, 2000]
-        }),
+        scale: [2000, 2000, 2000],
         material: new xeogl.PhongMaterial({ // Emissive map of sky, no diffuse, ambient or specular reflection
             ambient: [0, 0, 0],
             diffuse: [0, 0, 0],
@@ -128,7 +124,7 @@
         collidable: false
     });
 
-    var moon = new xeogl.Entity({
+    var moon = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 25
         }),
@@ -140,13 +136,7 @@
             }),
             pointSize: 5
         }),
-        transform: new xeogl.Rotate({
-            xyz: [0, 1, 0],
-            angle: 0,
-            parent: new xeogl.Translate({
-                xyz: [50, 10, 50]
-            })
-        }),
+        position: [50, 10, 50],
         stationary: true, // Locks position with respect to viewpoint
         pickable: false, // Don't want to ba able to pick the moon
         collidable: false // Moon will not contribute to the size of any enclosing boundaries
@@ -160,8 +150,8 @@
 
     skybox.scene.on("tick",
             function () {
-                moon.transform.angle += 0.1;
-                      skybox.scene.camera.orbitYaw(0.2);
+                moon.rotateY(0.1);
+                skybox.scene.camera.orbitYaw(0.2);
             });
 
     // Allow user camera control

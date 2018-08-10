@@ -1,11 +1,11 @@
 /**
- A **Pin** is a pinned position on the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
+ A **Pin** is a pinned position on the surface of a {{#crossLink "Mesh"}}{{/crossLink}}.
 
  ## Overview
 
  #### Position
 
- A Pin is positioned within one of the triangles of its {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Pin will automatically follow. An Pin specifies its position with two properties:
+ A Pin is positioned within one of the triangles of its {{#crossLink "Mesh"}}Mesh's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Pin will automatically follow. An Pin specifies its position with two properties:
 
  * {{#crossLink "Pin/primIndex:property"}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, and
  * {{#crossLink "Pin/bary:property"}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.
@@ -17,7 +17,7 @@
  * {{#crossLink "Pin/viewPos:property"}}{{/crossLink}} - 3D View-space position, and
  * {{#crossLink "Pin/canvasPos:property"}}{{/crossLink}} - 2D Canvas-space position.
 
- An Pin automatically recalculates these coordinates whenever its {{#crossLink "Entity"}}{{/crossLink}} is replaced or transformed, the {{#crossLink "Geometry"}}{{/crossLink}} is replaced or modified, or the {{#crossLink "Camera"}}{{/crossLink}} is moved.
+ An Pin automatically recalculates these coordinates whenever its {{#crossLink "Mesh"}}{{/crossLink}} is replaced or transformed, the {{#crossLink "Geometry"}}{{/crossLink}} is replaced or modified, or the {{#crossLink "Camera"}}{{/crossLink}} is moved.
 
  #### Visibility
 
@@ -28,9 +28,9 @@
 
  ## Example
 
- In the example below we'll create an {{#crossLink "Entity"}}{{/crossLink}} with a {{#crossLink "TorusGeometry"}}{{/crossLink}}, then attach a Pin to it. Then we'll subscribe to changes to the Pin's position and visibility status.
+ In the example below we'll create an {{#crossLink "Mesh"}}{{/crossLink}} with a {{#crossLink "TorusGeometry"}}{{/crossLink}}, then attach a Pin to it. Then we'll subscribe to changes to the Pin's position and visibility status.
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
     geometry: new xeogl.TorusGeometry(),
     transform: new xeogl.Translate({
         xyz: [0,0,0]
@@ -38,7 +38,7 @@
  });
 
  var pin = new xeogl.Pin({
-    entity: entity,
+    mesh: mesh,
     primIndex: 12,              // Triangle index in Geometry indices array
     bary: [0.11, 0.79, 0.08]    // Barycentric coordinates in the triangle
  });
@@ -57,7 +57,7 @@
 
  // Listen for change of the Pin's World-space cartesian position,
  // which is caused by update of Pin's Local-space position or by
- // animation of the Entity by its modelling Transform.
+ // animation of the Mesh by its modelling Transform.
  pin.on("worldPos", function() {
     //...
  });
@@ -83,8 +83,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Pin.
- @param [cfg.entity] {Number|String|Entity} ID or instance of the {{#crossLink "Entity"}}{{/crossLink}} the Pin is attached to.
- @param [cfg.primIndex=0] {Number} Index of the triangle containing the Pin. Within the {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry/indices:property"}}Geometry indices{{/crossLink}}, this is the index of the first vertex for the triangle.
+ @param [cfg.mesh] {Number|String|Mesh} ID or instance of the {{#crossLink "Mesh"}}{{/crossLink}} the Pin is attached to.
+ @param [cfg.primIndex=0] {Number} Index of the triangle containing the Pin. Within the {{#crossLink "Mesh"}}Mesh's{{/crossLink}} {{#crossLink "Geometry/indices:property"}}Geometry indices{{/crossLink}}, this is the index of the first vertex for the triangle.
  @param [cfg.bary=[0.3,0.3,0.3]] {Float32Array} Barycentric coordinates of the Pin within its triangle.
  @param [cfg.offset=0.2] {Number} How far the Pin is lifted out of its triangle, along the surface normal vector. This is used when occlusion culling, to ensure that the Pin is not lost inside the surface it's attached to.
  @param [cfg.occludable=false] {Boolean} Indicates whether occlusion testing is performed for the Pin, where it will be flagged invisible whenever it's hidden by something else in the 3D view.
@@ -196,8 +196,8 @@
         var pinId = pin.id;
         this._pins[pinId] = pin;
 
-        // Entity which renders a 3D point that we'll test for occlusion
-        this._markers[pinId] = new xeogl.Entity(this._scene, {
+        // Mesh which renders a 3D point that we'll test for occlusion
+        this._markers[pinId] = new xeogl.Mesh(this._scene, {
             geometry: this._scene.components["_pinMarkerGeometry"] || new xeogl.Geometry(this._scene, {
                 id: "_pinMarkerGeometry",
                 primitive: "points",
@@ -211,7 +211,6 @@
                 specular: [0, 0, 0],
                 pointSize: 5
             }),
-            transform: {type: "xeogl.Translate"},
             visible: true
         });
         this._testablePins[pinId] = pin;
@@ -228,7 +227,7 @@
 
     // Updates the World-space position of a Pin
     VisibilityTester.prototype.setPinWorldPos = function (pinId, worldPos) {
-        this._markers[pinId].transform.xyz = worldPos;
+        this._markers[pinId].position = worldPos;
     };
 
     // De-registers a Pin, so that it is not tested for visibility
@@ -273,7 +272,7 @@
             this._localPosDirty = true;
             this._worldPosDirty = false;
 
-            this.entity = cfg.entity;
+            this.mesh = cfg.mesh;
             this.primIndex = cfg.primIndex;
             this.bary = cfg.bary;
             this.offset = cfg.offset;
@@ -283,46 +282,46 @@
         _props: {
 
             /**
-             The {{#crossLink "Entity"}}{{/crossLink}} this Pin is attached to.
+             The {{#crossLink "Mesh"}}{{/crossLink}} this Pin is attached to.
 
-             You can attach a Pin to a different {{#crossLink "Entity"}}{{/crossLink}} at any time.
+             You can attach a Pin to a different {{#crossLink "Mesh"}}{{/crossLink}} at any time.
 
              Note that {{#crossLink "Pin/primIndex:property"}}{{/crossLink}} should always
-             be within the {{#crossLink "Geometry/indices:property"}}{{/crossLink}} of the {{#crossLink "Geometry"}}{{/crossLink}} belonging to the {{#crossLink "Entity"}}Entity{{/crossLink}}.
+             be within the {{#crossLink "Geometry/indices:property"}}{{/crossLink}} of the {{#crossLink "Geometry"}}{{/crossLink}} belonging to the {{#crossLink "Mesh"}}Mesh{{/crossLink}}.
 
-             Fires an {{#crossLink "Pin/entity:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "Pin/mesh:event"}}{{/crossLink}} event on change.
 
-             @property entity
-             @type {Number | String | xeogl.Entity}
+             @property mesh
+             @type {Number | String | xeogl.Mesh}
              */
-            entity: {
+            mesh: {
 
                 set: function (value) {
 
                     /**
-                     * Fired whenever this Pin's {{#crossLink "Pin/entity:property"}}{{/crossLink}} property changes.
-                     * @event entity
+                     * Fired whenever this Pin's {{#crossLink "Pin/mesh:property"}}{{/crossLink}} property changes.
+                     * @event mesh
                      * @param value The property's new value
                      */
                     this._attach({
-                        name: "entity",
-                        type: "xeogl.Entity",
+                        name: "mesh",
+                        type: "xeogl.Mesh",
                         component: value,
                         sceneDefault: false,
-                        onAttached: {callback: this._entityAttached, scope: this},
-                        onDetached: {callback: this._entityDetached, scope: this}
+                        onAttached: {callback: this._meshAttached, scope: this},
+                        onDetached: {callback: this._meshDetached, scope: this}
                     });
                 },
 
                 get: function () {
-                    return this._attached.entity;
+                    return this._attached.mesh;
                 }
             },
 
             /**
              Index of the triangle containing this pin.
 
-             Within the {{#crossLink "Geometry/indices:property"}}{{/crossLink}} of the {{#crossLink "Geometry"}}{{/crossLink}} attached to the {{#crossLink "Entity"}}{{/crossLink}}, this is the index of the first element for that triangle.
+             Within the {{#crossLink "Geometry/indices:property"}}{{/crossLink}} of the {{#crossLink "Geometry"}}{{/crossLink}} attached to the {{#crossLink "Mesh"}}{{/crossLink}}, this is the index of the first element for that triangle.
 
              Fires a {{#crossLink "Pin/primIndex:event"}}{{/crossLink}} event on change.
 
@@ -518,7 +517,7 @@
              This is read-only and is automatically calculated.
 
              @property viewPos
-             @default [0,0]
+             @default [0,0,0]
              @type Float32Array
              @final
              */
@@ -609,10 +608,10 @@
             }
         },
 
-        _entityAttached: function (entity) {
-            this._onGeometryBoundary = entity.geometry.on("boundary", this._setLocalPosDirty, this);
-            this._onEntityBoundary = entity.on("boundary", this._setWorldPosDirty, this);
-            this._onEntityVisible = entity.on("visible", this._entityVisible, this);
+        _meshAttached: function (mesh) {
+            this._onGeometryBoundary = mesh.geometry.on("boundary", this._setLocalPosDirty, this);
+            this._onMeshBoundary = mesh.on("boundary", this._setWorldPosDirty, this);
+            this._onMeshVisible = mesh.on("visible", this._meshVisible, this);
             this._setLocalPosDirty();
         },
 
@@ -630,7 +629,7 @@
             }
         },
 
-        _entityVisible: function (visible) {
+        _meshVisible: function (visible) {
             if (!visible) {
                 this._setVisible(false);
             }
@@ -639,17 +638,16 @@
             }
         },
 
-        _entityDetached: function (entity) {
-            entity.geometry.off(this._onGeometryBoundary);
-            entity.off(this._onEntityBoundary);
-            entity.off(this._onEntityVisible);
-            this._entityVisible(false);
+        _meshDetached: function (mesh) {
+            mesh.geometry.off(this._onGeometryBoundary);
+            mesh.off(this._onMeshBoundary);
+            mesh.off(this._onMeshVisible);
+            this._meshVisible(false);
         },
 
         _update: function () {
 
             var localPosDirty = this._localPosDirty;
-            var localNormalDirty = this._localNormalDirty;
             var worldPosDirty = localPosDirty || this._worldPosDirty;
 
             this.__update();
@@ -689,9 +687,9 @@
 
             return function () {
 
-                var entity = this._attached.entity;
+                var mesh = this._attached.mesh;
 
-                if (!entity) {
+                if (!mesh) {
                     return;
                 }
 
@@ -701,9 +699,9 @@
 
                 if (this._localPosDirty) {
 
-                    // Get Local position from entity's Geometry, primitive index and barycentric coordinates
+                    // Get Local position from mesh's Geometry, primitive index and barycentric coordinates
 
-                    var geometry = entity.geometry;
+                    var geometry = mesh.geometry;
                     var indices = geometry.indices;
                     var positions = geometry.positions;
 
@@ -749,8 +747,7 @@
 
                     // Transform Local position into World space
 
-                    var transform = entity.transform;
-                    transform ? math.transformPoint3(transform.leafMatrix, this._localPos, this._worldPos) : this._worldPos.set(this._localPos);
+                    math.transformPoint3(mesh.worldMatrix, this._localPos, this._worldPos);
 
                     if (this._visTester) {
                         this._visTester.setPinWorldPos(this.id, this._worldPos);
@@ -763,8 +760,7 @@
 
                     // Transform Local normal into World space
 
-                    var transform = entity.transform;
-                    transform ? math.transformVec3(transform.leafMatrix, this._localNormal, this._worldNormal) : this._worldNormal.set(this._localNormal);
+                    math.transformVec3(mesh.worldMatrix, this._localNormal, this._worldNormal);
 
                     this._worldNormalDirty = false;
                 }
@@ -788,15 +784,15 @@
             this.fire("visible", this._visible);
         },
 
-        _getJSON: function () {
+        getJSON: function () {
             var json = {
                 primIndex: this._primIndex,
                 bary: xeogl.math.vecToArray(this._bary),
                 offset: this._offset,
                 occludable: this._occludable
             };
-            if (this._attached.entity) {
-                json.entity = this._attached.entity.id;
+            if (this._attached.mesh) {
+                json.mesh = this._attached.mesh.id;
             }
             return json;
         },

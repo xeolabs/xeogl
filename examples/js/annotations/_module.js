@@ -1,5 +1,5 @@
 /**
- * Components for annotating entities.
+ * Components for annotating meshes.
  *
  * @module xeogl
  * @submodule annotations

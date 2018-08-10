@@ -18,7 +18,7 @@ xeogl.renderer.RenderBuffer.prototype.setSize = function (size) {
     this.size = size;
 };
 
-xeogl.renderer.RenderBuffer.prototype.webglRestored = function (gl) {
+xeogl.renderer.RenderBuffer.prototype.webglContextRestored = function (gl) {
     this.gl = gl;
     this.buffer = null;
     this.allocated = false;

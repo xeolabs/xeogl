@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -28,10 +28,7 @@
 
     var saw = new xeogl.GLTFModel({
         src: "models/gltf/ReciprocatingSaw/PBR-SpecGloss/Reciprocating_Saw.gltf",
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: 90
-        })
+        rotation: [90, 0, 0]
     });
 
     new xeogl.CameraControl();

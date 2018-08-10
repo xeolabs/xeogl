@@ -71,11 +71,11 @@
     })();
 
     /**
-     Transforms a Canvas-space position to an Entity's Local-space coordinate system, in the context of a Camera.
+     Transforms a Canvas-space position to a Mesh's Local-space coordinate system, in the context of a Camera.
      @method canvasPosToLocalRay
      @static
      @param {Camera} camera The Camera.
-     @param {Entity} entity The Entity.
+     @param {Mesh} mesh The Mesh.
      @param {Float32Array} canvasPos The Canvas-space position.
      @param {Float32Array} localRayOrigin The Local-space ray origin.
      @param {Float32Array} localRayDir The Local-space ray direction.
@@ -85,17 +85,17 @@
         var worldRayOrigin = math.vec3();
         var worldRayDir = math.vec3();
 
-        return function (camera, entity, canvasPos, localRayOrigin, localRayDir) {
+        return function (camera, mesh, canvasPos, localRayOrigin, localRayDir) {
             math.canvasPosToWorldRay(camera, canvasPos, worldRayOrigin, worldRayDir);
-            math.worldRayToLocalRay(entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir);
+            math.worldRayToLocalRay(mesh, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir);
         };
     })();
 
     /**
-     Transforms a ray from World-space to an Entity's Local-space coordinate system.
+     Transforms a ray from World-space to a Mesh's Local-space coordinate system.
      @method worldRayToLocalRay
      @static
-     @param {Entity} entity The Entity.
+     @param {Mesh} mesh The Mesh.
      @param {Float32Array} worldRayOrigin The World-space ray origin.
      @param {Float32Array} worldRayDir The World-space ray direction.
      @param {Float32Array} localRayOrigin The Local-space ray origin.
@@ -107,9 +107,9 @@
         var tempVec4a = math.vec4();
         var tempVec4b = math.vec4();
 
-        return function (entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
+        return function (mesh, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
 
-            var modelMat = entity.transform.leafMatrix;
+            var modelMat = mesh.worldMatrix || mesh.matrix;
             var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
 
             tempVec4a[0] = worldRayOrigin[0];

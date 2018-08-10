@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>mouse over the <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a> to pick them</h1>
+</div>
+
+<script>
+
+    // Load glTF model
+
+    var gearbox = new xeogl.GLTFModel({
+        id: "gearbox",
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+    });
+
+    // Set initial camera position
+    var camera = gearbox.scene.camera;
+    camera.eye = [174.46, 16.91, -21.92];
+    camera.look = [159.2, 17.02, 3.21];
+    camera.up = [-0.17, 0.89, 0.4];
+
+    var scene = xeogl.scene;
+
+    var cameraControl = new xeogl.CameraControl();
+
+    // Attempt to pick a Mesh on each mouse move.
+    // Highlight each Mesh that we successfully pick.
+
+    var input = scene.input;
+
+    var lastEntity = null;
+    var lastColorize = null;
+
+    input.on("mousemove", function (coords) {
+
+        var hit = scene.pick({
+            canvasPos: coords
+        });
+
+        if (hit) {
+
+            if (!lastEntity || hit.mesh.id !== lastEntity.id) {
+
+                if (lastEntity) {
+                    lastEntity.colorize = lastColorize;
+                }
+
+                lastEntity = hit.mesh;
+                lastColorize = hit.mesh.colorize.slice();
+
+                hit.mesh.colorize = [0.0, 1.0, 0.0, 1.0];
+            }
+        } else {
+
+            if (lastEntity) {
+                lastEntity.colorize = lastColorize;
+                lastEntity = null;
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

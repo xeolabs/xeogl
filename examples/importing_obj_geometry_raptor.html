@@ -3,83 +3,75 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
-    <script src="js/geometry/objGeometry.js"></script>
+    <script src="js/geometry/objGeometryLoader.js"></script>
 
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a> loaded from a Wavefront .OBJ file</h1>
+    <h1><a href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a> loaded from a Wavefront .OBJ file
+    </h1>
 </div>
 
 <script>
 
-    var entity = new xeogl.Entity({
+    xeogl.loadOBJGeometry(xeogl.scene, "models/obj/raptor/raptor.obj", function (geometry) {
 
-        geometry: new xeogl.OBJGeometry({
-            src: "models/obj/raptor/raptor.obj"
-        }),
+        var mesh = new xeogl.Mesh({
 
-        material: new xeogl.PhongMaterial({
+            geometry: geometry,
 
-            pointSize: 5,
+            material: new xeogl.PhongMaterial({
 
-            diffuseMap: new xeogl.Texture({
-                src: "models/obj/raptor/raptor.jpg",
-                encoding: "sRGB"
+                pointSize: 5,
+
+                diffuseMap: new xeogl.Texture({
+                    src: "models/obj/raptor/raptor.jpg",
+                    encoding: "sRGB"
+                }),
+
+                specularFresnel: new xeogl.Fresnel({
+                    edgeBias: 0.2,
+                    centerBias: 0.8,
+                    power: 0.2,
+                    edgeColor: [0.4, 0.4, 0.4],
+                    centerColor: [0.0, 0.0, 0.0]
+                }),
+
+                emissive: [1, 1, 1],
+
+                emissiveFresnel: new xeogl.Fresnel({
+                    edgeBias: 0.3,
+                    centerBias: 0.8,
+                    edgeColor: [0.3, 0.3, 0.3],
+                    centerColor: [0.0, 0.0, 0.0],
+                    power: 0.3
+                })
             }),
 
-            specularFresnel: new xeogl.Fresnel({
-                edgeBias: 0.2,
-                centerBias: 0.8,
-                power: 0.2,
-                edgeColor: [0.4, 0.4, 0.4],
-                centerColor: [0.0, 0.0, 0.0]
-            }),
+            rotation: [0, 120, 0],
+            position: [10, 3, 10]
+        });
 
-            emissive: [1, 1, 1],
-
-            emissiveFresnel: new xeogl.Fresnel({
-                edgeBias: 0.3,
-                centerBias: 0.8,
-                edgeColor: [0.3, 0.3, 0.3],
-                centerColor: [0.0, 0.0, 0.0],
-                power: 0.3
-            })
-        }),
-
-        transform: new xeogl.Rotate({
-            xyz: [0, 1, 0],
-            angle: 120,
-
-            parent: new xeogl.Translate({
-                xyz: [10, 3, 10]
-            })
-        })
-    });
-
-    // Allow user camera control
-    new xeogl.CameraControl();
-
-    // Fit to view as soon as the OBJ is loaded
-
-    entity.geometry.on("loaded", function () {
+        // Allow user camera control
+        new xeogl.CameraControl();
 
         var cameraFlight = new xeogl.CameraFlightAnimation();
 
+        // Fit to view
+
         cameraFlight.jumpTo({
-            aabb: entity.aabb,
+            aabb: mesh.aabb,
             fit: true,
             fitFOV: 45
         });
     });
-
 
 </script>
 </body>

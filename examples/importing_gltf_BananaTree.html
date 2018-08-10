@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -34,20 +34,21 @@
 
     var camera = xeogl.scene.camera;
 
-    camera.eye = [-0.8, -36.51, -871.64];
-    camera.look = [-0.8,-36.51,-2.37];
-    camera.up = [0,1,0 ];
+    camera.eye = [261.92, 491.56, -340.21];
+    camera.look = [21.12, 243.80, -6.53];
+    camera.up = [-0.30, 0.85, 0.41];
+
+    camera.zoom(-65);
 
     var spinning = true;
 
     xeogl.scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
-            camera.orbitYaw(-0.05);
+                camera.orbitYaw(-0.08);
         }
     });
 
     var cameraControl = new xeogl.CameraControl(); // User camera control
-
 
 
 </script>

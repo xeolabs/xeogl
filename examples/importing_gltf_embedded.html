@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -14,8 +14,8 @@
 
 <div id="info">
     <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading embedded glTF</h1>
-    <pre id="log">model:  Duck - [<a
-            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/Duck/README.md' target="_parent">model info</a>]</pre>
+    <pre id="log">model:  GearboxAssy - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/GearboxAssy/README.md' target="_parent">model info</a>]</pre>
 </div>
 
 <script>
@@ -24,8 +24,8 @@
     // Load the model
     //---------------------------------------------------
 
-    var model = new xeogl.GLTFModel({
-        src: "models/gltf/Duck/glTF-Embedded/Duck.gltf"
+    new xeogl.GLTFModel({
+        src: "models/gltf/GearboxAssy/glTF-Embedded/GearboxAssy.gltf"
     });
 
     //-----------------------------------------------------------------------------------------------------
@@ -42,13 +42,11 @@
 
     xeogl.scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
-            camera.orbitYaw(-0.05);
+            camera.orbitYaw(-0.1);
         }
     });
 
-    var cameraControl = new xeogl.CameraControl(); // User camera control
-
-
+    new xeogl.CameraControl(); // User camera control
 
 </script>
 </body>

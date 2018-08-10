@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -30,79 +30,10 @@
 
 <script>
 
-    // Create custom clipping planes
-
-    var scene = xeogl.scene;
-    var clips = scene.clips;
-    var camera = scene.camera;
-
-    clips.clips = [
-        new xeogl.Clip({
-            id: "clip0",
-            pos: [0.8, 0.8, 0.8],
-            dir: [-1, -1, -1],
-            active: true
-        }),
-        new xeogl.Clip({
-            id: "clip1",
-            pos: [0.8, 0.8, -0.8],
-            dir: [-1, -1, 1],
-            active: true
-        }),
-        new xeogl.Clip({
-            id: "clip2",
-            pos: [0.8, -0.8, -0.8],
-            dir: [-1, 1, 1],
-            active: true
-        }),
-        new xeogl.Clip({
-            id: "clip3",
-            pos: [-0.8, -0.8, -0.8],
-            dir: [1, 1, 1],
-            active: true
-        }),
-        new xeogl.Clip({
-            id: "clip4",
-            pos: [-0.8, -0.8, 0.8],
-            dir: [1, 1, -1],
-            active: true
-        }),
-        new xeogl.Clip({
-            id: "clip5",
-            pos: [-0.8, 0.8, 0.8],
-            dir: [1, -1, -1],
-            active: true
-        }),
-        new xeogl.Clip({
-            id: "clip6",
-            pos: [-0.8, 0.8, -0.8],
-            dir: [1, -1, 1],
-            active: true
-        }),
-        new xeogl.Clip({
-            id: "clip7",
-            pos: [0.8, -0.8, 0.8],
-            dir: [-1, 1, -1],
-            active: true
-        })
-    ];
-
-    // Visualize each Clip with a ClipHelper
-
-    for (var i = 0, len = clips.clips.length; i < len; i++) {
-        new xeogl.ClipHelper({
-            clip: clips.clips[i],
-            planeSize: [1.5, 1.5],
-            autoPlaneSize: false,
-            visible: true,
-            solid: true // Filled planes
-        });
-    }
-
-    // Outer sphere attached to our Clips, with clipping enabled,
+    // Outer sphere with clipping enabled,
     // causing eight portions to get clipped off the sphere
 
-    var outerSphere = new xeogl.Entity({
+    var outerSphere = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 1.5,
             heightSegments: 60,
@@ -119,10 +50,10 @@
         clippable: true // (default value)
     });
 
-    // Inner sphere, attached to our Clips, but with clipping disabled,
+    // Inner sphere with clipping disabled,
     // so nothing gets clipped off this sphere
 
-    var innerSphere = new xeogl.Entity({
+    var innerSphere = new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 1.2,
             heightSegments: 60,
@@ -138,7 +69,82 @@
         clippable: false
     });
 
+    new xeogl.Clip({
+        id: "clip0",
+        pos: [0.8, 0.8, 0.8],
+        dir: [-1, -1, -1],
+        active: true
+    });
+
+    new xeogl.Clip({
+        id: "clip1",
+        pos: [0.8, 0.8, -0.8],
+        dir: [-1, -1, 1],
+        active: true
+    });
+
+    new xeogl.Clip({
+        id: "clip2",
+        pos: [0.8, -0.8, -0.8],
+        dir: [-1, 1, 1],
+        active: true
+    });
+
+    new xeogl.Clip({
+        id: "clip3",
+        pos: [-0.8, -0.8, -0.8],
+        dir: [1, 1, 1],
+        active: true
+    });
+
+    new xeogl.Clip({
+        id: "clip4",
+        pos: [-0.8, -0.8, 0.8],
+        dir: [1, 1, -1],
+        active: true
+    });
+
+    new xeogl.Clip({
+        id: "clip5",
+        pos: [-0.8, 0.8, 0.8],
+        dir: [1, -1, -1],
+        active: true
+    });
+
+    new xeogl.Clip({
+        id: "clip6",
+        pos: [-0.8, 0.8, -0.8],
+        dir: [1, -1, 1],
+        active: true
+    });
+
+    new xeogl.Clip({
+        id: "clip7",
+        pos: [0.8, -0.8, 0.8],
+        dir: [-1, 1, -1],
+        active: true
+    });
+
+    // Visualize each Clip with a ClipHelper
+
+    var scene = innerSphere.scene;
+
+    for (var id in scene.clips) {
+        if (scene.clips.hasOwnProperty(id)) {
+            var clip = scene.clips[id];
+            new xeogl.ClipHelper({
+                clip: clip,
+                planeSize: [1.5, 1.5],
+                autoPlaneSize: false,
+                visible: true,
+                solid: true // Filled planes
+            });
+        }
+    }
+
     // Camera initial position, spin and control
+
+    var camera = scene.camera;
 
     camera.eye = [0, 0, -5];
 

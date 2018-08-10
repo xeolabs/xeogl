@@ -16,18 +16,18 @@
  ## Usage
 
  ````javascript
- // First Entity with a TorusGeometry
- var entity = new xeogl.Entity({
+ // First Mesh with a TorusGeometry
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.TorusGeometry()
  });
 
- // Second Entity with an OBBGeometry that shows a wireframe box
- // for the World-space boundary of the first Entity
+ // Second Mesh with an OBBGeometry that shows a wireframe box
+ // for the World-space boundary of the first Mesh
 
- var boundaryHelper = new xeogl.Entity({
+ var boundaryHelper = new xeogl.Mesh({
 
      geometry: new xeogl.OBBGeometry({
-         target: entity
+         target: mesh
      }),
 
      material: new xeogl.PhongMaterial({
@@ -38,16 +38,16 @@
  });
  ````
 
- Now whenever our entity {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our OBBGeometry will automatically
+ Now whenever our mesh {{#crossLink "Mesh"}}{{/crossLink}} changes shape or position, our OBBGeometry will automatically
  update to stay fitted to it.
 
- We could also directly configure the OBBGeometry with the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/obb:property"}}OBB{{/crossLink}}:
+ We could also directly configure the OBBGeometry with the {{#crossLink "Mesh"}}{{/crossLink}}'s {{#crossLink "Mesh/obb:property"}}OBB{{/crossLink}}:
 
  ````javascript
- var boundaryHelper2 = new xeogl.Entity({
+ var boundaryHelper2 = new xeogl.Mesh({
 
      geometry: new xeogl.OBBGeometry({
-         targetOBB: entity.obb
+         targetOBB: mesh.obb
      }),
 
      material: new xeogl.PhongMaterial({
@@ -69,7 +69,7 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBBGeometry.
  @param [cfg.target] {Component} ID or instance of a {{#crossLink "Component"}}{{/crossLink}} whose OBB we'll show.
- @param [cfg.targetOBB] {Float32Array} An entity-oriented box (OBB) in a 32-element Float32Array
+ @param [cfg.targetOBB] {Float32Array} An mesh-oriented box (OBB) in a 32-element Float32Array
  containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
  @extends Component
  */
@@ -84,6 +84,8 @@
         _init: function (cfg) {
 
             this._super(xeogl._apply(cfg, {
+                combined: true,
+                quantized: false, // Quantized geometry is immutable
                 primitive: cfg.primitive || "lines",
                 positions: cfg.positions || [1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
                     1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0],
@@ -144,7 +146,7 @@
             },
 
             /**
-             Sets this OBBGeometry to an entity-oriented bounding box (OBB), given as a 32-element Float32Array
+             Sets this OBBGeometry to an mesh-oriented bounding box (OBB), given as a 32-element Float32Array
              containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
 
              This property effectively replaces the {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
@@ -160,8 +162,8 @@
                         return;
                     }
 
-                    if (this._attached.boundary) {
-                        this.boundary = null;
+                    if (this._attached.target) {
+                        this.target = null;
                     }
 
                     this._setPositionsFromOBB(value);

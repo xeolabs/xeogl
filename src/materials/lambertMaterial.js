@@ -1,6 +1,6 @@
 /**
  A **LambertMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
+ attached {{#crossLink "Mesh"}}Meshes{{/crossLink}} using
  the non-physically based <a href="https://en.wikipedia.org/wiki/Lambertian_reflectance">Lambertian</a> model for calculating reflectance.
 
  ## Examples
@@ -34,7 +34,7 @@ TODO
  ## Usage
 
  ```` javascript
- var torus = new xeogl.Entity({
+ var torus = new xeogl.Mesh({
     material: new xeogl.LambertMaterial({
         ambient: [0.3, 0.3, 0.3],
         color: [0.5, 0.5, 0.0],
@@ -76,23 +76,17 @@ TODO
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.LambertMaterial({
-
+            this._state = new xeogl.renderer.State({
                 type: "LambertMaterial",
-
                 ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
-
                 alpha: null,
                 alphaMode: 0, // 2 ("blend") when transparent, so renderer knows when to add to transparency bin
-
                 lineWidth: null,
                 pointSize: null,
-
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-
                 hash: "/lam;"
             });
 
@@ -100,10 +94,8 @@ TODO
             this.color = cfg.color;
             this.emissive = cfg.emissive;
             this.alpha = cfg.alpha;
-
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
-
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
         },
@@ -118,32 +110,24 @@ TODO
              @type Float32Array
              */
             ambient: {
-
                 set: function (value) {
-
                     var ambient = this._state.ambient;
-
                     if (!ambient) {
                         ambient = this._state.ambient = new Float32Array(3);
-
                     } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         ambient[0] = value[0];
                         ambient[1] = value[1];
                         ambient[2] = value[2];
-
                     } else {
                         ambient[0] = .2;
                         ambient[1] = .2;
                         ambient[2] = .2;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.ambient;
                 }
@@ -157,32 +141,24 @@ TODO
              @type Float32Array
              */
             color: {
-
                 set: function (value) {
-
                     var color = this._state.color;
-
                     if (!color) {
                         color = this._state.color = new Float32Array(3);
-
                     } else if (value && color[0] === value[0] && color[1] === value[1] && color[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         color[0] = value[0];
                         color[1] = value[1];
                         color[2] = value[2];
-
                     } else {
                         color[0] = 1;
                         color[1] = 1;
                         color[2] = 1;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.color;
                 }
@@ -196,32 +172,24 @@ TODO
              @type Float32Array
              */
             emissive: {
-
                 set: function (value) {
-
                     var emissive = this._state.emissive;
-
                     if (!emissive) {
                         emissive = this._state.emissive = new Float32Array(3);
-
                     } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
                         return;
                     }
-
                     if (value) {
                         emissive[0] = value[0];
                         emissive[1] = value[1];
                         emissive[2] = value[2];
-
                     } else {
                         emissive[0] = 0;
                         emissive[1] = 0;
                         emissive[2] = 0;
                     }
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.emissive;
                 }
@@ -237,21 +205,15 @@ TODO
              @type Number
              */
             alpha: {
-
                 set: function (value) {
-
                     value = (value !== undefined && value !== null) ? value : 1.0;
-
                     if (this._state.alpha === value) {
                         return;
                     }
-
                     this._state.alpha = value;
                     this._state.alphaMode = value < 1.0 ? 2 /* blend */ : 0 /* opaque */
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.alpha;
                 }
@@ -265,14 +227,10 @@ TODO
              @type Number
              */
             lineWidth: {
-
                 set: function (value) {
-
                     this._state.lineWidth = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.lineWidth;
                 }
@@ -286,80 +244,63 @@ TODO
              @type Number
              */
             pointSize: {
-
                 set: function (value) {
-
                     this._state.pointSize = value || 1.0;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.pointSize;
                 }
             },
 
             /**
-             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
-             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property backfaces
              @default false
              @type Boolean
              */
             backfaces: {
-
                 set: function (value) {
-
                     value = !!value;
-
                     if (this._state.backfaces === value) {
                         return;
                     }
-
                     this._state.backfaces = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.backfaces;
                 }
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
              @property frontface
              @default "ccw"
              @type String
              */
             frontface: {
-
                 set: function (value) {
-
                     value = value !== "cw";
-
                     if (this._state.frontface === value) {
                         return;
                     }
-
                     this._state.frontface = value;
-
                     this._renderer.imageDirty();
                 },
-
                 get: function () {
                     return this._state.frontface ? "ccw" : "cw";
                 }
             }
         },
-
 
         _getState: function () {
             return this._state;

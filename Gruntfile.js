@@ -21,7 +21,6 @@ module.exports = function (grunt) {
             },
             engine: {
                 src: devScripts.engine,
-                //dest: '/home/lindsay/viewer.js/src/lib/xeogl/xeogl.js'
                 dest: 'build/<%= PROJECT_NAME %>.js'
             }
         },
@@ -38,9 +37,7 @@ module.exports = function (grunt) {
             }
         },
 
-        ifc2json: {
-
-        },
+        ifc2json: {},
 
         clean: {
             tmp: "tmp/*.js",

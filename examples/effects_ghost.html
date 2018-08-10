@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -16,7 +16,7 @@
 <body>
 
 <div id="info">
-    <h1>ghost effect applied to an <a href="../docs/classes/Entity.html" target="_parent">Entity</a> with a custom <a
+    <h1>ghost effect applied to a <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a> with a custom <a
             href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a></h1>
 </div>
 
@@ -25,9 +25,9 @@
 
 <script>
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
         geometry: new xeogl.TeapotGeometry({
-            ghostEdgeThreshold: 1
+            edgeThreshold: 1
         }),
         material: new xeogl.PhongMaterial({
             diffuse: [0.2, 0.2, 1.0]
@@ -45,21 +45,17 @@
             fillColor: [0, 0, 0],
             fillAlpha: 0.7
         }),
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90,
-            parent: new xeogl.Translate({
-                xyz: [0, -20, 0]
-            })
-        }),
+
+        rotation: [-90, 0, 0],
+        position: [0, -20, 0],
         ghosted: true
     });
 
-    var camera = entity.scene.camera;
+    var camera = mesh.scene.camera;
 
     camera.eye = [0, 0, -100];
 
-    entity.scene.on("tick", function () {
+    mesh.scene.on("tick", function () {
         camera.orbitYaw(0.2);
     });
 
@@ -71,7 +67,7 @@
 
     var Menu = function () {
 
-        var ghostMaterial = entity.ghostMaterial;
+        var ghostMaterial = mesh.ghostMaterial;
 
         this["ghosted"] = true;
         this["ghostMaterial.preset"] = "vectorscope";
@@ -93,7 +89,7 @@
 
         var update = function () {
 
-            entity.ghosted = !!self["ghosted"];
+            mesh.ghosted = !!self["ghosted"];
 
             var preset = self["ghostMaterial.preset"];
             if (lastGhostMaterialPreset !== preset) {

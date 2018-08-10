@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -11,7 +11,7 @@
 <body>
 
 <div id="info">
-    <h1>Disabling picking for the red <a href="../docs/classes/Entity.html" target="_parent">Entities</a></h1>
+    <h1>Disabling picking for the red <a href="../docs/classes/Mesh.html" target="_parent">Meshes</a></h1>
     <pre id="log"></pre>
 </div>
 
@@ -42,7 +42,7 @@
 
     var sphere = new xeogl.SphereGeometry({
         radius: 2.0,
-        widthSegments : 32,
+        widthSegments: 32,
         heightSegments: 24
     });
 
@@ -50,19 +50,17 @@
 
         var pickable = Math.random() < 0.5;
 
-        new xeogl.Entity({
+        new xeogl.Mesh({
 
-            id: "entity" + i,
+            id: "mesh" + i,
 
             geometry: sphere,
 
-            transform: new xeogl.Translate({
-                xyz: [
-                    Math.random() * 50 - 25,
-                    Math.random() * 50 - 25,
-                    Math.random() * 50 - 25
-                ]
-            }),
+            position: [
+                Math.random() * 50 - 25,
+                Math.random() * 50 - 25,
+                Math.random() * 50 - 25
+            ],
 
             material: new xeogl.PhongMaterial({
                 specular: [1, 1, 1],
@@ -87,8 +85,8 @@
 
     new xeogl.CameraControl();
 
-    // Attempt to pick a Entity on each mouse click.
-    // Highlight each Entity that we successfully pick.
+    // Attempt to pick a Mesh on each mouse click.
+    // Highlight each Mesh that we successfully pick.
 
     var input = scene.input;
 
@@ -102,9 +100,9 @@
                 });
 
                 if (hit) {
-                    log("picked Entity '" + hit.entity.id + "'");
+                    log("picked Mesh '" + hit.mesh.id + "'");
 
-                    hit.entity.material.emissive = [1, 1, 0];
+                    hit.mesh.material.emissive = [1, 1, 0];
 
                 } else {
                     log("nothing picked.");

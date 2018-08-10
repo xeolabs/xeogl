@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        #drop_zone {
+            border: 5px solid blue;
+            width: 200px;
+            height: 100px;
+        }
+    </style>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF</h1>
+    <pre id="log">model:  gearbox assembly - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/GearboxAssy/README.md'
+            target="_parent">model info</a>]</pre>
+</div>
+
+
+<div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+    <p>Drag one or more files to this Drop Zone ...</p>
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        id: "gearbox",
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+    });
+
+    var camera = xeogl.scene.camera;
+
+    camera.eye = [184.21, 10.54, -7.03];
+    camera.look = [159.20, 17.02, 3.21];
+    camera.up = [-0.15, 0.97, 0.13];
+
+    var cameraControl = new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

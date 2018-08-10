@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -18,7 +18,7 @@
         canvas {
             display: inline-block;
             margin: 5px;
-            margin-top:70px;
+            margin-top: 70px;
             border: white 1px solid;
             background: black;
         }
@@ -35,8 +35,8 @@
 
 <div id="info">
     <h1>taking a snapshot of a <a
-        href="../docs/classes/Canvas.html"
-        target="_parent">Canvas</a> once per second, synchronously</h1>
+            href="../docs/classes/Canvas.html"
+            target="_parent">Canvas</a> once per second, synchronously</h1>
 </div>
 
 <!-- Scene canvas -->
@@ -64,26 +64,25 @@
 
     var scene = xeogl.scene;
 
-    // Torus entity
-    new xeogl.Entity({
-        geometry: new xeogl.TorusGeometry({
-            radius: 1.0,
-            tube: 0.3,
-            radialSegments: 32,
-            tubeSegments: 24,
-            arc: Math.PI * 2.0
-        }),
-        material: new xeogl.PhongMaterial({
-            ambient: [0.9, 0.3, 0.9],
-            shininess: 30,
-            diffuseMap: new xeogl.Texture({
-                src: "textures/diffuse/uvGrid2.jpg"
-            })
-        })
+    // Create some spheres
+    var sphereGeometry = new xeogl.SphereGeometry({
+        radius: 1
     });
-
-    // Set initial camera position
-    scene.camera.eye = [0, 0, -4];
+    var sqrtNum = 10;
+    var inc = 1.0 / sqrtNum;
+    var width = 100;
+    var halfWidth = width / 2;
+    for (var y = 0; y <= 1.0; y += inc) {
+        for (var x = 0; x <= 1.0; x += inc) {
+            for (var z = 0; z <= 1.0; z += inc) {
+                new xeogl.Mesh({
+                    colorize: [x, z, y, 1],
+                    geometry: sphereGeometry,
+                    position: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
+                });
+            }
+        }
+    }
 
     // Orbit the camera
     scene.on("tick", function () {

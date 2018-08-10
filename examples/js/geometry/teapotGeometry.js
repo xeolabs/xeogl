@@ -1,6 +1,6 @@
 /**
  A **TeapotGeometry** defines a [Utah Teapot](https://en.wikipedia.org/wiki/Utah_teapot) geometry for attached
- {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_teapot"><img src="../../assets/images/screenshots/TeapotGeometry.png"></img></a>
 
@@ -12,11 +12,11 @@
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a TeapotGeometry, transformed with a {{#crossLink "Rotate"}}{{/crossLink}}
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a TeapotGeometry, transformed with a {{#crossLink "Rotate"}}{{/crossLink}}
  and {{#crossLink "Translate"}}{{/crossLink}}, colored with a {{#crossLink "PhongMaterial"}}{{/crossLink}}, and with a
  {{#crossLink "Camera"}}{{/crossLink}} positioned to arrange it within the view:
  ````javascript
- var entity = new xeogl.Entity({
+ var mesh = new xeogl.Mesh({
      geometry: new xeogl.TeapotGeometry(),
      material: new xeogl.PhongMaterial({
          ambient: [0.9, 0.3, 0.9],
@@ -32,7 +32,7 @@
      })
  });
 
- entity.scene.camera.eye = [0, 0, -80];
+ mesh.scene.camera.eye = [0, 0, -80];
  ````
 
  @class TeapotGeometry

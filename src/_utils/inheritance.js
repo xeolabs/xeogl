@@ -8,7 +8,9 @@
 
     var initializing = false;
 
-    var fnTest = /xyz/.test(function () {xyz;}) ? /\b_super\b/ : /.*/;
+    var fnTest = /xyz/.test(function () {
+        xyz;
+    }) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
     this.Class = function () {
@@ -71,23 +73,57 @@
             }
 
             // Check if we're overwriting an existing function
-            prototype[name] = typeof prop[name] === "function" && typeof _super[name] === "function" && fnTest.test(prop[name]) ?
-                (function (name, fn) {
-                    return function () {
-                        var tmp = this._super;
 
-                        // Add a new ._super() method that is the same method
-                        // but on the super-class
-                        this._super = _super[name];
+            var existsOnSuper = !!_super[name];
+            var isFunc = typeof prop[name] === "function";
+            var superIsFunc = typeof _super[name] === "function";
+            var passFnTest = fnTest.test(prop[name]);
 
-                        // The method only need to be bound temporarily, so we
-                        // remove it when we're done executing
-                        var ret = fn.apply(this, arguments);
-                        this._super = tmp;
+            if (existsOnSuper) {
+                if (isFunc && !superIsFunc) {
+                    throw "Can't override super class property with function: '" + name + "'";
+                }
+                if (!isFunc && superIsFunc) {
+                    throw "Can't override super class function with property: '" + name + "'";
+                }
+            }
 
-                        return ret;
-                    };
-                })(name, prop[name]) : prop[name];
+            if (isFunc) {
+
+                if (existsOnSuper) {
+
+                    // Exists on super, so overriding.
+                    // Allow possibility for sub-class function to call super function from within itself.
+
+                    prototype[name] = (function (name, fn) {
+                        return function () {
+                            var tmp = this._super;
+
+                            // Add a new ._super() method that is the same method
+                            // but on the super-class
+                            this._super = _super[name];
+
+                            // The method only need to be bound temporarily, so we
+                            // remove it when we're done executing
+                            var ret = fn.apply(this, arguments);
+                            this._super = tmp;
+
+                            return ret;
+                        };
+                    })(name, prop[name])
+
+                } else {
+
+                    // Does not exist on super; just define on subclass.
+
+                    prototype[name] = prop[name];
+                }
+            } else {
+
+                // Not a function; just define on subclass.
+
+                prototype[name] = prop[name];
+            }
         }
 
         // Create array of type names to indicate inheritance chain,

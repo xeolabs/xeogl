@@ -1,7 +1,7 @@
 /**
  A **Skybox** is a textured box that does not translate with respect to the
  {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background
- for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
+ for associated {{#crossLink "Meshes"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#skyboxes_skybox"><img src="http://i.giphy.com/3o7TKIBOOCEC5gJ224.gif"></img></a>
 
@@ -14,19 +14,19 @@
 
  ## Usage
 
- In the example below we're going to create twenty randomly-positioned and colored {{#crossLink "Entity"}}Entities{{/crossLink}}
+ In the example below we're going to create twenty randomly-positioned and colored {{#crossLink "Mesh"}}Meshes{{/crossLink}}
  and wrap them in a Skybox. The Skybox will use the texture image shown below, and the result will appear like the screen capture shown above.
 
  <img src="../../assets/images/skyboxMiramarClouds.jpg">
 
  ````javascript
- // A bunch of random cube Entities
+ // A bunch of random cube Meshes
 
- // Share this BoxGeometry among the Entities
+ // Share this BoxGeometry among the Meshes
  var boxGeometry = new BoxGeometry();
 
  for (var i = 0; i < 20; i++) {
-        new xeogl.Entity({
+        new xeogl.Mesh({
             geometry: boxGeometry,
             transform: new xeogl.Translate({
                 xyz: [
@@ -45,7 +45,7 @@
         });
     }
 
- // A Skybox that wraps our Entities in a cloudy background
+ // A Skybox that wraps our Meshes in a cloudy background
  var skybox = new xeogl.Skybox({
         src: "textures/skybox/miramarClouds.jpg",
         size: 1000 // Default
@@ -88,7 +88,7 @@
 
         _init: function (cfg) {
 
-            this._skyboxEntity = new xeogl.Entity(this, {
+            this._skyboxMesh = new xeogl.Mesh(this, {
 
                 geometry: new xeogl.Geometry(this, { // Box-shaped geometry
                     primitive: "triangles",
@@ -148,17 +148,8 @@
                         20, 22, 23
                     ]
                 }),
-                transform: new xeogl.Scale(this, {
-                    xyz: [2000, 2000, 2000], // Overridden when we initialize the 'size' property, below
-                    parent: new xeogl.Rotate(this, {
-                        xyz: [0, 0,1 ],
-                        angle: 0,
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [0, 1, 0],
-                            angle: -90
-                        })
-                    })
-                }),
+                scale: [2000, 2000, 2000], // Overridden when we initialize the 'size' property, below
+                rotation: [0, -90, 0],
                 material: new xeogl.PhongMaterial(this, {
                     ambient: [0, 0, 0],
                     diffuse: [0, 0, 0],
@@ -177,7 +168,7 @@
                 collidable: false
             });
 
-            this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
+            this.size = cfg.size; // Sets 'xyz' property on the Mesh's Scale transform
             this.active = cfg.active;
         },
 
@@ -198,7 +189,7 @@
 
                     this._size = value || 1000;
 
-                    this._skyboxEntity.transform.xyz = [this._size, this._size, this._size];
+                    this._skyboxMesh.scale = [this._size, this._size, this._size];
 
                     /**
                      Fired whenever this Skybox's {{#crossLink "Skybox/size:property"}}{{/crossLink}} property changes.
@@ -227,7 +218,7 @@
 
                 set: function (value) {
 
-                    this._skyboxEntity.visible = value;
+                    this._skyboxMesh.visible = value;
 
                     /**
                      Fired whenever this Skybox's {{#crossLink "Skybox/active:property"}}{{/crossLink}} property changes.
@@ -235,18 +226,18 @@
                      @event active
                      @param value {Boolean} The property's new value
                      */
-                    this.fire("active", this._skyboxEntity.visible);
+                    this.fire("active", this._skyboxMesh.visible);
                 },
 
                 get: function () {
-                    return this._skyboxEntity.visible;
+                    return this._skyboxMesh.visible;
                 }
             }
         },
 
         _getJSON: function () {
             return {
-                src: this._skyboxEntity.material.emissiveMap.src,
+                src: this._skyboxMesh.material.emissiveMap.src,
                 active: this._active,
                 size: this._size
             };

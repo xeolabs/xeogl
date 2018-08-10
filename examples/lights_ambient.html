@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -16,6 +16,8 @@
 </div>
 
 <script>
+
+    xeogl.scene.clearLights();
 
     var material = new xeogl.PhongMaterial({
         ambient: [0.0, 0.7, 0.7],
@@ -33,20 +35,15 @@
         space: "view"
     });
 
-    xeogl.scene.lights.lights = [
-        ambientLight,
-        dirLight
-    ];
-
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
         geometry: new xeogl.BoxGeometry(),
         material: material
     });
 
-    entity.scene.on("tick",
+    mesh.scene.on("tick",
             function () {
-                entity.scene.camera.orbitYaw(0.6);
-                entity.scene.camera.orbitPitch(0.3);
+                mesh.scene.camera.orbitYaw(0.6);
+                mesh.scene.camera.orbitPitch(0.3);
             });
 </script>
 </body>

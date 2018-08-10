@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -61,11 +61,11 @@
                 end: [0, 3, -3]
             }));
 
-    // Now show the CSG as a xeogl.Entity
+    // Now show the CSG as a xeogl.Mesh
 
     var geometry = shapeToGeometry(shape);
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
         geometry: geometry,
         material: new xeogl.MetallicMaterial({
             baseColor: [0.8, 0.8, 0.82],
@@ -76,14 +76,13 @@
 
     // Orbit the camera
 
-    entity.scene.on('tick', function () {
-        entity.scene.camera.orbitYaw(0.2);
-        entity.scene.camera.orbitPitch(0.02);
+    mesh.scene.on('tick', function () {
+        mesh.scene.camera.orbitYaw(0.2);
+        mesh.scene.camera.orbitPitch(0.02);
     });
 
-    var lights = entity.scene.lights;
 
-    lights.reflectionMap = new xeogl.CubeTexture({
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
@@ -94,31 +93,29 @@
         ]
     });
 
-    lights.lights = [
-        new xeogl.DirLight({
-            id: "keyLight",
-            dir: [0.8, -0.6, -0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "world"
-        }),
+    new xeogl.DirLight({
+        id: "keyLight",
+        dir: [0.8, -0.6, -0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            id: "fillLight",
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
-            intensity: 1.0,
-            space: "world"
-        }),
+    new xeogl.DirLight({
+        id: "fillLight",
+        dir: [-0.8, -0.4, -0.4],
+        color: [0.4, 0.4, 0.5],
+        intensity: 1.0,
+        space: "world"
+    });
 
-        new xeogl.DirLight({
-            id: "rimLight",
-            dir: [0.2, -0.8, 0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            space: "world"
-        })
-    ];
+    new xeogl.DirLight({
+        id: "rimLight",
+        dir: [0.2, -0.8, 0.8],
+        color: [0.8, 0.8, 0.8],
+        intensity: 1.0,
+        space: "world"
+    });
 
     // Utility function to convert a csg.js shape to a xeogl.Geometry
     function shapeToGeometry(shape) {

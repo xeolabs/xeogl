@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -21,45 +21,13 @@
 
 <script>
 
-    xeogl.scene.lights.reflectionMap = new xeogl.CubeTexture({
-        src: [
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-        ],
-        encoding: "linear"
-    });
-
     var model = new xeogl.GLTFModel({
         id: "gearbox",
-        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf",
+//        opacity: 0.5,
+        edges: true,
+        edgeThreshold: 20
     });
-
-    // Ground plane
-
-    new xeogl.Entity({
-        geometry: new xeogl.PlaneGeometry({
-            xSize: 50,
-            zSize: 50
-        }),
-        material: new xeogl.PhongMaterial({
-            diffuseMap: new xeogl.Texture({
-                src: "textures/diffuse/uvGrid2.jpg"
-            }),
-            backfaces: true
-        }),
-        transform: new xeogl.Translate({
-            xyz: [159.20, 17.02, 3.21],
-            parent: new xeogl.Translate({
-                xyz: [0,-10,0]
-            })
-        }),
-        receiveShadow: true
-    });
-
 
     var camera = xeogl.scene.camera;
 
@@ -68,7 +36,6 @@
     camera.up = [-0.15, 0.97, 0.13];
 
     var cameraControl = new xeogl.CameraControl();
-
 
 </script>
 </body>

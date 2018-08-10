@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -11,8 +11,8 @@
     <style>
         body {
             background-image: url(textures/diffuse/UVCheckerMap11-1024.png);
-            background-size: cover;
-            background-repeat: no-repeat;
+            background-size: 100%;
+            background-repeat: repeat;
         }
 
         canvas {
@@ -39,8 +39,8 @@
         transparent: true
     });
 
-    // Torus entity
-    new xeogl.Entity({
+    // Torus mesh
+    new xeogl.Mesh({
         geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,

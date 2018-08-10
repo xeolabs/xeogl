@@ -1,5 +1,5 @@
 /**
- A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_plane"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
 
@@ -17,11 +17,11 @@
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a PlaneGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a PlaneGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.PlaneGeometry({
          primitive: "triangles",

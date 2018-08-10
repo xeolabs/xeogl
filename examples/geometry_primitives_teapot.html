@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -18,7 +18,7 @@
 
 <script>
 
-    var entity = new xeogl.Entity({
+    var mesh = new xeogl.Mesh({
         geometry: new xeogl.TeapotGeometry({
             quantized: true,
             combined: false
@@ -29,20 +29,15 @@
             shininess: 30,
             backfaces: true  // Show backfaces, since the lid has a big gap around it
         }),
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: -90,
-            parent: new xeogl.Translate({
-                xyz: [0, -20, 0]
-            })
-        })
+        rotation: [-90, 0, 0],
+        position: [0, -20, 0]
     });
 
-    var camera = entity.scene.camera;
+    var camera = mesh.scene.camera;
 
     camera.eye = [0, 40, -80];
 
-    entity.scene.on("tick", function () {
+    mesh.scene.on("tick", function () {
         camera.orbitYaw(-0.2);
     });
 

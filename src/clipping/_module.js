@@ -1,5 +1,5 @@
 /**
- * Components for cross-section views of Entities.
+ * Components for cross-section views of meshes.
  *
  * @module xeogl
  * @submodule clipping

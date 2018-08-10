@@ -27,5 +27,5 @@ xeogl.renderer.Frame.prototype.reset = function () {
     this.shadowProjMatrix = null;
     this.pickViewMatrix = null;
     this.pickProjMatrix = null;
-    this.pickObjectIndex = 1;
+    this.pickmeshIndex = 1;
 };

@@ -1,5 +1,5 @@
 /**
- A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
 
  <a href="../../examples/#geometry_primitives_box"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
@@ -15,11 +15,11 @@
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a BoxGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ An {{#crossLink "Mesh"}}{{/crossLink}} with a BoxGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new xeogl.Entity({
+ new xeogl.Mesh({
 
      geometry: new xeogl.BoxGeometry({
         center: [0,0,0],

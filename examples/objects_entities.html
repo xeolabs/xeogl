@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/controls/bookmarks.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        .divTable {
+            display: table;
+            /*width: 100%;*/
+        }
+
+        .divTableRow {
+            display: table-row;
+        }
+
+        .divTableCell, .divTableHead {
+            border: 1px solid #999999;
+            display: table-cell;
+            padding: 2px 5px;
+        }
+
+        .divTableHeading {
+            border: 1px solid #999999;
+            display: table-cell;
+            padding: 2px 5px;
+            font-weight: bold;
+        }
+
+        .divTableFoot {
+            background-color: #EEE;
+            display: table-footer-group;
+            font-weight: bold;
+        }
+
+        .divTableBody {
+            display: table-row-group;
+        }
+
+        .thumbnail {
+            border: 1px solid white;
+        }
+    </style>
+<body>
+
+<div id="info">
+    <h1>a hierarchy of <a href="../docs/classes/Object.html" target="_parent">Objects</a> with a semantic data model
+        applied</h1>
+    <br>
+    <ul>
+        <li>assigning "entity types" to Objects, then updating them using those types</li>
+        <li>in the model below, the table top is of type "surface", and the legs are of type "support"</li>
+        <li>update the Objects by their types in the table below</li>
+    </ul>
+    <br>
+    <div class="divTable">
+        <div class="divTableBody">
+            <div class="divTableRow">
+                <div class="divTableCell">&nbsp;</div>
+                <div class="divTableHeading">visibility</div>
+                <div class="divTableHeading">ghosted *</div>
+                <div class="divTableHeading">highlighted *</div>
+                <div class="divTableHeading">selected *</div>
+                <div class="divTableHeading">colorize</div>
+                <div class="divTableHeading"><a href="../docs/classes/Object.html#property_opacity">opacity</a></div>
+                <div class="divTableHeading"><a href="../docs/classes/Object.html#method_translate">translate</a></div>
+                <div class="divTableHeading"><a href="../docs/classes/Object.html#method_rotate">rotate</a></div>
+            </div>
+            <div class="divTableRow">
+                <div class="divTableHeading">"surface"</div>
+                <div class="divTableCell"><a href='javascript:scene.setVisible(["surface"], true)'>true</a>&nbsp;|&nbsp;<a href='javascript:scene.setVisible(["surface"], false)'>false</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setGhosted(["surface"], true)'>true</a>&nbsp;|&nbsp;<a href='javascript:scene.setGhosted(["surface"], false)'>false</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setHighlighted(["surface"], true)'>true</a>&nbsp;|&nbsp;<a href='javascript:scene.setHighlighted(["surface"], false)'>false</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setSelected(["surface"], true)'>true</a>&nbsp;|&nbsp;<a href='javascript:scene.setSelected(["surface"], false)'>false</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setColorize(["surface"], [1,0,0])'>[1,0,0]</a>&nbsp;|&nbsp;<a href='javascript:scene.setColorize(["surface"], [1,1,1])'>[1,1,1]</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setOpacity(["surface"], 0.2)'>0.2</a>&nbsp;|&nbsp;<a href='javascript:scene.setOpacity(["surface"], 1)'>1.0</a></div>
+                <div class="divTableCell"><a href='javascript:scene.withObjects(["surface"], function(o) { o.translate([0,1,0],2); })'>[0,2,0]</a>&nbsp;|&nbsp;<a href='javascript:scene.withObjects(["surface"], function(o) { o.translate([0,1,0],-2); })'>[0,-2,0]</a></div>
+                <div class="divTableCell"><a href='javascript:scene.withObjects(["surface"], function(o) { o.rotate([1,0,0], 3); })'>[3,0,0]</a>&nbsp;|&nbsp;<a href='javascript:scene.withObjects(["surface"], function(o) { o.rotate([0,1,0], 3); })'>[0,3,0]</a>|&nbsp;<a href='javascript:scene.withObjects(["surface"], function(o) { o.rotate([0,0,1], 3); })'>[0,0,3]</a></div>
+            </div>
+            <div class="divTableRow">
+                <div class="divTableHeading">"support"</div>
+                <div class="divTableCell"><a href='javascript:scene.setVisible(["support"], true)'>true</a>&nbsp;|&nbsp;<a href='javascript:scene.setVisible(["support"], false)'>false</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setGhosted(["support"], true)'>true</a>&nbsp;|&nbsp;<a href='javascript:scene.setGhosted(["support"], false)'>false</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setHighlighted(["support"], true)'>true</a>&nbsp;|&nbsp;<a href='javascript:scene.setHighlighted(["support"], false)'>false</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setSelected(["support"], true)'>true</a>&nbsp;|&nbsp;<a href='javascript:scene.setSelected(["support"], false)'>false</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setColorize(["support"], [1,0,0])'>[1,0,0]</a>&nbsp;|&nbsp;<a href='javascript:scene.setColorize(["support"], [1,1,1])'>[1,1,1]</a></div>
+                <div class="divTableCell"><a href='javascript:scene.setOpacity(["support"], 0.2)'>0.2</a>&nbsp;|&nbsp;<a href='javascript:scene.setOpacity(["support"], 1)'>1.0</a></div>
+                <div class="divTableCell"><a href='javascript:scene.withObjects(["support"], function(o) { o.translate([0,1,0],2); })'>[0,2,0]</a>&nbsp;|&nbsp;<a href='javascript:scene.withObjects(["support"], function(o) { o.translate([0,1,0],-2); })'>[0,-2,0]</a>
+                </div>
+                <div class="divTableCell"><a href='javascript:scene.withObjects(["support"], function(o) { o.rotate([1,0,0], 3); })'>[3,0,0]</a>&nbsp;|&nbsp;<a href='javascript:scene.withObjects(["support"], function(o) { o.rotate([0,1,0], 3); })'>[0,3,0]</a>|&nbsp;<a href='javascript:scene.withObjects(["support"], function(o) { o.rotate([0,0,1], 3); })'>[0,0,3]</a></div>
+            </div>
+        </div>
+    </div>
+    <br>
+    * <i>ghosted</i>, <i>highlighted</i> and <i>selected</i> combine with each other, and each override <i>colorize</i>,
+    <i>opacity</i> and normal material appearance<br>
+    <br>
+    <br>
+    <a href="javascript:bookmarks.save()">save bookmark</a><br>
+    <div id="bookmarksList"></div>
+</div>
+
+<script>
+
+    var table = new xeogl.Group({
+        id: "table",
+        rotation: [0, 50, 0],
+        position: [0, 0, 0],
+        scale: [1, 1, 1],
+
+        children: [
+
+            new xeogl.Mesh({ // Red table leg
+                id: "redLeg",
+                entityType: "support",
+                position: [-4, -6, -4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1, 0.3, 0.3]
+                })
+            }),
+
+            new xeogl.Mesh({ // Green table leg
+                id: "greenLeg",
+                entityType: "support",
+                position: [4, -6, -4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [0.3, 1.0, 0.3]
+                })
+            }),
+
+            new xeogl.Mesh({// Blue table leg
+                id: "blueLeg",
+                entityType: "support",
+                position: [4, -6, 4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [0.3, 0.3, 1.0]
+                })
+            }),
+
+            new xeogl.Mesh({  // Yellow table leg
+                id: "yellowLeg",
+                entityType: "support",
+                position: [-4, -6, 4],
+                scale: [1, 3, 1],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1.0, 1.0, 0.0]
+                })
+            }),
+
+            new xeogl.Mesh({ // Purple table top
+                id: "tableTop",
+                entityType: "surface",
+                position: [0, -3, 0],
+                scale: [6, 0.5, 6],
+                rotation: [0, 0, 0],
+                material: new xeogl.PhongMaterial({
+                    diffuse: [1.0, 0.3, 1.0]
+                })
+            })
+        ]
+    });
+
+    var scene = xeogl.scene;
+    var camera = scene.camera;
+
+    camera.eye = [-21.80, 4.01, 6.56];
+    camera.look = [0, -5.75, 0];
+    camera.up = [0.37, 0.91, -0.11];
+
+    new xeogl.CameraControl();
+
+    var bookmarks = new xeogl.Bookmarks({
+        flyTo: true,
+        thumbnails: true,
+        thumbnailSize: [150, 150]
+    });
+
+    bookmarks.on("saved", function (bookmark) {
+        var container = document.getElementById("bookmarksList");
+        var p = document.createElement("p");
+        container.appendChild(p);
+        var a = document.createElement("a");
+        p.appendChild(a);
+        var img = document.createElement("img");
+        img.className = "thumbnail";
+        a.appendChild(img);
+        img.src = bookmark.thumbnail;
+        a.href = "javascript:bookmarks.load('" + bookmark.id + "')";
+    });
+
+</script>
+</body>
+</html>

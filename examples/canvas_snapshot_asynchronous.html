@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
@@ -55,8 +55,8 @@
         canvas: "myCanvas"
     });
 
-    // Torus entity
-    var torus = new xeogl.Entity({
+    // Torus mesh
+    var torus = new xeogl.Mesh({
         geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,
@@ -103,7 +103,7 @@
         // drawing buffer.
 
         scene.canvas.getSnapshot({
-            width: 500, // Defaults to size of canvas
+            width: 100, // Defaults to size of canvas
             height: 500,
             format: "png" // Options are "jpeg" (default), "png" and "bmp"
         }, function (src) {

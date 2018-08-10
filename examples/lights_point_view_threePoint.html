@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
 
@@ -21,36 +21,35 @@
 
     // Modify lights on default xeogl.Scene
 
-    xeogl.scene.lights.lights = [
+    xeogl.scene.clearLights();
 
-        new xeogl.PointLight({
-            id: "keyLight",
-            pos: [-80, 60, 80],
-            color: [1.0, 0.3, 0.3],
-            intensity: 1.0,
-            space: "view"
-        }),
+    new xeogl.PointLight({
+        id: "keyLight",
+        pos: [-80, 60, 80],
+        color: [1.0, 0.3, 0.3],
+        intensity: 1.0,
+        space: "view"
+    });
 
-        new xeogl.PointLight({
-            id: "fillLight",
-            pos: [80, 40, 40],
-            color: [0.3, 1.0, 0.3],
-            intensity: 1.0,
-            space: "view"
-        }),
+    new xeogl.PointLight({
+        id: "fillLight",
+        pos: [80, 40, 40],
+        color: [0.3, 1.0, 0.3],
+        intensity: 1.0,
+        space: "view"
+    });
 
-        new xeogl.PointLight({
-            id: "rimLight",
-            pos: [-20, 80, -80],
-            color: [0.6, 0.6, 0.6],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    new xeogl.PointLight({
+        id: "rimLight",
+        pos: [-20, 80, -80],
+        color: [0.6, 0.6, 0.6],
+        intensity: 1.0,
+        space: "view"
+    });
 
     // Sphere
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.SphereGeometry({
             radius: 2.0
         }),
@@ -65,7 +64,7 @@
 
     // Ground plane
 
-    new xeogl.Entity({
+    new xeogl.Mesh({
         geometry: new xeogl.PlaneGeometry({
             xSize: 30,
             zSize: 30
@@ -76,9 +75,7 @@
             }),
             backfaces: true
         }),
-        transform: new xeogl.Translate({
-            xyz: [0, -2.1, 0]
-        })
+        position: [0, -2.1, 0]
     });
 
     // User camera control

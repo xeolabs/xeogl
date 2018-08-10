@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+
+<body>
+
+<div id="info">
+    <h1>
+        <ul>
+            <li>hover over an <a href="../docs/classes/Object.html" target="_parent">Object</a> in this
+                <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> to make it transparent
+            </li>
+            <li>click an Object to fly to it</li>
+            <li>click nothing to fit everything in view</li>
+        </ul>
+    </h1>
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        id: "saw",
+        src: "models/gltf/ReciprocatingSaw/glTF-MaterialsCommon/ReciprocatingSaw.gltf",
+        rotation: [90, 0, 0],
+        edgeThreshold: 20
+    });
+
+    var scene = model.scene;
+    var camera = scene.camera;
+    var input = scene.input;
+
+    camera.eye = [-112.62, -31.46, 278.83];
+    camera.look = [-110.89, -44.85, -0.46];
+    camera.up = [0.0, 0.9, -0.04];
+
+    var cameraControl = new xeogl.CameraControl({
+        doublePickFlyTo: false
+    });
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+
+    cameraControl.on("hoverEnter", function (hit) {
+        hit.mesh.opacity = 0.5;
+    });
+
+    cameraControl.on("hoverOut", function (hit) {
+        hit.mesh.opacity = 1.0;
+    });
+
+    cameraControl.on("picked", function (hit) {
+        cameraFlight.flyTo(hit.mesh);
+    });
+
+    cameraControl.on("pickedNothing", function (hit) {
+        cameraFlight.flyTo(model);
+    });
+
+    scene.highlightMaterial.fillAlpha = 0.6;
+    scene.highlightMaterial.edgeAlpha = 0.6;
+    scene.highlightMaterial.edgeColor = [0, 0, 0];
+    scene.highlightMaterial.edgeWidth = 2;
+
+</script>
+</body>
+</html>

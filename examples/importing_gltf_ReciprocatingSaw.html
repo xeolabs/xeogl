@@ -3,7 +3,7 @@
 <head>
     <title>xeogl Example</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
@@ -28,10 +28,7 @@
     var model = new xeogl.GLTFModel({
         id: "saw",
         src: "models/gltf/ReciprocatingSaw/glTF-MaterialsCommon/ReciprocatingSaw.gltf",
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: 90
-        })
+        rotation: [90, 0, 0]
     });
 
     //-----------------------------------------------------------------------------------------------------
@@ -41,10 +38,13 @@
     var camera = model.scene.camera;
 
     camera.eye = [-110.8940200805664, -44.85665512084961, 454.97216796875];
-    camera.look =  [-110.8940200805664, -44.85665512084961, -0.46092796325683594];
+    camera.look = [-110.8940200805664, -44.85665512084961, -0.46092796325683594];
     camera.up = [0, 1, 0];
 
     new xeogl.CameraControl();
+
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
 
 </script>
 </body>

@@ -14,7 +14,7 @@
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
  scene comprised of {{#crossLink "Scene"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}}, {{#crossLink "Geometry"}}{{/crossLink}} and
- {{#crossLink "Entity"}}{{/crossLink}} components, while letting xeogl generate its own ID for
+ {{#crossLink "Mesh"}}{{/crossLink}} components, while letting xeogl generate its own ID for
  the {{#crossLink "Geometry"}}{{/crossLink}}:
 
  ````javascript
@@ -31,8 +31,8 @@
     id: "myGeometry"
  });
 
- // Let xeogl automatically generate the ID for our Entity
- var entity = new xeogl.Entity(scene, {
+ // Let xeogl automatically generate the ID for our Mesh
+ var mesh = new xeogl.Mesh(scene, {
     material: material,
     geometry: geometry
  });
@@ -168,7 +168,7 @@
 
      _init: function (cfg) { // Constructor
 
-         this._torus = new xeogl.Entity({
+         this._torus = new xeogl.Mesh({
              geometry: new xeogl.TorusGeometry({radius: 2, tube: .6}),
              material: new xeogl.MetallicMaterial({
                  baseColor: [1.0, 0.5, 0.5],
@@ -240,6 +240,8 @@
              */
             this.scene = null;
 
+            this._model = null;
+
             var adopter = null;
 
             if (this.type === "xeogl.Scene") {
@@ -288,14 +290,6 @@
             this.meta = cfg.meta || {};
 
             /**
-             Indicates whether this is one of the {{#crossLink "Scene"}}Scene{{/crossLink}}'s built-in Components.
-
-             @property isDefault
-             @type Boolean
-             */
-            this.isDefault = cfg.isDefault;
-
-            /**
              Unique ID for this Component within its parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
              @property id
@@ -320,8 +314,8 @@
 
             // Event support - lazy creating these properties because
             // they are expensive to have around if not using them
-            this._handleMap = null; // Subscription handle pool
-            this._handleEvents = null; // Subscription handles mapped to event names
+            this._subIdMap = null; // Subscription subId pool
+            this._subIdEvents = null; // Subscription subIds mapped to event names
             this._eventSubs = null; // Event names mapped to subscribers
             this._events = null; // Maps names to events
             this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
@@ -329,7 +323,9 @@
             // Components created with #create
             this._adoptees = null; // Lazy-instantiated map
 
-            if (this.scene && this.type !== "xeogl.Scene") { // HACK: Don't add scene to itself
+            var isScene = this.type === "xeogl.Scene";
+
+            if (this.scene && !isScene) { // HACK: Don't add scene to itself
                 // Register this component on its scene
                 // Assigns this component an automatic ID if not yet assigned
                 this.scene._addComponent(this);
@@ -378,6 +374,33 @@
          */
         superTypes: [],
 
+        _addedToModel: function (model) { // Called by xeogl.Model.add()
+            this._model = model;
+        },
+
+        _removedFromModel: function (model) { // Called by xeogl.Model.remove()
+            this._model = null;
+        },
+
+        _props: {
+
+            /**
+             The {{#crossLink "Model"}}{{/crossLink}} which contains this Component, if any.
+
+             Will be null if this Component is not in a Model.
+
+             @property model
+             @final
+             @type Model
+             */
+            model: {
+
+                get: function () {
+                    return this._model;
+                }
+            }
+        },
+
         /**
          Tests if this component is of the given type, or is a subclass of the given type.
 
@@ -397,7 +420,7 @@
          myRotate.isType(xeogl.Rotate); // Returns true
          myRotate.isType(xeogl.Transform); // Returns true
          myRotate.isType("xeogl.Transform"); // Returns true
-         myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
+         myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Mesh
          ````
 
          @method isType
@@ -441,14 +464,14 @@
                 this._eventSubs = {};
             }
             if (forget !== true) {
-                this._events[event] = value; // Save notification
+                this._events[event] = value || true; // Save notification
             }
             var subs = this._eventSubs[event];
             var sub;
             if (subs) { // Notify subscriptions
-                for (var handle in subs) {
-                    if (subs.hasOwnProperty(handle)) {
-                        sub = subs[handle];
+                for (var subId in subs) {
+                    if (subs.hasOwnProperty(subId)) {
+                        sub = subs[subId];
                         this._eventCallDepth++;
                         if (this._eventCallDepth < 300) {
                             sub.callback.call(sub.scope, value);
@@ -476,11 +499,11 @@
             if (!this._events) {
                 this._events = {};
             }
-            if (!this._handleMap) {
-                this._handleMap = new xeogl.utils.Map(); // Subscription handle pool
+            if (!this._subIdMap) {
+                this._subIdMap = new xeogl.utils.Map(); // Subscription subId pool
             }
-            if (!this._handleEvents) {
-                this._handleEvents = {};
+            if (!this._subIdEvents) {
+                this._subIdEvents = {};
             }
             if (!this._eventSubs) {
                 this._eventSubs = {};
@@ -490,49 +513,49 @@
                 subs = {};
                 this._eventSubs[event] = subs;
             }
-            var handle = this._handleMap.addItem(); // Create unique handle
-            subs[handle] = {
+            var subId = this._subIdMap.addItem(); // Create unique subId
+            subs[subId] = {
                 callback: callback,
                 scope: scope || this
             };
-            this._handleEvents[handle] = event;
+            this._subIdEvents[subId] = event;
             var value = this._events[event];
             if (value !== undefined) { // A publication exists, notify callback immediately
                 callback.call(scope || this, value);
             }
-            return handle;
+            return subId;
         },
-
+        
         /**
-         * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}{{/crossLink}} or
-         * {{#crossLink "Component/once:method"}}{{/crossLink}}.
+         * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}Component#on(){{/crossLink}} or
+         * {{#crossLink "Component/once:method"}}Component#once(){{/crossLink}}.
          *
          * @method off
-         * @param {String} handle Publication handle
+         * @param {String} subId Publication subId
          */
-        off: function (handle) {
-            if (handle === undefined || handle === null) {
+        off: function (subId) {
+            if (subId === undefined || subId === null) {
                 return;
             }
-            if (!this._handleEvents) {
+            if (!this._subIdEvents) {
                 return;
             }
-            var event = this._handleEvents[handle];
+            var event = this._subIdEvents[subId];
             if (event) {
-                delete this._handleEvents[handle];
-                var locSubs = this._eventSubs[event];
-                if (locSubs) {
-                    delete locSubs[handle];
+                delete this._subIdEvents[subId];
+                var subs = this._eventSubs[event];
+                if (subs) {
+                    delete subs[subId];
                 }
-                this._handleMap.removeItem(handle); // Release handle
+                this._subIdMap.removeItem(subId); // Release subId
             }
         },
 
         /**
-         * Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.
+         * Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is subIdd.
          *
-         * This is equivalent to calling {{#crossLink "Component/on:method"}}{{/crossLink}}, and then calling
-         * {{#crossLink "Component/off:method"}}{{/crossLink}} inside the callback function.
+         * This is equivalent to calling {{#crossLink "Component/on:method"}}Component#on(){{/crossLink}}, and then calling
+         * {{#crossLink "Component/off:method"}}Component#off(){{/crossLink}} inside the callback function.
          *
          * @method once
          * @param {String} event Data event to listen to
@@ -541,9 +564,9 @@
          */
         once: function (event, callback, scope) {
             var self = this;
-            var handle = this.on(event,
+            var subId = this.on(event,
                 function (value) {
-                    self.off(handle);
+                    self.off(subId);
                     callback(value);
                 },
                 scope);
@@ -844,21 +867,21 @@
                 if (on) {
 
                     var event;
-                    var handler;
+                    var subIdr;
                     var callback;
                     var scope;
 
                     for (event in on) {
                         if (on.hasOwnProperty(event)) {
 
-                            handler = on[event];
+                            subIdr = on[event];
 
-                            if (xeogl._isFunction(handler)) {
-                                callback = handler;
+                            if (xeogl._isFunction(subIdr)) {
+                                callback = subIdr;
                                 scope = null;
                             } else {
-                                callback = handler.callback;
-                                scope = handler.scope;
+                                callback = subIdr.callback;
+                                scope = subIdr.scope;
                             }
 
                             if (!callback) {
@@ -872,13 +895,46 @@
             }
 
             if (recompiles) {
-                this.fire("dirty", this); // FIXME: May trigger spurous entity recompilations unless able to limit with param?
+                this.fire("dirty", this); // FIXME: May trigger spurous mesh recompilations unless able to limit with param?
             }
 
             this.fire(name, component); // Component can be null
 
             return component;
         },
+
+        _checkComponent: function (expectedType, component) {
+            if (xeogl._isObject(component)) {
+                if (component.type) {
+                    if (!xeogl._isComponentType(component.type, expectedType)) {
+                        this.error("Expected a " + expectedType + " type or subtype: " + component.type + " " + xeogl._inQuotes(component.id));
+                        return;
+                    }
+                } else {
+                    component.type = expectedType;
+                }
+                component = new window[component.type](this.scene, component);
+            } else {
+                if (xeogl._isID(component)) { // Expensive test
+                    var id = component;
+                    component = this.scene.components[id];
+                    if (!component) {
+                        this.error("Component not found: " + xeogl._inQuotes(component.id));
+                        return;
+                    }
+                }
+            }
+            if (component.scene.id !== this.scene.id) {
+                this.error("Not in same scene: " + component.type + " " + xeogl._inQuotes(component.id));
+                return;
+            }
+            if (!component.isType(expectedType)) {
+                this.error("Expected a " + expectedType + " type or subtype: " + component.type + " " + xeogl._inQuotes(component.id));
+                return;
+            }
+            return component;
+        },
+
 
         /**
          * Convenience method for creating a Component within this Component's {{#crossLink "Scene"}}{{/crossLink}}.
@@ -1037,6 +1093,7 @@
                 for (id in this._adoptees) {
                     if (this._adoptees.hasOwnProperty(id)) {
                         component = this._adoptees[id];
+                        component.destroy();
                         delete this._adoptees[id];
                     }
                 }
@@ -1047,6 +1104,19 @@
             if (this._destroy) {
                 this._destroy();
             }
+
+            this.scene._removeComponent(this);
+
+            // Memory leak avoidance
+            this._attached = {};
+            this._attachments = null;
+            this._subIdMap = null;
+            this._subIdEvents = null;
+            this._eventSubs = null;
+            this._events = null;
+            this._eventCallDepth = 0;
+            this._adoptees = null;
+            this._updateScheduled = false;
 
             /**
              * Fired when this Component is destroyed.
@@ -1062,6 +1132,7 @@
          * @protected
          */
         _destroy: function () {
+
         }
     });
 })();
