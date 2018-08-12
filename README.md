@@ -39,7 +39,7 @@ camera.up = [0.24, 0.72, 0.64];
  - [API Docs](http://xeogl.org/docs/index.html)
  - [Wiki](https://github.com/xeolabs/xeogl/wiki)
  - [Download](https://github.com/xeolabs/xeogl/archive/master.zip)
- - [MIT License](https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE)
+ - [MIT License](https://github.com/xeolabs/xeogl/blob/master/LICENSE)
  
 ## Change logs
  
