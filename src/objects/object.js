@@ -1812,10 +1812,14 @@ xeogl.Object = xeogl.Component.extend({
                 scene._entityHighlightedUpdated(this, false);
             }
         }
-        var object;
-        for (var i = 0, len = this._childList.length; i < len; i++) {
-            object = this._childList[i];
-            object.destroy();
+        if (this._childList.length) {
+            // Clone the _childList before iterating it, so our children don't mess us up when calling removeChild().
+            var tempChildList = this._childList.splice();
+            var object;
+            for (var i = 0, len = tempChildList.length; i < len; i++) {
+                object = tempChildList[i];
+                object.destroy();
+            }
         }
         this._childList = [];
         this._childMap = {};
