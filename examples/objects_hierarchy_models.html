@@ -16,10 +16,10 @@
     <h1>organizing two <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModels</a> and an <a
             href="../docs/classes/STLModel.html" target="_parent">STLModel</a> within an <a
             href="../docs/classes/Object.html" target="_parent">Object</a> hierarchy</h1>
-        <ul>
-            <li>entire hierarchy rotates about the Y-axis</li>
-            <li>one of the glTF models rotates about its local Z-axis</li>
-        </ul>
+    <ul>
+        <li>entire hierarchy rotates about the Y-axis</li>
+        <li>one of the glTF models rotates about its local Z-axis</li>
+    </ul>
 </div>
 
 <script>
@@ -68,7 +68,9 @@
     camera.look = [0, -7.69, 2.47];
     camera.up = [0, 0.92, -0.38];
 
-    var engine = scene.models["engine"];
+    var engine = scene.models["engine"];        // Find Model by ID
+    var hoverBike = scene.objects["hoverBike"]; // A Model is an Object subclass
+    var f1Car = scene.components["f1Car"];      // A Model is also a Component subclass
 
     scene.on("tick", function () {
         models.rotateY(.3); // Spin the whole group
