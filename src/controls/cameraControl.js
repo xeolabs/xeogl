@@ -473,8 +473,10 @@
                     var element = event.target;
                     var totalOffsetLeft = 0;
                     var totalOffsetTop = 0;
-                    while (element.offsetParent) {
+                    while (element) {
+                        totalOffsetLeft -= element.scrollLeft;
                         totalOffsetLeft += element.offsetLeft;
+                        totalOffsetTop -= element.scrollTop;
                         totalOffsetTop += element.offsetTop;
                         element = element.offsetParent;
                     }
