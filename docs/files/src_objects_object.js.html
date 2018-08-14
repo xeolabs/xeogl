@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.8</em>
+            <em>API Docs for: 0.8.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -555,16 +555,12 @@
 
  ### Objects within Models
 
- Notice the &#x60;&#x60;&#x60;&#x60;objectTree&#x60;&#x60;&#x60;&#x60; configuration on the first child {{#crossLink &quot;GLTFModel&quot;}}{{/crossLink}} in the previous
- example. That&#x27;s going to cause the GLTFModel (which is a {{#crossLink &quot;Group&quot;}}Group{{/crossLink}}) to create one or more subtrees of child Objects from the
- glTF scene node graph. The root Objects of the subtrees will be available in the GLTFModel&#x27;s {{#crossLink &quot;GLTFModel/children:property&quot;}}{{/crossLink}} and {{#crossLink &quot;GLTFModel/childMap:property&quot;}}{{/crossLink}}
- properties, while all the Objects in the subtrees will be available in the GLTFModel&#x27;s objects property, and all the {{#crossLink &quot;Mesh&quot;}}{{/crossLink}}es at the
- leaves of the subtrees will be available in the GLTFModel&#x27;s objects property.
+ Models are Objects that plug into the scene graph, containing child Objects of their own.  The {{#crossLink &quot;GLTFModel&quot;}}{{/crossLink}}
+ in the previous example loads its child Objects from the glTF scene node graph.
 
+ The root Objects within the GLTFModel will be available in the GLTFModel&#x27;s {{#crossLink &quot;GLTFModel/children:property&quot;}}{{/crossLink}} and {{#crossLink &quot;GLTFModel/childMap:property&quot;}}{{/crossLink}}
+ properties, while all its Objects and Meshes (at the leaves) will be available in the GLTFModel&#x27;s {{#crossLink &quot;GLTFModel/objects:property&quot;}}{{/crossLink}} property.
 
- {{#crossLink &quot;Component/id:property&quot;}}{{/crossLink}}
-
- TODO:
 
  &#x60;&#x60;&#x60;&#x60;javascript
  models.childMap[&quot;engine&quot;].childMap[&quot;engine#0&quot;].highlighted = true;
@@ -1999,10 +1995,14 @@ xeogl.Object = xeogl.Component.extend({
                 scene._entityHighlightedUpdated(this, false);
             }
         }
-        var object;
-        for (var i = 0, len = this._childList.length; i &lt; len; i++) {
-            object = this._childList[i];
-            object.destroy();
+        if (this._childList.length) {
+            // Clone the _childList before iterating it, so our children don&#x27;t mess us up when calling removeChild().
+            var tempChildList = this._childList.splice();
+            var object;
+            for (var i = 0, len = tempChildList.length; i &lt; len; i++) {
+                object = tempChildList[i];
+                object.destroy();
+            }
         }
         this._childList = [];
         this._childMap = {};
