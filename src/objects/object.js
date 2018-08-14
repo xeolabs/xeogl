@@ -368,16 +368,12 @@
 
  ### Objects within Models
 
- Notice the ````objectTree```` configuration on the first child {{#crossLink "GLTFModel"}}{{/crossLink}} in the previous
- example. That's going to cause the GLTFModel (which is a {{#crossLink "Group"}}Group{{/crossLink}}) to create one or more subtrees of child Objects from the
- glTF scene node graph. The root Objects of the subtrees will be available in the GLTFModel's {{#crossLink "GLTFModel/children:property"}}{{/crossLink}} and {{#crossLink "GLTFModel/childMap:property"}}{{/crossLink}}
- properties, while all the Objects in the subtrees will be available in the GLTFModel's objects property, and all the {{#crossLink "Mesh"}}{{/crossLink}}es at the
- leaves of the subtrees will be available in the GLTFModel's objects property.
+ Models are Objects that plug into the scene graph, containing child Objects of their own.  The {{#crossLink "GLTFModel"}}{{/crossLink}}
+ in the previous example loads its child Objects from the glTF scene node graph.
 
+ The root Objects within the GLTFModel will be available in the GLTFModel's {{#crossLink "GLTFModel/children:property"}}{{/crossLink}} and {{#crossLink "GLTFModel/childMap:property"}}{{/crossLink}}
+ properties, while all its Objects and Meshes (at the leaves) will be available in the GLTFModel's {{#crossLink "GLTFModel/objects:property"}}{{/crossLink}} property.
 
- {{#crossLink "Component/id:property"}}{{/crossLink}}
-
- TODO:
 
  ````javascript
  models.childMap["engine"].childMap["engine#0"].highlighted = true;
