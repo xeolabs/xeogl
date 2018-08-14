@@ -10,7 +10,7 @@ module.exports = function (grunt) {
         PROJECT_NAME: "<%= pkg.name %>",
         ENGINE_VERSION: "<%= pkg.version %>",
         build_dir: "build/<%= ENGINE_VERSION %>",
-        license: grunt.file.read("MIT-LICENSE"),
+        license: grunt.file.read("LICENSE"),
 
         concat: {
             options: {
@@ -102,7 +102,7 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks("grunt-contrib-uglify-es");
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks('grunt-contrib-copy');
