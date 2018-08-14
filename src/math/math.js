@@ -691,7 +691,7 @@
 
         /**
          * Returns the dot product of two three-element vectors.
-         * @method dotVec4
+         * @method dotVec3
          * @static
          * @param {Array(Number)} u First vector
          * @param {Array(Number)} v Second vector
