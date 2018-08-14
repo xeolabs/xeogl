@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.8</em>
+            <em>API Docs for: 0.8.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -688,9 +688,12 @@
             }
 
             if (this.gl) {
-                if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS[&quot;OES_standard_derivatives&quot;]) { // For normal mapping
-                    this.gl.getExtension(&quot;OES_standard_derivatives&quot;);
-                    //  this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
+                // Setup extension (if necessary) and hints for fragment shader derivative functions
+                if (this.webgl2) {
+                    this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT, this.gl.FASTEST);
+                } else if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS[&quot;OES_standard_derivatives&quot;]) {
+                    var ext = this.gl.getExtension(&quot;OES_standard_derivatives&quot;);
+                    this.gl.hint(ext.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST);
                 }
             }
         },

@@ -2,7 +2,7 @@
     "project": {
         "name": "xeogl",
         "description": "A WebGL-based 3D visualization engine from xeoLabs",
-        "version": "0.8",
+        "version": "0.8.0",
         "url": "http://xeogl.org/",
         "logo": "../assets/images/logo.png"
     },
@@ -5338,7 +5338,7 @@
             "namespace": "",
             "file": "src/objects/object.js",
             "line": 1,
-            "description": "An **Object** is a 3D element within a xeogl {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\nObject is an abstract base class that's subclassed by:\n\n* {{#crossLink \"Mesh\"}}{{/crossLink}}, which represents a drawable 3D primitive.\n* {{#crossLink \"Group\"}}{{/crossLink}}, which is a composite Object that represents a group of child Objects.\n* {{#crossLink \"Model\"}}{{/crossLink}}, which is a Group and is subclassed by {{#crossLink \"GLTFModel\"}}{{/crossLink}},\n{{#crossLink \"STLModel\"}}{{/crossLink}}, {{#crossLink \"OBJModel\"}}{{/crossLink}} etc. A Model can contain child Groups\nand {{#crossLink \"Mesh\"}}Meshes{{/crossLink}} that represent its component parts.\n\nAs shown in the examples below, these component types can be connected into flexible scene hierarchies that contain\ncontent loaded from multiple sources and file formats. Since a {{#crossLink \"Group\"}}{{/crossLink}} implements the *[Composite](https://en.wikipedia.org/wiki/Composite_pattern)* pattern,\nproperty updates on a {{#crossLink \"Group\"}}Group{{/crossLink}} will apply recursively to all the Objects within it.\n\nThis page mostly covers the base functionality provided by Object, while the pages for the subclasses document the\nfunctionality specific to those subclasses.\n\n## Usage\n\n* [Creating an Object hierarchy](#creating-an-object-hierarchy)\n* [Accessing Objects](#accessing-objects)\n* [Updating Objects](#updating-objects)\n* [Adding and removing Objects](#updating-objects)\n* [Models within Groups](#models-within-groups)\n* [Objects within Models](#objects-within-models)\n* [Applying a semantic data model](#applying-a-semantic-data-model)\n* [Destroying Objects](#destroying-objects)\n\n### Creating an Object hierarchy\n\nLet's create a {{#crossLink \"Group\"}}Group{{/crossLink}} that represents a table, with five child {{#crossLink \"Mesh\"}}{{/crossLink}}es for its top and legs:\n\n<a href=\"../../examples/#objects_hierarchy\"><img src=\"../../assets/images/screenshots/objectHierarchy.png\"></img></a>\n\n````javascript\nvar boxGeometry = new xeogl.BoxGeometry(); // We'll reuse the same geometry for all our Meshes\n\nvar table = new xeogl.Group({\n\n    id: \"table\",\n    rotation: [0, 50, 0],\n    position: [0, 0, 0],\n    scale: [1, 1, 1],\n\n    children: [\n\n        new xeogl.Mesh({ // Red table leg\n            id: \"redLeg\",                                  // <<-------- Optional ID within Scene\n            guid: \"5782d454-9f06-4d71-aff1-78c597eacbfb\",  // <<-------- Optional GUID\n            position: [-4, -6, -4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1, 0.3, 0.3]\n            })\n        }),\n\n        new xeogl.Mesh({ // Green table leg\n            id: \"greenLeg\",                                // <<-------- Optional ID within Scene\n            guid: \"c37e421f-5440-4ce1-9b4c-9bd06d8ab5ed\",  // <<-------- Optional GUID\n            position: [4, -6, -4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [0.3, 1.0, 0.3]\n            })\n        }),\n\n        new xeogl.Mesh({// Blue table leg\n            id: \"blueLeg\",\n            position: [4, -6, 4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [0.3, 0.3, 1.0]\n            })\n        }),\n\n        new xeogl.Mesh({  // Yellow table leg\n            id: \"yellowLeg\",\n            position: [-4, -6, 4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1.0, 1.0, 0.0]\n            })\n        })\n\n        new xeogl.Mesh({ // Purple table top\n            id: \"tableTop\",\n            position: [0, -3, 0],\n            scale: [6, 0.5, 6],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1.0, 0.3, 1.0]\n            })\n        })\n    ]\n});\n````\n\n### Accessing Objects\n\nWe can then get those {{#crossLink \"Mesh\"}}Mesh{{/crossLink}} Objects by index from the {{#crossLink \"Group\"}}Group{{/crossLink}}'s children property:\n\n````javascript\nvar blueLeg = table.children[2];\nblueLeg.highlighted = true;\n````\n\nWe can also get them by ID from the {{#crossLink \"Group\"}}Group{{/crossLink}}'s childMap property:\n\n````javascript\nvar blueLeg = table.childMap[\"blueLeg\"];\nblueLeg.highlighted = true;\n````\n\nor by ID from the {{#crossLink \"Scene\"}}{{/crossLink}}'s components map:\n\n````javascript\nvar blueLeg = table.scene.components[\"blueLeg\"];\nblueLeg.highlighted = true;\n````\n\nor from the {{#crossLink \"Scene\"}}{{/crossLink}}'s objects map (only Objects are in this map, and {{#crossLink \"Mesh\"}}Meshes{{/crossLink}} are Objects):\n\n````javascript\nvar blueLeg = table.scene.objects[\"blueLeg\"];\nblueLeg.highlighted = true;\n````\n\nor from the {{#crossLink \"Scene\"}}{{/crossLink}}'s meshes map (only {{#crossLink \"Mesh\"}}Meshes{{/crossLink}} are in that map):\n\n````javascript\nvar blueLeg = table.scene.meshes[\"blueLeg\"];\nblueLeg.highlighted = true;\n````\nFor convenience, the {{#crossLink \"Scene\"}}{{/crossLink}}'s objects map explicitly registers what Objects exist within the {{#crossLink \"Scene\"}}{{/crossLink}}, while its meshes map\nexplicitly registers what {{#crossLink \"Mesh\"}}Meshes{{/crossLink}} exist.\n\n#### GUIDs\n\nNote the optional globally unique identifiers (GUIDs) on the first two Objects. While regular IDs are unique within the Scene,\nGUIDs are unique throughout the entire universe, and are often used to identify elements in things like architectural models. We can\nfind those Objects within their Scene using their GUIDs, like this:\n\n````javascript\nvar redLeg = scene.guidObjects[\"5782d454-9f06-4d71-aff1-78c597eacbfb\"];\nvar greenLeg = scene.guidObjects[\"c37e421f-5440-4ce1-9b4c-9bd06d8ab5ed\"];\n````\n\n### Updating Objects\n\nAs mentioned earlier, property updates on a {{#crossLink \"Group\"}}Group{{/crossLink}} {{#crossLink \"Object\"}}{{/crossLink}} will apply recursively to all\nsub-Objects within it, eventually updating the {{#crossLink \"Mesh\"}}{{/crossLink}} {{#crossLink \"Object\"}}Objects{{/crossLink}} at the leaves.\n\nThese properties, defined in Object, are:\n\n* {{#crossLink \"Object/visible:property\"}}visible{{/crossLink}}\n* {{#crossLink \"Object/highlighted:property\"}}highlighted{{/crossLink}}\n* {{#crossLink \"Object/ghosted:property\"}}ghosted{{/crossLink}}\n* {{#crossLink \"Object/selected:property\"}}selected{{/crossLink}}\n* {{#crossLink \"Object/edges:property\"}}edges{{/crossLink}}\n* {{#crossLink \"Object/colorize:property\"}}colorize{{/crossLink}}\n* {{#crossLink \"Object/opacity:property\"}}opacity{{/crossLink}}\n* {{#crossLink \"Object/clippable:property\"}}clippable{{/crossLink}}\n* {{#crossLink \"Object/collidable:property\"}}collidable{{/crossLink}}\n* {{#crossLink \"Object/pickable:property\"}}pickable{{/crossLink}}\n* {{#crossLink \"Object/castShadow:property\"}}castShadow{{/crossLink}}\n* {{#crossLink \"Object/receiveShadow:property\"}}receiveShadow{{/crossLink}}\n* {{#crossLink \"Object/receiveShadow:property\"}}receiveShadow{{/crossLink}}\n\nLet's highlight the whole table in one shot:\n\n````javascript\ntable.highlighted = true;\n````\n\nThat property value will then recursively propagate down our five Meshes.\n\nEach Object has a local transformation that's applied within the coordinate space set up the\ntransform of its parent, if it has one.\n\nLet's rotate the table:\n\n````javascript\ntable.rotation = [0, 45, 0]; // (X,Y,Z)\ntable.childMap[\"tableTop\"].position = [0, -10, 0]; // (X,Y,Z)\n````\n\nThat will rotate the coordinate space containing the five child Meshes.\n\nNow let's translate the table top Mesh:\n\n````javascript\ntable.childMap[\"tableTop\"].position = [0, -10, 0]; // (X,Y,Z)\n````\n\nAs we translated table top Mesh, we updated the extents its World-space boundary. That update, in addition to rotating\nthe table Group, has updated the collective boundary of the whole table.\n\nWe can get the boundary of the table top like this:\n\n````javascript\nvar tableTopMesh = table.childMap[\"tableTop\"].aabb;\n````\n\nWe can get the collective boundary of the whole table, like this:\n\n````javascript\nvar tableTopMesh = table.aabb;\n````\n\nJust for fun, let's fit the view to the table top:\n\n````javascript\nvar cameraFlight = new xeogl.CameraFlightAnimation(); // Fit the boundary in view\ncameraFlight.flyTo(tableTopMesh.aabb);\n````\n\nThose boundaries will automatically update whenever we add or remove child {{#crossLink \"Object\"}}Objects{{/crossLink}} or {{#crossLink \"Mesh\"}}Meshes{{/crossLink}}, or update child {{#crossLink \"Mesh\"}}Meshes{{/crossLink}}' {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}\nor modeling transforms.\n\nLet's follow the table top wherever it goes:\n\n````javascript\ntableTopMesh.on(\"boundary\", function() {\n   cameraFlight.flyTo(this.aabb); // \"this\" is the table top Mesh\n});\n````\n\nOr perhaps keep the whole table fitted to view whenever we transform any Objects or Meshes within the hierarchy, or add\nor remove Objects within the hierarchy:\n\n````javascript\ntable.on(\"boundary\", function() {\n    var aabb = this.aabb; // \"this\" is the table Group\n    cameraFlight.flyTo(aabb);\n});\n````\n\n### Adding and removing Objects\n\nLet's add another {{#crossLink \"Mesh\"}}Mesh{{/crossLink}} to our table {{#crossLink \"Group\"}}Group{{/crossLink}}, a sort of spherical ornament sitting on the table top:\n\n````javascript\ntable.addChild(new xeogl.Mesh({\n    id: \"myExtraObject\",\n    geometry: new xeogl.SphereGeometry({ radius: 1.0 }),\n    position: [2, -3, 0],\n    geometry: boxGeometry,\n    material: new xeogl.PhongMaterial({\n        diffuse: [0.3, 0.3, 1.0]\n    })\n});\n````\n\nThat's going to update the {{#crossLink \"Group\"}}Group{{/crossLink}}'s boundary, as mentioned earlier.\n\nTo remove it, just destroy it:\n\n````javascript\ntable.childMap[\"myExtraObject\"].destroy();\n````\n\n### Models within Groups\n\nNow let's create a {{#crossLink \"Group\"}}Group{{/crossLink}} that contains three Models. Recall that Models are {{#crossLink \"Group\"}}Group{{/crossLink}}s, which are Objects.\n\n<a href=\"../../examples/#objects_hierarchy_models\"><img src=\"../../assets/images/screenshots/modelHierarchy.png\"></img></a>\n\n````javascript\nvar myModels = new xeogl.Group({\n\n    rotation: [0, 0, 0],\n    position: [0, 0, 0],\n    scale: [1, 1, 1],\n\n    children: [\n\n        new xeogl.GLTFModel({\n            id: \"engine\",\n            src: \"models/gltf/2CylinderEngine/glTF/2CylinderEngine.gltf\",\n            scale: [.2, .2, .2],\n            position: [-110, 0, 0],\n            rotation: [0, 90, 0],\n            objectTree: true // <<----------------- Loads Object tree from glTF scene node graph\n        }),\n\n        new xeogl.GLTFModel({\n            id: \"hoverBike\",\n            src: \"models/gltf/hover_bike/scene.gltf\",\n            scale: [.5, .5, .5],\n            position: [0, -40, 0]\n        }),\n\n        new xeogl.STLModel({\n            id: \"f1Car\",\n            src: \"models/stl/binary/F1Concept.stl\",\n            smoothNormals: true,\n            scale: [3, 3, 3],\n            position: [110, -20, 60],\n            rotation: [0, 90, 0]\n        })\n    ]\n});\n````\n\nLike with the {{#crossLink \"Mesh\"}}{{/crossLink}} Objects in the previous example, we can then get those Models by index from the {{#crossLink \"Group\"}}Group{{/crossLink}}'s children property:\n\n````javascript\nvar hoverBike = myModels.children[1];\nhoverBike.scale = [0.5, 0.5, 0.5];\n````\n\nor by ID from the {{#crossLink \"Group\"}}Group{{/crossLink}}'s childMap property:\n\n````javascript\nvar hoverBike = myModels.childMap[\"hoverBike\"];\nhoverBike.scale = [0.5, 0.5, 0.5];\n````\n\nor by ID from the {{#crossLink \"Scene\"}}{{/crossLink}}'s components map:\n\n````javascript\nvar hoverBike = myModels.scene.components[\"hoverBike\"];\nhoverBike.scale = [0.75, 0.75, 0.75];\n````\n\nor from the {{#crossLink \"Scene\"}}{{/crossLink}}'s objects map (only Objects are in this map, and Models are Objects):\n\n````javascript\nvar hoverBike = myModels.scene.objects[\"hoverBike\"];\nhoverBike.scale = [0.75, 0.75, 0.75];\n````\n\nor from the {{#crossLink \"Scene\"}}{{/crossLink}}'s models map (which only contains Models):\n\n````javascript\nvar hoverBike = myModels.scene.models[\"hoverBike\"];\nhoverBike.scale = [0.5, 0.5, 0.5];\n````\n\nFor convenience, the {{#crossLink \"Scene\"}}{{/crossLink}}'s objects map explicitly registers what Objects exist within the {{#crossLink \"Scene\"}}{{/crossLink}}, while its models map\nexplicitly registers what Models exist.\n\nAs mentioned earlier, property updates on a {{#crossLink \"Group\"}}Group{{/crossLink}} will apply recursively to all the Objects within it. Let's highlight\nall the Models in the {{#crossLink \"Group\"}}Group{{/crossLink}}, in one shot:\n\n````javascript\nmyModels.highlighted = true;\n````\n\nand just for fun, let's scale the {{#crossLink \"Group\"}}Group{{/crossLink}} down, then rotate one of the Models, relative to the {{#crossLink \"Group\"}}Group{{/crossLink}}:\n\n````javascript\nmyModels.scale = [0.5, 0.5, 0.5]; // (X,Y,Z)\nmyModels.childMap[\"engine\"].rotation = [0, 45, 0]; // (X,Y,Z)\n````\n\n### Objects within Models\n\nNotice the ````objectTree```` configuration on the first child {{#crossLink \"GLTFModel\"}}{{/crossLink}} in the previous\nexample. That's going to cause the GLTFModel (which is a {{#crossLink \"Group\"}}Group{{/crossLink}}) to create one or more subtrees of child Objects from the\nglTF scene node graph. The root Objects of the subtrees will be available in the GLTFModel's {{#crossLink \"GLTFModel/children:property\"}}{{/crossLink}} and {{#crossLink \"GLTFModel/childMap:property\"}}{{/crossLink}}\nproperties, while all the Objects in the subtrees will be available in the GLTFModel's objects property, and all the {{#crossLink \"Mesh\"}}{{/crossLink}}es at the\nleaves of the subtrees will be available in the GLTFModel's objects property.\n\n\n{{#crossLink \"Component/id:property\"}}{{/crossLink}}\n\nTODO:\n\n````javascript\nmodels.childMap[\"engine\"].childMap[\"engine#0\"].highlighted = true;\n````\n\n````javascript\nmodels.childMap[\"engine\"].objects[\"engine#3.0\"].highlighted=true;\n````\n\n````javascript\nmodels.childMap[\"engine\"].meshes[\"engine#3.0\"].highlighted=true;\n````\n\n### Applying a semantic data model\n\nxeogl allows us to organize our Objects using a generic conceptual data model that describes the semantics of our application\ndomain. We do this by assigning \"entity classes\" to those Objects that we consider to be *entities* within our domain, and then we're\nable to reference those Objects according to their entity classes.\n\n#### entityType\n\nIn xeogl, we classify an Object as an entity by setting its {{#crossLink \"Object/entityType:property\"}}{{/crossLink}} to an arbitrary string\nvalue that represents its class. Once we've done that, we regard the Object as being an \"entity\" within our semantic data model, in\naddition to being a regular Object within our scene graph. Note that entities in xeogl are not to be confused with *entity-component systems*,\nwhich are a completely different concept.\n\nThis classification mechanism is useful for building IFC viewers on xeogl, in which case our entity classes would be the IFC\nelement types. However, since xeogl's concept of entity classes is generic, our semantic model could include any arbitrary\nset of classes, such as \"fluffy\", \"insulator\", \"essential\" or \"optional\", for example.\n\nThis mechanism only goes as far as allowing us to assign entity classes to our Objects, for the purpose of finding them\nwithin the Scene using their classes. If we wanted to go a step further and model relationships between our classes,\nwe would need to additionally use some sort of entity-relationship data structure, externally to xeogl, such as an IFC structure model\nin which the relation elements would reference our classes.\n\nObjects that are not part of any semantic model, such as helpers and gizmos, would not get an ````entityType````, and so would\nbe effectively invisible to maps and methods that deal with specifically with entities. Use component IDs and \"lower-level\" maps\nlike  {{#crossLink \"Scene/components:property\"}}Scene#components{{/crossLink}},\n{{#crossLink \"Scene/objects:property\"}}Scene#objects{{/crossLink}},\n{{#crossLink \"Scene/meshes:property\"}}Scene#meshes{{/crossLink}} and\n{{#crossLink \"Scene/models:property\"}}Scene#models{{/crossLink}} to work with such Objects as non-semantic scene elements,\nand \"higher-level\" maps like {{#crossLink \"Scene/entities:property\"}}Scene#entities{{/crossLink}} and\n{{#crossLink \"Scene/entityTypes:property\"}}Scene#entityTypes{{/crossLink}} to work with Objects that are entities.\n\nTo show how to use a semantic model with xeogl, let's redefine the Object hierarchy we created earlier, this\ntime assigning some imaginary domain-specific entity classes to our table Mesh Objects:\n\n````javascript\nvar boxGeometry = new xeogl.BoxGeometry(); // We'll reuse the same geometry for all our Meshes\n\nvar table = new xeogl.Group({\n\n    id: \"table\",\n    rotation: [0, 50, 0],\n    position: [0, 0, 0],\n    scale: [1, 1, 1],\n\n    children: [\n\n        new xeogl.Mesh({ // Red table leg\n            id: \"redLeg\",\n            entityType: \"supporting\",  // <<------------ Entity class\n            position: [-4, -6, -4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1, 0.3, 0.3]\n            })\n        }),\n\n        new xeogl.Mesh({ // Green table leg\n            id: \"greenLeg\",\n            entityType: \"supporting\",  // <<------------ Entity class\n            position: [4, -6, -4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [0.3, 1.0, 0.3]\n            })\n        }),\n\n        new xeogl.Mesh({// Blue table leg\n            id: \"blueLeg\",\n            entityType: \"supporting\",  // <<------------ Entity class\n            position: [4, -6, 4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [0.3, 0.3, 1.0]\n            })\n        }),\n\n        new xeogl.Mesh({  // Yellow table leg\n            id: \"yellowLeg\",\n            entityType: \"supporting\",  // <<------------ Entity class\n            position: [-4, -6, 4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1.0, 1.0, 0.0]\n            })\n        })\n\n        new xeogl.Mesh({ // Purple table top\n            id: \"tableTop\",\n            entityType: \"surface\",     // <<------------ Entity class\n            position: [0, -3, 0],\n            scale: [6, 0.5, 6],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1.0, 0.3, 1.0]\n            })\n        })\n    ]\n});\n````\n\nThis time, we've set the {{#crossLink \"Object/entityType:property\"}}{{/crossLink}} property on our Mesh Objects, to\nassign our entity classes to them. Our arbitrary semantic model is very simple, with just two classes:\n\n* \"supporting\" for entities that support things (eg. table legs), and\n* \"surface\" for entities that provide a surface that you can put things on (eg. table tops).\n\nNote that we can assign entity classes to any component type that extends Object, including {{#crossLink \"Group\"}}{{/crossLink}},\n{{#crossLink \"Mesh\"}}{{/crossLink}}, {{#crossLink \"Model\"}}{{/crossLink}}, {{#crossLink \"GLTFModel\"}}{{/crossLink}} etc.\n\nWe can now conveniently work with our Mesh Objects as entities, in addition working with them as ordinary Objects.\n\nWe can find our entities in a dedicated map, that contains only the Objects that have the \"entityType\" property set:\n\n````javascript\nvar yellowLegMesh = scene.entities[\"yellowLeg\"];\n````\n\nWe can get a map of all Objects of a given entity class:\n\n````javascript\nvar supportingEntities = scene.entityTypes[\"supporting\"];\nvar yellowLegMesh = supportingEntities[\"yellowLeg\"];\n````\n\nWe can do state updates on entity Objects by their entity class, in a batch:\n\n````javascript\nscene.setVisible([\"supporting\"], false);               // Hide the legs\nscene.setVisible([\"supporting\"], true);                // Show the legs again\nscene.setHighlighted([\"supporting\", \"surface\"], true); // Highlight the legs and the table top\n````\n\nThe {{#crossLink \"Scene\"}}{{/crossLink}} also has convenience maps dedicated to tracking the visibility, ghosted, highlighted\nand selected states of entity Objects:\n\n````javascript\nvar yellowLegMesh = scene.visibleEntities[\"yellowLeg\"];\nvar isYellowLegVisible = yellowLegMesh !== undefined;\n\nyellowLegMesh.highlighted = false;\nvar isYellowLegHighlighted = scene.highlightedEntities[\"yellowLeg\"];\n````\n\n* [Example](../../examples/#objects_entities)\n\n#### Limitations with state inheritance\n\nNote that you can't currently nest entity Objects within a hierarchy. If we were to set an entityType on our Group,\nsay \"furniture\", and then do this:\n\n````javascript\nscene.setVisible([\"furniture\"], false);                // Hide the table\n````\n\nThen all our entity Meshes would be hidden, even though they are not \"furniture\" entities. The entity classification\nsystem does not currently work alongside the way xeogl does state inheritance within Object hierarchies, so keep your\nentities non-hierarchical.\n\n### Destroying Objects\n\nCall an Object's {{#crossLink \"Component/destroy:method\"}}Object#destroy(){{/crossLink}} method to destroy it:\n\n````JavaScript\nmyObject.destroy();\n````\n\nThat will also destroy all Objects in its subtree.",
+            "description": "An **Object** is a 3D element within a xeogl {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\nObject is an abstract base class that's subclassed by:\n\n* {{#crossLink \"Mesh\"}}{{/crossLink}}, which represents a drawable 3D primitive.\n* {{#crossLink \"Group\"}}{{/crossLink}}, which is a composite Object that represents a group of child Objects.\n* {{#crossLink \"Model\"}}{{/crossLink}}, which is a Group and is subclassed by {{#crossLink \"GLTFModel\"}}{{/crossLink}},\n{{#crossLink \"STLModel\"}}{{/crossLink}}, {{#crossLink \"OBJModel\"}}{{/crossLink}} etc. A Model can contain child Groups\nand {{#crossLink \"Mesh\"}}Meshes{{/crossLink}} that represent its component parts.\n\nAs shown in the examples below, these component types can be connected into flexible scene hierarchies that contain\ncontent loaded from multiple sources and file formats. Since a {{#crossLink \"Group\"}}{{/crossLink}} implements the *[Composite](https://en.wikipedia.org/wiki/Composite_pattern)* pattern,\nproperty updates on a {{#crossLink \"Group\"}}Group{{/crossLink}} will apply recursively to all the Objects within it.\n\nThis page mostly covers the base functionality provided by Object, while the pages for the subclasses document the\nfunctionality specific to those subclasses.\n\n## Usage\n\n* [Creating an Object hierarchy](#creating-an-object-hierarchy)\n* [Accessing Objects](#accessing-objects)\n* [Updating Objects](#updating-objects)\n* [Adding and removing Objects](#updating-objects)\n* [Models within Groups](#models-within-groups)\n* [Objects within Models](#objects-within-models)\n* [Applying a semantic data model](#applying-a-semantic-data-model)\n* [Destroying Objects](#destroying-objects)\n\n### Creating an Object hierarchy\n\nLet's create a {{#crossLink \"Group\"}}Group{{/crossLink}} that represents a table, with five child {{#crossLink \"Mesh\"}}{{/crossLink}}es for its top and legs:\n\n<a href=\"../../examples/#objects_hierarchy\"><img src=\"../../assets/images/screenshots/objectHierarchy.png\"></img></a>\n\n````javascript\nvar boxGeometry = new xeogl.BoxGeometry(); // We'll reuse the same geometry for all our Meshes\n\nvar table = new xeogl.Group({\n\n    id: \"table\",\n    rotation: [0, 50, 0],\n    position: [0, 0, 0],\n    scale: [1, 1, 1],\n\n    children: [\n\n        new xeogl.Mesh({ // Red table leg\n            id: \"redLeg\",                                  // <<-------- Optional ID within Scene\n            guid: \"5782d454-9f06-4d71-aff1-78c597eacbfb\",  // <<-------- Optional GUID\n            position: [-4, -6, -4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1, 0.3, 0.3]\n            })\n        }),\n\n        new xeogl.Mesh({ // Green table leg\n            id: \"greenLeg\",                                // <<-------- Optional ID within Scene\n            guid: \"c37e421f-5440-4ce1-9b4c-9bd06d8ab5ed\",  // <<-------- Optional GUID\n            position: [4, -6, -4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [0.3, 1.0, 0.3]\n            })\n        }),\n\n        new xeogl.Mesh({// Blue table leg\n            id: \"blueLeg\",\n            position: [4, -6, 4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [0.3, 0.3, 1.0]\n            })\n        }),\n\n        new xeogl.Mesh({  // Yellow table leg\n            id: \"yellowLeg\",\n            position: [-4, -6, 4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1.0, 1.0, 0.0]\n            })\n        })\n\n        new xeogl.Mesh({ // Purple table top\n            id: \"tableTop\",\n            position: [0, -3, 0],\n            scale: [6, 0.5, 6],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1.0, 0.3, 1.0]\n            })\n        })\n    ]\n});\n````\n\n### Accessing Objects\n\nWe can then get those {{#crossLink \"Mesh\"}}Mesh{{/crossLink}} Objects by index from the {{#crossLink \"Group\"}}Group{{/crossLink}}'s children property:\n\n````javascript\nvar blueLeg = table.children[2];\nblueLeg.highlighted = true;\n````\n\nWe can also get them by ID from the {{#crossLink \"Group\"}}Group{{/crossLink}}'s childMap property:\n\n````javascript\nvar blueLeg = table.childMap[\"blueLeg\"];\nblueLeg.highlighted = true;\n````\n\nor by ID from the {{#crossLink \"Scene\"}}{{/crossLink}}'s components map:\n\n````javascript\nvar blueLeg = table.scene.components[\"blueLeg\"];\nblueLeg.highlighted = true;\n````\n\nor from the {{#crossLink \"Scene\"}}{{/crossLink}}'s objects map (only Objects are in this map, and {{#crossLink \"Mesh\"}}Meshes{{/crossLink}} are Objects):\n\n````javascript\nvar blueLeg = table.scene.objects[\"blueLeg\"];\nblueLeg.highlighted = true;\n````\n\nor from the {{#crossLink \"Scene\"}}{{/crossLink}}'s meshes map (only {{#crossLink \"Mesh\"}}Meshes{{/crossLink}} are in that map):\n\n````javascript\nvar blueLeg = table.scene.meshes[\"blueLeg\"];\nblueLeg.highlighted = true;\n````\nFor convenience, the {{#crossLink \"Scene\"}}{{/crossLink}}'s objects map explicitly registers what Objects exist within the {{#crossLink \"Scene\"}}{{/crossLink}}, while its meshes map\nexplicitly registers what {{#crossLink \"Mesh\"}}Meshes{{/crossLink}} exist.\n\n#### GUIDs\n\nNote the optional globally unique identifiers (GUIDs) on the first two Objects. While regular IDs are unique within the Scene,\nGUIDs are unique throughout the entire universe, and are often used to identify elements in things like architectural models. We can\nfind those Objects within their Scene using their GUIDs, like this:\n\n````javascript\nvar redLeg = scene.guidObjects[\"5782d454-9f06-4d71-aff1-78c597eacbfb\"];\nvar greenLeg = scene.guidObjects[\"c37e421f-5440-4ce1-9b4c-9bd06d8ab5ed\"];\n````\n\n### Updating Objects\n\nAs mentioned earlier, property updates on a {{#crossLink \"Group\"}}Group{{/crossLink}} {{#crossLink \"Object\"}}{{/crossLink}} will apply recursively to all\nsub-Objects within it, eventually updating the {{#crossLink \"Mesh\"}}{{/crossLink}} {{#crossLink \"Object\"}}Objects{{/crossLink}} at the leaves.\n\nThese properties, defined in Object, are:\n\n* {{#crossLink \"Object/visible:property\"}}visible{{/crossLink}}\n* {{#crossLink \"Object/highlighted:property\"}}highlighted{{/crossLink}}\n* {{#crossLink \"Object/ghosted:property\"}}ghosted{{/crossLink}}\n* {{#crossLink \"Object/selected:property\"}}selected{{/crossLink}}\n* {{#crossLink \"Object/edges:property\"}}edges{{/crossLink}}\n* {{#crossLink \"Object/colorize:property\"}}colorize{{/crossLink}}\n* {{#crossLink \"Object/opacity:property\"}}opacity{{/crossLink}}\n* {{#crossLink \"Object/clippable:property\"}}clippable{{/crossLink}}\n* {{#crossLink \"Object/collidable:property\"}}collidable{{/crossLink}}\n* {{#crossLink \"Object/pickable:property\"}}pickable{{/crossLink}}\n* {{#crossLink \"Object/castShadow:property\"}}castShadow{{/crossLink}}\n* {{#crossLink \"Object/receiveShadow:property\"}}receiveShadow{{/crossLink}}\n* {{#crossLink \"Object/receiveShadow:property\"}}receiveShadow{{/crossLink}}\n\nLet's highlight the whole table in one shot:\n\n````javascript\ntable.highlighted = true;\n````\n\nThat property value will then recursively propagate down our five Meshes.\n\nEach Object has a local transformation that's applied within the coordinate space set up the\ntransform of its parent, if it has one.\n\nLet's rotate the table:\n\n````javascript\ntable.rotation = [0, 45, 0]; // (X,Y,Z)\ntable.childMap[\"tableTop\"].position = [0, -10, 0]; // (X,Y,Z)\n````\n\nThat will rotate the coordinate space containing the five child Meshes.\n\nNow let's translate the table top Mesh:\n\n````javascript\ntable.childMap[\"tableTop\"].position = [0, -10, 0]; // (X,Y,Z)\n````\n\nAs we translated table top Mesh, we updated the extents its World-space boundary. That update, in addition to rotating\nthe table Group, has updated the collective boundary of the whole table.\n\nWe can get the boundary of the table top like this:\n\n````javascript\nvar tableTopMesh = table.childMap[\"tableTop\"].aabb;\n````\n\nWe can get the collective boundary of the whole table, like this:\n\n````javascript\nvar tableTopMesh = table.aabb;\n````\n\nJust for fun, let's fit the view to the table top:\n\n````javascript\nvar cameraFlight = new xeogl.CameraFlightAnimation(); // Fit the boundary in view\ncameraFlight.flyTo(tableTopMesh.aabb);\n````\n\nThose boundaries will automatically update whenever we add or remove child {{#crossLink \"Object\"}}Objects{{/crossLink}} or {{#crossLink \"Mesh\"}}Meshes{{/crossLink}}, or update child {{#crossLink \"Mesh\"}}Meshes{{/crossLink}}' {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}\nor modeling transforms.\n\nLet's follow the table top wherever it goes:\n\n````javascript\ntableTopMesh.on(\"boundary\", function() {\n   cameraFlight.flyTo(this.aabb); // \"this\" is the table top Mesh\n});\n````\n\nOr perhaps keep the whole table fitted to view whenever we transform any Objects or Meshes within the hierarchy, or add\nor remove Objects within the hierarchy:\n\n````javascript\ntable.on(\"boundary\", function() {\n    var aabb = this.aabb; // \"this\" is the table Group\n    cameraFlight.flyTo(aabb);\n});\n````\n\n### Adding and removing Objects\n\nLet's add another {{#crossLink \"Mesh\"}}Mesh{{/crossLink}} to our table {{#crossLink \"Group\"}}Group{{/crossLink}}, a sort of spherical ornament sitting on the table top:\n\n````javascript\ntable.addChild(new xeogl.Mesh({\n    id: \"myExtraObject\",\n    geometry: new xeogl.SphereGeometry({ radius: 1.0 }),\n    position: [2, -3, 0],\n    geometry: boxGeometry,\n    material: new xeogl.PhongMaterial({\n        diffuse: [0.3, 0.3, 1.0]\n    })\n});\n````\n\nThat's going to update the {{#crossLink \"Group\"}}Group{{/crossLink}}'s boundary, as mentioned earlier.\n\nTo remove it, just destroy it:\n\n````javascript\ntable.childMap[\"myExtraObject\"].destroy();\n````\n\n### Models within Groups\n\nNow let's create a {{#crossLink \"Group\"}}Group{{/crossLink}} that contains three Models. Recall that Models are {{#crossLink \"Group\"}}Group{{/crossLink}}s, which are Objects.\n\n<a href=\"../../examples/#objects_hierarchy_models\"><img src=\"../../assets/images/screenshots/modelHierarchy.png\"></img></a>\n\n````javascript\nvar myModels = new xeogl.Group({\n\n    rotation: [0, 0, 0],\n    position: [0, 0, 0],\n    scale: [1, 1, 1],\n\n    children: [\n\n        new xeogl.GLTFModel({\n            id: \"engine\",\n            src: \"models/gltf/2CylinderEngine/glTF/2CylinderEngine.gltf\",\n            scale: [.2, .2, .2],\n            position: [-110, 0, 0],\n            rotation: [0, 90, 0],\n            objectTree: true // <<----------------- Loads Object tree from glTF scene node graph\n        }),\n\n        new xeogl.GLTFModel({\n            id: \"hoverBike\",\n            src: \"models/gltf/hover_bike/scene.gltf\",\n            scale: [.5, .5, .5],\n            position: [0, -40, 0]\n        }),\n\n        new xeogl.STLModel({\n            id: \"f1Car\",\n            src: \"models/stl/binary/F1Concept.stl\",\n            smoothNormals: true,\n            scale: [3, 3, 3],\n            position: [110, -20, 60],\n            rotation: [0, 90, 0]\n        })\n    ]\n});\n````\n\nLike with the {{#crossLink \"Mesh\"}}{{/crossLink}} Objects in the previous example, we can then get those Models by index from the {{#crossLink \"Group\"}}Group{{/crossLink}}'s children property:\n\n````javascript\nvar hoverBike = myModels.children[1];\nhoverBike.scale = [0.5, 0.5, 0.5];\n````\n\nor by ID from the {{#crossLink \"Group\"}}Group{{/crossLink}}'s childMap property:\n\n````javascript\nvar hoverBike = myModels.childMap[\"hoverBike\"];\nhoverBike.scale = [0.5, 0.5, 0.5];\n````\n\nor by ID from the {{#crossLink \"Scene\"}}{{/crossLink}}'s components map:\n\n````javascript\nvar hoverBike = myModels.scene.components[\"hoverBike\"];\nhoverBike.scale = [0.75, 0.75, 0.75];\n````\n\nor from the {{#crossLink \"Scene\"}}{{/crossLink}}'s objects map (only Objects are in this map, and Models are Objects):\n\n````javascript\nvar hoverBike = myModels.scene.objects[\"hoverBike\"];\nhoverBike.scale = [0.75, 0.75, 0.75];\n````\n\nor from the {{#crossLink \"Scene\"}}{{/crossLink}}'s models map (which only contains Models):\n\n````javascript\nvar hoverBike = myModels.scene.models[\"hoverBike\"];\nhoverBike.scale = [0.5, 0.5, 0.5];\n````\n\nFor convenience, the {{#crossLink \"Scene\"}}{{/crossLink}}'s objects map explicitly registers what Objects exist within the {{#crossLink \"Scene\"}}{{/crossLink}}, while its models map\nexplicitly registers what Models exist.\n\nAs mentioned earlier, property updates on a {{#crossLink \"Group\"}}Group{{/crossLink}} will apply recursively to all the Objects within it. Let's highlight\nall the Models in the {{#crossLink \"Group\"}}Group{{/crossLink}}, in one shot:\n\n````javascript\nmyModels.highlighted = true;\n````\n\nand just for fun, let's scale the {{#crossLink \"Group\"}}Group{{/crossLink}} down, then rotate one of the Models, relative to the {{#crossLink \"Group\"}}Group{{/crossLink}}:\n\n````javascript\nmyModels.scale = [0.5, 0.5, 0.5]; // (X,Y,Z)\nmyModels.childMap[\"engine\"].rotation = [0, 45, 0]; // (X,Y,Z)\n````\n\n### Objects within Models\n\nModels are Objects that plug into the scene graph, containing child Objects of their own.  The {{#crossLink \"GLTFModel\"}}{{/crossLink}}\nin the previous example loads its child Objects from the glTF scene node graph.\n\nThe root Objects within the GLTFModel will be available in the GLTFModel's {{#crossLink \"GLTFModel/children:property\"}}{{/crossLink}} and {{#crossLink \"GLTFModel/childMap:property\"}}{{/crossLink}}\nproperties, while all its Objects and Meshes (at the leaves) will be available in the GLTFModel's {{#crossLink \"GLTFModel/objects:property\"}}{{/crossLink}} property.\n\n\n````javascript\nmodels.childMap[\"engine\"].childMap[\"engine#0\"].highlighted = true;\n````\n\n````javascript\nmodels.childMap[\"engine\"].objects[\"engine#3.0\"].highlighted=true;\n````\n\n````javascript\nmodels.childMap[\"engine\"].meshes[\"engine#3.0\"].highlighted=true;\n````\n\n### Applying a semantic data model\n\nxeogl allows us to organize our Objects using a generic conceptual data model that describes the semantics of our application\ndomain. We do this by assigning \"entity classes\" to those Objects that we consider to be *entities* within our domain, and then we're\nable to reference those Objects according to their entity classes.\n\n#### entityType\n\nIn xeogl, we classify an Object as an entity by setting its {{#crossLink \"Object/entityType:property\"}}{{/crossLink}} to an arbitrary string\nvalue that represents its class. Once we've done that, we regard the Object as being an \"entity\" within our semantic data model, in\naddition to being a regular Object within our scene graph. Note that entities in xeogl are not to be confused with *entity-component systems*,\nwhich are a completely different concept.\n\nThis classification mechanism is useful for building IFC viewers on xeogl, in which case our entity classes would be the IFC\nelement types. However, since xeogl's concept of entity classes is generic, our semantic model could include any arbitrary\nset of classes, such as \"fluffy\", \"insulator\", \"essential\" or \"optional\", for example.\n\nThis mechanism only goes as far as allowing us to assign entity classes to our Objects, for the purpose of finding them\nwithin the Scene using their classes. If we wanted to go a step further and model relationships between our classes,\nwe would need to additionally use some sort of entity-relationship data structure, externally to xeogl, such as an IFC structure model\nin which the relation elements would reference our classes.\n\nObjects that are not part of any semantic model, such as helpers and gizmos, would not get an ````entityType````, and so would\nbe effectively invisible to maps and methods that deal with specifically with entities. Use component IDs and \"lower-level\" maps\nlike  {{#crossLink \"Scene/components:property\"}}Scene#components{{/crossLink}},\n{{#crossLink \"Scene/objects:property\"}}Scene#objects{{/crossLink}},\n{{#crossLink \"Scene/meshes:property\"}}Scene#meshes{{/crossLink}} and\n{{#crossLink \"Scene/models:property\"}}Scene#models{{/crossLink}} to work with such Objects as non-semantic scene elements,\nand \"higher-level\" maps like {{#crossLink \"Scene/entities:property\"}}Scene#entities{{/crossLink}} and\n{{#crossLink \"Scene/entityTypes:property\"}}Scene#entityTypes{{/crossLink}} to work with Objects that are entities.\n\nTo show how to use a semantic model with xeogl, let's redefine the Object hierarchy we created earlier, this\ntime assigning some imaginary domain-specific entity classes to our table Mesh Objects:\n\n````javascript\nvar boxGeometry = new xeogl.BoxGeometry(); // We'll reuse the same geometry for all our Meshes\n\nvar table = new xeogl.Group({\n\n    id: \"table\",\n    rotation: [0, 50, 0],\n    position: [0, 0, 0],\n    scale: [1, 1, 1],\n\n    children: [\n\n        new xeogl.Mesh({ // Red table leg\n            id: \"redLeg\",\n            entityType: \"supporting\",  // <<------------ Entity class\n            position: [-4, -6, -4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1, 0.3, 0.3]\n            })\n        }),\n\n        new xeogl.Mesh({ // Green table leg\n            id: \"greenLeg\",\n            entityType: \"supporting\",  // <<------------ Entity class\n            position: [4, -6, -4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [0.3, 1.0, 0.3]\n            })\n        }),\n\n        new xeogl.Mesh({// Blue table leg\n            id: \"blueLeg\",\n            entityType: \"supporting\",  // <<------------ Entity class\n            position: [4, -6, 4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [0.3, 0.3, 1.0]\n            })\n        }),\n\n        new xeogl.Mesh({  // Yellow table leg\n            id: \"yellowLeg\",\n            entityType: \"supporting\",  // <<------------ Entity class\n            position: [-4, -6, 4],\n            scale: [1, 3, 1],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1.0, 1.0, 0.0]\n            })\n        })\n\n        new xeogl.Mesh({ // Purple table top\n            id: \"tableTop\",\n            entityType: \"surface\",     // <<------------ Entity class\n            position: [0, -3, 0],\n            scale: [6, 0.5, 6],\n            rotation: [0, 0, 0],\n            geometry: boxGeometry,\n            material: new xeogl.PhongMaterial({\n                diffuse: [1.0, 0.3, 1.0]\n            })\n        })\n    ]\n});\n````\n\nThis time, we've set the {{#crossLink \"Object/entityType:property\"}}{{/crossLink}} property on our Mesh Objects, to\nassign our entity classes to them. Our arbitrary semantic model is very simple, with just two classes:\n\n* \"supporting\" for entities that support things (eg. table legs), and\n* \"surface\" for entities that provide a surface that you can put things on (eg. table tops).\n\nNote that we can assign entity classes to any component type that extends Object, including {{#crossLink \"Group\"}}{{/crossLink}},\n{{#crossLink \"Mesh\"}}{{/crossLink}}, {{#crossLink \"Model\"}}{{/crossLink}}, {{#crossLink \"GLTFModel\"}}{{/crossLink}} etc.\n\nWe can now conveniently work with our Mesh Objects as entities, in addition working with them as ordinary Objects.\n\nWe can find our entities in a dedicated map, that contains only the Objects that have the \"entityType\" property set:\n\n````javascript\nvar yellowLegMesh = scene.entities[\"yellowLeg\"];\n````\n\nWe can get a map of all Objects of a given entity class:\n\n````javascript\nvar supportingEntities = scene.entityTypes[\"supporting\"];\nvar yellowLegMesh = supportingEntities[\"yellowLeg\"];\n````\n\nWe can do state updates on entity Objects by their entity class, in a batch:\n\n````javascript\nscene.setVisible([\"supporting\"], false);               // Hide the legs\nscene.setVisible([\"supporting\"], true);                // Show the legs again\nscene.setHighlighted([\"supporting\", \"surface\"], true); // Highlight the legs and the table top\n````\n\nThe {{#crossLink \"Scene\"}}{{/crossLink}} also has convenience maps dedicated to tracking the visibility, ghosted, highlighted\nand selected states of entity Objects:\n\n````javascript\nvar yellowLegMesh = scene.visibleEntities[\"yellowLeg\"];\nvar isYellowLegVisible = yellowLegMesh !== undefined;\n\nyellowLegMesh.highlighted = false;\nvar isYellowLegHighlighted = scene.highlightedEntities[\"yellowLeg\"];\n````\n\n* [Example](../../examples/#objects_entities)\n\n#### Limitations with state inheritance\n\nNote that you can't currently nest entity Objects within a hierarchy. If we were to set an entityType on our Group,\nsay \"furniture\", and then do this:\n\n````javascript\nscene.setVisible([\"furniture\"], false);                // Hide the table\n````\n\nThen all our entity Meshes would be hidden, even though they are not \"furniture\" entities. The entity classification\nsystem does not currently work alongside the way xeogl does state inheritance within Object hierarchies, so keep your\nentities non-hierarchical.\n\n### Destroying Objects\n\nCall an Object's {{#crossLink \"Component/destroy:method\"}}Object#destroy(){{/crossLink}} method to destroy it:\n\n````JavaScript\nmyObject.destroy();\n````\n\nThat will also destroy all Objects in its subtree.",
             "submodule": "objects",
             "is_constructor": 1,
             "params": [
@@ -9753,7 +9753,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 511,
+            "line": 514,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500,\n    height: 500,\n    format: \"png\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9802,7 +9802,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 592,
+            "line": 595,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -9832,7 +9832,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 618,
+            "line": 621,
             "description": "Simulates lost WebGL context.",
             "class": "Canvas",
             "module": "xeogl",
@@ -9840,7 +9840,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 629,
+            "line": 632,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -9852,7 +9852,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 662,
+            "line": 665,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -9863,7 +9863,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 701,
+            "line": 704,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -17006,7 +17006,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 610,
+            "line": 606,
             "description": "JavaScript class name for this xeogl.Object.",
             "itemtype": "property",
             "name": "type",
@@ -17018,7 +17018,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 790,
+            "line": 786,
             "description": "Adds a child.\n\nThe child must be in the same {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nIf the child already has a parent, will be removed from that parent first.\n\nDoes nothing if already a child.",
             "params": [
                 {
@@ -17044,7 +17044,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 866,
+            "line": 862,
             "description": "Removes the given child.",
             "itemtype": "method",
             "name": "removeChild",
@@ -17061,7 +17061,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 888,
+            "line": 884,
             "description": "Removes all children.",
             "itemtype": "method",
             "name": "removeChildren",
@@ -17071,7 +17071,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 908,
+            "line": 904,
             "description": "Rotates about the given local axis by the given increment.",
             "itemtype": "method",
             "name": "rotate",
@@ -17089,7 +17089,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 934,
+            "line": 930,
             "description": "Rotates about the given World-space axis by the given increment.",
             "itemtype": "method",
             "name": "rotate",
@@ -17107,7 +17107,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 956,
+            "line": 952,
             "description": "Rotates about the local X-axis by the given increment.",
             "itemtype": "method",
             "name": "rotateX",
@@ -17124,7 +17124,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 969,
+            "line": 965,
             "description": "Rotates about the local Y-axis by the given increment.",
             "itemtype": "method",
             "name": "rotateY",
@@ -17141,7 +17141,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 982,
+            "line": 978,
             "description": "Rotates about the local Z-axis by the given increment.",
             "itemtype": "method",
             "name": "rotateZ",
@@ -17158,7 +17158,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 995,
+            "line": 991,
             "description": "Translates along local space vector by the given increment.",
             "itemtype": "method",
             "name": "translate",
@@ -17180,7 +17180,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1016,
+            "line": 1012,
             "description": "Translates along the local X-axis by the given increment.",
             "itemtype": "method",
             "name": "translateX",
@@ -17197,7 +17197,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1029,
+            "line": 1025,
             "description": "Translates along the local Y-axis by the given increment.",
             "itemtype": "method",
             "name": "translateX",
@@ -17214,7 +17214,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1042,
+            "line": 1038,
             "description": "Translates along the local Z-axis by the given increment.",
             "itemtype": "method",
             "name": "translateX",
@@ -17231,7 +17231,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1057,
+            "line": 1053,
             "description": "Globally unique identifier.\n\nThis is unique not only within the {{#crossLink \"Scene\"}}{{/crossLink}}, but throughout the entire universe.\n\nOnly defined when given to the constructor.",
             "itemtype": "property",
             "name": "guid",
@@ -17243,7 +17243,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1074,
+            "line": 1070,
             "description": "Optional entity classification when using within a semantic data model.\n\nSee the Object documentation on \"Applying a semantic data model\" for usage.",
             "itemtype": "property",
             "name": "entityType",
@@ -17256,7 +17256,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1094,
+            "line": 1090,
             "description": "Number of child {{#crossLink \"Object\"}}Objects{{/crossLink}}.",
             "itemtype": "property",
             "name": "numChildren",
@@ -17268,7 +17268,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1107,
+            "line": 1103,
             "description": "Array of child {{#crossLink \"Object\"}}Objects{{/crossLink}}.",
             "itemtype": "property",
             "name": "children",
@@ -17280,7 +17280,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1120,
+            "line": 1116,
             "description": "Child {{#crossLink \"Object\"}}Objects{{/crossLink}} mapped to their IDs.",
             "itemtype": "property",
             "name": "childMap",
@@ -17292,7 +17292,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1133,
+            "line": 1129,
             "description": "IDs of child {{#crossLink \"Object\"}}Objects{{/crossLink}}.",
             "itemtype": "property",
             "name": "childIDs",
@@ -17304,7 +17304,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1149,
+            "line": 1145,
             "description": "The parent.\n\nThe parent Group may also be set by passing the Object to the\nGroup/Model's {{#crossLink \"Group/addChild:method\"}}addChild(){{/crossLink}} method.",
             "itemtype": "property",
             "name": "parent",
@@ -17315,7 +17315,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1187,
+            "line": 1183,
             "description": "Local translation.",
             "itemtype": "property",
             "name": "position",
@@ -17327,7 +17327,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1206,
+            "line": 1202,
             "description": "Local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.",
             "itemtype": "property",
             "name": "rotation",
@@ -17339,7 +17339,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1226,
+            "line": 1222,
             "description": "Local rotation quaternion.",
             "itemtype": "property",
             "name": "quaternion",
@@ -17351,7 +17351,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1246,
+            "line": 1242,
             "description": "Local scale.",
             "itemtype": "property",
             "name": "scale",
@@ -17363,7 +17363,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1265,
+            "line": 1261,
             "description": "Local matrix.",
             "itemtype": "property",
             "name": "matrix",
@@ -17375,7 +17375,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1299,
+            "line": 1295,
             "description": "The World matrix.",
             "itemtype": "property",
             "name": "worldMatrix",
@@ -17386,7 +17386,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1314,
+            "line": 1310,
             "description": "This World normal matrix.",
             "itemtype": "property",
             "name": "worldNormalMatrix",
@@ -17398,7 +17398,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1389,
+            "line": 1385,
             "description": "World-space 3D axis-aligned bounding box (AABB).\n\nRepresented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -17410,7 +17410,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1408,
+            "line": 1404,
             "description": "World-space 3D center.",
             "itemtype": "property",
             "name": "center",
@@ -17422,7 +17422,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1424,
+            "line": 1420,
             "description": "Indicates if visible.\n\nOnly rendered when {{#crossLink \"Object/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Object/culled:property\"}}{{/crossLink}} is false.\n\nEach visible Object is registered in its {{#crossLink \"Scene\"}}{{/crossLink}}'s\n{{#crossLink \"Scene/visibleEntities:property\"}}{{/crossLink}} map while its {{#crossLink \"Object/entityType:property\"}}{{/crossLink}}\nis set to a value.",
             "itemtype": "property",
             "name": "visible",
@@ -17434,7 +17434,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1454,
+            "line": 1450,
             "description": "Indicates if highlighted.\n\nEach highlighted Object is registered in its {{#crossLink \"Scene\"}}{{/crossLink}}'s\n{{#crossLink \"Scene/highlightedEntities:property\"}}{{/crossLink}} map while its {{#crossLink \"Object/entityType:property\"}}{{/crossLink}}\nis set to a value.",
             "itemtype": "property",
             "name": "highlighted",
@@ -17446,7 +17446,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1481,
+            "line": 1477,
             "description": "Indicates if ghosted.\n\nEach ghosted Object is registered in its {{#crossLink \"Scene\"}}{{/crossLink}}'s\n{{#crossLink \"Scene/ghostedEntities:property\"}}{{/crossLink}} map while its {{#crossLink \"Object/entityType:property\"}}{{/crossLink}}\nis set to a value.",
             "itemtype": "property",
             "name": "ghosted",
@@ -17458,7 +17458,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1508,
+            "line": 1504,
             "description": "Indicates if selected.\n\nEach selected Object is registered in its {{#crossLink \"Scene\"}}{{/crossLink}}'s\n{{#crossLink \"Scene/selectedEntities:property\"}}{{/crossLink}} map while its {{#crossLink \"Object/entityType:property\"}}{{/crossLink}}\nis set to a value.",
             "itemtype": "property",
             "name": "selected",
@@ -17470,7 +17470,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1535,
+            "line": 1531,
             "description": "Indicates if edges are emphasized.",
             "itemtype": "property",
             "name": "edges",
@@ -17482,7 +17482,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1555,
+            "line": 1551,
             "description": "Indicates if culled from view.\n\nOnly rendered when {{#crossLink \"Object/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Object/culled:property\"}}{{/crossLink}} is false.",
             "itemtype": "property",
             "name": "culled",
@@ -17494,7 +17494,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1578,
+            "line": 1574,
             "description": "Indicates if clippable.\n\nClipping is done by the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Clips\"}}{{/crossLink}} component.",
             "itemtype": "property",
             "name": "clippable",
@@ -17506,7 +17506,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1600,
+            "line": 1596,
             "description": "Indicates if included in boundary calculations.",
             "itemtype": "property",
             "name": "collidable",
@@ -17518,7 +17518,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1620,
+            "line": 1616,
             "description": "Whether or not to allow picking.\n\nPicking is done via calls to {{#crossLink \"Scene/pick:method\"}}Scene#pick(){{/crossLink}}.",
             "itemtype": "property",
             "name": "pickable",
@@ -17530,7 +17530,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1642,
+            "line": 1638,
             "description": "RGB colorize color, multiplies by the rendered fragment color.",
             "itemtype": "property",
             "name": "colorize",
@@ -17542,7 +17542,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1674,
+            "line": 1670,
             "description": "Opacity factor, multiplies by the rendered fragment alpha.\n\nThis is a factor in range ````[0..1]````.",
             "itemtype": "property",
             "name": "opacity",
@@ -17554,7 +17554,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1702,
+            "line": 1698,
             "description": "Indicates if outlined.",
             "itemtype": "property",
             "name": "outlined",
@@ -17566,7 +17566,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1722,
+            "line": 1718,
             "description": "Indicates if casting shadows.",
             "itemtype": "property",
             "name": "castShadow",
@@ -17578,7 +17578,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1742,
+            "line": 1738,
             "description": "Indicates if receiving shadows.",
             "itemtype": "property",
             "name": "receiveShadow",
@@ -17590,7 +17590,7 @@
         },
         {
             "file": "src/objects/object.js",
-            "line": 1762,
+            "line": 1758,
             "description": "Indicates if the 3D World-space axis-aligned bounding box (AABB) is visible.",
             "itemtype": "property",
             "name": "aabbVisible",
@@ -23048,7 +23048,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:511"
+            "line": " src/canvas/canvas.js:514"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -23136,15 +23136,15 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/objects/object.js:790"
+            "line": " src/objects/object.js:786"
         },
         {
             "message": "unknown tag: paream",
-            "line": " src/objects/object.js:908"
+            "line": " src/objects/object.js:904"
         },
         {
             "message": "unknown tag: paream",
-            "line": " src/objects/object.js:934"
+            "line": " src/objects/object.js:930"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -23308,11 +23308,11 @@
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:592"
+            "line": " src/canvas/canvas.js:595"
         },
         {
             "message": "Missing item type\nSimulates lost WebGL context.",
-            "line": " src/canvas/canvas.js:618"
+            "line": " src/canvas/canvas.js:621"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -23556,7 +23556,7 @@
         },
         {
             "message": "Missing item type\nAdds a child.\n\nThe child must be in the same {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nIf the child already has a parent, will be removed from that parent first.\n\nDoes nothing if already a child.",
-            "line": " src/objects/object.js:790"
+            "line": " src/objects/object.js:786"
         },
         {
             "message": "Missing item type\nInitializes this component",

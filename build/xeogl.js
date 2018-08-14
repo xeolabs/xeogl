@@ -1,10 +1,10 @@
 /*
- * xeogl V0.8
+ * xeogl V0.8.0
  *
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-08-10
+ * Built on 2018-08-14
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -16995,16 +16995,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ### Objects within Models
 
- Notice the ````objectTree```` configuration on the first child {{#crossLink "GLTFModel"}}{{/crossLink}} in the previous
- example. That's going to cause the GLTFModel (which is a {{#crossLink "Group"}}Group{{/crossLink}}) to create one or more subtrees of child Objects from the
- glTF scene node graph. The root Objects of the subtrees will be available in the GLTFModel's {{#crossLink "GLTFModel/children:property"}}{{/crossLink}} and {{#crossLink "GLTFModel/childMap:property"}}{{/crossLink}}
- properties, while all the Objects in the subtrees will be available in the GLTFModel's objects property, and all the {{#crossLink "Mesh"}}{{/crossLink}}es at the
- leaves of the subtrees will be available in the GLTFModel's objects property.
+ Models are Objects that plug into the scene graph, containing child Objects of their own.  The {{#crossLink "GLTFModel"}}{{/crossLink}}
+ in the previous example loads its child Objects from the glTF scene node graph.
 
+ The root Objects within the GLTFModel will be available in the GLTFModel's {{#crossLink "GLTFModel/children:property"}}{{/crossLink}} and {{#crossLink "GLTFModel/childMap:property"}}{{/crossLink}}
+ properties, while all its Objects and Meshes (at the leaves) will be available in the GLTFModel's {{#crossLink "GLTFModel/objects:property"}}{{/crossLink}} property.
 
- {{#crossLink "Component/id:property"}}{{/crossLink}}
-
- TODO:
 
  ````javascript
  models.childMap["engine"].childMap["engine#0"].highlighted = true;
@@ -18439,10 +18435,14 @@ xeogl.Object = xeogl.Component.extend({
                 scene._entityHighlightedUpdated(this, false);
             }
         }
-        var object;
-        for (var i = 0, len = this._childList.length; i < len; i++) {
-            object = this._childList[i];
-            object.destroy();
+        if (this._childList.length) {
+            // Clone the _childList before iterating it, so our children don't mess us up when calling removeChild().
+            var tempChildList = this._childList.splice();
+            var object;
+            for (var i = 0, len = tempChildList.length; i < len; i++) {
+                object = tempChildList[i];
+                object.destroy();
+            }
         }
         this._childList = [];
         this._childMap = {};
@@ -21160,9 +21160,12 @@ xeogl.Group = xeogl.Object.extend({
             }
 
             if (this.gl) {
-                if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping
-                    this.gl.getExtension("OES_standard_derivatives");
-                    //  this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
+                // Setup extension (if necessary) and hints for fragment shader derivative functions
+                if (this.webgl2) {
+                    this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT, this.gl.FASTEST);
+                } else if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) {
+                    var ext = this.gl.getExtension("OES_standard_derivatives");
+                    this.gl.hint(ext.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST);
                 }
             }
         },
@@ -36839,4 +36842,4 @@ TODO
         }
     });
 })();
-xeogl.version="0.8";
+xeogl.version="0.8.0";
