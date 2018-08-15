@@ -12,12 +12,12 @@
     };
 
     function buildVertex(mesh) {
-        var scene = mesh.scene;
-        var clipping = scene._clipsState.clips.length > 0;
-        var quantizedGeometry = !!mesh._geometry._state.quantized;
-        var billboard = mesh._state.billboard;
-        var stationary = mesh._state.stationary;
-        var src = [];
+        const scene = mesh.scene;
+        const clipping = scene._clipsState.clips.length > 0;
+        const quantizedGeometry = !!mesh._geometry._state.quantized;
+        const billboard = mesh._state.billboard;
+        const stationary = mesh._state.stationary;
+        const src = [];
         src.push("// Surface picking vertex shader");
         src.push("attribute vec3 position;");
         src.push("attribute vec4 color;");
@@ -49,10 +49,10 @@
     }
 
     function buildFragment(mesh) {
-        var scene = mesh.scene;
-        var clipsState = scene._clipsState;
-        var clipping = clipsState.clips.length > 0;
-        var src = [];
+        const scene = mesh.scene;
+        const clipsState = scene._clipsState;
+        const clipping = clipsState.clips.length > 0;
+        const src = [];
         src.push("// Surface picking fragment shader");
         src.push("precision lowp float;");
         src.push("varying vec4 vColor;");

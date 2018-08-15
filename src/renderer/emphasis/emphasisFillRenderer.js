@@ -6,7 +6,7 @@
 
     "use strict";
 
-    var ids = new xeogl.utils.Map({});
+    const ids = new xeogl.utils.Map({});
 
     xeogl.renderer.EmphasisFillRenderer = function (hash, mesh) {
         this.id = ids.addItem({});
@@ -17,10 +17,10 @@
         this._allocate(mesh);
     };
 
-    var ghostFillRenderers = {};
+    const ghostFillRenderers = {};
 
     xeogl.renderer.EmphasisFillRenderer.get = function (mesh) {
-        var hash = [
+        const hash = [
             mesh.scene.id,
             mesh.scene.gammaOutput ? "go" : "", // Gamma input not needed
             mesh.scene._clipsState.getHash(),
@@ -28,7 +28,7 @@
             mesh._geometry._state.quantized ? "cp" : "",
             mesh._state.hash
         ].join(";");
-        var renderer = ghostFillRenderers[hash];
+        let renderer = ghostFillRenderers[hash];
         if (!renderer) {
             renderer = new xeogl.renderer.EmphasisFillRenderer(hash, mesh);
             ghostFillRenderers[hash] = renderer;
@@ -57,18 +57,18 @@
         if (!this._program) {
             this._allocate(mesh);
         }
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var materialState = mode === 0 ? mesh._ghostMaterial._state : (mode === 1 ? mesh._highlightMaterial._state : mesh._selectedMaterial._state);
-        var meshState = mesh._state;
-        var geometryState = mesh._geometry._state;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const materialState = mode === 0 ? mesh._ghostMaterial._state : (mode === 1 ? mesh._highlightMaterial._state : mesh._selectedMaterial._state);
+        const meshState = mesh._state;
+        const geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
         if (materialState.id !== this._lastMaterialId) {
-            var fillColor = materialState.fillColor;
-            var backfaces = materialState.backfaces;
+            const fillColor = materialState.fillColor;
+            const backfaces = materialState.backfaces;
             if (frame.backfaces !== backfaces) {
                 if (backfaces) {
                     gl.disable(gl.CULL_FACE);
@@ -88,7 +88,7 @@
             gl.uniform1i(this._uClippable, meshState.clippable);
         }
         if (geometryState.combined) {
-            var vertexBufs = mesh._geometry._getVertexBufs();
+            const vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -155,15 +155,15 @@
     };
 
     xeogl.renderer.EmphasisFillRenderer.prototype._allocate = function (mesh) {
-        var lightsState = mesh.scene._lightsState;
-        var clipsState = mesh.scene._clipsState;
-        var gl = mesh.scene.canvas.gl;
+        const lightsState = mesh.scene._lightsState;
+        const clipsState = mesh.scene._clipsState;
+        const gl = mesh.scene.canvas.gl;
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-        var program = this._program;
+        const program = this._program;
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uModelNormalMatrix = program.getLocation("modelNormalMatrix");
@@ -176,7 +176,7 @@
         this._uLightPos = [];
         this._uLightAttenuation = [];
         for (var i = 0, len = lightsState.lights.length; i < len; i++) {
-            var light = lightsState.lights[i];
+            const light = lightsState.lights[i];
             switch (light.type) {
                 case "ambient":
                     this._uLightAmbient[i] = program.getLocation("lightAmbient");
@@ -213,14 +213,14 @@
     };
 
     xeogl.renderer.EmphasisFillRenderer.prototype._bindProgram = function (frame) {
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var clipsState = scene._clipsState;
-        var lightsState = scene._lightsState;
-        var camera = scene.camera;
-        var cameraState = camera._state;
-        var light;
-        var program = this._program;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const clipsState = scene._clipsState;
+        const lightsState = scene._lightsState;
+        const camera = scene.camera;
+        const cameraState = camera._state;
+        let light;
+        const program = this._program;
         program.bind();
         frame.useProgram++;
         frame.textureUnit = 0;
@@ -251,12 +251,12 @@
             }
         }
         if (clipsState.clips.length > 0) {
-            var clips = scene._clipsState.clips;
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
+            const clips = scene._clipsState.clips;
+            let clipUniforms;
+            let uClipActive;
+            let clip;
+            let uClipPos;
+            let uClipDir;
             for (var i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;

@@ -12,12 +12,12 @@
     };
 
     function buildVertex(mesh) {
-        var scene = mesh.scene;
-        var clipping = scene._clipsState.clips.length > 0;
-        var quantizedGeometry = !!mesh._geometry._state.quantized;
-        var billboard = mesh._state.billboard;
-        var stationary = mesh._state.stationary;
-        var src = [];
+        const scene = mesh.scene;
+        const clipping = scene._clipsState.clips.length > 0;
+        const quantizedGeometry = !!mesh._geometry._state.quantized;
+        const billboard = mesh._state.billboard;
+        const stationary = mesh._state.stationary;
+        const src = [];
         src.push("// Vertices drawing vertex shader");
         src.push("attribute vec3 position;");
         src.push("uniform mat4 modelMatrix;");
@@ -80,12 +80,12 @@
     }
 
     function buildFragment(mesh) {
-        var clipsState = mesh.scene._clipsState;
-        var gammaOutput = mesh.scene.gammaOutput;
-        var clipping = clipsState.clips.length > 0;
-        var i;
-        var len;
-        var src = [];
+        const clipsState = mesh.scene._clipsState;
+        const gammaOutput = mesh.scene.gammaOutput;
+        const clipping = clipsState.clips.length > 0;
+        let i;
+        let len;
+        const src = [];
         src.push("// Vertices drawing fragment shader");
         src.push("precision lowp float;");
         if (gammaOutput) {

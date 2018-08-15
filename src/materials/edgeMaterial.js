@@ -229,7 +229,7 @@
              */
             edgeColor: {
                 set: function (value) {
-                    var edgeColor = this._state.edgeColor;
+                    let edgeColor = this._state.edgeColor;
                     if (!edgeColor) {
                         edgeColor = this._state.edgeColor = new Float32Array(3);
                     } else if (value && edgeColor[0] === value[0] && edgeColor[1] === value[1] && edgeColor[2] === value[2]) {
@@ -315,7 +315,7 @@
                     if (this._preset === value) {
                         return;
                     }
-                    var preset = xeogl.EdgeMaterial.presets[value];
+                    const preset = xeogl.EdgeMaterial.presets[value];
                     if (!preset) {
                         this.error("unsupported preset: '" + value + "' - supported values are " + Object.keys(xeogl.EdgeMaterial.presets).join(", "));
                         return;

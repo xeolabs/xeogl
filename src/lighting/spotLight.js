@@ -86,7 +86,7 @@
 
     "use strict";
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
     xeogl.SpotLight = xeogl.Component.extend({
 
@@ -94,7 +94,7 @@
 
         _init: function (cfg) {
 
-            var self = this;
+            const self = this;
 
             this._shadowRenderBuf = null;
             this._shadowViewMatrix = null;
@@ -114,8 +114,8 @@
                 shadowDirty: true,
 
                 getShadowViewMatrix: (function () {
-                    var look = math.vec3();
-                    var up = math.vec3([0, 1, 0]);
+                    const look = math.vec3();
+                    const up = math.vec3([0, 1, 0]);
                     return function () {
                         if (self._shadowViewMatrixDirty) {
                             if (!self._shadowViewMatrix) {
@@ -134,7 +134,7 @@
                         if (!self._shadowProjMatrix) {
                             self._shadowProjMatrix = math.identityMat4();
                         }
-                        var canvas = self.scene.canvas.canvas;
+                        const canvas = self.scene.canvas.canvas;
                         math.perspectiveMat4(60 * (Math.PI / 180.0), canvas.clientWidth / canvas.clientHeight, 0.1, 400.0, self._shadowProjMatrix);
                         self._shadowProjMatrixDirty = false;
                     }

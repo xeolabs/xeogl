@@ -78,7 +78,7 @@
 
     "use strict";
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
     xeogl.DirLight = xeogl.Component.extend({
 
@@ -86,7 +86,7 @@
 
         _init: function (cfg) {
 
-            var self = this;
+            const self = this;
 
             this._shadowRenderBuf = null;
             this._shadowViewMatrix = null;
@@ -104,14 +104,14 @@
                 shadowDirty: true,
 
                 getShadowViewMatrix: (function () {
-                    var look = math.vec3();
-                    var up = math.vec3([0, 1, 0]);
+                    const look = math.vec3();
+                    const up = math.vec3([0, 1, 0]);
                     return function () {
                         if (self._shadowViewMatrixDirty) {
                             if (!self._shadowViewMatrix) {
                                 self._shadowViewMatrix = math.identityMat4();
                             }
-                            var dir = self._state.dir;
+                            const dir = self._state.dir;
                             math.lookAtMat4v([-dir[0], -dir[1], -dir[2]], [0, 0, 0], up, self._shadowViewMatrix);
                             self._shadowViewMatrixDirty = false;
                         }

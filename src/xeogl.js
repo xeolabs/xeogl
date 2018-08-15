@@ -12,17 +12,17 @@
 
     // Fast queue that avoids using potentially inefficient array .shift() calls
     // Based on https://github.com/creationix/fastqueue
-    var Queue = function () {
+    const Queue = function () {
 
-        var head = [];
-        var headLength = 0;
-        var tail = [];
-        var index = 0;
+        let head = [];
+        let headLength = 0;
+        let tail = [];
+        let index = 0;
         this.length = 0;
 
         this.shift = function () {
             if (index >= headLength) {
-                var t = head;
+                const t = head;
                 t.length = 0;
                 head = tail;
                 tail = t;
@@ -32,7 +32,7 @@
                     return;
                 }
             }
-            var value = head[index];
+            const value = head[index];
             if (index < 0) {
                 delete head[index++];
             }
@@ -56,7 +56,7 @@
         };
     };
 
-    var xeogl = function () {
+    const xeogl = function () {
 
         this._debug = {
             forceHighShaderPrecision: false
@@ -75,17 +75,17 @@
          * Information about available WebGL support
          */
         this.WEBGL_INFO = (function () {
-            var info = {
+            const info = {
                 WEBGL: false
             };
 
-            var canvas = document.createElement("canvas");
+            const canvas = document.createElement("canvas");
 
             if (!canvas) {
                 return info;
             }
 
-            var gl = canvas.getContext("webgl", {antialias: true}) || canvas.getContext("experimental-webgl", {antialias: true});
+            const gl = canvas.getContext("webgl", {antialias: true}) || canvas.getContext("experimental-webgl", {antialias: true});
 
             info.WEBGL = !!gl;
 
@@ -222,11 +222,11 @@
         // http://gameprogrammingpatterns.com/game-loop.html
         //-----------------------------------------------------------------------
 
-        var self = this;
+        const self = this;
 
         (function () {
 
-            var tickEvent = {
+            const tickEvent = {
                 sceneId: null,
                 time: null,
                 startTime: null,
@@ -236,19 +236,19 @@
 
             // Hoisted vars
 
-            var taskBudget = 10; // Millisecs we're allowed to spend on tasks in each frame
-            var frameTime;
-            var lastFrameTime = 0;
-            var elapsedFrameTime;
-            var newFPS;
-            var fpsSamples = [];
-            var numFPSSamples = 30;
-            var totalFPS = 0;
-            var updateTime;
-            var id;
-            var scene;
+            const taskBudget = 10; // Millisecs we're allowed to spend on tasks in each frame
+            let frameTime;
+            let lastFrameTime = 0;
+            let elapsedFrameTime;
+            let newFPS;
+            const fpsSamples = [];
+            const numFPSSamples = 30;
+            let totalFPS = 0;
+            let updateTime;
+            let id;
+            let scene;
 
-            var frame = function () {
+            const frame = function () {
 
                 frameTime = Date.now();
 
@@ -283,8 +283,8 @@
                 // Process as many enqueued tasks as we can
                 // within the per-frame task budget
 
-                var tasksRun = self._runScheduledTasks(updateTime + taskBudget);
-                var tasksScheduled = self._taskQueue.length;
+                const tasksRun = self._runScheduledTasks(updateTime + taskBudget);
+                const tasksScheduled = self._taskQueue.length;
 
                 self.stats.frame.tasksRun = tasksRun;
                 self.stats.frame.tasksScheduled = tasksScheduled;
@@ -325,13 +325,13 @@
 
             function render() {
 
-                var scenes = self.scenes;
-                var scenesRenderInfo = self._scenesRenderInfo;
-                var scene;
-                var renderInfo;
-                var ticksPerRender;
+                const scenes = self.scenes;
+                const scenesRenderInfo = self._scenesRenderInfo;
+                let scene;
+                let renderInfo;
+                let ticksPerRender;
 
-                var forceRender = false;
+                const forceRender = false;
                 for (id in scenes) {
                     if (scenes.hasOwnProperty(id)) {
 
@@ -421,7 +421,7 @@
 
             this.scenes[scene.id] = scene;
 
-            var ticksPerRender = scene.ticksPerRender;
+            const ticksPerRender = scene.ticksPerRender;
 
             this._scenesRenderInfo[scene.id] = {
                 ticksPerRender: ticksPerRender,
@@ -430,7 +430,7 @@
 
             this.stats.components.scenes++;
 
-            var self = this;
+            const self = this;
 
             // Unregister destroyed scenes
 
@@ -473,11 +473,11 @@
         // given number of milliseconds has elapsed.
         _runScheduledTasks: function (until) {
 
-            var time = (new Date()).getTime();
-            var taskQueue = this._taskQueue;
-            var callback;
-            var scope;
-            var tasksRun = 0;
+            let time = (new Date()).getTime();
+            const taskQueue = this._taskQueue;
+            let callback;
+            let scope;
+            let tasksRun = 0;
 
             while (taskQueue.length > 0 && time < until) {
                 callback = taskQueue.shift();
@@ -503,9 +503,9 @@
          */
         clear: function () {
 
-            var scene;
+            let scene;
 
-            for (var id in this.scenes) {
+            for (const id in this.scenes) {
                 if (this.scenes.hasOwnProperty(id)) {
 
                     scene = this.scenes[id];
@@ -574,8 +574,8 @@
                 return false;
             }
 
-            var id1 = (xeogl.prototype._isNumeric(c1) || xeogl.prototype._isString(c1)) ? "" + c1 : c1.id;
-            var id2 = (xeogl.prototype._isNumeric(c2) || xeogl.prototype._isString(c2)) ? "" + c2 : c2.id;
+            const id1 = (xeogl.prototype._isNumeric(c1) || xeogl.prototype._isString(c1)) ? "" + c1 : c1.id;
+            const id2 = (xeogl.prototype._isNumeric(c2) || xeogl.prototype._isString(c2)) ? "" + c2 : c2.id;
 
             return id1 === id2;
         },
@@ -597,7 +597,7 @@
          * @private
          */
         _isObject: (function () {
-            var objectConstructor = {}.constructor;
+            const objectConstructor = {}.constructor;
             return function (value) {
                 return (!!value && value.constructor === objectConstructor);
             };
@@ -618,13 +618,13 @@
                 return true;
             }
 
-            var superTypes = this._superTypes[type];
+            const superTypes = this._superTypes[type];
 
             if (!superTypes) {
                 return false;
             }
 
-            for (var i = superTypes.length - 1; i >= 0; i--) {
+            for (let i = superTypes.length - 1; i >= 0; i--) {
                 if (superTypes[i] === superType) {
                     return true;
                 }
@@ -642,7 +642,7 @@
         /** Add properties of o to o2, overwriting them on o2 if already there
          */
         _apply: function (o, o2) {
-            for (var name in o) {
+            for (const name in o) {
                 if (o.hasOwnProperty(name)) {
                     o2[name] = o[name];
                 }
@@ -655,7 +655,7 @@
          * @private
          */
         _apply2: function (o, o2) {
-            for (var name in o) {
+            for (const name in o) {
                 if (o.hasOwnProperty(name)) {
                     if (o[name] !== undefined && o[name] !== null) {
                         o2[name] = o[name];
@@ -670,7 +670,7 @@
          * @private
          */
         _applyIf: function (o, o2) {
-            for (var name in o) {
+            for (const name in o) {
                 if (o.hasOwnProperty(name)) {
                     if (o2[name] === undefined || o2[name] === null) {
                         o2[name] = o[name];
@@ -687,7 +687,7 @@
          * @private
          */
         _isEmptyObject: function (obj) {
-            for (var name in obj) {
+            for (const name in obj) {
                 if (obj.hasOwnProperty(name)) {
                     return false;
                 }
@@ -716,7 +716,7 @@
          * @private
          */
         _concat: function (a, b) {
-            var c = new a.constructor(a.length + b.length);
+            const c = new a.constructor(a.length + b.length);
             c.set(a);
             c.set(b, a.length);
             return c;

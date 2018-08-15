@@ -246,8 +246,8 @@
         },
 
         _makeHash: function () {
-            var state = this._state;
-            var hash = ["/p"]; // 'P' for Phong
+            const state = this._state;
+            const hash = ["/p"]; // 'P' for Phong
             if (this._normalMap) {
                 hash.push("/nm");
                 if (this._normalMap.hasMatrix) {
@@ -329,7 +329,7 @@
              */
             ambient: {
                 set: function (value) {
-                    var ambient = this._state.ambient;
+                    let ambient = this._state.ambient;
                     if (!ambient) {
                         ambient = this._state.ambient = new Float32Array(3);
                     } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
@@ -362,7 +362,7 @@
              */
             diffuse: {
                 set: function (value) {
-                    var diffuse = this._state.diffuse;
+                    let diffuse = this._state.diffuse;
                     if (!diffuse) {
                         diffuse = this._state.diffuse = new Float32Array(3);
                     } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
@@ -395,7 +395,7 @@
              */
             specular: {
                 set: function (value) {
-                    var specular = this._state.specular;
+                    let specular = this._state.specular;
                     if (!specular) {
                         specular = this._state.specular = new Float32Array(3);
                     } else if (value && specular[0] === value[0] && specular[1] === value[1] && specular[2] === value[2]) {
@@ -428,7 +428,7 @@
              */
             emissive: {
                 set: function (value) {
-                    var emissive = this._state.emissive;
+                    let emissive = this._state.emissive;
                     if (!emissive) {
                         emissive = this._state.emissive = new Float32Array(3);
                     } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
@@ -772,12 +772,12 @@
              @type {String}
              */
             alphaMode: (function () {
-                var modes = {"opaque": 0, "mask": 1, "blend": 2};
-                var modeNames = ["opaque", "mask", "blend"];
+                const modes = {"opaque": 0, "mask": 1, "blend": 2};
+                const modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
                         alphaMode = alphaMode || "opaque";
-                        var value = modes[alphaMode];
+                        let value = modes[alphaMode];
                         if (value === undefined) {
                             this.error("Unsupported value for 'alphaMode': " + alphaMode + " - defaulting to 'opaque'");
                             value = "opaque";

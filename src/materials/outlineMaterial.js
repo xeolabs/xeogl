@@ -50,7 +50,7 @@
              */
             color: {
                 set: function (value) {
-                    var color = this._state.color;
+                    let color = this._state.color;
                     if (!color) {
                         color = this._state.color = new Float32Array(3);
                     } else if (value && color[0] === value[0] && color[1] === value[1] && color[2] === value[2]) {

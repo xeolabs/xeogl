@@ -62,19 +62,19 @@
             const WIDTH_INDEX = 2;
             const HEIGHT_INDEX = 3;
 
-            var scene = this.scene;
-            var scale = this._scale;
-            var halfSize = 0.5 * scale;
+            const scene = this.scene;
+            const scale = this._scale;
+            const halfSize = 0.5 * scale;
 
-            var boundary = scene.viewport.boundary;
-            var boundaryWidth = boundary[WIDTH_INDEX];
-            var boundaryHeight = boundary[HEIGHT_INDEX];
-            var aspect = boundaryWidth / boundaryHeight;
+            const boundary = scene.viewport.boundary;
+            const boundaryWidth = boundary[WIDTH_INDEX];
+            const boundaryHeight = boundary[HEIGHT_INDEX];
+            const aspect = boundaryWidth / boundaryHeight;
 
-            var left;
-            var right;
-            var top;
-            var bottom;
+            let left;
+            let right;
+            let top;
+            let bottom;
 
             if (boundaryWidth > boundaryHeight) {
                 left = -halfSize;

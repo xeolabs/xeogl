@@ -63,35 +63,35 @@
 
         _init: function (cfg) {
 
-            var xSize = cfg.xSize || 1;
+            let xSize = cfg.xSize || 1;
             if (xSize < 0) {
                 this.error("negative xSize not allowed - will invert");
                 xSize *= -1;
             }
 
-            var ySize = cfg.ySize || 1;
+            let ySize = cfg.ySize || 1;
             if (ySize < 0) {
                 this.error("negative ySize not allowed - will invert");
                 ySize *= -1;
             }
 
-            var zSize = cfg.zSize || 1;
+            let zSize = cfg.zSize || 1;
             if (zSize < 0) {
                 this.error("negative zSize not allowed - will invert");
                 zSize *= -1;
             }
 
-            var center = cfg.center;
-            var centerX = center ? center[0] : 0;
-            var centerY = center ? center[1] : 0;
-            var centerZ = center ? center[2] : 0;
+            const center = cfg.center;
+            const centerX = center ? center[0] : 0;
+            const centerY = center ? center[1] : 0;
+            const centerZ = center ? center[2] : 0;
 
-            var xmin = -xSize + centerX;
-            var ymin = -ySize + centerY;
-            var zmin = -zSize + centerZ;
-            var xmax = xSize + centerX;
-            var ymax = ySize + centerY;
-            var zmax = zSize + centerZ;
+            const xmin = -xSize + centerX;
+            const ymin = -ySize + centerY;
+            const zmin = -zSize + centerZ;
+            const xmax = xSize + centerX;
+            const ymax = ySize + centerY;
+            const zmax = zSize + centerZ;
 
             this._super(xeogl._apply(cfg, {
 

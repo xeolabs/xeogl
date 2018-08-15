@@ -87,7 +87,7 @@
 
         _init: function (cfg) {
 
-            var self = this;
+            const self = this;
 
             this._boundaryHelper = new xeogl.Mesh(this, {
                 geometry: new xeogl.AABBGeometry(this),
@@ -106,18 +106,18 @@
 
                 // Pivot math by: http://www.derschmale.com/
 
-                var math = xeogl.math;
-                var scene = self.scene;
-                var camera = scene.camera;
-                var canvas = scene.canvas;
-                var pivotPoint = new Float32Array(3);
-                var cameraOffset;
-                var azimuth = 0;
-                var polar = 0;
-                var radius = 0;
-                var pivoting = false; // True while pivoting
+                const math = xeogl.math;
+                const scene = self.scene;
+                const camera = scene.camera;
+                const canvas = scene.canvas;
+                const pivotPoint = new Float32Array(3);
+                let cameraOffset;
+                let azimuth = 0;
+                let polar = 0;
+                let radius = 0;
+                let pivoting = false; // True while pivoting
 
-                var spot = document.createElement("div");
+                const spot = document.createElement("div");
                 spot.innerText = " ";
                 spot.style.color = "#ffffff";
                 spot.style.position = "absolute";
@@ -135,10 +135,10 @@
                 document.body.appendChild(spot);
 
                 (function () {
-                    var viewPos = math.vec4();
-                    var projPos = math.vec4();
-                    var canvasPos = math.vec2();
-                    var distDirty = true;
+                    const viewPos = math.vec4();
+                    const projPos = math.vec4();
+                    const canvasPos = math.vec2();
+                    let distDirty = true;
                     camera.on("viewMatrix", function () {
                         distDirty = true;
                     });
@@ -150,11 +150,11 @@
                             math.transformPoint3(camera.viewMatrix, pivotPoint, viewPos);
                             viewPos[3] = 1;
                             math.transformPoint4(camera.projMatrix, viewPos, projPos);
-                            var aabb = canvas.boundary;
+                            const aabb = canvas.boundary;
                             canvasPos[0] = Math.floor((1 + projPos[0] / projPos[3]) * aabb[2] / 2);
                             canvasPos[1] = Math.floor((1 - projPos[1] / projPos[3]) * aabb[3] / 2);
-                            var canvasElem = canvas.canvas;
-                            var rect = canvasElem.getBoundingClientRect();
+                            const canvasElem = canvas.canvas;
+                            const rect = canvasElem.getBoundingClientRect();
                             spot.style.left = (Math.floor(rect.left + canvasPos[0]) - 12) + "px";
                             spot.style.top = (Math.floor(rect.top + canvasPos[1]) - 12) + "px";
                             spot.style.visibility = "visible";
@@ -167,16 +167,16 @@
                     if (worldPos) { // Use last pivotPoint by default
                         pivotPoint.set(worldPos);
                     }
-                    var lookat = math.lookAtMat4v(camera.eye, camera.look, camera.worldUp);
+                    let lookat = math.lookAtMat4v(camera.eye, camera.look, camera.worldUp);
                     cameraOffset = math.transformPoint3(lookat, pivotPoint);
                     cameraOffset[2] += math.distVec3(camera.eye, pivotPoint);
                     lookat = math.inverseMat4(lookat);
-                    var offset = math.transformVec3(lookat, cameraOffset);
-                    var diff = math.vec3();
+                    const offset = math.transformVec3(lookat, cameraOffset);
+                    const diff = math.vec3();
                     math.subVec3(camera.eye, pivotPoint, diff);
                     math.addVec3(diff, offset);
                     if (camera.worldUp[2] === 1) {
-                        var t = diff[1];
+                        const t = diff[1];
                         diff[1] = diff[2];
                         diff[2] = t;
                     }
@@ -205,30 +205,30 @@
                         dx = -dx;
                     }
                     var dx = -yawInc;
-                    var dy = -pitchInc;
+                    const dy = -pitchInc;
                     azimuth += -dx * .01;
                     polar += dy * .01;
                     polar = math.clamp(polar, .001, Math.PI - .001);
-                    var pos = [
+                    const pos = [
                         radius * Math.sin(polar) * Math.sin(azimuth),
                         radius * Math.cos(polar),
                         radius * Math.sin(polar) * Math.cos(azimuth)
                     ];
                     if (camera.worldUp[2] === 1) {
-                        var t = pos[1];
+                        const t = pos[1];
                         pos[1] = pos[2];
                         pos[2] = t;
                     }
                     // Preserve the eye->look distance, since in xeogl "look" is the point-of-interest, not the direction vector.
-                    var eyeLookLen = math.lenVec3(math.subVec3(camera.look, camera.eye, math.vec3()));
+                    const eyeLookLen = math.lenVec3(math.subVec3(camera.look, camera.eye, math.vec3()));
                     math.addVec3(pos, pivotPoint);
-                    var lookat = math.lookAtMat4v(pos, pivotPoint, camera.worldUp);
+                    let lookat = math.lookAtMat4v(pos, pivotPoint, camera.worldUp);
                     lookat = math.inverseMat4(lookat);
-                    var offset = math.transformVec3(lookat, cameraOffset);
+                    const offset = math.transformVec3(lookat, cameraOffset);
                     lookat[12] -= offset[0];
                     lookat[13] -= offset[1];
                     lookat[14] -= offset[2];
-                    var zAxis = [lookat[8], lookat[9], lookat[10]];
+                    const zAxis = [lookat[8], lookat[9], lookat[10]];
                     camera.eye = [lookat[12], lookat[13], lookat[14]];
                     math.subVec3(camera.eye, math.mulVec3Scalar(zAxis, eyeLookLen), camera.look);
                     camera.up = [lookat[4], lookat[5], lookat[6]];
@@ -441,38 +441,38 @@
 
         _initEvents: function () {
 
-            var self = this;
-            var scene = this.scene;
-            var input = scene.input;
-            var camera = scene.camera;
-            var math = xeogl.math;
-            var canvas = this.scene.canvas.canvas;
-            var over = false;
-            var mouseHoverDelay = 500;
-            var mouseOrbitRate = 0.4;
-            var mousePanRate = 0.4;
-            var mouseZoomRate = 0.8;
-            var mouseWheelPanRate = 0.4;
-            var keyboardOrbitRate = .02;
-            var keyboardPanRate = .02;
-            var keyboardZoomRate = .02;
-            var touchRotateRate = 0.3;
-            var touchPanRate = 0.2;
-            var touchZoomRate = 0.05;
+            const self = this;
+            const scene = this.scene;
+            const input = scene.input;
+            const camera = scene.camera;
+            const math = xeogl.math;
+            const canvas = this.scene.canvas.canvas;
+            let over = false;
+            const mouseHoverDelay = 500;
+            const mouseOrbitRate = 0.4;
+            const mousePanRate = 0.4;
+            const mouseZoomRate = 0.8;
+            const mouseWheelPanRate = 0.4;
+            const keyboardOrbitRate = .02;
+            const keyboardPanRate = .02;
+            const keyboardZoomRate = .02;
+            const touchRotateRate = 0.3;
+            const touchPanRate = 0.2;
+            const touchZoomRate = 0.05;
 
             canvas.oncontextmenu = function (e) {
                 e.preventDefault();
             };
 
-            var getCanvasPosFromEvent = function (event, canvasPos) {
+            const getCanvasPosFromEvent = function (event, canvasPos) {
                 if (!event) {
                     event = window.event;
                     canvasPos[0] = event.x;
                     canvasPos[1] = event.y;
                 } else {
-                    var element = event.target;
-                    var totalOffsetLeft = 0;
-                    var totalOffsetTop = 0;
+                    let element = event.target;
+                    let totalOffsetLeft = 0;
+                    let totalOffsetTop = 0;
                     while (element.offsetParent) {
                         totalOffsetLeft += element.offsetLeft;
                         totalOffsetTop += element.offsetTop;
@@ -484,13 +484,13 @@
                 return canvasPos;
             };
 
-            var pickCursorPos = [0, 0];
-            var needPickMesh = false;
-            var needPickSurface = false;
-            var lastPickedMeshId;
-            var hit;
-            var picked = false;
-            var pickedSurface = false;
+            const pickCursorPos = [0, 0];
+            let needPickMesh = false;
+            let needPickSurface = false;
+            let lastPickedMeshId;
+            let hit;
+            let picked = false;
+            let pickedSurface = false;
 
             function updatePick() {
                 if (!needPickMesh && !needPickSurface) {
@@ -510,7 +510,7 @@
                 }
                 if (hit) {
                     picked = true;
-                    var pickedMeshId = hit.mesh.id;
+                    const pickedMeshId = hit.mesh.id;
                     if (lastPickedMeshId !== pickedMeshId) {
                         if (lastPickedMeshId !== undefined) {
 
@@ -586,35 +586,35 @@
 
             (function () {
 
-                var rotateVx = 0;
-                var rotateVy = 0;
-                var panVx = 0;
-                var panVy = 0;
-                var panVz = 0;
-                var vZoom = 0;
-                var mousePos = math.vec2();
-                var panToMouse = false;
+                let rotateVx = 0;
+                let rotateVy = 0;
+                let panVx = 0;
+                let panVy = 0;
+                let panVz = 0;
+                let vZoom = 0;
+                const mousePos = math.vec2();
+                let panToMouse = false;
 
-                var ctrlDown = false;
-                var altDown = false;
-                var shiftDown = false;
-                var keyDown = {};
+                let ctrlDown = false;
+                let altDown = false;
+                let shiftDown = false;
+                const keyDown = {};
 
-                var EPSILON = 0.001;
+                const EPSILON = 0.001;
 
-                var getEyeLookDist = (function () {
-                    var vec = new Float32Array(3);
+                const getEyeLookDist = (function () {
+                    const vec = new Float32Array(3);
                     return function () {
                         return math.lenVec3(math.subVec3(camera.look, camera.eye, vec));
                     };
                 })();
 
-                var getInverseProjectMat = (function () {
-                    var projMatDirty = true;
+                const getInverseProjectMat = (function () {
+                    let projMatDirty = true;
                     camera.on("projMatrix", function () {
                         projMatDirty = true;
                     });
-                    var inverseProjectMat = math.mat4();
+                    const inverseProjectMat = math.mat4();
                     return function () {
                         if (projMatDirty) {
                             math.inverseMat4(camera.projMatrix, inverseProjectMat);
@@ -623,12 +623,12 @@
                     }
                 })();
 
-                var getTransposedProjectMat = (function () {
-                    var projMatDirty = true;
+                const getTransposedProjectMat = (function () {
+                    let projMatDirty = true;
                     camera.on("projMatrix", function () {
                         projMatDirty = true;
                     });
-                    var transposedProjectMat = math.mat4();
+                    const transposedProjectMat = math.mat4();
                     return function () {
                         if (projMatDirty) {
                             math.transposeMat4(camera.projMatrix, transposedProjectMat);
@@ -637,12 +637,12 @@
                     }
                 })();
 
-                var getInverseViewMat = (function () {
-                    var viewMatDirty = true;
+                const getInverseViewMat = (function () {
+                    let viewMatDirty = true;
                     camera.on("viewMatrix", function () {
                         viewMatDirty = true;
                     });
-                    var inverseViewMat = math.mat4();
+                    const inverseViewMat = math.mat4();
                     return function () {
                         if (viewMatDirty) {
                             math.inverseMat4(camera.viewMatrix, inverseViewMat);
@@ -651,9 +651,9 @@
                     }
                 })();
 
-                var getSceneDiagSize = (function () {
-                    var sceneSizeDirty = true;
-                    var diag = 1; // Just in case
+                const getSceneDiagSize = (function () {
+                    let sceneSizeDirty = true;
+                    let diag = 1; // Just in case
                     scene.on("boundary", function () {
                         sceneSizeDirty = true;
                     });
@@ -665,17 +665,17 @@
                     };
                 })();
 
-                var panToMousePos = (function () {
+                const panToMousePos = (function () {
 
-                    var cp = math.vec4();
-                    var viewPos = math.vec4();
-                    var worldPos = math.vec4();
-                    var eyeCursorVec = math.vec3();
+                    const cp = math.vec4();
+                    const viewPos = math.vec4();
+                    const worldPos = math.vec4();
+                    const eyeCursorVec = math.vec3();
 
-                    var unproject = function (inverseProjMat, inverseViewMat, mousePos, z, viewPos, worldPos) {
-                        var canvas = scene.canvas.canvas;
-                        var halfCanvasWidth = canvas.offsetWidth / 2.0;
-                        var halfCanvasHeight = canvas.offsetHeight / 2.0;
+                    const unproject = function (inverseProjMat, inverseViewMat, mousePos, z, viewPos, worldPos) {
+                        const canvas = scene.canvas.canvas;
+                        const halfCanvasWidth = canvas.offsetWidth / 2.0;
+                        const halfCanvasHeight = canvas.offsetHeight / 2.0;
                         cp[0] = (mousePos[0] - halfCanvasWidth) / halfCanvasWidth;
                         cp[1] = (mousePos[1] - halfCanvasHeight) / halfCanvasHeight;
                         cp[2] = z;
@@ -689,44 +689,44 @@
 
                     return function (mousePos, factor) {
 
-                        var lastHoverDistance = 0;
-                        var inverseProjMat = getInverseProjectMat();
-                        var inverseViewMat = getInverseViewMat();
+                        const lastHoverDistance = 0;
+                        const inverseProjMat = getInverseProjectMat();
+                        const inverseViewMat = getInverseViewMat();
 
                         // Get last two columns of projection matrix
-                        var transposedProjectMat = getTransposedProjectMat();
-                        var Pt3 = transposedProjectMat.subarray(8, 12);
-                        var Pt4 = transposedProjectMat.subarray(12);
-                        var D = [0, 0, -(lastHoverDistance || getSceneDiagSize()), 1];
-                        var Z = math.dotVec4(D, Pt3) / math.dotVec4(D, Pt4);
+                        const transposedProjectMat = getTransposedProjectMat();
+                        const Pt3 = transposedProjectMat.subarray(8, 12);
+                        const Pt4 = transposedProjectMat.subarray(12);
+                        const D = [0, 0, -(lastHoverDistance || getSceneDiagSize()), 1];
+                        const Z = math.dotVec4(D, Pt3) / math.dotVec4(D, Pt4);
 
                         unproject(inverseProjMat, inverseViewMat, mousePos, Z, viewPos, worldPos);
 
                         math.subVec3(worldPos, camera.eye, eyeCursorVec);
                         math.normalizeVec3(eyeCursorVec);
 
-                        var px = eyeCursorVec[0] * factor;
-                        var py = eyeCursorVec[1] * factor;
-                        var pz = eyeCursorVec[2] * factor;
+                        const px = eyeCursorVec[0] * factor;
+                        const py = eyeCursorVec[1] * factor;
+                        const pz = eyeCursorVec[2] * factor;
 
-                        var eye = camera.eye;
-                        var look = camera.look;
+                        const eye = camera.eye;
+                        const look = camera.look;
 
                         camera.eye = [eye[0] + px, eye[1] + py, eye[2] + pz];
                         camera.look = [look[0] + px, look[1] + py, look[2] + pz];
                     };
                 })();
 
-                var panToWorldPos = (function () {
-                    var eyeCursorVec = math.vec3();
+                const panToWorldPos = (function () {
+                    const eyeCursorVec = math.vec3();
                     return function (worldPos, factor) {
                         math.subVec3(worldPos, camera.eye, eyeCursorVec);
                         math.normalizeVec3(eyeCursorVec);
-                        var px = eyeCursorVec[0] * factor;
-                        var py = eyeCursorVec[1] * factor;
-                        var pz = eyeCursorVec[2] * factor;
-                        var eye = camera.eye;
-                        var look = camera.look;
+                        const px = eyeCursorVec[0] * factor;
+                        const py = eyeCursorVec[1] * factor;
+                        const pz = eyeCursorVec[2] * factor;
+                        const eye = camera.eye;
+                        const look = camera.look;
                         camera.eye = [eye[0] + px, eye[1] + py, eye[2] + pz];
                         camera.look = [look[0] + px, look[1] + py, look[2] + pz];
                     };
@@ -734,7 +734,7 @@
 
                 scene.on("tick", function () {
 
-                    var cameraInertia = self._inertia;
+                    const cameraInertia = self._inertia;
 
                     if (Math.abs(rotateVx) < EPSILON) {
                         rotateVx = 0;
@@ -789,7 +789,7 @@
                     }
 
                     if (panVx !== 0 || panVy !== 0 || panVz !== 0) {
-                        var f = getEyeLookDist() / 80;
+                        const f = getEyeLookDist() / 80;
                         if (self._walking) {
                             var y = camera.eye[1];
                             camera.pan([panVx * f, panVy * f, panVz * f]);
@@ -846,11 +846,11 @@
                 });
 
                 function getZoomRate() {
-                    var aabb = scene.aabb;
-                    var xsize = aabb[3] - aabb[0];
-                    var ysize = aabb[4] - aabb[1];
-                    var zsize = aabb[5] - aabb[2];
-                    var max = (xsize > ysize ? xsize : ysize);
+                    const aabb = scene.aabb;
+                    const xsize = aabb[3] - aabb[0];
+                    const ysize = aabb[4] - aabb[1];
+                    const zsize = aabb[5] - aabb[2];
+                    let max = (xsize > ysize ? xsize : ysize);
                     max = (zsize > max ? zsize : max);
                     return max / 30;
                 }
@@ -889,15 +889,15 @@
 
                 (function () {
 
-                    var lastX;
-                    var lastY;
-                    var xDelta = 0;
-                    var yDelta = 0;
-                    var down = false;
+                    let lastX;
+                    let lastY;
+                    let xDelta = 0;
+                    let yDelta = 0;
+                    let down = false;
 
-                    var mouseDownLeft;
-                    var mouseDownMiddle;
-                    var mouseDownRight;
+                    let mouseDownLeft;
+                    let mouseDownMiddle;
+                    let mouseDownRight;
 
                     canvas.addEventListener("mousedown", function (e) {
                         if (!self._active) {
@@ -1006,8 +1006,8 @@
                         if (!down) {
                             return;
                         }
-                        var x = mousePos[0];
-                        var y = mousePos[1];
+                        const x = mousePos[0];
+                        const y = mousePos[1];
                         xDelta += (x - lastX) * mouseOrbitRate;
                         yDelta += (y - lastY) * mouseOrbitRate;
                         lastX = x;
@@ -1022,7 +1022,7 @@
                             return;
                         }
 
-                        var panning = shiftDown || mouseDownRight;
+                        const panning = shiftDown || mouseDownRight;
 
                         if (panning) {
 
@@ -1052,11 +1052,11 @@
                         if (self._panToPointer) {
                             needPickSurface = true;
                         }
-                        var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
+                        const delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
                         if (delta === 0) {
                             return;
                         }
-                        var d = delta / Math.abs(delta);
+                        const d = delta / Math.abs(delta);
                         vZoom = -d * getZoomRate() * mouseZoomRate;
                         e.preventDefault();
                     });
@@ -1070,10 +1070,10 @@
                         if (!over) {
                             return;
                         }
-                        var elapsed = e.deltaTime;
+                        const elapsed = e.deltaTime;
                         if (!self.ctrlDown && !self.altDown) {
-                            var wkey = input.keyDown[input.KEY_ADD];
-                            var skey = input.keyDown[input.KEY_SUBTRACT];
+                            const wkey = input.keyDown[input.KEY_ADD];
+                            const skey = input.keyDown[input.KEY_SUBTRACT];
                             if (wkey || skey) {
                                 if (skey) {
                                     vZoom = elapsed * getZoomRate() * keyboardZoomRate;
@@ -1096,10 +1096,10 @@
                                 return;
                             }
 
-                            var elapsed = e.deltaTime;
+                            const elapsed = e.deltaTime;
 
                             // if (!self.ctrlDown && !self.altDown) {
-                            var front, back, left, right, up, down;
+                            let front, back, left, right, up, down;
                             if (self._keyboardLayout == 'azerty') {
                                 front = input.keyDown[input.KEY_Z];
                                 back = input.keyDown[input.KEY_S];
@@ -1141,26 +1141,26 @@
 
                 (function () {
 
-                    var touchStartTime;
-                    var tapStartPos = new Float32Array(2);
-                    var tapStartTime = -1;
+                    let touchStartTime;
+                    const tapStartPos = new Float32Array(2);
+                    let tapStartTime = -1;
 
-                    var lastTouches = [];
-                    var numTouches = 0;
+                    const lastTouches = [];
+                    let numTouches = 0;
 
-                    var touch0Vec = new Float32Array(2);
-                    var touch1Vec = new Float32Array(2);
+                    const touch0Vec = new Float32Array(2);
+                    const touch1Vec = new Float32Array(2);
 
-                    var MODE_CHANGE_TIMEOUT = 50;
-                    var MODE_NONE = 0;
-                    var MODE_ROTATE = 1;
-                    var MODE_PAN = 1 << 1;
-                    var MODE_ZOOM = 1 << 2;
-                    var currentMode = MODE_NONE;
-                    var transitionTime = Date.now();
+                    const MODE_CHANGE_TIMEOUT = 50;
+                    const MODE_NONE = 0;
+                    const MODE_ROTATE = 1;
+                    const MODE_PAN = 1 << 1;
+                    const MODE_ZOOM = 1 << 2;
+                    let currentMode = MODE_NONE;
+                    let transitionTime = Date.now();
 
                     function checkMode(mode) {
-                        var currentTime = Date.now();
+                        const currentTime = Date.now();
                         if (currentMode === MODE_NONE) {
                             currentMode = mode;
                             return true;
@@ -1177,8 +1177,8 @@
                         if (!self._active) {
                             return;
                         }
-                        var touches = event.touches;
-                        var changedTouches = event.changedTouches;
+                        const touches = event.touches;
+                        const changedTouches = event.changedTouches;
 
                         touchStartTime = Date.now();
 
@@ -1194,7 +1194,7 @@
                             lastTouches.push(new Float32Array(2));
                         }
 
-                        for (var i = 0, len = touches.length; i < len; ++i) {
+                        for (let i = 0, len = touches.length; i < len; ++i) {
                             lastTouches[i][0] = touches[i].pageX;
                             lastTouches[i][1] = touches[i].pageY;
                         }
@@ -1209,17 +1209,17 @@
                         if (!self._active) {
                             return;
                         }
-                        var touches = event.touches;
+                        const touches = event.touches;
 
                         if (numTouches === 1) {
 
                             var touch0 = touches[0];
 
                             if (checkMode(MODE_ROTATE)) {
-                                var deltaX = touch0.pageX - lastTouches[0][0];
-                                var deltaY = touch0.pageY - lastTouches[0][1];
-                                var rotateX = deltaX * touchRotateRate;
-                                var rotateY = deltaY * touchRotateRate;
+                                const deltaX = touch0.pageX - lastTouches[0][0];
+                                const deltaY = touch0.pageY - lastTouches[0][1];
+                                const rotateX = deltaX * touchRotateRate;
+                                const rotateY = deltaY * touchRotateRate;
                                 rotateVx = rotateY;
                                 rotateVy = -rotateX;
                             }
@@ -1227,12 +1227,12 @@
                         } else if (numTouches === 2) {
 
                             var touch0 = touches[0];
-                            var touch1 = touches[1];
+                            const touch1 = touches[1];
 
                             math.subVec2([touch0.pageX, touch0.pageY], lastTouches[0], touch0Vec);
                             math.subVec2([touch1.pageX, touch1.pageY], lastTouches[1], touch1Vec);
 
-                            var panning = math.dotVec2(touch0Vec, touch1Vec) > 0;
+                            const panning = math.dotVec2(touch0Vec, touch1Vec) > 0;
 
                             if (panning && checkMode(MODE_PAN)) {
                                 math.subVec2([touch0.pageX, touch0.pageY], lastTouches[0], touch0Vec);
@@ -1241,13 +1241,13 @@
                             }
 
                             if (!panning && checkMode(MODE_ZOOM)) {
-                                var d1 = math.distVec2([touch0.pageX, touch0.pageY], [touch1.pageX, touch1.pageY]);
-                                var d2 = math.distVec2(lastTouches[0], lastTouches[1]);
+                                const d1 = math.distVec2([touch0.pageX, touch0.pageY], [touch1.pageX, touch1.pageY]);
+                                const d2 = math.distVec2(lastTouches[0], lastTouches[1]);
                                 vZoom = (d2 - d1) * getZoomRate() * touchZoomRate;
                             }
                         }
 
-                        for (var i = 0; i < numTouches; ++i) {
+                        for (let i = 0; i < numTouches; ++i) {
                             lastTouches[i][0] = touches[i].pageX;
                             lastTouches[i][1] = touches[i].pageY;
                         }
@@ -1268,11 +1268,11 @@
                         if (!over) {
                             return;
                         }
-                        var elapsed = e.deltaTime;
-                        var left = input.keyDown[input.KEY_LEFT_ARROW];
-                        var right = input.keyDown[input.KEY_RIGHT_ARROW];
-                        var up = input.keyDown[input.KEY_UP_ARROW];
-                        var down = input.keyDown[input.KEY_DOWN_ARROW];
+                        const elapsed = e.deltaTime;
+                        const left = input.keyDown[input.KEY_LEFT_ARROW];
+                        const right = input.keyDown[input.KEY_RIGHT_ARROW];
+                        const up = input.keyDown[input.KEY_UP_ARROW];
+                        const down = input.keyDown[input.KEY_DOWN_ARROW];
                         if (left || right || up || down) {
                             if (right) {
                                 rotateVy += -elapsed * keyboardOrbitRate;
@@ -1301,9 +1301,9 @@
                         if (!over) {
                             return;
                         }
-                        var elapsed = e.deltaTime;
-                        var rotateLeft;
-                        var rotateRight;
+                        const elapsed = e.deltaTime;
+                        let rotateLeft;
+                        let rotateRight;
                         if (self._keyboardLayout == 'azerty') {
                             rotateLeft = input.keyDown[input.KEY_A];
                             rotateRight = input.keyDown[input.KEY_E];
@@ -1346,10 +1346,10 @@
                         }
                     });
 
-                    var downX;
-                    var downY;
-                    var downCursorX;
-                    var downCursorY;
+                    let downX;
+                    let downY;
+                    let downCursorX;
+                    let downCursorY;
 
                     canvas.addEventListener('mousedown', function (e) {
                         if (!self._active) {
@@ -1373,8 +1373,8 @@
 
                     canvas.addEventListener('mouseup', (function (e) {
 
-                        var clicks = 0;
-                        var timeout;
+                        let clicks = 0;
+                        let timeout;
 
                         return function (e) {
 
@@ -1510,15 +1510,15 @@
 
                 (function () {
 
-                    var TAP_INTERVAL = 150;
-                    var DBL_TAP_INTERVAL = 325;
-                    var TAP_DISTANCE_THRESHOLD = 4;
+                    const TAP_INTERVAL = 150;
+                    const DBL_TAP_INTERVAL = 325;
+                    const TAP_DISTANCE_THRESHOLD = 4;
 
-                    var touchStartTime;
-                    var activeTouches = [];
-                    var tapStartPos = new Float32Array(2);
-                    var tapStartTime = -1;
-                    var lastTapTime = -1;
+                    let touchStartTime;
+                    const activeTouches = [];
+                    const tapStartPos = new Float32Array(2);
+                    let tapStartTime = -1;
+                    let lastTapTime = -1;
 
                     canvas.addEventListener("touchstart", function (event) {
 
@@ -1526,8 +1526,8 @@
                             return;
                         }
 
-                        var touches = event.touches;
-                        var changedTouches = event.changedTouches;
+                        const touches = event.touches;
+                        const changedTouches = event.changedTouches;
 
                         touchStartTime = Date.now();
 
@@ -1543,7 +1543,7 @@
                             activeTouches.push(new Float32Array(2))
                         }
 
-                        for (var i = 0, len = touches.length; i < len; ++i) {
+                        for (let i = 0, len = touches.length; i < len; ++i) {
                             activeTouches[i][0] = touches[i].pageX;
                             activeTouches[i][1] = touches[i].pageY;
                         }
@@ -1564,9 +1564,9 @@
                             return;
                         }
 
-                        var currentTime = Date.now();
-                        var touches = event.touches;
-                        var changedTouches = event.changedTouches;
+                        const currentTime = Date.now();
+                        const touches = event.touches;
+                        const changedTouches = event.changedTouches;
 
                         // process tap
 
@@ -1631,7 +1631,7 @@
 
                         activeTouches.length = touches.length;
 
-                        for (var i = 0, len = touches.length; i < len; ++i) {
+                        for (let i = 0, len = touches.length; i < len; ++i) {
                             activeTouches[i][0] = touches[i].pageX;
                             activeTouches[i][1] = touches[i].pageY;
                         }
@@ -1647,19 +1647,19 @@
 
             (function () {
 
-                var KEY_NUM_1 = 49;
-                var KEY_NUM_2 = 50;
-                var KEY_NUM_3 = 51;
-                var KEY_NUM_4 = 52;
-                var KEY_NUM_5 = 53;
-                var KEY_NUM_6 = 54;
+                const KEY_NUM_1 = 49;
+                const KEY_NUM_2 = 50;
+                const KEY_NUM_3 = 51;
+                const KEY_NUM_4 = 52;
+                const KEY_NUM_5 = 53;
+                const KEY_NUM_6 = 54;
 
-                var center = new math.vec3();
-                var tempVec3a = new math.vec3();
-                var tempVec3b = new math.vec3();
-                var tempVec3c = new math.vec3();
+                const center = new math.vec3();
+                const tempVec3a = new math.vec3();
+                const tempVec3b = new math.vec3();
+                const tempVec3c = new math.vec3();
 
-                var cameraTarget = {
+                const cameraTarget = {
                     eye: new Float32Array(3),
                     look: new Float32Array(3),
                     up: new Float32Array(3)
@@ -1675,7 +1675,7 @@
                         return;
                     }
 
-                    var keyCode = e.keyCode;
+                    const keyCode = e.keyCode;
 
                     if (keyCode !== KEY_NUM_1 &&
                         keyCode !== KEY_NUM_2 &&
@@ -1686,12 +1686,12 @@
                         return;
                     }
 
-                    var aabb = scene.aabb;
-                    var diag = math.getAABB3Diag(aabb);
+                    const aabb = scene.aabb;
+                    const diag = math.getAABB3Diag(aabb);
                     center[0] = aabb[0] + aabb[3] / 2.0;
                     center[1] = aabb[1] + aabb[4] / 2.0;
                     center[2] = aabb[2] + aabb[5] / 2.0;
-                    var dist = Math.abs((diag) / Math.tan(self._cameraFlight.fitFOV / 2));
+                    const dist = Math.abs((diag) / Math.tan(self._cameraFlight.fitFOV / 2));
 
                     switch (keyCode) {
 
@@ -1759,13 +1759,13 @@
 
         _flyTo: function (hit) {
 
-            var pos;
+            let pos;
 
             if (hit && hit.worldPos) {
                 pos = hit.worldPos
             }
 
-            var aabb = hit ? hit.mesh.aabb : this.scene.aabb;
+            const aabb = hit ? hit.mesh.aabb : this.scene.aabb;
 
             this._boundaryHelper.geometry.targetAABB = aabb;
             //    this._boundaryHelper.visible = true;
@@ -1774,8 +1774,8 @@
 
                 // Fly to look at point, don't change eye->look dist
 
-                var camera = this.scene.camera;
-                var diff = xeogl.math.subVec3(camera.eye, camera.look, []);
+                const camera = this.scene.camera;
+                const diff = xeogl.math.subVec3(camera.eye, camera.look, []);
 
                 this._cameraFlight.flyTo({
                         // look: pos,

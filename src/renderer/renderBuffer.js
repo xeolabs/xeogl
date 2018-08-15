@@ -30,16 +30,16 @@ xeogl.renderer.RenderBuffer.prototype.bind = function () {
     if (this.bound) {
         return;
     }
-    var gl = this.gl;
+    const gl = this.gl;
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.buffer.framebuf);
     this.bound = true;
 };
 
 xeogl.renderer.RenderBuffer.prototype._touch = function () {
 
-    var width;
-    var height;
-    var gl = this.gl;
+    let width;
+    let height;
+    const gl = this.gl;
 
     if (this.size) {
         width = this.size[0];
@@ -68,7 +68,7 @@ xeogl.renderer.RenderBuffer.prototype._touch = function () {
     // width = 1024;
     // height = 1024;
 
-    var texture = gl.createTexture();
+    const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -77,11 +77,11 @@ xeogl.renderer.RenderBuffer.prototype._touch = function () {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    var renderbuf = gl.createRenderbuffer();
+    const renderbuf = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuf);
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
 
-    var framebuf = gl.createFramebuffer();
+    const framebuf = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuf);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuf);
@@ -98,7 +98,7 @@ xeogl.renderer.RenderBuffer.prototype._touch = function () {
     }
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
 
     switch (status) {
 
@@ -136,27 +136,27 @@ xeogl.renderer.RenderBuffer.prototype.clear = function () {
     if (!this.bound) {
         throw "Render buffer not bound";
     }
-    var gl = this.gl;
+    const gl = this.gl;
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 };
 
 xeogl.renderer.RenderBuffer.prototype.read = function (pickX, pickY) {
-    var x = pickX;
-    var y = this.canvas.height - pickY;
-    var pix = new Uint8Array(4);
-    var gl = this.gl;
+    const x = pickX;
+    const y = this.canvas.height - pickY;
+    const pix = new Uint8Array(4);
+    const gl = this.gl;
     gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pix);
     return pix;
 };
 
 xeogl.renderer.RenderBuffer.prototype.unbind = function () {
-    var gl = this.gl;
+    const gl = this.gl;
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     this.bound = false;
 };
 
 xeogl.renderer.RenderBuffer.prototype.getTexture = function () {
-    var self = this;
+    const self = this;
     return {
         renderBuffer: this,
         bind: function (unit) {
@@ -178,7 +178,7 @@ xeogl.renderer.RenderBuffer.prototype.getTexture = function () {
 
 xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     if (this.allocated) {
-        var gl = this.gl;
+        const gl = this.gl;
         gl.deleteTexture(this.buffer.texture);
         gl.deleteFramebuffer(this.buffer.framebuf);
         gl.deleteRenderbuffer(this.buffer.renderbuf);

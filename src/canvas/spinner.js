@@ -57,7 +57,7 @@
     "use strict";
 
     // Ensures lazy-injected CSS only injected once  
-    var spinnerCSSInjected = false;
+    let spinnerCSSInjected = false;
 
     xeogl.Spinner = xeogl.Component.extend({
 
@@ -73,8 +73,8 @@
 
             // Create spinner elements
 
-            var div = document.createElement('div');
-            var style = div.style;
+            const div = document.createElement('div');
+            const style = div.style;
 
             style["z-index"] = "9000";
             style.position = "absolute";
@@ -157,7 +157,7 @@
                         return;
                     }
 
-                    var prevValue = this._processes;
+                    const prevValue = this._processes;
 
                     this._processes = value;
 
@@ -195,9 +195,9 @@
                 return;
             }
 
-            var canvas = this._canvas;
-            var spinner = this._element;
-            var spinnerStyle = spinner.style;
+            const canvas = this._canvas;
+            const spinner = this._element;
+            const spinnerStyle = spinner.style;
 
             spinnerStyle["left"] = (canvas.offsetLeft + (canvas.clientWidth * 0.5) - (spinner.clientWidth * 0.5)) + "px";
             spinnerStyle["top"] = (canvas.offsetTop + (canvas.clientHeight * 0.5) - (spinner.clientHeight * 0.5)) + "px";
@@ -207,7 +207,7 @@
             if (spinnerCSSInjected) {
                 return;
             }
-            var node = document.createElement('style');
+            const node = document.createElement('style');
             node.innerHTML = this._spinnerCSS;
             document.body.appendChild(node);
             spinnerCSSInjected = true;

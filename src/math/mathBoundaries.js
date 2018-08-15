@@ -5,7 +5,7 @@
 
     "use strict";
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
     /**
      * Returns a new, uninitialized 3D axis-aligned bounding box.
@@ -53,29 +53,29 @@
 
         p2 = p2 || p;
 
-        var i;
-        var len = p.length;
+        let i;
+        const len = p.length;
 
-        var x;
-        var y;
-        var z;
+        let x;
+        let y;
+        let z;
 
-        var m0 = m[0];
-        var m1 = m[1];
-        var m2 = m[2];
-        var m3 = m[3];
-        var m4 = m[4];
-        var m5 = m[5];
-        var m6 = m[6];
-        var m7 = m[7];
-        var m8 = m[8];
-        var m9 = m[9];
-        var m10 = m[10];
-        var m11 = m[11];
-        var m12 = m[12];
-        var m13 = m[13];
-        var m14 = m[14];
-        var m15 = m[15];
+        const m0 = m[0];
+        const m1 = m[1];
+        const m2 = m[2];
+        const m3 = m[3];
+        const m4 = m[4];
+        const m5 = m[5];
+        const m6 = m[6];
+        const m7 = m[7];
+        const m8 = m[8];
+        const m9 = m[9];
+        const m10 = m[10];
+        const m11 = m[11];
+        const m12 = m[12];
+        const m13 = m[13];
+        const m14 = m[14];
+        const m15 = m[15];
 
         for (i = 0; i < len; i += 4) {
 
@@ -99,9 +99,9 @@
      */
     math.getAABB3Diag = (function () {
 
-        var min = new Float32Array(3);
-        var max = new Float32Array(3);
-        var tempVec3 = new Float32Array(3);
+        const min = new Float32Array(3);
+        const max = new Float32Array(3);
+        const tempVec3 = new Float32Array(3);
 
         return function (aabb) {
 
@@ -126,9 +126,9 @@
      */
     math.getAABB3DiagPoint = (function () {
 
-        var min = new Float32Array(3);
-        var max = new Float32Array(3);
-        var tempVec3 = new Float32Array(3);
+        const min = new Float32Array(3);
+        const max = new Float32Array(3);
+        const tempVec3 = new Float32Array(3);
 
         return function (aabb, p) {
 
@@ -140,14 +140,14 @@
             max[1] = aabb[4];
             max[2] = aabb[5];
 
-            var diagVec = math.subVec3(max, min, tempVec3);
+            const diagVec = math.subVec3(max, min, tempVec3);
 
-            var xneg = p[0] - aabb[0];
-            var xpos = aabb[3] - p[0];
-            var yneg = p[1] - aabb[1];
-            var ypos = aabb[4] - p[1];
-            var zneg = p[2] - aabb[2];
-            var zpos = aabb[5] - p[2];
+            const xneg = p[0] - aabb[0];
+            const xpos = aabb[3] - p[0];
+            const yneg = p[1] - aabb[1];
+            const ypos = aabb[4] - p[1];
+            const zneg = p[2] - aabb[2];
+            const zpos = aabb[5] - p[2];
 
             diagVec[0] += (xneg > xpos) ? xneg : xpos;
             diagVec[1] += (yneg > ypos) ? yneg : ypos;
@@ -163,7 +163,7 @@
      * @private
      */
     math.getAABB3Center = function (aabb, dest) {
-        var r = dest || math.vec3();
+        const r = dest || math.vec3();
 
         r[0] = (aabb[0] + aabb[3] ) / 2;
         r[1] = (aabb[1] + aabb[4] ) / 2;
@@ -178,7 +178,7 @@
      * @private
      */
     math.getAABB2Center = function (aabb, dest) {
-        var r = dest || math.vec2();
+        const r = dest || math.vec2();
 
         r[0] = (aabb[2] + aabb[0] ) / 2;
         r[1] = (aabb[3] + aabb[1] ) / 2;
@@ -266,22 +266,22 @@
      */
     math.positions3ToAABB3 = (function() {
 
-        var p = new Float32Array(3);
+        const p = new Float32Array(3);
 
         return function (positions, aabb, positionsDecodeMatrix) {
 
             aabb = aabb || math.AABB3();
 
-            var xmin = xeogl.math.MAX_DOUBLE;
-            var ymin = xeogl.math.MAX_DOUBLE;
-            var zmin = xeogl.math.MAX_DOUBLE;
-            var xmax = -xeogl.math.MAX_DOUBLE;
-            var ymax = -xeogl.math.MAX_DOUBLE;
-            var zmax = -xeogl.math.MAX_DOUBLE;
+            let xmin = xeogl.math.MAX_DOUBLE;
+            let ymin = xeogl.math.MAX_DOUBLE;
+            let zmin = xeogl.math.MAX_DOUBLE;
+            let xmax = -xeogl.math.MAX_DOUBLE;
+            let ymax = -xeogl.math.MAX_DOUBLE;
+            let zmax = -xeogl.math.MAX_DOUBLE;
 
-            var x, y, z;
+            let x, y, z;
 
-            for (var i = 0, len = positions.length; i < len; i += 3) {
+            for (let i = 0, len = positions.length; i < len; i += 3) {
 
                 if (positionsDecodeMatrix) {
 
@@ -346,16 +346,16 @@
 
         aabb = aabb || math.AABB3();
 
-        var xmin = xeogl.math.MAX_DOUBLE;
-        var ymin = xeogl.math.MAX_DOUBLE;
-        var zmin = xeogl.math.MAX_DOUBLE;
-        var xmax = -xeogl.math.MAX_DOUBLE;
-        var ymax = -xeogl.math.MAX_DOUBLE;
-        var zmax = -xeogl.math.MAX_DOUBLE;
+        let xmin = xeogl.math.MAX_DOUBLE;
+        let ymin = xeogl.math.MAX_DOUBLE;
+        let zmin = xeogl.math.MAX_DOUBLE;
+        let xmax = -xeogl.math.MAX_DOUBLE;
+        let ymax = -xeogl.math.MAX_DOUBLE;
+        let zmax = -xeogl.math.MAX_DOUBLE;
 
-        var x, y, z;
+        let x, y, z;
 
-        for (var i = 0, len = obb.length; i < len; i += 4) {
+        for (let i = 0, len = obb.length; i < len; i += 4) {
 
             x = obb[i + 0];
             y = obb[i + 1];
@@ -405,16 +405,16 @@
 
         aabb = aabb || math.AABB3();
 
-        var xmin = xeogl.math.MAX_DOUBLE;
-        var ymin = xeogl.math.MAX_DOUBLE;
-        var zmin = xeogl.math.MAX_DOUBLE;
-        var xmax = -xeogl.math.MAX_DOUBLE;
-        var ymax = -xeogl.math.MAX_DOUBLE;
-        var zmax = -xeogl.math.MAX_DOUBLE;
+        let xmin = xeogl.math.MAX_DOUBLE;
+        let ymin = xeogl.math.MAX_DOUBLE;
+        let zmin = xeogl.math.MAX_DOUBLE;
+        let xmax = -xeogl.math.MAX_DOUBLE;
+        let ymax = -xeogl.math.MAX_DOUBLE;
+        let zmax = -xeogl.math.MAX_DOUBLE;
 
-        var x, y, z;
+        let x, y, z;
 
-        for (var i = 0, len = points.length; i < len; i++) {
+        for (let i = 0, len = points.length; i < len; i++) {
 
             x = points[i][0];
             y = points[i][1];
@@ -462,18 +462,18 @@
      */
     math.points3ToSphere3 = (function () {
 
-        var tempVec3 = new Float32Array(3);
+        const tempVec3 = new Float32Array(3);
 
         return function (points, sphere) {
 
             sphere = sphere || math.vec4();
 
-            var x = 0;
-            var y = 0;
-            var z = 0;
+            let x = 0;
+            let y = 0;
+            let z = 0;
 
-            var i;
-            var numPoints = points.length;
+            let i;
+            const numPoints = points.length;
 
             for (i = 0; i < numPoints; i++) {
                 x += points[i][0];
@@ -485,8 +485,8 @@
             sphere[1] = y / numPoints;
             sphere[2] = z / numPoints;
 
-            var radius = 0;
-            var dist;
+            let radius = 0;
+            let dist;
 
             for (i = 0; i < numPoints; i++) {
 
@@ -510,20 +510,20 @@
      */
     math.OBB3ToSphere3 = (function () {
 
-        var point = new Float32Array(3);
-        var tempVec3 = new Float32Array(3);
+        const point = new Float32Array(3);
+        const tempVec3 = new Float32Array(3);
 
         return function (points, sphere) {
 
             sphere = sphere || math.vec4();
 
-            var x = 0;
-            var y = 0;
-            var z = 0;
+            let x = 0;
+            let y = 0;
+            let z = 0;
 
-            var i;
-            var lenPoints = points.length;
-            var numPoints = lenPoints / 4;
+            let i;
+            const lenPoints = points.length;
+            const numPoints = lenPoints / 4;
 
             for (i = 0; i < lenPoints; i += 4) {
                 x += points[i + 0];
@@ -535,8 +535,8 @@
             sphere[1] = y / numPoints;
             sphere[2] = z / numPoints;
 
-            var radius = 0;
-            var dist;
+            let radius = 0;
+            let dist;
 
             for (i = 0; i < lenPoints; i += 4) {
 
@@ -667,17 +667,17 @@
 
         aabb = aabb || math.AABB2();
 
-        var xmin = xeogl.math.MAX_DOUBLE;
-        var ymin = xeogl.math.MAX_DOUBLE;
-        var xmax = -xeogl.math.MAX_DOUBLE;
-        var ymax = -xeogl.math.MAX_DOUBLE;
+        let xmin = xeogl.math.MAX_DOUBLE;
+        let ymin = xeogl.math.MAX_DOUBLE;
+        let xmax = -xeogl.math.MAX_DOUBLE;
+        let ymax = -xeogl.math.MAX_DOUBLE;
 
-        var x;
-        var y;
-        var w;
-        var f;
+        let x;
+        let y;
+        let w;
+        let f;
 
-        for (var i = 0, len = points.length; i < len; i += 4) {
+        for (let i = 0, len = points.length; i < len; i += 4) {
 
             x = points[i + 0];
             y = points[i + 1];
@@ -769,10 +769,10 @@
 
         aabb2 = aabb2 || aabb;
 
-        var xmin = (aabb[0] + 1.0) * 0.5;
-        var ymin = (aabb[1] + 1.0) * 0.5;
-        var xmax = (aabb[2] + 1.0) * 0.5;
-        var ymax = (aabb[3] + 1.0) * 0.5;
+        const xmin = (aabb[0] + 1.0) * 0.5;
+        const ymin = (aabb[1] + 1.0) * 0.5;
+        const xmax = (aabb[2] + 1.0) * 0.5;
+        const ymax = (aabb[3] + 1.0) * 0.5;
 
         aabb2[0] = Math.floor(xmin * canvasWidth);
         aabb2[1] = canvasHeight - Math.floor(ymax * canvasHeight);

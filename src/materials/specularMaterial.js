@@ -363,8 +363,8 @@
         },
 
         _makeHash: function () {
-            var state = this._state;
-            var hash = ["/spe"];
+            const state = this._state;
+            const hash = ["/spe"];
             if (this._diffuseMap) {
                 hash.push("/dm");
                 if (this._diffuseMap.hasMatrix) {
@@ -432,7 +432,7 @@
              */
             diffuse: {
                 set: function (value) {
-                    var diffuse = this._state.diffuse;
+                    let diffuse = this._state.diffuse;
                     if (!diffuse) {
                         diffuse = this._state.diffuse = new Float32Array(3);
                     } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
@@ -483,7 +483,7 @@
              */
             specular: {
                 set: function (value) {
-                    var specular = this._state.specular;
+                    let specular = this._state.specular;
                     if (!specular) {
                         specular = this._state.specular = new Float32Array(3);
                     } else if (value && specular[0] === value[0] && specular[1] === value[1] && specular[2] === value[2]) {
@@ -614,7 +614,7 @@
              */
             emissive: {
                 set: function (value) {
-                    var emissive = this._state.emissive;
+                    let emissive = this._state.emissive;
                     if (!emissive) {
                         emissive = this._state.emissive = new Float32Array(3);
                     } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
@@ -740,12 +740,12 @@
              @type {String}
              */
             alphaMode: (function () {
-                var modes = {"opaque": 0, "mask": 1, "blend": 2};
-                var modeNames = ["opaque", "mask", "blend"];
+                const modes = {"opaque": 0, "mask": 1, "blend": 2};
+                const modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
                         alphaMode = alphaMode || "opaque";
-                        var value = modes[alphaMode];
+                        let value = modes[alphaMode];
                         if (value === undefined) {
                             this.error("Unsupported value for 'alphaMode': " + alphaMode + " defaulting to 'opaque'");
                             value = "opaque";

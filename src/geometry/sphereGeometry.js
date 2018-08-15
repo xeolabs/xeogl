@@ -58,19 +58,19 @@
 
         _init: function (cfg) {
 
-            var lod = cfg.lod || 1;
+            const lod = cfg.lod || 1;
 
-            var centerX = cfg.center ? cfg.center[0] : 0;
-            var centerY = cfg.center ? cfg.center[1] : 0;
-            var centerZ = cfg.center ? cfg.center[2] : 0;
+            const centerX = cfg.center ? cfg.center[0] : 0;
+            const centerY = cfg.center ? cfg.center[1] : 0;
+            const centerZ = cfg.center ? cfg.center[2] : 0;
 
-            var radius = cfg.radius || 1;
+            let radius = cfg.radius || 1;
             if (radius < 0) {
                 this.warn("negative radius not allowed - will invert");
                 radius *= -1;
             }
 
-            var heightSegments = cfg.heightSegments || 18;
+            let heightSegments = cfg.heightSegments || 18;
             if (heightSegments < 0) {
                 this.warn("negative heightSegments not allowed - will invert");
                 heightSegments *= -1;
@@ -80,7 +80,7 @@
                 heightSegments = 18;
             }
 
-            var widthSegments = cfg.widthSegments || 18;
+            let widthSegments = cfg.widthSegments || 18;
             if (widthSegments < 0) {
                 this.warn("negative widthSegments not allowed - will invert");
                 widthSegments *= -1;
@@ -90,31 +90,31 @@
                 widthSegments = 18;
             }
 
-            var positions = [];
-            var normals = [];
-            var uvs = [];
-            var indices = [];
+            const positions = [];
+            const normals = [];
+            const uvs = [];
+            const indices = [];
 
-            var i;
-            var j;
+            let i;
+            let j;
 
-            var theta;
-            var sinTheta;
-            var cosTheta;
+            let theta;
+            let sinTheta;
+            let cosTheta;
 
-            var phi;
-            var sinPhi;
-            var cosPhi;
+            let phi;
+            let sinPhi;
+            let cosPhi;
 
-            var x;
-            var y;
-            var z;
+            let x;
+            let y;
+            let z;
 
-            var u;
-            var v;
+            let u;
+            let v;
 
-            var first;
-            var second;
+            let first;
+            let second;
 
             for (i = 0; i <= heightSegments; i++) {
 

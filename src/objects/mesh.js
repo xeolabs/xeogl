@@ -661,8 +661,8 @@
         },
 
         _makeHash: function () {
-            var hash = [];
-            var state = this._state;
+            const hash = [];
+            const state = this._state;
             if (state.stationary) {
                 hash.push("/s");
             }
@@ -681,8 +681,8 @@
         },
 
         _buildMeshAABB: (function () {
-            var math = xeogl.math;
-            var obb = math.OBB3();
+            const math = xeogl.math;
+            const obb = math.OBB3();
             return function (worldMatrix, aabb) { // TODO: factor out into class member
                 math.transformOBB3(worldMatrix, this._geometry.obb, obb);
                 math.OBB3ToAABB3(obb, aabb);
@@ -855,7 +855,7 @@
             worldPositions: {
                 get: function () {
                     if (this._worldPositionsDirty) {
-                        var positions = this._geometry.positions;
+                        const positions = this._geometry.positions;
                         if (!this._worldPositions) {
                             this._worldPositions = new Float32Array(positions.length);
                         }
@@ -1266,7 +1266,7 @@
              */
             colorize: {
                 set: function (value) {
-                    var colorize = this._state.colorize;
+                    let colorize = this._state.colorize;
                     if (!colorize) {
                         colorize = this._state.colorize = new Float32Array(4);
                         colorize[3] = 1;
@@ -1298,7 +1298,7 @@
              */
             opacity: {
                 set: function (opacity) {
-                    var colorize = this._state.colorize;
+                    let colorize = this._state.colorize;
                     if (!colorize) {
                         colorize = this._state.colorize = new Float32Array(4);
                         colorize[0] = 1;

@@ -5,7 +5,7 @@
 
     "use strict";
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
     /**
      * Builds normal vectors from positions and indices.
@@ -14,21 +14,21 @@
      */
     math.buildNormals = (function () {
 
-        var a = math.vec3();
-        var b = math.vec3();
-        var c = math.vec3();
-        var ab = math.vec3();
-        var ac = math.vec3();
-        var crossVec = math.vec3();
+        const a = math.vec3();
+        const b = math.vec3();
+        const c = math.vec3();
+        const ab = math.vec3();
+        const ac = math.vec3();
+        const crossVec = math.vec3();
 
         return function (positions, indices, normals) {
 
-            var i;
-            var len;
-            var nvecs = new Array(positions.length / 3);
-            var j0;
-            var j1;
-            var j2;
+            let i;
+            let len;
+            const nvecs = new Array(positions.length / 3);
+            let j0;
+            let j1;
+            let j2;
 
             for (i = 0, len = indices.length; i < len; i += 3) {
 
@@ -51,7 +51,7 @@
                 math.subVec3(b, a, ab);
                 math.subVec3(c, a, ac);
 
-                var normVec = math.vec3();
+                const normVec = math.vec3();
 
                 math.normalizeVec3(math.cross3Vec3(ab, ac, crossVec), normVec);
 
@@ -72,10 +72,10 @@
 
             normals = (normals && normals.length === positions.length) ? normals : new Float32Array(positions.length);
 
-            var count;
-            var x;
-            var y;
-            var z;
+            let count;
+            let x;
+            let y;
+            let z;
 
             for (i = 0, len = nvecs.length; i < len; i++) {  // Now go through and average out everything
 
@@ -85,7 +85,7 @@
                 y = 0;
                 z = 0;
 
-                for (var j = 0; j < count; j++) {
+                for (let j = 0; j < count; j++) {
                     x += nvecs[i][j][0];
                     y += nvecs[i][j][1];
                     z += nvecs[i][j][2];
@@ -107,49 +107,49 @@
      */
     math.buildTangents = (function () {
 
-        var tempVec3 = new Float32Array(3);
-        var tempVec3b = new Float32Array(3);
-        var tempVec3c = new Float32Array(3);
-        var tempVec3d = new Float32Array(3);
-        var tempVec3e = new Float32Array(3);
-        var tempVec3f = new Float32Array(3);
-        var tempVec3g = new Float32Array(3);
+        const tempVec3 = new Float32Array(3);
+        const tempVec3b = new Float32Array(3);
+        const tempVec3c = new Float32Array(3);
+        const tempVec3d = new Float32Array(3);
+        const tempVec3e = new Float32Array(3);
+        const tempVec3f = new Float32Array(3);
+        const tempVec3g = new Float32Array(3);
 
         return function (positions, indices, uv) {
 
-            var tangents = new Float32Array(positions.length);
+            const tangents = new Float32Array(positions.length);
 
             // The vertex arrays needs to be calculated
             // before the calculation of the tangents
 
-            for (var location = 0; location < indices.length; location += 3) {
+            for (let location = 0; location < indices.length; location += 3) {
 
                 // Recontructing each vertex and UV coordinate into the respective vectors
 
-                var index = indices[location];
+                let index = indices[location];
 
-                var v0 = positions.subarray(index * 3, index * 3 + 3);
-                var uv0 = uv.subarray(index * 2, index * 2 + 2);
+                const v0 = positions.subarray(index * 3, index * 3 + 3);
+                const uv0 = uv.subarray(index * 2, index * 2 + 2);
 
                 index = indices[location + 1];
 
-                var v1 = positions.subarray(index * 3, index * 3 + 3);
-                var uv1 = uv.subarray(index * 2, index * 2 + 2);
+                const v1 = positions.subarray(index * 3, index * 3 + 3);
+                const uv1 = uv.subarray(index * 2, index * 2 + 2);
 
                 index = indices[location + 2];
 
-                var v2 = positions.subarray(index * 3, index * 3 + 3);
-                var uv2 = uv.subarray(index * 2, index * 2 + 2);
+                const v2 = positions.subarray(index * 3, index * 3 + 3);
+                const uv2 = uv.subarray(index * 2, index * 2 + 2);
 
-                var deltaPos1 = math.subVec3(v1, v0, tempVec3);
-                var deltaPos2 = math.subVec3(v2, v0, tempVec3b);
+                const deltaPos1 = math.subVec3(v1, v0, tempVec3);
+                const deltaPos2 = math.subVec3(v2, v0, tempVec3b);
 
-                var deltaUV1 = math.subVec2(uv1, uv0, tempVec3c);
-                var deltaUV2 = math.subVec2(uv2, uv0, tempVec3d);
+                const deltaUV1 = math.subVec2(uv1, uv0, tempVec3c);
+                const deltaUV2 = math.subVec2(uv2, uv0, tempVec3d);
 
-                var r = 1 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
+                const r = 1 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
 
-                var tangent = math.mulVec3Scalar(
+                const tangent = math.mulVec3Scalar(
                     math.subVec3(
                         math.mulVec3Scalar(deltaPos1, deltaUV2[1], tempVec3e),
                         math.mulVec3Scalar(deltaPos2, deltaUV1[1], tempVec3f),
@@ -161,9 +161,9 @@
 
                 // Average the value of the vectors
 
-                var addTo;
+                let addTo;
 
-                for (var v = 0; v < 3; v++) {
+                for (let v = 0; v < 3; v++) {
                     addTo = indices[location + v] * 3;
                     tangents[addTo] += tangent[0];
                     tangents[addTo + 1] += tangent[1];
@@ -182,22 +182,22 @@
      */
     math.buildPickTriangles = function (positions, indices, quantized) {
 
-        var numIndices = indices.length;
-        var pickPositions = quantized ? new Uint16Array(numIndices * 9) : new Float32Array(numIndices * 9);
-        var pickColors = new Uint8Array(numIndices  * 12);
-        var primIndex = 0;
-        var vi;// Positions array index
-        var pvi = 0;// Picking positions array index
-        var pci = 0; // Picking color array index
+        const numIndices = indices.length;
+        const pickPositions = quantized ? new Uint16Array(numIndices * 9) : new Float32Array(numIndices * 9);
+        const pickColors = new Uint8Array(numIndices  * 12);
+        let primIndex = 0;
+        let vi;// Positions array index
+        let pvi = 0;// Picking positions array index
+        let pci = 0; // Picking color array index
 
         // Triangle indices
-        var i;
-        var r;
-        var g;
-        var b;
-        var a;
+        let i;
+        let r;
+        let g;
+        let b;
+        let a;
 
-        for (var location = 0; location < numIndices; location += 3) {
+        for (let location = 0; location < numIndices; location += 3) {
 
             // Primitive-indexed triangle pick color
 
@@ -266,24 +266,24 @@
      */
     math.faceToVertexNormals = function (positions, normals, options) {
         options = options || {};
-        var smoothNormalsAngleThreshold = options.smoothNormalsAngleThreshold || 20;
-        var vertexMap = {};
-        var vertexNormals = [];
-        var vertexNormalAccum = {};
-        var acc;
-        var vx;
-        var vy;
-        var vz;
-        var key;
-        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-        var precision = Math.pow(10, precisionPoints);
-        var posi;
-        var i;
-        var j;
-        var len;
-        var a;
-        var b;
-        var c;
+        const smoothNormalsAngleThreshold = options.smoothNormalsAngleThreshold || 20;
+        const vertexMap = {};
+        const vertexNormals = [];
+        const vertexNormalAccum = {};
+        let acc;
+        let vx;
+        let vy;
+        let vz;
+        let key;
+        const precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+        const precision = Math.pow(10, precisionPoints);
+        let posi;
+        let i;
+        let j;
+        let len;
+        let a;
+        let b;
+        let c;
 
         for (i = 0, len = positions.length; i < len; i += 3) {
 
@@ -301,7 +301,7 @@
                 vertexMap[key].push(posi);
             }
 
-            var normal = math.normalizeVec3([normals[i], normals[i + 1], normals[i + 2]]);
+            const normal = math.normalizeVec3([normals[i], normals[i + 1], normals[i + 2]]);
 
             vertexNormals[posi] = normal;
 
@@ -314,12 +314,12 @@
 
             if (vertexMap.hasOwnProperty(key)) {
 
-                var vertices = vertexMap[key];
-                var numVerts = vertices.length;
+                const vertices = vertexMap[key];
+                const numVerts = vertices.length;
 
                 for (i = 0; i < numVerts; i++) {
 
-                    var ii = vertices[i];
+                    const ii = vertices[i];
 
                     acc = vertexNormalAccum[ii];
 
@@ -329,12 +329,12 @@
                             continue;
                         }
 
-                        var jj = vertices[j];
+                        const jj = vertices[j];
 
                         a = vertexNormals[ii];
                         b = vertexNormals[jj];
 
-                        var angle = Math.abs(math.angleVec3(a, b) / math.DEGTORAD);
+                        const angle = Math.abs(math.angleVec3(a, b) / math.DEGTORAD);
 
                         if (angle < smoothNormalsAngleThreshold) {
 

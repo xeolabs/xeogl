@@ -1,8 +1,8 @@
 (function () {
-    var ids = new xeogl.utils.Map({});
+    const ids = new xeogl.utils.Map({});
     xeogl.renderer.State = function (cfg) {
         this.id = ids.addItem({});
-        for (var key in cfg) {
+        for (const key in cfg) {
             if (cfg.hasOwnProperty(key)) {
                 this[key] = cfg[key];
             }

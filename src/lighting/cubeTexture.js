@@ -29,7 +29,7 @@
 
         _init: function (cfg) {
 
-            var gl = this.scene.canvas.gl;
+            const gl = this.scene.canvas.gl;
 
             this._state = new xeogl.renderer.State({
                 texture: new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP),
@@ -64,7 +64,7 @@
         },
 
         _webglContextRestored: function () {
-            var gl = this.scene.canvas.gl;
+            const gl = this.scene.canvas.gl;
             this._state.texture = null;
             // if (this._images.length > 0) {
             //     this._state.texture = new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
@@ -77,16 +77,16 @@
         },
 
         _loadSrc: function (src) {
-            var self = this;
-            var gl = this.scene.canvas.gl;
+            const self = this;
+            const gl = this.scene.canvas.gl;
             this._images = [];
-            var loadFailed = false;
-            var numLoaded = 0;
-            for (var i = 0; i < src.length; i++) {
-                var image = new Image();
+            let loadFailed = false;
+            let numLoaded = 0;
+            for (let i = 0; i < src.length; i++) {
+                const image = new Image();
                 image.onload = (function () {
-                    var _image = image;
-                    var index = i;
+                    let _image = image;
+                    const index = i;
                     return function () {
                         if (loadFailed) {
                             return;
@@ -95,7 +95,7 @@
                         self._images[index] = _image;
                         numLoaded++;
                         if (numLoaded === 6) {
-                            var texture = self._state.texture;
+                            let texture = self._state.texture;
                             if (!texture) {
                                 texture = new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
                                 self._state.texture = texture;

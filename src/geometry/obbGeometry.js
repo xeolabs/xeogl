@@ -114,8 +114,8 @@
 
                 set: function (value) {
 
-                    var geometryDirty = false;
-                    var self = this;
+                    let geometryDirty = false;
+                    const self = this;
 
                     this._attach({
                         name: "target",

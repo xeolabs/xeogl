@@ -370,8 +370,8 @@
         },
 
         _makeHash: function () {
-            var state = this._state;
-            var hash = ["/met"];
+            const state = this._state;
+            const hash = ["/met"];
             if (this._baseColorMap) {
                 hash.push("/bm");
                 if (this._baseColorMap._state.hasMatrix) {
@@ -438,7 +438,7 @@
              */
             baseColor: {
                 set: function (value) {
-                    var baseColor = this._state.baseColor;
+                    let baseColor = this._state.baseColor;
                     if (!baseColor) {
                         baseColor = this._state.baseColor = new Float32Array(3);
                     } else if (value && baseColor[0] === value[0] && baseColor[1] === value[1] && baseColor[2] === value[2]) {
@@ -613,7 +613,7 @@
              */
             emissive: {
                 set: function (value) {
-                    var emissive = this._state.emissive;
+                    let emissive = this._state.emissive;
                     if (!emissive) {
                         emissive = this._state.emissive = new Float32Array(3);
                     } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
@@ -742,12 +742,12 @@
              @type {String}
              */
             alphaMode: (function () {
-                var modes = {"opaque": 0, "mask": 1, "blend": 2};
-                var modeNames = ["opaque", "mask", "blend"];
+                const modes = {"opaque": 0, "mask": 1, "blend": 2};
+                const modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
                         alphaMode = alphaMode || "opaque";
-                        var value = modes[alphaMode];
+                        let value = modes[alphaMode];
                         if (value === undefined) {
                             this.error("Unsupported value for 'alphaMode': " + alphaMode + " defaulting to 'opaque'");
                             value = "opaque";

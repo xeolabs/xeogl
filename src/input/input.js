@@ -101,7 +101,7 @@
 
         _init: function (cfg) {
 
-            var self = this;
+            const self = this;
 
             this._element = cfg.element;
 
@@ -221,7 +221,7 @@
 
                 self.mouseover = true;
 
-                var coords = self._getClickCoordsWithinElement(e);
+                const coords = self._getClickCoordsWithinElement(e);
 
                 /**
                  * Fired whenever the mouse is moved into of the parent
@@ -240,7 +240,7 @@
 
                 self.mouseover = false;
 
-                var coords = self._getClickCoordsWithinElement(e);
+                const coords = self._getClickCoordsWithinElement(e);
 
                 /**
                  * Fired whenever the mouse is moved out of the parent
@@ -276,7 +276,7 @@
                         break;
                 }
 
-                var coords = self._getClickCoordsWithinElement(e);
+                const coords = self._getClickCoordsWithinElement(e);
 
                 cfg.element.focus();
 
@@ -317,7 +317,7 @@
                         break;
                 }
 
-                var coords = self._getClickCoordsWithinElement(e);
+                const coords = self._getClickCoordsWithinElement(e);
 
                 /**
                  * Fired whenever the mouse is released over the parent
@@ -358,7 +358,7 @@
                         break;
                 }
 
-                var coords = self._getClickCoordsWithinElement(e);
+                const coords = self._getClickCoordsWithinElement(e);
 
                 /**
                  * Fired whenever the mouse is double-clicked over the parent
@@ -379,7 +379,7 @@
                     return;
                 }
 
-                var coords = self._getClickCoordsWithinElement(e);
+                const coords = self._getClickCoordsWithinElement(e);
 
                 /**
                  * Fired whenever the mouse is moved over the parent
@@ -400,7 +400,7 @@
                     return;
                 }
 
-                var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
+                const delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
 
                 /**
                  * Fired whenever the mouse wheel is moved over the parent
@@ -415,11 +415,11 @@
 
             (function () {
 
-                var downX;
-                var downY;
+                let downX;
+                let downY;
 
                 // Tolerance between down and up positions for a mouse click
-                var tolerance = 2;
+                const tolerance = 2;
 
                 self.on("mousedown", function (params) {
                     downX = params[0];
@@ -449,24 +449,24 @@
 
             (function () {
 
-                var orientationAngleLookup = {
+                const orientationAngleLookup = {
                     'landscape-primary': 90,
                     'landscape-secondary': -90,
                     'portrait-secondary': 180,
                     'portrait-primary': 0
                 };
 
-                var orientation;
-                var orientationAngle;
-                var acceleration = xeogl.math.vec3();
-                var accelerationIncludingGravity = xeogl.math.vec3();
+                let orientation;
+                let orientationAngle;
+                const acceleration = xeogl.math.vec3();
+                const accelerationIncludingGravity = xeogl.math.vec3();
 
-                var orientationChangeEvent = {
+                const orientationChangeEvent = {
                     orientation: null,
                     orientationAngle: 0
                 };
 
-                var deviceMotionEvent = {
+                const deviceMotionEvent = {
                     orientationAngle: 0,
                     acceleration: null,
                     accelerationIncludingGravity: accelerationIncludingGravity,
@@ -474,7 +474,7 @@
                     interval: 0
                 };
 
-                var deviceOrientationEvent = {
+                const deviceOrientationEvent = {
                     alpha: 0,
                     beta: 0,
                     gamma: 0,
@@ -508,7 +508,7 @@
                             deviceMotionEvent.interval = e.interval;
                             deviceMotionEvent.orientationAngle = orientationAngle;
 
-                            var accel = e.acceleration;
+                            const accel = e.acceleration;
 
                             if (accel) {
                                 acceleration[0] = accel.x;
@@ -519,7 +519,7 @@
                                 deviceMotionEvent.acceleration = null;
                             }
 
-                            var accelGrav = e.accelerationIncludingGravity;
+                            const accelGrav = e.accelerationIncludingGravity;
 
                             if (accelGrav) {
                                 accelerationIncludingGravity[0] = accelGrav.x;
@@ -576,16 +576,16 @@
         },
 
         _getClickCoordsWithinElement: function (event) {
-            var coords = [0, 0];
+            const coords = [0, 0];
             if (!event) {
                 event = window.event;
                 coords.x = event.x;
                 coords.y = event.y;
             }
             else {
-                var element = event.target;
-                var totalOffsetLeft = 0;
-                var totalOffsetTop = 0;
+                let element = event.target;
+                let totalOffsetLeft = 0;
+                let totalOffsetTop = 0;
 
                 while (element.offsetParent) {
                     totalOffsetLeft += element.offsetLeft;

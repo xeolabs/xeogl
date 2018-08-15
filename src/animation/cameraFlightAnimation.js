@@ -90,7 +90,7 @@
 
     "use strict";
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
     xeogl.CameraFlightAnimation = xeogl.Component.extend({
 
@@ -201,7 +201,7 @@
          */
         flyTo: (function () {
 
-            var tempVec3 = math.vec3();
+            const tempVec3 = math.vec3();
 
             return function (params, callback, scope) {
 
@@ -216,7 +216,7 @@
                 this._callback = callback;
                 this._callbackScope = scope;
 
-                var camera = this.scene.camera;
+                const camera = this.scene.camera;
 
                 this._eye1[0] = camera.eye[0];
                 this._eye1[1] = camera.eye[1];
@@ -233,11 +233,11 @@
                 this._orthoScale1 = camera.ortho.scale;
                 this._orthoScale2 = params.orthoScale || this._orthoScale1;
 
-                var aabb;
-                var eye;
-                var look;
-                var up;
-                var componentId;
+                let aabb;
+                let eye;
+                let look;
+                let up;
+                let componentId;
 
                 if (params.aabb) {
                     aabb = params.aabb;
@@ -260,7 +260,7 @@
 
                     // Argument must be an instance or ID of a Component (subtype)
 
-                    var component = params;
+                    let component = params;
 
                     if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
@@ -284,7 +284,7 @@
                     aabb = component.aabb || this.scene.aabb;
                 }
 
-                var poi = params.poi;
+                const poi = params.poi;
 
                 if (aabb) {
 
@@ -310,14 +310,14 @@
 
                     aabb = aabb.slice();
 
-                    var aabbCenter = math.getAABB3Center(aabb);
+                    const aabbCenter = math.getAABB3Center(aabb);
                     this._look2 = poi ||  aabbCenter;
 
-                    var eyeLookVec = math.subVec3(this._eye1, this._look1, tempVec3);
-                    var eyeLookVecNorm = math.normalizeVec3(eyeLookVec);
-                    var diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
-                    var fitFOV = params.fitFOV || this._fitFOV;
-                    var sca = Math.abs(diag / Math.tan(fitFOV * xeogl.math.DEGTORAD));
+                    const eyeLookVec = math.subVec3(this._eye1, this._look1, tempVec3);
+                    const eyeLookVecNorm = math.normalizeVec3(eyeLookVec);
+                    const diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
+                    const fitFOV = params.fitFOV || this._fitFOV;
+                    const sca = Math.abs(diag / Math.tan(fitFOV * xeogl.math.DEGTORAD));
 
                     this._orthoScale2 = diag * 1.1;
 
@@ -390,7 +390,7 @@
          * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          */
         jumpTo: function (params) {
-            var self = this;
+            const self = this;
             //           xeogl.scheduleTask(function () {  // Ensures that required asynch boundaries are built first
             self._jumpTo(params);
             //         });
@@ -398,11 +398,11 @@
 
         _jumpTo: (function () {
 
-            var newEye = math.vec3();
-            var newLook = math.vec3();
-            var newUp = math.vec3();
-            var newLookEyeVec = math.vec3();
-            var tempVec3e = math.vec3();
+            let newEye = math.vec3();
+            let newLook = math.vec3();
+            let newUp = math.vec3();
+            const newLookEyeVec = math.vec3();
+            const tempVec3e = math.vec3();
 
             return function (params) {
 
@@ -410,10 +410,10 @@
                     this.stop();
                 }
 
-                var camera = this.scene.camera;
+                const camera = this.scene.camera;
 
-                var aabb;
-                var componentId;
+                let aabb;
+                let componentId;
 
                 if (params.aabb) { // Boundary3D
 
@@ -433,7 +433,7 @@
 
                     // Argument must be an instance or ID of a Component (subtype)
 
-                    var component = params;
+                    let component = params;
 
                     if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
@@ -450,7 +450,7 @@
                     aabb = component.aabb || this.scene.aabb;
                 }
 
-                var poi = params.poi;
+                const poi = params.poi;
 
                 if (aabb) {
 
@@ -473,9 +473,9 @@
 
                     math.normalizeVec3(newLookEyeVec);
 
-                    var dist;
+                    let dist;
 
-                    var fit = (params.fit !== undefined) ? params.fit : this._fit;
+                    const fit = (params.fit !== undefined) ? params.fit : this._fit;
                     if (fit) {
                         dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * xeogl.math.DEGTORAD));
 
@@ -507,11 +507,11 @@
 
         _update: (function () {
 
-            var newLookEyeVec = math.vec3();
-            var newEye = math.vec3();
-            var newLook = math.vec3();
-            var newUp = math.vec3();
-            var lookEyeVec = math.vec3();
+            const newLookEyeVec = math.vec3();
+            const newEye = math.vec3();
+            const newLook = math.vec3();
+            const newUp = math.vec3();
+            const lookEyeVec = math.vec3();
 
             return function () {
 
@@ -519,11 +519,11 @@
                     return;
                 }
 
-                var time = Date.now();
+                const time = Date.now();
 
-                var t = (time - this._time1) / (this._time2 - this._time1);
+                let t = (time - this._time1) / (this._time2 - this._time1);
 
-                var stopping = (t >= 1);
+                const stopping = (t >= 1);
 
                 if (t > 1) {
                     t = 1;
@@ -531,7 +531,7 @@
 
                 t = this.easing ? this._ease(t, 0, 1, 1) : t;
 
-                var camera = this.scene.camera;
+                const camera = this.scene.camera;
 
 
                 if (this._flyingEye || this._flyingLook) {
@@ -556,7 +556,7 @@
 
                     math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
 
-                    var dist;
+                    let dist;
 
                     if (this._trail) {
                         math.subVec3(newLook, camera.look, newLookEyeVec);
@@ -611,7 +611,7 @@
             this._time1 = null;
             this._time2 = null;
 
-            var callback = this._callback;
+            const callback = this._callback;
 
             if (callback) {
 

@@ -26,9 +26,9 @@ xeogl.renderer.Shader = function (gl, type, source) {
 
         if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
 
-            var lines = source.split("\n");
-            var numberedLines = [];
-            for (var i = 0; i < lines.length; i++) {
+            const lines = source.split("\n");
+            const numberedLines = [];
+            for (let i = 0; i < lines.length; i++) {
                 numberedLines.push((i + 1) + ": " + lines[i] + "\n");
             }
             this.errors = [];

@@ -111,10 +111,10 @@
 
                     if (!value) {
 
-                        var canvasBoundary = this.scene.canvas.boundary;
+                        const canvasBoundary = this.scene.canvas.boundary;
 
-                        var width = canvasBoundary[2];
-                        var height = canvasBoundary[3];
+                        const width = canvasBoundary[2];
+                        const height = canvasBoundary[3];
 
                         value = [0, 0, width, height];
                     }
@@ -167,8 +167,8 @@
                         this._onCanvasSize = this.scene.canvas.on("boundary",
                             function (boundary) {
 
-                                var width = boundary[2];
-                                var height = boundary[3];
+                                const width = boundary[2];
+                                const height = boundary[3];
 
                                 this._state.boundary = [0, 0, width, height];
 

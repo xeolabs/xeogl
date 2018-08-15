@@ -75,19 +75,19 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
      */
     _update: function () {
 
-        var path = this._attached.path;
+        const path = this._attached.path;
 
         if (!path) {
             return;
         }
 
-        var i;
-        var len;
+        let i;
+        let len;
 
-        var points = path.getPoints(this._divisions);
+        const points = path.getPoints(this._divisions);
 
-        var positions = [];
-        var point;
+        const positions = [];
+        let point;
 
         for (i = 0, len = points.length; i < len; i++) {
 
@@ -98,7 +98,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             positions.push(point[2]);
         }
 
-        var indices = [];
+        const indices = [];
 
         for (i = 0, len = points.length - 1; i < len; i++) {
             indices.push(i);

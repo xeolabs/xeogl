@@ -226,10 +226,10 @@
 
         __init: function () {
 
-            var cfg = {};
+            let cfg = {};
 
-            var arg1 = arguments[0];
-            var arg2 = arguments[1];
+            const arg1 = arguments[0];
+            const arg2 = arguments[1];
 
             /**
              The parent {{#crossLink "Scene"}}{{/crossLink}} that contains this Component.
@@ -242,7 +242,7 @@
 
             this._model = null;
 
-            var adopter = null;
+            let adopter = null;
 
             if (this.type === "xeogl.Scene") {
                 this.scene = this;
@@ -323,7 +323,7 @@
             // Components created with #create
             this._adoptees = null; // Lazy-instantiated map
 
-            var isScene = this.type === "xeogl.Scene";
+            const isScene = this.type === "xeogl.Scene";
 
             if (this.scene && !isScene) { // HACK: Don't add scene to itself
                 // Register this component on its scene
@@ -466,10 +466,10 @@
             if (forget !== true) {
                 this._events[event] = value || true; // Save notification
             }
-            var subs = this._eventSubs[event];
-            var sub;
+            const subs = this._eventSubs[event];
+            let sub;
             if (subs) { // Notify subscriptions
-                for (var subId in subs) {
+                for (const subId in subs) {
                     if (subs.hasOwnProperty(subId)) {
                         sub = subs[subId];
                         this._eventCallDepth++;
@@ -508,18 +508,18 @@
             if (!this._eventSubs) {
                 this._eventSubs = {};
             }
-            var subs = this._eventSubs[event];
+            let subs = this._eventSubs[event];
             if (!subs) {
                 subs = {};
                 this._eventSubs[event] = subs;
             }
-            var subId = this._subIdMap.addItem(); // Create unique subId
+            const subId = this._subIdMap.addItem(); // Create unique subId
             subs[subId] = {
                 callback: callback,
                 scope: scope || this
             };
             this._subIdEvents[subId] = event;
-            var value = this._events[event];
+            const value = this._events[event];
             if (value !== undefined) { // A publication exists, notify callback immediately
                 callback.call(scope || this, value);
             }
@@ -540,10 +540,10 @@
             if (!this._subIdEvents) {
                 return;
             }
-            var event = this._subIdEvents[subId];
+            const event = this._subIdEvents[subId];
             if (event) {
                 delete this._subIdEvents[subId];
-                var subs = this._eventSubs[event];
+                const subs = this._eventSubs[event];
                 if (subs) {
                     delete subs[subId];
                 }
@@ -563,8 +563,8 @@
          * @param {Object} [scope=this] Scope for the callback
          */
         once: function (event, callback, scope) {
-            var self = this;
-            var subId = this.on(event,
+            const self = this;
+            const subId = this.on(event,
                 function (value) {
                     self.off(subId);
                     callback(value);
@@ -662,22 +662,22 @@
          */
         _attach: function (params) {
 
-            var name = params.name;
+            const name = params.name;
 
             if (!name) {
                 this.error("Component 'name' expected");
                 return;
             }
 
-            var component = params.component;
-            var sceneDefault = params.sceneDefault;
-            var sceneSingleton = params.sceneSingleton;
-            var type = params.type;
-            var on = params.on;
-            var recompiles = params.recompiles !== false;
+            let component = params.component;
+            const sceneDefault = params.sceneDefault;
+            const sceneSingleton = params.sceneSingleton;
+            const type = params.type;
+            const on = params.on;
+            const recompiles = params.recompiles !== false;
 
             // True when child given as config object, where parent manages its instantiation and destruction
-            var managingLifecycle = false;
+            let managingLifecycle = false;
 
             if (component) {
 
@@ -686,7 +686,7 @@
                     // Component ID given
                     // Both numeric and string IDs are supported
 
-                    var id = component;
+                    const id = component;
 
                     component = this.scene.components[id];
 
@@ -702,9 +702,9 @@
 
                     // Component config given
 
-                    var componentCfg = component;
-                    var componentType = componentCfg.type || type || "xeogl.Component";
-                    var componentClass = window[componentType];
+                    const componentCfg = component;
+                    const componentType = componentCfg.type || type || "xeogl.Component";
+                    const componentClass = window[componentType];
 
                     if (!componentClass) {
                         this.error("Component type not found: " + componentType);
@@ -731,8 +731,8 @@
 
                     // Using the first instance of the component type we find
 
-                    var instances = this.scene.types[type];
-                    for (var id2 in instances) {
+                    const instances = this.scene.types[type];
+                    for (const id2 in instances) {
                         if (instances.hasOwnProperty) {
                             component = instances[id2];
                             break;
@@ -777,10 +777,10 @@
                 this._attachments = {};
             }
 
-            var oldComponent = this._attached[name];
-            var subs;
-            var i;
-            var len;
+            const oldComponent = this._attached[name];
+            let subs;
+            let i;
+            let len;
 
             if (oldComponent) {
 
@@ -790,7 +790,7 @@
                     return;
                 }
 
-                var oldAttachment = this._attachments[oldComponent.id];
+                const oldAttachment = this._attachments[oldComponent.id];
 
                 // Unsubscribe from events on old component
 
@@ -803,7 +803,7 @@
                 delete this._attached[name];
                 delete this._attachments[oldComponent.id];
 
-                var onDetached = oldAttachment.params.onDetached;
+                const onDetached = oldAttachment.params.onDetached;
                 if (onDetached) {
                     if (xeogl._isFunction(onDetached)) {
                         onDetached(oldComponent);
@@ -825,7 +825,7 @@
 
                 // Set and publish the new component on this component
 
-                var attachment = {
+                const attachment = {
                     params: params,
                     component: component,
                     subs: [],
@@ -855,7 +855,7 @@
                 // Bind destruct listener to new component to remove it
                 // from this component when destroyed
 
-                var onAttached = params.onAttached;
+                const onAttached = params.onAttached;
                 if (onAttached) {
                     if (xeogl._isFunction(onAttached)) {
                         onAttached(component);
@@ -866,10 +866,10 @@
 
                 if (on) {
 
-                    var event;
-                    var subIdr;
-                    var callback;
-                    var scope;
+                    let event;
+                    let subIdr;
+                    let callback;
+                    let scope;
 
                     for (event in on) {
                         if (on.hasOwnProperty(event)) {
@@ -916,7 +916,7 @@
                 component = new window[component.type](this.scene, component);
             } else {
                 if (xeogl._isID(component)) { // Expensive test
-                    var id = component;
+                    const id = component;
                     component = this.scene.components[id];
                     if (!component) {
                         this.error("Component not found: " + xeogl._inQuotes(component.id));
@@ -955,8 +955,8 @@
          */
         create: function (cfg) {
 
-            var type;
-            var claz;
+            let type;
+            let claz;
 
             if (xeogl._isObject(cfg)) {
                 type = cfg.type || "xeogl.Component";
@@ -988,7 +988,7 @@
                 //return null;
             }
 
-            var component = new claz(this, cfg);
+            const component = new claz(this, cfg);
             if (component) {
                 this._adopt(component);
             }
@@ -1064,12 +1064,12 @@
 
             // Unsubscribe from child components and destroy then
 
-            var id;
-            var attachment;
-            var component;
-            var subs;
-            var i;
-            var len;
+            let id;
+            let attachment;
+            let component;
+            let subs;
+            let i;
+            let len;
 
             if (this._attachments) {
                 for (id in this._attachments) {

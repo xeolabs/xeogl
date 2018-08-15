@@ -2,22 +2,22 @@
 
     "use strict";
 
-    var KD_TREE_MAX_DEPTH = 10;
-    var KD_TREE_MIN_meshes = 20;
+    const KD_TREE_MAX_DEPTH = 10;
+    const KD_TREE_MIN_meshes = 20;
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
     math.buildMeshKDTree = function (meshes) {
         return buildNode(meshes, 0);
     };
 
-    var dimLength = new Float32Array();
+    const dimLength = new Float32Array();
 
     function buildNode(meshes, depth) {
 
-        var aabb = new Float32Array(6);
+        const aabb = new Float32Array(6);
 
-        var node = {
+        const node = {
             meshes: null,
             left: null,
             right: null,
@@ -29,7 +29,7 @@
         aabb[0] = aabb[1] = aabb[2] = Number.POSITIVE_INFINITY;
         aabb[3] = aabb[4] = aabb[5] = Number.NEGATIVE_INFINITY;
 
-        var t, i, len;
+        let t, i, len;
 
         for (t = 0, len = meshes.length; t < len; ++t) {
 
@@ -71,7 +71,7 @@
         dimLength[1] = aabb[4] - aabb[1];
         dimLength[2] = aabb[5] - aabb[2];
 
-        var dim = 0;
+        let dim = 0;
 
         if (dimLength[1] > dimLength[dim]) {
             dim = 1;
@@ -83,11 +83,11 @@
 
         node.splitDim = dim;
 
-        var mid = (aabb[dim] + aabb[dim + 3]) / 2;
-        var left = new Array(meshes.length);
-        var numLeft = 0;
-        var right = new Array(meshes.length);
-        var numRight = 0;
+        const mid = (aabb[dim] + aabb[dim + 3]) / 2;
+        const left = new Array(meshes.length);
+        let numLeft = 0;
+        const right = new Array(meshes.length);
+        let numRight = 0;
 
         for (t = 0, len = meshes.length; t < len; ++t) {
 

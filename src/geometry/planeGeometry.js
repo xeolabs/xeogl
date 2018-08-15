@@ -68,19 +68,19 @@
 
         _init: function (cfg) {
 
-            var xSize = cfg.xSize || 1;
+            let xSize = cfg.xSize || 1;
             if (xSize < 0) {
                 this.error("negative xSize not allowed - will invert");
                 xSize *= -1;
             }
 
-            var zSize = cfg.zSize || 1;
+            let zSize = cfg.zSize || 1;
             if (zSize < 0) {
                 this.error("negative zSize not allowed - will invert");
                 zSize *= -1;
             }
 
-            var xSegments = cfg.xSegments || 1;
+            let xSegments = cfg.xSegments || 1;
             if (xSegments < 0) {
                 this.error("negative xSegments not allowed - will invert");
                 xSegments *= -1;
@@ -89,7 +89,7 @@
                 xSegments = 1;
             }
 
-            var zSegments = cfg.xSegments || 1;
+            let zSegments = cfg.xSegments || 1;
             if (zSegments < 0) {
                 this.error("negative zSegments not allowed - will invert");
                 zSegments *= -1;
@@ -98,41 +98,41 @@
                 zSegments = 1;
             }
 
-            var center = cfg.center;
-            var centerX = center ? center[0] : 0;
-            var centerY = center ? center[1] : 0;
-            var centerZ = center ? center[2] : 0;
+            const center = cfg.center;
+            const centerX = center ? center[0] : 0;
+            const centerY = center ? center[1] : 0;
+            const centerZ = center ? center[2] : 0;
 
-            var halfWidth = xSize / 2;
-            var halfHeight = zSize / 2;
+            const halfWidth = xSize / 2;
+            const halfHeight = zSize / 2;
 
-            var planeX = Math.floor(xSegments) || 1;
-            var planeZ = Math.floor(zSegments) || 1;
+            const planeX = Math.floor(xSegments) || 1;
+            const planeZ = Math.floor(zSegments) || 1;
 
-            var planeX1 = planeX + 1;
-            var planeZ1 = planeZ + 1;
+            const planeX1 = planeX + 1;
+            const planeZ1 = planeZ + 1;
 
-            var segmentWidth = xSize / planeX;
-            var segmentHeight = zSize / planeZ;
+            const segmentWidth = xSize / planeX;
+            const segmentHeight = zSize / planeZ;
 
-            var positions = new Float32Array(planeX1 * planeZ1 * 3);
-            var normals = new Float32Array(planeX1 * planeZ1 * 3);
-            var uvs = new Float32Array(planeX1 * planeZ1 * 2);
+            const positions = new Float32Array(planeX1 * planeZ1 * 3);
+            const normals = new Float32Array(planeX1 * planeZ1 * 3);
+            const uvs = new Float32Array(planeX1 * planeZ1 * 2);
 
-            var offset = 0;
-            var offset2 = 0;
+            let offset = 0;
+            let offset2 = 0;
 
-            var iz;
-            var ix;
-            var x;
-            var a;
-            var b;
-            var c;
-            var d;
+            let iz;
+            let ix;
+            let x;
+            let a;
+            let b;
+            let c;
+            let d;
 
             for (iz = 0; iz < planeZ1; iz++) {
 
-                var z = iz * segmentHeight - halfHeight;
+                const z = iz * segmentHeight - halfHeight;
 
                 for (ix = 0; ix < planeX1; ix++) {
 
@@ -154,7 +154,7 @@
 
             offset = 0;
 
-            var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(planeX * planeZ * 6);
+            const indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(planeX * planeZ * 6);
 
             for (iz = 0; iz < planeZ; iz++) {
 

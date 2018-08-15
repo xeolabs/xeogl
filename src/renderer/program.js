@@ -6,7 +6,7 @@
 
     "use strict";
 
-    var ids = new xeogl.utils.Map({});
+    const ids = new xeogl.utils.Map({});
 
     xeogl.renderer.Program = function (gl, shaderSource) {
         this.id = ids.addItem({});
@@ -44,11 +44,11 @@
             return;
         }
         this.compiled = true;
-        var a;
-        var i;
-        var u;
-        var uName;
-        var location;
+        let a;
+        let i;
+        let u;
+        let uName;
+        let location;
         this.handle = gl.createProgram();
         if (!this.handle) {
             this.errors = ["Failed to allocate program"];
@@ -71,7 +71,7 @@
             this.errors = this.errors.concat(shaderSource.fragment);
             return;
         }
-        var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
+        const numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
         for (i = 0; i < numUniforms; ++i) {
             u = gl.getActiveUniform(this.handle, i);
             if (u) {
@@ -87,7 +87,7 @@
                 }
             }
         }
-        var numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
+        const numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
         for (i = 0; i < numAttribs; i++) {
             a = gl.getActiveAttrib(this.handle, i);
             if (a) {
@@ -99,10 +99,10 @@
     };
 
     function joinSansComments(srcLines) {
-        var src = [];
-        var line;
-        var n;
-        for (var i = 0, len = srcLines.length; i < len; i++) {
+        const src = [];
+        let line;
+        let n;
+        for (let i = 0, len = srcLines.length; i < len; i++) {
             line = srcLines[i];
             n = line.indexOf("/");
             if (n > 0) {
@@ -140,7 +140,7 @@
         if (!this.allocated) {
             return false;
         }
-        var sampler = this.samplers[name];
+        const sampler = this.samplers[name];
         if (sampler) {
             return sampler.bindTexture(texture, unit);
         } else {

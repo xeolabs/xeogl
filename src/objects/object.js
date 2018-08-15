@@ -614,7 +614,7 @@ xeogl.Object = xeogl.Component.extend({
 
     _init: function (cfg) {
 
-        var math = xeogl.math;
+        const math = xeogl.math;
 
         this._guid = cfg.guid;
 
@@ -683,8 +683,8 @@ xeogl.Object = xeogl.Component.extend({
         // Add children, which inherit state from this Object
 
         if (cfg.children) {
-            var children = cfg.children;
-            for (var i = 0, len = children.length; i < len; i++) {
+            const children = cfg.children;
+            for (let i = 0, len = children.length; i < len; i++) {
                 this.addChild(children[i], cfg.inheritStates);
             }
         }
@@ -705,16 +705,16 @@ xeogl.Object = xeogl.Component.extend({
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
         if (this._childList) {
-            for (var i = 0, len = this._childList.length; i < len; i++) {
+            for (let i = 0, len = this._childList.length; i < len; i++) {
                 this._childList[i]._setWorldMatrixDirty();
             }
         }
     },
 
     _buildWorldMatrix: function () {
-        var localMatrix = this.matrix;
+        const localMatrix = this.matrix;
         if (!this._parent) {
-            for (var i = 0, len = localMatrix.length; i < len; i++) {
+            for (let i = 0, len = localMatrix.length; i < len; i++) {
                 this._worldMatrix[i] = localMatrix[i];
             }
         } else {
@@ -741,7 +741,7 @@ xeogl.Object = xeogl.Component.extend({
             object._aabbDirty = true;
             object.fire("boundary", true);
             if (object._childList) {
-                for (var i = 0, len = object._childList.length; i < len; i++) {
+                for (let i = 0, len = object._childList.length; i < len; i++) {
                     setSubtreeAABBsDirty(object._childList[i]);
                 }
             }
@@ -750,7 +750,7 @@ xeogl.Object = xeogl.Component.extend({
         return function () {
             setSubtreeAABBsDirty(this);
             if (this.collidable) {
-                for (var object = this; object; object = object._parent) {
+                for (let object = this; object; object = object._parent) {
                     object._aabbDirty = true;
                     object.fire("boundary", true);
                 }
@@ -767,8 +767,8 @@ xeogl.Object = xeogl.Component.extend({
             this._buildMeshAABB(this.worldMatrix, this._aabb); // Geometry
         } else { // Object | Group | Model
             xeogl.math.collapseAABB3(this._aabb);
-            var object;
-            for (var i = 0, len = this._childList.length; i < len; i++) {
+            let object;
+            for (let i = 0, len = this._childList.length; i < len; i++) {
                 object = this._childList[i];
                 if (!object.collidable) {
                     continue;
@@ -802,7 +802,7 @@ xeogl.Object = xeogl.Component.extend({
      */
     addChild: function (object, inheritStates) {
         if (xeogl._isNumeric(object) || xeogl._isString(object)) {
-            var objectId = object;
+            const objectId = object;
             object = this.scene.objects[objectId];
             if (!object) {
                 this.warn("Object not found: " + xeogl._inQuotes(objectId));
@@ -810,7 +810,7 @@ xeogl.Object = xeogl.Component.extend({
             }
         } else if (xeogl._isObject(object)) {
             throw "addChild( * ) not implemented";
-            var cfg = object;
+            const cfg = object;
             // object = new xeogl.Group(this.scene, cfg);
             if (!object) {
                 return;
@@ -828,7 +828,7 @@ xeogl.Object = xeogl.Component.extend({
                 object._parent.removeChild(object);
             }
         }
-        var id = object.id;
+        const id = object.id;
         if (object.scene.id !== this.scene.id) {
             this.error("Object not in same Scene: " + object.id);
             return;
@@ -866,7 +866,7 @@ xeogl.Object = xeogl.Component.extend({
      @param {Object} object Child to remove.
      */
     removeChild: function (object) {
-        for (var i = 0, len = this._childList.length; i < len; i++) {
+        for (let i = 0, len = this._childList.length; i < len; i++) {
             if (this._childList[i].id === object.id) {
                 object._parent = null;
                 this._childList = this._childList.splice(i, 1);
@@ -887,8 +887,8 @@ xeogl.Object = xeogl.Component.extend({
      @method removeChildren
      */
     removeChildren: function () {
-        var object;
-        for (var i = 0, len = this._childList.length; i < len; i++) {
+        let object;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
             object = this._childList[i];
             object._parent = null;
             this.scene.rootObjects[object.id] = object;
@@ -909,9 +909,9 @@ xeogl.Object = xeogl.Component.extend({
      @param {Number} angle Angle increment in degrees.
      */
     rotate: (function () {
-        var angleAxis = new Float32Array(4);
-        var q1 = new Float32Array(4);
-        var q2 = new Float32Array(4);
+        const angleAxis = new Float32Array(4);
+        const q1 = new Float32Array(4);
+        const q2 = new Float32Array(4);
         return function rotateOnWorldAxis(axis, angle) {
             angleAxis[0] = axis[0];
             angleAxis[1] = axis[1];
@@ -935,8 +935,8 @@ xeogl.Object = xeogl.Component.extend({
      @param {Number} angle Angle increment in degrees.
      */
     rotateOnWorldAxis: (function () {
-        var angleAxis = new Float32Array(4);
-        var q1 = new Float32Array(4);
+        const angleAxis = new Float32Array(4);
+        const q1 = new Float32Array(4);
         return function rotateOnWorldAxis(axis, angle) {
             angleAxis[0] = axis[0];
             angleAxis[1] = axis[1];
@@ -956,7 +956,7 @@ xeogl.Object = xeogl.Component.extend({
      @param {Number} angle Angle increment in degrees.
      */
     rotateX: (function () {
-        var axis = new Float32Array([1, 0, 0]);
+        const axis = new Float32Array([1, 0, 0]);
         return function rotateX(angle) {
             return this.rotate(axis, angle);
         };
@@ -969,7 +969,7 @@ xeogl.Object = xeogl.Component.extend({
      @param {Number} angle Angle increment in degrees.
      */
     rotateY: (function () {
-        var axis = new Float32Array([0, 1, 0]);
+        const axis = new Float32Array([0, 1, 0]);
         return function rotateY(angle) {
             return this.rotate(axis, angle);
         };
@@ -982,7 +982,7 @@ xeogl.Object = xeogl.Component.extend({
      @param {Number} angle Angle increment in degrees.
      */
     rotateZ: (function () {
-        var axis = new Float32Array([0, 0, 1]);
+        const axis = new Float32Array([0, 0, 1]);
         return function rotateZ(angle) {
             return this.rotate(axis, angle);
         };
@@ -996,8 +996,8 @@ xeogl.Object = xeogl.Component.extend({
      @param {Number} distance Distance to translate along  the vector.
      */
     translate: (function () {
-        var veca = new Float32Array(3);
-        var vecb = new Float32Array(3);
+        const veca = new Float32Array(3);
+        const vecb = new Float32Array(3);
         return function (axis, distance) {
             xeogl.math.vec3ApplyQuaternion(this.quaternion, axis, veca);
             xeogl.math.mulVec3Scalar(veca, distance, vecb);
@@ -1016,7 +1016,7 @@ xeogl.Object = xeogl.Component.extend({
      @param {Number} distance Distance to translate along  the X-axis.
      */
     translateX: (function () {
-        var v1 = new Float32Array([1, 0, 0]);
+        const v1 = new Float32Array([1, 0, 0]);
         return function translateX(distance) {
             return this.translate(v1, distance);
         };
@@ -1029,7 +1029,7 @@ xeogl.Object = xeogl.Component.extend({
      * @param {Number} distance Distance to translate along  the Y-axis.
      */
     translateY: (function () {
-        var v1 = new Float32Array([0, 1, 0]);
+        const v1 = new Float32Array([0, 1, 0]);
         return function translateY(distance) {
             return this.translate(v1, distance);
         };
@@ -1042,7 +1042,7 @@ xeogl.Object = xeogl.Component.extend({
      @param {Number} distance Distance to translate along  the Z-axis.
      */
     translateZ: (function () {
-        var v1 = new Float32Array([0, 0, 1]);
+        const v1 = new Float32Array([0, 0, 1]);
         return function translateZ(distance) {
             return this.translate(v1, distance);
         };
@@ -1154,7 +1154,7 @@ xeogl.Object = xeogl.Component.extend({
         parent: {
             set: function (object) {
                 if (xeogl._isNumeric(object) || xeogl._isString(object)) {
-                    var objectId = object;
+                    const objectId = object;
                     object = this.scene.objects[objectId];
                     if (!object) {
                         this.warn("Group not found: " + xeogl._inQuotes(objectId));
@@ -1267,7 +1267,7 @@ xeogl.Object = xeogl.Component.extend({
          */
         matrix: {
             set: (function () {
-                var identityMat = xeogl.math.identityMat4();
+                const identityMat = xeogl.math.identityMat4();
                 return function (value) {
                     if (!this.__localMatrix) {
                         this.__localMatrix = xeogl.math.identityMat4();
@@ -1435,7 +1435,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (visible) {
                 visible = visible !== false;
                 this._visible = visible;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].visible = visible;
                 }
                 if (this._entityType) {
@@ -1462,7 +1462,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (highlighted) {
                 highlighted = !!highlighted;
                 this._highlighted = highlighted;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].highlighted = highlighted;
                 }
                 if (this._entityType) {
@@ -1489,7 +1489,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (ghosted) {
                 ghosted = !!ghosted;
                 this._ghosted = ghosted;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].ghosted = ghosted;
                 }
                 if (this._entityType) {
@@ -1516,7 +1516,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (selected) {
                 selected = !!selected;
                 this._selected = selected;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].selected = selected;
                 }
                 if (this._entityType) {
@@ -1539,7 +1539,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (edges) {
                 edges = !!edges;
                 this._edges = edges;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].edges = edges;
                 }
             },
@@ -1562,7 +1562,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (culled) {
                 culled = !!culled;
                 this._culled = culled;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].culled = culled;
                 }
             },
@@ -1584,7 +1584,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (clippable) {
                 clippable = clippable !== false;
                 this._clippable = clippable;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].clippable = clippable;
                 }
             },
@@ -1604,7 +1604,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (collidable) {
                 collidable = collidable !== false;
                 this._collidable = collidable;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].collidable = collidable;
                 }
             },
@@ -1626,7 +1626,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (pickable) {
                 pickable = pickable !== false;
                 this._pickable = pickable;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].pickable = pickable;
                 }
             },
@@ -1644,7 +1644,7 @@ xeogl.Object = xeogl.Component.extend({
          */
         colorize: {
             set: function (rgb) {
-                var colorize = this._colorize;
+                let colorize = this._colorize;
                 if (!colorize) {
                     colorize = this._colorize = new Float32Array(4);
                     colorize[3] = 1.0;
@@ -1658,7 +1658,7 @@ xeogl.Object = xeogl.Component.extend({
                     colorize[1] = 1;
                     colorize[2] = 1;
                 }
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].colorize = colorize;
                 }
             },
@@ -1678,7 +1678,7 @@ xeogl.Object = xeogl.Component.extend({
          */
         opacity: {
             set: function (opacity) {
-                var colorize = this._colorize;
+                let colorize = this._colorize;
                 if (!colorize) {
                     colorize = this._colorize = new Float32Array(4);
                     colorize[0] = 1;
@@ -1686,7 +1686,7 @@ xeogl.Object = xeogl.Component.extend({
                     colorize[2] = 1;
                 }
                 colorize[3] = opacity !== null && opacity !== undefined ? opacity : 1.0;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].opacity = opacity;
                 }
             },
@@ -1706,7 +1706,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (outlined) {
                 outlined = !!outlined;
                 this._outlined = outlined;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].outlined = outlined;
                 }
             },
@@ -1726,7 +1726,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (castShadow) {
                 castShadow = !!castShadow;
                 this._castShadow = castShadow;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].castShadow = castShadow;
                 }
             },
@@ -1746,7 +1746,7 @@ xeogl.Object = xeogl.Component.extend({
             set: function (receiveShadow) {
                 receiveShadow = !!receiveShadow;
                 this._receiveShadow = receiveShadow;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
+                for (let i = 0, len = this._childList.length; i < len; i++) {
                     this._childList[i].receiveShadow = receiveShadow;
                 }
             },
@@ -1793,7 +1793,7 @@ xeogl.Object = xeogl.Component.extend({
             this._parent.removeChild(this);
         }
         if (this._entityType) {
-            var scene = this.scene;
+            const scene = this.scene;
             scene._entityTypeRemoved(this, this._entityType);
             if (this._visible) {
                 scene._entityVisibilityUpdated(this, false);
@@ -1810,9 +1810,9 @@ xeogl.Object = xeogl.Component.extend({
         }
         if (this._childList.length) {
             // Clone the _childList before iterating it, so our children don't mess us up when calling removeChild().
-            var tempChildList = this._childList.splice();
-            var object;
-            for (var i = 0, len = tempChildList.length; i < len; i++) {
+            const tempChildList = this._childList.splice();
+            let object;
+            for (let i = 0, len = tempChildList.length; i < len; i++) {
                 object = tempChildList[i];
                 object.destroy();
             }

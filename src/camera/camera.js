@@ -201,14 +201,14 @@
 
     "use strict";
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
-    var tempVec3 = math.vec3();
-    var tempVec3b = math.vec3();
-    var tempVec3c = math.vec3();
-    var tempVec3d = math.vec3();
-    var tempVec3e = math.vec3();
-    var tempVec3f = math.vec3();
+    const tempVec3 = math.vec3();
+    const tempVec3b = math.vec3();
+    const tempVec3c = math.vec3();
+    const tempVec3d = math.vec3();
+    const tempVec3e = math.vec3();
+    const tempVec3f = math.vec3();
 
     xeogl.Camera = xeogl.Component.extend({
 
@@ -229,7 +229,7 @@
             this._customProjection = new xeogl.CustomProjection(this);
             this._project = this._perspective;
 
-            var self = this;
+            const self = this;
 
             this._eye = math.vec3([0, 0, 10.0]);
             this._look = math.vec3([0, 0, 0]);
@@ -272,18 +272,18 @@
         },
 
         _update: (function () {
-            var eyeLookVec = math.vec3();
-            var eyeLookVecNorm = math.vec3();
-            var eyeLookOffset = math.vec3();
-            var offsetEye = math.vec3();
-            var tempMat = math.mat4();
+            const eyeLookVec = math.vec3();
+            const eyeLookVecNorm = math.vec3();
+            const eyeLookOffset = math.vec3();
+            const offsetEye = math.vec3();
+            const tempMat = math.mat4();
             return function () {
-                var state = this._state;
+                const state = this._state;
                 // In ortho mode, build the view matrix with an eye position that's translated
                 // well back from look, so that the front clip plane doesn't unexpectedly cut
                 // the front off the view (not a problem with perspective, since objects close enough
                 // to be clipped by the front plane are usually too big to see anything of their cross-sections).
-                var eye;
+                let eye;
                 if (this.projection === "ortho") {
                     math.subVec3(this._eye, this._look, eyeLookVec);
                     math.normalizeVec3(eyeLookVec, eyeLookVecNorm);
@@ -315,9 +315,9 @@
          @param {Number} angle Angle of rotation in degrees
          */
         orbitYaw: (function () {
-            var mat = math.mat4();
+            const mat = math.mat4();
             return function (angle) {
-                var lookEyeVec = math.subVec3(this._eye, this._look, tempVec3);
+                let lookEyeVec = math.subVec3(this._eye, this._look, tempVec3);
                 math.rotationMat4v(angle * 0.0174532925, this._gimbalLock ? this._worldUp : this._up, mat);
                 lookEyeVec = math.transformPoint3(mat, lookEyeVec, tempVec3b);
                 this.eye = math.addVec3(this._look, lookEyeVec, tempVec3c); // Set eye position as 'look' plus 'eye' vector
@@ -332,13 +332,13 @@
          @param {Number} angle Angle of rotation in degrees
          */
         orbitPitch: (function () {
-            var mat = math.mat4();
+            const mat = math.mat4();
             return function (angle) {
-                var eye2 = math.subVec3(this._eye, this._look, tempVec3);
-                var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
+                let eye2 = math.subVec3(this._eye, this._look, tempVec3);
+                const left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
                 math.rotationMat4v(angle * 0.0174532925, left, mat);
                 eye2 = math.transformPoint3(mat, eye2, tempVec3d);
-                var up = math.transformPoint3(mat, this._up, tempVec3e);
+                const up = math.transformPoint3(mat, this._up, tempVec3e);
                 if (this._constrainPitch) {
                     var angle = math.dotVec3(up, this._worldUp) / math.DEGTORAD;
                     if (angle < 1) {
@@ -357,9 +357,9 @@
          @param {Number} angle Angle of rotation in degrees
          */
         yaw: (function () {
-            var mat = math.mat4();
+            const mat = math.mat4();
             return function (angle) {
-                var look2 = math.subVec3(this._look, this._eye, tempVec3);
+                let look2 = math.subVec3(this._look, this._eye, tempVec3);
                 math.rotationMat4v(angle * 0.0174532925, this._gimbalLock ? this._worldUp : this._up, mat);
                 look2 = math.transformPoint3(mat, look2, tempVec3b);
                 this.look = math.addVec3(look2, this._eye, tempVec3c);
@@ -376,12 +376,12 @@
          @param {Number} angle Angle of rotation in degrees
          */
         pitch: (function () {
-            var mat = math.mat4();
+            const mat = math.mat4();
             return function (angle) {
-                var look2 = math.subVec3(this._look, this._eye, tempVec3);
-                var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
+                let look2 = math.subVec3(this._look, this._eye, tempVec3);
+                const left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
                 math.rotationMat4v(angle * 0.0174532925, left, mat);
-                var up = math.transformPoint3(mat, this._up, tempVec3f);
+                const up = math.transformPoint3(mat, this._up, tempVec3f);
                 if (this._constrainPitch) {
                     var angle = math.dotVec3(up, this._worldUp) / math.DEGTORAD;
                     if (angle < 1) {
@@ -401,11 +401,11 @@
          @param pan The pan vector
          */
         pan: function (pan) {
-            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
-            var vec = [0, 0, 0];
-            var v;
+            const eye2 = math.subVec3(this._eye, this._look, tempVec3);
+            const vec = [0, 0, 0];
+            let v;
             if (pan[0] !== 0) {
-                var left = math.cross3Vec3(math.normalizeVec3(eye2, []), math.normalizeVec3(this._up, tempVec3b));
+                const left = math.cross3Vec3(math.normalizeVec3(eye2, []), math.normalizeVec3(this._up, tempVec3b));
                 v = math.mulVec3Scalar(left, pan[0]);
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -435,13 +435,13 @@
          @param delta
          */
         zoom: function (delta) {
-            var vec = math.subVec3(this._eye, this._look, tempVec3);
-            var lenLook = Math.abs(math.lenVec3(vec, tempVec3b));
-            var newLenLook = Math.abs(lenLook + delta);
+            const vec = math.subVec3(this._eye, this._look, tempVec3);
+            const lenLook = Math.abs(math.lenVec3(vec, tempVec3b));
+            const newLenLook = Math.abs(lenLook + delta);
             if (newLenLook < 0.5) {
                 return;
             }
-            var dir = math.normalizeVec3(vec, tempVec3c);
+            const dir = math.normalizeVec3(vec, tempVec3c);
             this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
         },
 
@@ -694,7 +694,7 @@
              */
             eyeLookDist: {
                 get: (function () {
-                    var vec = new Float32Array(3);
+                    const vec = new Float32Array(3);
                     return function () {
                         return math.lenVec3(math.subVec3(this._look, this._eye, vec));
                     };

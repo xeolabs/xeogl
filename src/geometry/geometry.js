@@ -97,10 +97,10 @@
     "use strict";
 
     const CHUNK_LEN = bigIndicesSupported ? (Number.MAX_SAFE_INTEGER / 6) : (64000 * 4); // RGBA is largest item
-    var memoryStats = xeogl.stats.memory;
+    const memoryStats = xeogl.stats.memory;
     var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
-    var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
-    var nullVertexBufs = new xeogl.renderer.State({});
+    const IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
+    const nullVertexBufs = new xeogl.renderer.State({});
 
     xeogl.Geometry = xeogl.Component.extend({
 
@@ -108,7 +108,7 @@
 
         _init: function (cfg) {
 
-            var self = this;
+            const self = this;
 
             this._state = new xeogl.renderer.State({ // Arrays for emphasis effects are got from xeogl.Geometry friend methods
                 combined: !!cfg.combined,
@@ -150,8 +150,8 @@
             this._obb = null;
             this._obbDirty = true;
 
-            var state = this._state;
-            var gl = this.scene.canvas.gl;
+            const state = this._state;
+            const gl = this.scene.canvas.gl;
 
             // Primitive type
 
@@ -251,8 +251,8 @@
         },
 
         _buildVBOs: function () {
-            var state = this._state;
-            var gl = this.scene.canvas.gl;
+            const state = this._state;
+            const gl = this.scene.canvas.gl;
             if (state.indices) {
                 state.indicesBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, state.indices, state.indices.length, 1, gl.STATIC_DRAW);
                 memoryStats.indices += state.indicesBuf.numItems;
@@ -282,8 +282,8 @@
         },
 
         _buildHash: function () {
-            var state = this._state;
-            var hash = ["/g"];
+            const state = this._state;
+            const hash = ["/g"];
             hash.push("/" + state.primitive + ";");
             if (state.positions) {
                 hash.push("p");
@@ -326,15 +326,15 @@
         },
 
         _buildEdgesIndices: function () { // FIXME: Does not adjust indices after other objects are deleted from vertex buffer!!
-            var state = this._state;
+            const state = this._state;
             if (!state.positions || !state.indices) {
                 return;
             }
-            var gl = this.scene.canvas.gl;
-            var edgesIndices = buildEdgesIndices(state.positions, state.indices, state.positionsDecodeMatrix, this._edgeThreshold, state.combined);
+            const gl = this.scene.canvas.gl;
+            const edgesIndices = buildEdgesIndices(state.positions, state.indices, state.positionsDecodeMatrix, this._edgeThreshold, state.combined);
             if (state.combined) {
-                var indicesOffset = this._sceneVertexBufs.getIndicesOffset(state);
-                for (var i = 0, len = edgesIndices.length; i < len; i++) {
+                const indicesOffset = this._sceneVertexBufs.getIndicesOffset(state);
+                for (let i = 0, len = edgesIndices.length; i < len; i++) {
                     edgesIndices[i] += indicesOffset;
                 }
             }
@@ -343,14 +343,14 @@
         },
 
         _buildPickTriangleVBOs: function () { // Builds positions and indices arrays that allow each triangle to have a unique color
-            var state = this._state;
+            const state = this._state;
             if (!state.positions || !state.indices) {
                 return;
             }
-            var gl = this.scene.canvas.gl;
-            var arrays = xeogl.math.buildPickTriangles(state.positions, state.indices, state.quantized);
-            var positions = arrays.positions;
-            var colors = arrays.colors;
+            const gl = this.scene.canvas.gl;
+            const arrays = xeogl.math.buildPickTriangles(state.positions, state.indices, state.quantized);
+            const positions = arrays.positions;
+            const colors = arrays.colors;
             this._pickTrianglePositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, positions, positions.length, 3, gl.STATIC_DRAW);
             this._pickTriangleColorsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, colors, colors.length, 4, gl.STATIC_DRAW, true);
             memoryStats.positions += this._pickTrianglePositionsBuf.numItems;
@@ -469,8 +469,8 @@
                 },
 
                 set: function (newPositions) {
-                    var state = this._state;
-                    var positions = state.positions;
+                    const state = this._state;
+                    const positions = state.positions;
                     if (!positions) {
                         this.error("can't update geometry positions - geometry has no positions");
                         return;
@@ -480,8 +480,8 @@
                         return;
                     }
                     if (this._state.quantized) {
-                        var bounds = getBounds(newPositions, 3);
-                        var quantized = quantizeVec3(newPositions, bounds.min, bounds.max);
+                        const bounds = getBounds(newPositions, 3);
+                        const quantized = quantizeVec3(newPositions, bounds.min, bounds.max);
                         newPositions = quantized.quantized; // TODO: Copy in-place
                         state.positionsDecodeMatrix = quantized.decode;
                     }
@@ -513,8 +513,8 @@
                         return this._state.normals;
                     }
                     if (!this._decompressedNormals) {
-                        var lenCompressed = this._state.normals.length;
-                        var lenDecompressed = lenCompressed + (lenCompressed / 2); // 2 -> 3
+                        const lenCompressed = this._state.normals.length;
+                        const lenDecompressed = lenCompressed + (lenCompressed / 2); // 2 -> 3
                         this._decompressedNormals = new Float32Array(lenDecompressed);
                         xeogl.math.octDecodeVec2s(this._state.normals, this._decompressedNormals);
                     }
@@ -526,8 +526,8 @@
                         this.error("can't update geometry normals - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
-                    var state = this._state;
-                    var normals = state.normals;
+                    const state = this._state;
+                    const normals = state.normals;
                     if (!normals) {
                         this.error("can't update geometry normals - geometry has no normals");
                         return;
@@ -574,8 +574,8 @@
                         this.error("can't update geometry UVs - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
-                    var state = this._state;
-                    var uv = state.uv;
+                    const state = this._state;
+                    const uv = state.uv;
                     if (!uv) {
                         this.error("can't update geometry UVs - geometry has no UVs");
                         return;
@@ -612,8 +612,8 @@
                         this.error("can't update geometry colors - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
-                    var state = this._state;
-                    var colors = state.colors;
+                    const state = this._state;
+                    const colors = state.colors;
                     if (!colors) {
                         this.error("can't update geometry colors - geometry has no colors");
                         return;
@@ -685,7 +685,7 @@
              */
             obb: {
                 get: (function () {
-                    var aabb = xeogl.math.AABB3();
+                    const aabb = xeogl.math.AABB3();
                     return function () {
                         if (this._obbDirty) {
                             if (!this._obb) {
@@ -702,7 +702,7 @@
 
             kdtree: {
                 get: function () {
-                    var state = this._state;
+                    const state = this._state;
                     if (!state.indices || !state.positions) {
                         this.error("Can't provide a KD-tree: no indices/positions");
                         return;
@@ -744,7 +744,7 @@
         },
 
         _destroy: function () {
-            var state = this._state;
+            const state = this._state;
             if (state.indicesBuf) {
                 state.indicesBuf.destroy();
             }
@@ -772,9 +772,9 @@
     });
 
     function getBounds(array, stride) {
-        var min = new Float32Array(stride);
-        var max = new Float32Array(stride);
-        var i, j;
+        const min = new Float32Array(stride);
+        const max = new Float32Array(stride);
+        let i, j;
         for (i = 0; i < stride; i++) {
             min[i] = Number.MAX_VALUE;
             max[i] = -Number.MAX_VALUE;
@@ -793,17 +793,17 @@
 
     // http://cg.postech.ac.kr/research/mesh_comp_mobile/mesh_comp_mobile_conference.pdf
     var quantizeVec3 = (function () {
-        var math = xeogl.math;
-        var translate = math.mat4();
-        var scale = math.mat4();
+        const math = xeogl.math;
+        const translate = math.mat4();
+        const scale = math.mat4();
         return function (array, min, max) {
-            var quantized = new Uint16Array(array.length);
-            var multiplier = new Float32Array([
+            const quantized = new Uint16Array(array.length);
+            const multiplier = new Float32Array([
                 65535 / (max[0] - min[0]),
                 65535 / (max[1] - min[1]),
                 65535 / (max[2] - min[2])
             ]);
-            var i;
+            let i;
             for (i = 0; i < array.length; i += 3) {
                 quantized[i + 0] = Math.floor((array[i + 0] - min[0]) * multiplier[0]);
                 quantized[i + 1] = Math.floor((array[i + 1] - min[1]) * multiplier[1]);
@@ -817,25 +817,25 @@
                 (max[1] - min[1]) / 65535,
                 (max[2] - min[2]) / 65535
             ], scale);
-            var decodeMat = math.mulMat4(translate, scale, math.identityMat4());
+            const decodeMat = math.mulMat4(translate, scale, math.identityMat4());
             return {
                 quantized: quantized,
                 decode: decodeMat
             };
-        }
+        };
     })();
 
     var quantizeVec2 = (function () {
-        var math = xeogl.math;
-        var translate = math.mat3();
-        var scale = math.mat3();
+        const math = xeogl.math;
+        const translate = math.mat3();
+        const scale = math.mat3();
         return function (array, min, max) {
-            var quantized = new Uint16Array(array.length);
-            var multiplier = new Float32Array([
+            const quantized = new Uint16Array(array.length);
+            const multiplier = new Float32Array([
                 65535 / (max[0] - min[0]),
                 65535 / (max[1] - min[1])
             ]);
-            var i;
+            let i;
             for (i = 0; i < array.length; i += 2) {
                 quantized[i + 0] = Math.floor((array[i + 0] - min[0]) * multiplier[0]);
                 quantized[i + 1] = Math.floor((array[i + 1] - min[1]) * multiplier[1]);
@@ -847,7 +847,7 @@
                 (max[0] - min[0]) / 65535,
                 (max[1] - min[1]) / 65535
             ], scale);
-            var decodeMat = math.mulMat3(translate, scale, math.identityMat3());
+            const decodeMat = math.mulMat3(translate, scale, math.identityMat3());
             return {
                 quantized: quantized,
                 decode: decodeMat
@@ -857,9 +857,9 @@
 
     // http://jcgt.org/published/0003/02/01/
     function octEncode(array) {
-        var encoded = new Int8Array(array.length * 2 / 3);
-        var oct, dec, best, currentCos, bestCos;
-        var i, ei;
+        const encoded = new Int8Array(array.length * 2 / 3);
+        let oct, dec, best, currentCos, bestCos;
+        let i, ei;
         for (i = 0, ei = 0; i < array.length; i += 3, ei += 2) {
             // Test various combinations of ceil and floor
             // to minimize rounding errors
@@ -895,11 +895,11 @@
 
     // Oct-encode single normal vector in 2 bytes
     function octEncodeVec3(array, i, xfunc, yfunc) {
-        var x = array[i] / (Math.abs(array[i]) + Math.abs(array[i + 1]) + Math.abs(array[i + 2]));
-        var y = array[i + 1] / (Math.abs(array[i]) + Math.abs(array[i + 1]) + Math.abs(array[i + 2]));
+        let x = array[i] / (Math.abs(array[i]) + Math.abs(array[i + 1]) + Math.abs(array[i + 2]));
+        let y = array[i + 1] / (Math.abs(array[i]) + Math.abs(array[i + 1]) + Math.abs(array[i + 2]));
         if (array[i + 2] < 0) {
-            var tempx = x;
-            var tempy = y;
+            let tempx = x;
+            let tempy = y;
             tempx = (1 - Math.abs(y)) * (x >= 0 ? 1 : -1);
             tempy = (1 - Math.abs(x)) * (y >= 0 ? 1 : -1);
             x = tempx;
@@ -913,16 +913,16 @@
 
     // Decode an oct-encoded normal
     function octDecodeVec2(oct) {
-        var x = oct[0];
-        var y = oct[1];
+        let x = oct[0];
+        let y = oct[1];
         x /= x < 0 ? 127 : 128;
         y /= y < 0 ? 127 : 128;
-        var z = 1 - Math.abs(x) - Math.abs(y);
+        const z = 1 - Math.abs(x) - Math.abs(y);
         if (z < 0) {
             x = (1 - Math.abs(y)) * (x >= 0 ? 1 : -1);
             y = (1 - Math.abs(x)) * (y >= 0 ? 1 : -1);
         }
-        var length = Math.sqrt(x * x + y * y + z * z);
+        const length = Math.sqrt(x * x + y * y + z * z);
         return [
             x / length,
             y / length,
@@ -937,26 +937,26 @@
 
     var buildEdgesIndices = (function () {
 
-        var math = xeogl.math;
+        const math = xeogl.math;
 
         // TODO: Optimize with caching, but need to cater to both compressed and uncompressed positions
 
-        var uniquePositions = [];
-        var indicesLookup = [];
-        var indicesReverseLookup = [];
-        var weldedIndices = [];
+        const uniquePositions = [];
+        const indicesLookup = [];
+        const indicesReverseLookup = [];
+        const weldedIndices = [];
 
         function weldVertices(positions, indices) {
-            var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-            var vx;
-            var vy;
-            var vz;
-            var key;
-            var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-            var precision = Math.pow(10, precisionPoints);
-            var i;
-            var len;
-            var lenUniquePositions = 0;
+            const positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+            let vx;
+            let vy;
+            let vz;
+            let key;
+            const precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+            const precision = Math.pow(10, precisionPoints);
+            let i;
+            let len;
+            let lenUniquePositions = 0;
             for (i = 0, len = positions.length; i < len; i += 3) {
                 vx = positions[i];
                 vy = positions[i + 1];
@@ -976,25 +976,25 @@
             }
         }
 
-        var faces = [];
-        var numFaces = 0;
-        var compa = new Uint16Array(3);
-        var compb = new Uint16Array(3);
-        var compc = new Uint16Array(3);
-        var a = math.vec3();
-        var b = math.vec3();
-        var c = math.vec3();
-        var cb = math.vec3();
-        var ab = math.vec3();
-        var cross = math.vec3();
-        var normal = math.vec3();
+        const faces = [];
+        let numFaces = 0;
+        const compa = new Uint16Array(3);
+        const compb = new Uint16Array(3);
+        const compc = new Uint16Array(3);
+        const a = math.vec3();
+        const b = math.vec3();
+        const c = math.vec3();
+        const cb = math.vec3();
+        const ab = math.vec3();
+        const cross = math.vec3();
+        const normal = math.vec3();
 
         function buildFaces(numIndices, positionsDecodeMatrix) {
             numFaces = 0;
-            for (var i = 0, len = numIndices; i < len; i += 3) {
-                var ia = ((weldedIndices[i]) * 3);
-                var ib = ((weldedIndices[i + 1]) * 3);
-                var ic = ((weldedIndices[i + 2]) * 3);
+            for (let i = 0, len = numIndices; i < len; i += 3) {
+                const ia = ((weldedIndices[i]) * 3);
+                const ib = ((weldedIndices[i + 1]) * 3);
+                const ic = ((weldedIndices[i + 2]) * 3);
                 if (positionsDecodeMatrix) {
                     compa[0] = uniquePositions[ia];
                     compa[1] = uniquePositions[ia + 1];
@@ -1024,7 +1024,7 @@
                 math.subVec3(a, b, ab);
                 math.cross3Vec3(cb, ab, cross);
                 math.normalizeVec3(cross, normal);
-                var face = faces[numFaces] || (faces[numFaces] = {normal: math.vec3()});
+                const face = faces[numFaces] || (faces[numFaces] = {normal: math.vec3()});
                 face.normal[0] = normal[0];
                 face.normal[1] = normal[1];
                 face.normal[2] = normal[2];
@@ -1035,24 +1035,24 @@
         return function (positions, indices, positionsDecodeMatrix, edgeThreshold, combined) {
             weldVertices(positions, indices);
             buildFaces(indices.length, positionsDecodeMatrix);
-            var edgeIndices = [];
-            var thresholdDot = Math.cos(xeogl.math.DEGTORAD * edgeThreshold);
-            var edges = {};
-            var edge1;
-            var edge2;
-            var index1;
-            var index2;
-            var key;
-            var largeIndex = false;
-            var edge;
-            var normal1;
-            var normal2;
-            var dot;
-            var ia;
-            var ib;
-            for (var i = 0, len = indices.length; i < len; i += 3) {
-                var faceIndex = i / 3;
-                for (var j = 0; j < 3; j++) {
+            const edgeIndices = [];
+            const thresholdDot = Math.cos(xeogl.math.DEGTORAD * edgeThreshold);
+            const edges = {};
+            let edge1;
+            let edge2;
+            let index1;
+            let index2;
+            let key;
+            let largeIndex = false;
+            let edge;
+            let normal1;
+            let normal2;
+            let dot;
+            let ia;
+            let ib;
+            for (let i = 0, len = indices.length; i < len; i += 3) {
+                const faceIndex = i / 3;
+                for (let j = 0; j < 3; j++) {
                     edge1 = weldedIndices[i + j];
                     edge2 = weldedIndices[i + ((j + 1) % 3)];
                     index1 = Math.min(edge1, edge2);
@@ -1090,6 +1090,6 @@
                 edgeIndices.push(indicesReverseLookup[ib]);
             }
             return (largeIndex || combined) ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
-        }
+        };
     })();
 })();

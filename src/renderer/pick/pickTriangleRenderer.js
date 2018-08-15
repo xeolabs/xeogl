@@ -14,16 +14,16 @@
         this._allocate(mesh);
     };
 
-    var renderers = {};
+    const renderers = {};
 
     xeogl.renderer.PickTriangleRenderer.get = function (mesh) {
-        var hash = [
+        const hash = [
             mesh.scene.canvas.canvas.id,
             mesh.scene._clipsState.getHash(),
             mesh._geometry._state.quantized ? "cp" : "",
             mesh._state.hash
         ].join(";");
-        var renderer = renderers[hash];
+        let renderer = renderers[hash];
         if (!renderer) {
             renderer = new xeogl.renderer.PickTriangleRenderer(hash, mesh);
             if (renderer.errors) {
@@ -55,31 +55,31 @@
         if (!this._program) {
             this._allocate(mesh);
         }
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var clipsState = scene._clipsState;
-        var materialState = mesh._material._state;
-        var meshState = mesh._state;
-        var geometry = mesh._geometry;
-        var geometryState = mesh._geometry._state;
-        var backfaces = materialState.backfaces;
-        var frontface = materialState.frontface;
-        var positionsBuf = geometry._getPickTrianglePositions();
-        var pickColorsBuf = geometry._getPickTriangleColors();
-        var camera = scene.camera;
-        var cameraState = camera._state;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const clipsState = scene._clipsState;
+        const materialState = mesh._material._state;
+        const meshState = mesh._state;
+        const geometry = mesh._geometry;
+        const geometryState = mesh._geometry._state;
+        const backfaces = materialState.backfaces;
+        const frontface = materialState.frontface;
+        const positionsBuf = geometry._getPickTrianglePositions();
+        const pickColorsBuf = geometry._getPickTriangleColors();
+        const camera = scene.camera;
+        const cameraState = camera._state;
         this._program.bind();
         frame.useProgram++;
         gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || cameraState.matrix);
         gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || camera.project._state.matrix);
         if (clipsState.clips.length > 0) {
-            var clips = clipsState.clips;
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
-            for (var i = 0, len = this._uClips.length; i < len; i++) {
+            const clips = clipsState.clips;
+            let clipUniforms;
+            let uClipActive;
+            let clip;
+            let uClipPos;
+            let uClipDir;
+            for (let i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;
                 clip = clips[i];
@@ -130,21 +130,21 @@
     };
 
     xeogl.renderer.PickTriangleRenderer.prototype._allocate = function (mesh) {
-        var gl = mesh.scene.canvas.gl;
+        const gl = mesh.scene.canvas.gl;
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
         this._useCount = 0;
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-        var program = this._program;
+        const program = this._program;
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
         this._uClips = [];
-        var clips = mesh.scene._clipsState.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
+        const clips = mesh.scene._clipsState.clips;
+        for (let i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
                 pos: program.getLocation("clipPos" + i),

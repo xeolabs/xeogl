@@ -111,7 +111,7 @@ TODO
              */
             ambient: {
                 set: function (value) {
-                    var ambient = this._state.ambient;
+                    let ambient = this._state.ambient;
                     if (!ambient) {
                         ambient = this._state.ambient = new Float32Array(3);
                     } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
@@ -142,7 +142,7 @@ TODO
              */
             color: {
                 set: function (value) {
-                    var color = this._state.color;
+                    let color = this._state.color;
                     if (!color) {
                         color = this._state.color = new Float32Array(3);
                     } else if (value && color[0] === value[0] && color[1] === value[1] && color[2] === value[2]) {
@@ -173,7 +173,7 @@ TODO
              */
             emissive: {
                 set: function (value) {
-                    var emissive = this._state.emissive;
+                    let emissive = this._state.emissive;
                     if (!emissive) {
                         emissive = this._state.emissive = new Float32Array(3);
                     } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {

@@ -258,7 +258,7 @@
 
             // Bind context loss and recovery handlers
 
-            var self = this;
+            const self = this;
 
             this.canvas.addEventListener("webglcontextlost", this._webglcontextlostListener = function (event) {
 
@@ -300,27 +300,27 @@
 
             // Publish canvas size and position changes on each scene tick
 
-            var lastWindowWidth = null;
-            var lastWindowHeight = null;
+            let lastWindowWidth = null;
+            let lastWindowHeight = null;
 
-            var lastCanvasWidth = null;
-            var lastCanvasHeight = null;
+            let lastCanvasWidth = null;
+            let lastCanvasHeight = null;
 
-            var lastCanvasOffsetLeft = null;
-            var lastCanvasOffsetTop = null;
+            let lastCanvasOffsetLeft = null;
+            let lastCanvasOffsetTop = null;
 
-            var lastParent = null;
+            let lastParent = null;
 
             this._tick = this.scene.on("tick", function () {
 
-                var canvas = self.canvas;
+                const canvas = self.canvas;
 
-                var newWindowSize = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
-                var newCanvasSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
-                var newCanvasPos = (canvas.offsetLeft !== lastCanvasOffsetLeft || canvas.offsetTop !== lastCanvasOffsetTop);
+                const newWindowSize = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
+                const newCanvasSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
+                const newCanvasPos = (canvas.offsetLeft !== lastCanvasOffsetLeft || canvas.offsetTop !== lastCanvasOffsetTop);
 
-                var parent = canvas.parentElement;
-                var newParent = (parent !== lastParent);
+                const parent = canvas.parentElement;
+                const newParent = (parent !== lastParent);
 
                 if (newWindowSize || newCanvasSize || newCanvasPos || newParent) {
 
@@ -328,14 +328,14 @@
 
                     if (newCanvasSize || newCanvasPos) {
 
-                        var newWidth = canvas.clientWidth;
-                        var newHeight = canvas.clientHeight;
+                        const newWidth = canvas.clientWidth;
+                        const newHeight = canvas.clientHeight;
 
                         // TODO: Wasteful to re-count pixel size of each canvas on each canvas' resize
                         if (newCanvasSize) {
-                            var countPixels = 0;
-                            var scene;
-                            for (var sceneId in xeogl.scenes) {
+                            let countPixels = 0;
+                            let scene;
+                            for (const sceneId in xeogl.scenes) {
                                 if (xeogl.scenes.hasOwnProperty(sceneId)) {
                                     scene = xeogl.scenes[sceneId];
                                     countPixels += scene.canvas.canvas.clientWidth * scene.canvas.canvas.clientHeight;
@@ -347,7 +347,7 @@
                             canvas.height = canvas.clientHeight;
                         }
 
-                        var boundary = self.boundary;
+                        const boundary = self.boundary;
 
                         boundary[0] = canvas.offsetLeft;
                         boundary[1] = canvas.offsetTop;
@@ -399,11 +399,11 @@
          */
         _createCanvas: function () {
 
-            var canvasId = "xeogl-canvas-" + xeogl.math.createUUID();
-            var body = document.getElementsByTagName("body")[0];
-            var div = document.createElement('div');
+            const canvasId = "xeogl-canvas-" + xeogl.math.createUUID();
+            const body = document.getElementsByTagName("body")[0];
+            const div = document.createElement('div');
 
-            var style = div.style;
+            const style = div.style;
             style.height = "100%";
             style.width = "100%";
             style.padding = "0";
@@ -429,8 +429,8 @@
          */
         _createBackground: function () {
 
-            var div = document.createElement('div');
-            var style = div.style;
+            const div = document.createElement('div');
+            const style = div.style;
             style.padding = "0";
             style.margin = "0";
             style.background = null;
@@ -450,7 +450,7 @@
         },
 
         _getElementXY: function (e) {
-            var x = 0, y = 0;
+            let x = 0, y = 0;
             while (e) {
                 x += (e.offsetLeft - e.scrollLeft);
                 y += (e.offsetTop - e.scrollTop);
@@ -480,7 +480,7 @@
             }
 
             if (!this.gl) {
-                for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
+                for (let i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
                     try {
                         this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
                     } catch (e) { // Try with next context name
@@ -505,7 +505,7 @@
                 if (this.webgl2) {
                     this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT, this.gl.FASTEST);
                 } else if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) {
-                    var ext = this.gl.getExtension("OES_standard_derivatives");
+                    const ext = this.gl.getExtension("OES_standard_derivatives");
                     this.gl.hint(ext.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST);
                 }
             }
@@ -558,7 +558,7 @@
             }
 
             if (ok) { // Asynchronous
-                var self = this;
+                const self = this;
                 requestAnimationFrame(function () {
                     self.scene.render(true); // Force-render a frame
                     ok(self._getSnapshot(params));
@@ -570,10 +570,10 @@
 
         _getSnapshot: function (params) {
             params = params || {};
-            var width = params.width || this.canvas.width;
-            var height = params.height || this.canvas.height;
-            var format = params.format || "jpeg";
-            var image;
+            const width = params.width || this.canvas.width;
+            const height = params.height || this.canvas.height;
+            const format = params.format || "jpeg";
+            let image;
             switch (format) {
                 case "jpeg":
                     image = Canvas2Image.saveAsJPEG(this.canvas, false, width, height);
@@ -651,7 +651,7 @@
                         (this._backgroundColor = this._backgroundColor || new xeogl.math.vec4()).set(value || [0, 0, 0, 1]);
 
                         if (!this._backgroundImageSrc) {
-                            var rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
+                            const rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
                             this._backgroundElement.style.background = rgb;
                         }
                     }
@@ -691,7 +691,7 @@
                     this._backgroundImageSrc = value;
 
                     if (!this._backgroundImageSrc) {
-                        var rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
+                        const rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
                         this._backgroundElement.style.background = rgb;
                     }
                 },

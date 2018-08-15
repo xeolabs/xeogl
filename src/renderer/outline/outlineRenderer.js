@@ -6,23 +6,23 @@
 
     "use strict";
 
-    var ids = new xeogl.utils.Map({});
+    const ids = new xeogl.utils.Map({});
 
     xeogl.renderer.OutlineRenderer = function (hash, mesh) {
         this._init(hash, mesh);
     };
 
-    var outlineRenderers = {};
+    const outlineRenderers = {};
 
     xeogl.renderer.OutlineRenderer.get = function (mesh) {
-        var hash = [
+        const hash = [
             mesh.scene.canvas.canvas.id,
             mesh.scene.gammaOutput ? "go" : "", // Gamma input not needed
             mesh.scene._clipsState.getHash(),
             mesh._geometry._state.hash,
             mesh._state.hash
         ].join(";");
-        var renderer = outlineRenderers[hash];
+        let renderer = outlineRenderers[hash];
         if (!renderer) {
             renderer = new xeogl.renderer.OutlineRenderer(hash, mesh);
             outlineRenderers[hash] = renderer;
@@ -52,14 +52,14 @@
             this.errors = this._program.errors;
             return;
         }
-        var program = this._program;
+        const program = this._program;
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
         this._uClips = [];
-        var clips = mesh.scene._clipsState.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
+        const clips = mesh.scene._clipsState.clips;
+        for (let i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
                 pos: program.getLocation("clipPos" + i),
@@ -78,10 +78,10 @@
     };
 
     xeogl.renderer.OutlineRenderer.prototype._bindProgram = function (frame) {
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var program = this._program;
-        var clipsState = scene._clipsState;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const program = this._program;
+        const clipsState = scene._clipsState;
         program.bind();
         frame.useProgram++;
         this._lastMaterialId = null;
@@ -90,12 +90,12 @@
         gl.uniformMatrix4fv(this._uViewMatrix, false, scene.viewTransform.matrix);
         gl.uniformMatrix4fv(this._uProjMatrix, false, scene.projTransform.matrix);
         if (clipsState.clips.length > 0) {
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
-            for (var i = 0, len = this._uClips.length; i < len; i++) {
+            let clipUniforms;
+            let uClipActive;
+            let clip;
+            let uClipPos;
+            let uClipDir;
+            for (let i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;
                 clip = clipsState.clips[i];
@@ -118,11 +118,11 @@
     };
 
     xeogl.renderer.OutlineRenderer.prototype.drawMesh = function (frame, mesh) {
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var materialState = mesh.outlineMaterial;
-        var meshState = mesh._state;
-        var geometryState = mesh._geometry._state;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const materialState = mesh.outlineMaterial;
+        const meshState = mesh._state;
+        const geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
@@ -132,8 +132,8 @@
                 gl.uniform1f(this._uWidth, materialState.width);
             }
             if (this._uColor) {
-                var color = materialState.color;
-                var alpha = materialState.alpha;
+                const color = materialState.color;
+                const alpha = materialState.alpha;
                 gl.uniform4f(this._uColor, color[0], color[1], color[2], alpha);
             }
             this._lastMaterialId = materialState.id;
@@ -146,7 +146,7 @@
             gl.uniform1i(this._uClippable, meshState.clippable);
         }
         if (geometryState.combined) {
-            var vertexBufs = mesh._geometry._getVertexBufs();
+            const vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);

@@ -6,7 +6,7 @@
 
     "use strict";
 
-    var ids = new xeogl.utils.Map({});
+    const ids = new xeogl.utils.Map({});
 
     xeogl.renderer.DrawRenderer = function (hash, mesh) {
         this.id = ids.addItem({});
@@ -17,12 +17,12 @@
         this._allocate(mesh);
     };
 
-    var drawRenderers = {};
+    const drawRenderers = {};
 
 
     xeogl.renderer.DrawRenderer.get = function (mesh) {
-        var scene = mesh.scene;
-        var hash = [
+        const scene = mesh.scene;
+        const hash = [
             scene.canvas.canvas.id,
             (scene.gammaInput ? "gi;" : ";") + (scene.gammaOutput ? "go" : ""),
             scene._lightsState.getHash(),
@@ -31,7 +31,7 @@
             mesh._material._state.hash,
             mesh._state.hash
         ].join(";");
-        var renderer = drawRenderers[hash];
+        let renderer = drawRenderers[hash];
         if (!renderer) {
             renderer = new xeogl.renderer.DrawRenderer(hash, mesh);
             if (renderer.errors) {
@@ -64,14 +64,14 @@
         if (!this._program) {
             this._allocate(mesh);
         }
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-        var scene = mesh.scene;
-        var material = mesh._material;
-        var gl = scene.canvas.gl;
-        var program = this._program;
-        var meshState = mesh._state;
-        var materialState = mesh._material._state;
-        var geometryState = mesh._geometry._state;
+        const maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+        const scene = mesh.scene;
+        const material = mesh._material;
+        const gl = scene.canvas.gl;
+        const program = this._program;
+        const meshState = mesh._state;
+        const materialState = mesh._material._state;
+        const geometryState = mesh._geometry._state;
 
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
@@ -82,7 +82,7 @@
 
             frame.textureUnit = this._baseTextureUnit;
 
-            var backfaces = materialState.backfaces;
+            const backfaces = materialState.backfaces;
             if (frame.backfaces !== backfaces) {
                 if (backfaces) {
                     gl.disable(gl.CULL_FACE);
@@ -92,7 +92,7 @@
                 frame.backfaces = backfaces;
             }
 
-            var frontface = materialState.frontface;
+            const frontface = materialState.frontface;
             if (frame.frontface !== frontface) {
                 if (frontface) {
                     gl.frontFace(gl.CCW);
@@ -322,7 +322,7 @@
                             materialState.alphaCutoff,
                             0.0);
                     }
-                    var baseColorMap = material._baseColorMap;
+                    const baseColorMap = material._baseColorMap;
                     if (baseColorMap && baseColorMap._state.texture && this._uBaseColorMap) {
                         program.bindTexture(this._uBaseColorMap, baseColorMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -331,7 +331,7 @@
                             gl.uniformMatrix4fv(this._uBaseColorMapMatrix, false, baseColorMap._state.matrix);
                         }
                     }
-                    var metallicMap = material._metallicMap;
+                    const metallicMap = material._metallicMap;
                     if (metallicMap && metallicMap._state.texture && this._uMetallicMap) {
                         program.bindTexture(this._uMetallicMap, metallicMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -340,7 +340,7 @@
                             gl.uniformMatrix4fv(this._uMetallicMapMatrix, false, metallicMap._state.matrix);
                         }
                     }
-                    var roughnessMap = material._roughnessMap;
+                    const roughnessMap = material._roughnessMap;
                     if (roughnessMap && roughnessMap._state.texture && this._uRoughnessMap) {
                         program.bindTexture(this._uRoughnessMap, roughnessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -349,7 +349,7 @@
                             gl.uniformMatrix4fv(this._uRoughnessMapMatrix, false, roughnessMap._state.matrix);
                         }
                     }
-                    var metallicRoughnessMap = material._metallicRoughnessMap;
+                    const metallicRoughnessMap = material._metallicRoughnessMap;
                     if (metallicRoughnessMap && metallicRoughnessMap._state.texture && this._uMetallicRoughnessMap) {
                         program.bindTexture(this._uMetallicRoughnessMap, metallicRoughnessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -420,7 +420,7 @@
                             materialState.alphaCutoff,
                             0.0);
                     }
-                    var diffuseMap = material._diffuseMap;
+                    const diffuseMap = material._diffuseMap;
                     if (diffuseMap && diffuseMap._state.texture && this._uDiffuseMap) {
                         program.bindTexture(this._uDiffuseMap, diffuseMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -429,7 +429,7 @@
                             gl.uniformMatrix4fv(this._uDiffuseMapMatrix, false, diffuseMap._state.matrix);
                         }
                     }
-                    var specularMap = material._specularMap;
+                    const specularMap = material._specularMap;
                     if (specularMap && specularMap._state.texture && this._uSpecularMap) {
                         program.bindTexture(this._uSpecularMap, specularMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -438,7 +438,7 @@
                             gl.uniformMatrix4fv(this._uSpecularMapMatrix, false, specularMap._state.matrix);
                         }
                     }
-                    var glossinessMap = material._glossinessMap;
+                    const glossinessMap = material._glossinessMap;
                     if (glossinessMap && glossinessMap._state.texture && this._uGlossinessMap) {
                         program.bindTexture(this._uGlossinessMap, glossinessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -447,7 +447,7 @@
                             gl.uniformMatrix4fv(this._uGlossinessMapMatrix, false, glossinessMap._state.matrix);
                         }
                     }
-                    var specularGlossinessMap = material._specularGlossinessMap;
+                    const specularGlossinessMap = material._specularGlossinessMap;
                     if (specularGlossinessMap && specularGlossinessMap._state.texture && this._uSpecularGlossinessMap) {
                         program.bindTexture(this._uSpecularGlossinessMap, specularGlossinessMap._state.texture, frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -507,8 +507,8 @@
         }
 
         if (this._uColorize) {
-            var colorize = meshState.colorize;
-            var lastColorize = this._lastColorize;
+            const colorize = meshState.colorize;
+            const lastColorize = this._lastColorize;
             if (lastColorize[0] !== colorize[0] ||
                 lastColorize[1] !== colorize[1] ||
                 lastColorize[2] !== colorize[2] ||
@@ -522,7 +522,7 @@
         }
 
         if (geometryState.combined) {
-            var vertexBufs = mesh._geometry._getVertexBufs();
+            const vertexBufs = mesh._geometry._getVertexBufs();
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
@@ -617,17 +617,17 @@
     };
 
     xeogl.renderer.DrawRenderer.prototype._allocate = function (mesh) {
-        var gl = mesh.scene.canvas.gl;
-        var material = mesh._material;
-        var lightsState = mesh.scene._lightsState;
-        var clipsState = mesh.scene._clipsState;
-        var materialState = mesh._material._state;
+        const gl = mesh.scene.canvas.gl;
+        const material = mesh._material;
+        const lightsState = mesh.scene._lightsState;
+        const clipsState = mesh.scene._clipsState;
+        const materialState = mesh._material._state;
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
         if (this._program.errors) {
             this.errors = this._program.errors;
             return;
         }
-        var program = this._program;
+        const program = this._program;
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
         this._uUVDecodeMatrix = program.getLocation("uvDecodeMatrix");
         this._uModelMatrix = program.getLocation("modelMatrix");
@@ -644,8 +644,8 @@
         this._uShadowViewMatrix = [];
         this._uShadowProjMatrix = [];
 
-        var lights = lightsState.lights;
-        var light;
+        const lights = lightsState.lights;
+        let light;
 
         for (var i = 0, len = lights.length; i < len; i++) {
             light = lights[i];
@@ -691,7 +691,7 @@
         }
 
         this._uClips = [];
-        var clips = clipsState.clips;
+        const clips = clipsState.clips;
         for (var i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
@@ -889,16 +889,16 @@
 
     xeogl.renderer.DrawRenderer.prototype._bindProgram = function (frame) {
 
-        var math = xeogl.math;
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var lightsState = scene._lightsState;
-        var clipsState = scene._clipsState;
-        var lights = lightsState.lights;
-        var light;
+        const math = xeogl.math;
+        const maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const lightsState = scene._lightsState;
+        const clipsState = scene._clipsState;
+        const lights = lightsState.lights;
+        let light;
 
-        var program = this._program;
+        const program = this._program;
 
         program.bind();
 
@@ -914,8 +914,8 @@
         this._lastColorize[2] = -1;
         this._lastColorize[3] = -1;
 
-        var camera = scene.camera;
-        var cameraState = camera._state;
+        const camera = scene.camera;
+        const cameraState = camera._state;
 
         gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
         gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
@@ -952,7 +952,7 @@
                     if (this._uShadowProjMatrix[i]) {
                         gl.uniformMatrix4fv(this._uShadowProjMatrix[i], false, light.getShadowProjMatrix());
                     }
-                    var shadowRenderBuf = light.getShadowRenderBuf();
+                    const shadowRenderBuf = light.getShadowRenderBuf();
                     if (shadowRenderBuf) {
                         program.bindTexture("shadowMap" + i, shadowRenderBuf.getTexture(), frame.textureUnit);
                         frame.textureUnit = (frame.textureUnit + 1) % maxTextureUnits;
@@ -975,12 +975,12 @@
         }
 
         if (clipsState.clips.length > 0) {
-            var clips = scene._clipsState.clips;
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
+            const clips = scene._clipsState.clips;
+            let clipUniforms;
+            let uClipActive;
+            let clip;
+            let uClipPos;
+            let uClipDir;
             for (var i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;

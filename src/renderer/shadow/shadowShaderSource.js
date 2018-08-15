@@ -15,19 +15,19 @@
         if (!mesh._geometry._state.uv) {
             return false;
         }
-        var materialState = mesh._material._state;
+        const materialState = mesh._material._state;
         return materialState.alphaMap;
     }
     
     function buildVertex(mesh) {
 
-        var i;
-        var len;
-        var lights = scene.lights.lights;
-        var light;
-        var billboard = mesh._state.billboard;
+        let i;
+        let len;
+        const lights = scene.lights.lights;
+        let light;
+        const billboard = mesh._state.billboard;
 
-        var src = [];
+        const src = [];
 
         src.push("// Shadow drawing vertex shader");
 
@@ -120,8 +120,8 @@
 
     function buildFragment(mesh) {
 
-        var i;
-        var src = [];
+        let i;
+        const src = [];
 
         src.push("// Shadow fragment shader");
 

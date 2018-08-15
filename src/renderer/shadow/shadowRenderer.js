@@ -16,14 +16,14 @@
             this.errors = this._program.errors;
             return;
         }
-        var program = this._program;
+        const program = this._program;
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
         this._uClips = {};
-        var clips = mesh.scene._clipsState.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
+        const clips = mesh.scene._clipsState.clips;
+        for (let i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
                 pos: program.getLocation("clipPos" + i),
@@ -37,15 +37,15 @@
         this._lastGeometryId = null;
     };
 
-    var renderers = {};
+    const renderers = {};
 
     xeogl.renderer.ShadowRenderer.get = function (mesh) {
-        var hash = [
+        const hash = [
             mesh.scene.canvas.canvas.id,
             mesh.scene._clipsState.getHash(),
             mesh._geometry._state.hash,
             mesh._state.hash].join(";");
-        var renderer = renderers[hash];
+        let renderer = renderers[hash];
         if (!renderer) {
             renderer = new xeogl.renderer.ShadowRenderer(hash, mesh);
             renderers[hash] = renderer;
@@ -62,9 +62,9 @@
     };
 
     xeogl.renderer.ShadowRenderer.prototype._bindProgram = function (frame) {
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var clipsState = scene._clipsState;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const clipsState = scene._clipsState;
         this._program.bind();
         frame.useProgram++;
         this._lastLightId = null;
@@ -72,12 +72,12 @@
         this._lastVertexBufsId = null;
         this._lastGeometryId = null;
         if (clipsState.clips.length > 0) {
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
-            for (var i = 0, len = this._uClips.length; i < len; i++) {
+            let clipUniforms;
+            let uClipActive;
+            let clip;
+            let uClipPos;
+            let uClipDir;
+            for (let i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;
                 clip = clipsState.clips[i];
@@ -101,11 +101,11 @@
     };
 
     xeogl.renderer.ShadowRenderer.prototype.drawMesh = function (frame, mesh, light) {
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var materialState = mesh._material._state;
-        var meshState = mesh._state;
-        var geometryState = mesh._geometry._state;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const materialState = mesh._material._state;
+        const meshState = mesh._state;
+        const geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
@@ -119,7 +119,7 @@
         // gl.uniformMatrix4fv(this._uViewMatrix, false, this._scene.viewTransform.matrix);
         // gl.uniformMatrix4fv(this._uProjMatrix, false, this._scene.projTransform.matrix);
         if (materialState.id !== this._lastMaterialId) {
-            var backfaces = materialState.backfaces;
+            const backfaces = materialState.backfaces;
             if (frame.backfaces !== backfaces) {
                 if (backfaces) {
                     gl.disable(gl.CULL_FACE);
@@ -128,7 +128,7 @@
                 }
                 frame.backfaces = backfaces;
             }
-            var frontface = materialState.frontface;
+            const frontface = materialState.frontface;
             if (frame.frontface !== frontface) {
                 if (frontface) {
                     gl.frontFace(gl.CCW);
@@ -151,7 +151,7 @@
             gl.uniform1i(this._uClippable, mesh._state.clippable);
         }
         if (geometryState.combined) {
-            var vertexBufs = mesh.vertexBufs;
+            const vertexBufs = mesh.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
                     this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);

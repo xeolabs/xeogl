@@ -396,9 +396,9 @@
 
         _init: function (cfg) {
 
-            var self = this;
+            const self = this;
 
-            var transparent = !!cfg.transparent;
+            const transparent = !!cfg.transparent;
 
             /**
              The number of models currently loading.
@@ -641,19 +641,19 @@
 
                 this.clips = [];
 
-                var hash = null;
+                let hash = null;
 
                 this.getHash = function () {
                     if (hash) {
                         return hash;
                     }
-                    var clips = this.clips;
+                    const clips = this.clips;
                     if (clips.length === 0) {
                         return this.hash = ";";
                     }
-                    var clip;
-                    var hashParts = [];
-                    for (var i = 0, len = clips.length; i < len; i++) {
+                    let clip;
+                    const hashParts = [];
+                    for (let i = 0, len = clips.length; i < len; i++) {
                         clip = clips[i];
                         hashParts.push("cp");
                     }
@@ -668,7 +668,7 @@
                 };
 
                 this.removeClip = function (clip) {
-                    for (var i = 0, len = this.clips.length; i < len; i++) {
+                    for (let i = 0, len = this.clips.length; i < len; i++) {
                         if (this.clips[i].id === clip.id) {
                             this.clips.splice(i, 1);
                             hash = null;
@@ -681,23 +681,23 @@
             this._lightsState = new (function () {
 
                 const DEFAULT_AMBIENT = xeogl.math.vec3([0, 0, 0]);
-                var ambientColor = xeogl.math.vec3();
+                const ambientColor = xeogl.math.vec3();
 
                 this.lights = [];
                 this.reflectionMaps = [];
                 this.lightMaps = [];
 
-                var hash = null;
-                var ambientLight = null;
+                let hash = null;
+                let ambientLight = null;
 
                 this.getHash = function () {
                     if (hash) {
                         return hash;
                     }
-                    var hashParts = [];
-                    var lights = this.lights;
-                    var light;
-                    for (var i = 0, len = lights.length; i < len; i++) {
+                    const hashParts = [];
+                    const lights = this.lights;
+                    let light;
+                    for (let i = 0, len = lights.length; i < len; i++) {
                         light = lights[i];
                         hashParts.push("/");
                         hashParts.push(light.type);
@@ -724,8 +724,8 @@
                 };
 
                 this.removeLight = function (state) {
-                    for (var i = 0, len = this.lights.length; i < len; i++) {
-                        var light = this.lights[i];
+                    for (let i = 0, len = this.lights.length; i < len; i++) {
+                        const light = this.lights[i];
                         if (light.id === state.id) {
                             this.lights.splice(i, 1);
                             if (ambientLight && ambientLight.id === state.id) {
@@ -743,7 +743,7 @@
                 };
 
                 this.removeReflectionMap = function (state) {
-                    for (var i = 0, len = this.reflectionMaps.length; i < len; i++) {
+                    for (let i = 0, len = this.reflectionMaps.length; i < len; i++) {
                         if (this.reflectionMaps[i].id === state.id) {
                             this.reflectionMaps.splice(i, 1);
                             hash = null;
@@ -758,7 +758,7 @@
                 };
 
                 this.removeLightMap = function (state) {
-                    for (var i = 0, len = this.lightMaps.length; i < len; i++) {
+                    for (let i = 0, len = this.lightMaps.length; i < len; i++) {
                         if (this.lightMaps[i].id === state.id) {
                             this.lightMaps.splice(i, 1);
                             hash = null;
@@ -769,8 +769,8 @@
 
                 this.getAmbientColor = function () {
                     if (!ambientLight) {
-                        for (var i = 0, len = this.lights.length; i < len; i++) {
-                            var light = this.lights[i];
+                        for (let i = 0, len = this.lights.length; i < len; i++) {
+                            const light = this.lights[i];
                             if (light.type === "ambient") {
                                 ambientLight = light;
                                 break;
@@ -778,8 +778,8 @@
                         }
                     }
                     if (ambientLight) {
-                        var color = ambientLight.color;
-                        var intensity = ambientLight.intensity;
+                        const color = ambientLight.color;
+                        const intensity = ambientLight.intensity;
                         ambientColor[0] = color[0] * intensity;
                         ambientColor[1] = color[1] * intensity;
                         ambientColor[2] = color[2] * intensity;
@@ -808,13 +808,13 @@
 
             // Add components specified as JSON
 
-            var componentJSONs = cfg.components;
+            const componentJSONs = cfg.components;
 
             if (componentJSONs) {
-                var componentJSON;
-                var type;
-                var constr;
-                for (var i = 0, len = componentJSONs.length; i < len; i++) {
+                let componentJSON;
+                let type;
+                let constr;
+                for (let i = 0, len = componentJSONs.length; i < len; i++) {
                     componentJSON = componentJSONs[i];
                     type = componentJSON.type;
                     if (type) {
@@ -866,9 +866,9 @@
 
             // Plug global components into renderer
 
-            var viewport = this._viewport;
-            var renderer = this._renderer;
-            var camera = this._camera;
+            const viewport = this._viewport;
+            const renderer = this._renderer;
+            const camera = this._camera;
 
             camera.on("dirty", function () {
                 renderer.imageDirty();
@@ -886,7 +886,7 @@
 
             // Call this Scene's property accessors to lazy-init their properties
 
-            var dummy; // Keeps Codacy happy
+            let dummy; // Keeps Codacy happy
 
             dummy = this.geometry;
             dummy = this.material;
@@ -913,8 +913,8 @@
             }
             this.components[c.id] = c;
             // Register for class type
-            var type = c.type;
-            var types = this.types[c.type];
+            const type = c.type;
+            let types = this.types[c.type];
             if (!types) {
                 types = this.types[type] = {};
             }
@@ -923,7 +923,7 @@
 
         _removeComponent: function (c) {
             delete this.components[c.id];
-            var types = this.types[c.type];
+            const types = this.types[c.type];
             if (types) {
                 delete types[c.id];
                 if (xeogl._isEmptyObject(types)) {
@@ -1031,7 +1031,7 @@
 
         _entityTypeAssigned: function (object, newEntityType) {
             this.entities[object.id] = object;
-            var objectsOfType = this.entityTypes[newEntityType];
+            let objectsOfType = this.entityTypes[newEntityType];
             if (!objectsOfType) {
                 objectsOfType = {};
                 this.entityTypes[newEntityType] = objectsOfType;
@@ -1043,7 +1043,7 @@
 
         _entityTypeRemoved: function (object, oldEntityType) {
             delete this.entities[object.id];
-            var objectsOfType = this.entityTypes[oldEntityType];
+            const objectsOfType = this.entityTypes[oldEntityType];
             if (objectsOfType) {
                 delete objectsOfType[object.id];
             }
@@ -1090,9 +1090,9 @@
         _webglContextLost: function () {
           //  this.loading++;
             this.canvas.spinner.processes++;
-            for (var id in this.components) {
+            for (const id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
-                    var c = this.components[id];
+                    const c = this.components[id];
                     if (c._webglContextLost) {
                         c._webglContextLost();
                     }
@@ -1102,10 +1102,10 @@
         },
 
         _webglContextRestored: function () {
-            var gl = this.canvas.gl;
-            for (var id in this.components) {
+            const gl = this.canvas.gl;
+            for (const id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
-                    var c = this.components[id];
+                    const c = this.components[id];
                     if (c._webglContextRestored) {
                         c._webglContextRestored(gl);
                     }
@@ -1129,7 +1129,7 @@
          */
         render: (function () {
 
-            var renderEvent = {
+            const renderEvent = {
                 sceneId: null,
                 pass: 0
             };
@@ -1146,7 +1146,7 @@
                     return;
                 }
 
-                var opacity = Number.parseFloat(this.canvas.canvas.style.opacity);
+                let opacity = Number.parseFloat(this.canvas.canvas.style.opacity);
                 if (opacity < 1.0) {
                     opacity += 0.1;
                     this.canvas.canvas.style.opacity = opacity;
@@ -1154,10 +1154,10 @@
 
                 renderEvent.sceneId = this.id;
 
-                var passes = this._passes;
-                var clearEachPass = this._clearEachPass;
-                var pass;
-                var clear;
+                const passes = this._passes;
+                const clearEachPass = this._clearEachPass;
+                let pass;
+                let clear;
 
                 for (pass = 0; pass < passes; pass++) {
 
@@ -1187,11 +1187,11 @@
                 }
 
                 this._saveAmbientColor();
-            }
+            };
         })(),
 
         _recompileMeshes: function () {
-            for (var id in this.meshes) {
+            for (const id in this.meshes) {
                 if (this.meshes.hasOwnProperty(id)) {
                     this.meshes[id]._compile();
                 }
@@ -1199,9 +1199,9 @@
         },
 
         _saveAmbientColor: function () {
-            var canvas = this.canvas;
+            const canvas = this.canvas;
             if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
-                var ambientColor = this._lightsState.getAmbientColor();
+                const ambientColor = this._lightsState.getAmbientColor();
                 if (!this._lastAmbientColor ||
                     this._lastAmbientColor[0] !== ambientColor[0] ||
                     this._lastAmbientColor[1] !== ambientColor[1] ||
@@ -1669,7 +1669,7 @@
                         if (!this._center || !this._center) {
                             this._center = xeogl.math.vec3();
                         }
-                        var aabb = this.aabb;
+                        const aabb = this.aabb;
                         this._center[0] = (aabb[0] + aabb[3] ) / 2;
                         this._center[1] = (aabb[1] + aabb[4] ) / 2;
                         this._center[2] = (aabb[2] + aabb[5] ) / 2;
@@ -1695,16 +1695,16 @@
                         if (!this._aabb) {
                             this._aabb = xeogl.math.AABB3();
                         }
-                        var xmin = xeogl.math.MAX_DOUBLE;
-                        var ymin = xeogl.math.MAX_DOUBLE;
-                        var zmin = xeogl.math.MAX_DOUBLE;
-                        var xmax = -xeogl.math.MAX_DOUBLE;
-                        var ymax = -xeogl.math.MAX_DOUBLE;
-                        var zmax = -xeogl.math.MAX_DOUBLE;
-                        var aabb;
-                        var meshes = this.meshes;
-                        var mesh;
-                        for (var meshId in meshes) {
+                        let xmin = xeogl.math.MAX_DOUBLE;
+                        let ymin = xeogl.math.MAX_DOUBLE;
+                        let zmin = xeogl.math.MAX_DOUBLE;
+                        let xmax = -xeogl.math.MAX_DOUBLE;
+                        let ymax = -xeogl.math.MAX_DOUBLE;
+                        let zmax = -xeogl.math.MAX_DOUBLE;
+                        let aabb;
+                        const meshes = this.meshes;
+                        let mesh;
+                        for (const meshId in meshes) {
                             if (meshes.hasOwnProperty(meshId)) {
                                 mesh = meshes[meshId];
                                 if (!mesh.collidable) {
@@ -1844,50 +1844,50 @@
 
             // Cached vectors to avoid garbage collection
 
-            var math = xeogl.math;
+            const math = xeogl.math;
 
-            var localRayOrigin = math.vec3();
-            var localRayDir = math.vec3();
+            const localRayOrigin = math.vec3();
+            const localRayDir = math.vec3();
 
-            var a = math.vec3();
-            var b = math.vec3();
-            var c = math.vec3();
+            const a = math.vec3();
+            const b = math.vec3();
+            const c = math.vec3();
 
-            var triangleVertices = math.vec3();
-            var position = math.vec4();
-            var worldPos = math.vec3();
-            var viewPos = math.vec3();
-            var bary = math.vec3();
+            const triangleVertices = math.vec3();
+            const position = math.vec4();
+            const worldPos = math.vec3();
+            const viewPos = math.vec3();
+            const bary = math.vec3();
 
-            var na = math.vec3();
-            var nb = math.vec3();
-            var nc = math.vec3();
+            const na = math.vec3();
+            const nb = math.vec3();
+            const nc = math.vec3();
 
-            var uva = math.vec3();
-            var uvb = math.vec3();
-            var uvc = math.vec3();
+            const uva = math.vec3();
+            const uvb = math.vec3();
+            const uvc = math.vec3();
 
-            var tempVec4a = math.vec4();
-            var tempVec4b = math.vec4();
-            var tempVec4c = math.vec4();
+            const tempVec4a = math.vec4();
+            const tempVec4b = math.vec4();
+            const tempVec4c = math.vec4();
 
-            var tempVec3 = math.vec3();
-            var tempVec3b = math.vec3();
-            var tempVec3c = math.vec3();
-            var tempVec3d = math.vec3();
-            var tempVec3e = math.vec3();
-            var tempVec3f = math.vec3();
-            var tempVec3g = math.vec3();
-            var tempVec3h = math.vec3();
-            var tempVec3i = math.vec3();
-            var tempVec3j = math.vec3();
-            var tempVec3k = math.vec3();
+            const tempVec3 = math.vec3();
+            const tempVec3b = math.vec3();
+            const tempVec3c = math.vec3();
+            const tempVec3d = math.vec3();
+            const tempVec3e = math.vec3();
+            const tempVec3f = math.vec3();
+            const tempVec3g = math.vec3();
+            const tempVec3h = math.vec3();
+            const tempVec3i = math.vec3();
+            const tempVec3j = math.vec3();
+            const tempVec3k = math.vec3();
 
             function getMeshIDMap(scene, meshIds) {
-                var map = {};
-                var meshId;
-                var mesh;
-                for (var i = 0, len = meshIds.length; i < len; i++) {
+                const map = {};
+                let meshId;
+                let mesh;
+                for (let i = 0, len = meshIds.length; i < len; i++) {
                     meshId = meshIds[i];
                     mesh = scene.meshes[meshId];
                     if (!mesh) {
@@ -1930,12 +1930,12 @@
                     this.warn("picking without canvasPos or ray origin and direction");
                 }
 
-                var includeMeshes = params.includeMeshes || params.include; // Backwards compat
+                const includeMeshes = params.includeMeshes || params.include; // Backwards compat
                 if (includeMeshes) {
                     params.includeMeshIds = getMeshIDMap(this, includeMeshes);
                 }
 
-                var excludeMeshes = params.excludeMeshes || params.exclude; // Backwards compat
+                const excludeMeshes = params.excludeMeshes || params.exclude; // Backwards compat
                 if (excludeMeshes) {
                     params.excludeMeshIds = getMeshIDMap(this, excludeMeshes);
                 }
@@ -1948,7 +1948,7 @@
                 //     params.excludeObjects = getMeshIDMapFromEntityTypes(this, params.excludeEntityTypes);
                 // }
 
-                var hit = this._renderer.pick(params);
+                const hit = this._renderer.pick(params);
 
                 if (hit) {
 
@@ -1958,7 +1958,7 @@
 
                         if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
-                            var geometry = hit.mesh.geometry._state;
+                            const geometry = hit.mesh.geometry._state;
 
                             if (geometry.primitiveName === "triangles") {
 
@@ -1969,14 +1969,14 @@
 
                                 // Get the World-space positions of the triangle's vertices
 
-                                var i = hit.primIndex; // Indicates the first triangle index in the indices array
+                                const i = hit.primIndex; // Indicates the first triangle index in the indices array
 
-                                var indices = geometry.indices; // Indices into geometry arrays, not into shared VertexBufs
-                                var positions = geometry.positions;
+                                const indices = geometry.indices; // Indices into geometry arrays, not into shared VertexBufs
+                                const positions = geometry.positions;
 
-                                var ia3;
-                                var ib3;
-                                var ic3;
+                                let ia3;
+                                let ib3;
+                                let ic3;
 
                                 if (indices) {
 
@@ -2017,7 +2017,7 @@
 
                                     // Decompress vertex positions
 
-                                    var positionsDecodeMatrix = geometry.positionsDecodeMatrix;
+                                    const positionsDecodeMatrix = geometry.positionsDecodeMatrix;
                                     if (positionsDecodeMatrix) {
                                         math.decompressPosition(a, positionsDecodeMatrix, a);
                                         math.decompressPosition(b, positionsDecodeMatrix, b);
@@ -2027,7 +2027,7 @@
 
                                 // Attempt to ray-pick the triangle in local space
 
-                                var canvasPos;
+                                let canvasPos;
 
                                 if (params.canvasPos) {
                                     canvasPos = params.canvasPos;
@@ -2083,7 +2083,7 @@
 
                                 // Get interpolated normal vector
 
-                                var normals = geometry.normals;
+                                const normals = geometry.normals;
 
                                 if (normals) {
 
@@ -2091,9 +2091,9 @@
 
                                         // Decompress vertex normals
 
-                                        var ia2 = ia * 2;
-                                        var ib2 = ib * 2;
-                                        var ic2 = ic * 2;
+                                        const ia2 = ia * 2;
+                                        const ib2 = ib * 2;
+                                        const ic2 = ic * 2;
 
                                         math.octDecodeVec2(normals.subarray(ia2, ia2 + 2), na);
                                         math.octDecodeVec2(normals.subarray(ib2, ib2 + 2), nb);
@@ -2114,7 +2114,7 @@
                                         nc[2] = normals[ic3 + 2];
                                     }
 
-                                    var normal = math.addVec3(math.addVec3(
+                                    const normal = math.addVec3(math.addVec3(
                                         math.mulVec3Scalar(na, bary[0], tempVec3),
                                         math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
@@ -2124,7 +2124,7 @@
 
                                 // Get interpolated UV coordinates
 
-                                var uvs = geometry.uv;
+                                const uvs = geometry.uv;
 
                                 if (uvs) {
 
@@ -2141,7 +2141,7 @@
 
                                         // Decompress vertex UVs
 
-                                        var uvDecodeMatrix = geometry.uvDecodeMatrix;
+                                        const uvDecodeMatrix = geometry.uvDecodeMatrix;
                                         if (uvDecodeMatrix) {
                                             math.decompressUV(uva, uvDecodeMatrix, uva);
                                             math.decompressUV(uvb, uvDecodeMatrix, uvb);
@@ -2190,16 +2190,16 @@
          @returns {[Number, Number, Number, Number, Number, Number]} An axis-aligned World-space bounding box, given as elements ````[xmin, ymin, zmin, xmax, ymax, zmax]````.
          */
         getAABB: (function () {
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
-            var valid;
+            let xmin = 100000;
+            let ymin = 100000;
+            let zmin = 100000;
+            let xmax = -100000;
+            let ymax = -100000;
+            let zmax = -100000;
+            let valid;
 
             function callback(object) {
-                var aabb = object.aabb;
+                const aabb = object.aabb;
                 if (aabb[0] < xmin) {
                     xmin = aabb[0];
                 }
@@ -2226,7 +2226,7 @@
                     return this.aabb;
                 }
                 if (xeogl._isString(target)) {
-                    var object = this.objects[target];
+                    const object = this.objects[target];
                     if (object) {
                         return object.aabb;
                     }
@@ -2243,7 +2243,7 @@
                 zmax = -100000;
                 this.withObjects(target, callback);
                 if (valid) {
-                    var aabb2 = new xeogl.math.AABB3();
+                    const aabb2 = new xeogl.math.AABB3();
                     aabb2[0] = xmin;
                     aabb2[1] = ymin;
                     aabb2[2] = zmin;
@@ -2265,7 +2265,7 @@
          @method clear
          */
         clear: function () {  // FIXME: should only clear user-created components
-            for (var id in this.components) {
+            for (const id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
                     // Each component fires "destroyed" as it is destroyed,
                     // which this Scene handles by removing the component
@@ -2285,8 +2285,8 @@
          @method clearLights
          */
         clearLights: function () {
-            var ids = Object.keys(this.lights);
-            for (var i = 0, len = ids.length; i < len; i++) {
+            const ids = Object.keys(this.lights);
+            for (let i = 0, len = ids.length; i < len; i++) {
                 this.lights[ids[i]].destroy();
             }
         },
@@ -2297,8 +2297,8 @@
          @method clearClips
          */
         clearClips: function () {
-            var ids = Object.keys(this.clips);
-            for (var i = 0, len = ids.length; i < len; i++) {
+            const ids = Object.keys(this.clips);
+            for (let i = 0, len = ids.length; i < len; i++) {
                 this.clips[ids[i]].destroy();
             }
         },
@@ -2318,10 +2318,10 @@
          @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed visibility, else false if all updates were redundant and not applied.
          */
         setVisible: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
-                var changed = (object.visible != newValue);
+                const changed = (object.visible != newValue);
                 object.visible = newValue;
                 return changed;
             }
@@ -2343,10 +2343,10 @@
          @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed culled state, else false if all updates were redundant and not applied.
          */
         setCulled: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
-                var changed = (object.culled != newValue);
+                const changed = (object.culled != newValue);
                 object.culled = newValue;
                 return changed;
             }
@@ -2372,10 +2372,10 @@
          @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed selection state, else false if all updates were redundant and not applied.
          */
         setSelected: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
-                var changed = (object.selected != newValue);
+                const changed = (object.selected != newValue);
                 object.selected = newValue;
                 return changed;
             }
@@ -2401,10 +2401,10 @@
          @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed highlighted state, else false if all updates were redundant and not applied.
          */
         setHighlighted: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
-                var changed = (object.highlighted != newValue);
+                const changed = (object.highlighted != newValue);
                 object.highlighted = newValue;
                 return changed;
             }
@@ -2430,10 +2430,10 @@
          @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed ghosted state, else false if all updates were redundant and not applied.
          */
         setGhosted: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
-                var changed = (object.ghosted != newValue);
+                const changed = (object.ghosted != newValue);
                 object.ghosted = newValue;
                 return changed;
             }
@@ -2453,10 +2453,10 @@
          @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed edges state, else false if all updates were redundant and not applied.
          */
         setEdges: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
-                var changed = (object.edges != newValue);
+                const changed = (object.edges != newValue);
                 object.edges = newValue;
                 return changed;
             }
@@ -2504,7 +2504,7 @@
          @param [colorize=(1,1,1)] Float32Array RGB colorize factors, multiplied by the rendered pixel colors.
          */
         setColorize: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
                 object.colorize = newValue;
@@ -2524,7 +2524,7 @@
          @param [opacity=1] Number Opacity factor in range ````[0..1]````, multiplies by the rendered pixel alphas.
          */
         setOpacity: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
                 object.opacity = newValue;
@@ -2547,10 +2547,10 @@
          @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed pickable state, else false if all updates were redundant and not applied.
          */
         setPickable: (function () {
-            var newValue;
+            let newValue;
 
             function callback(object) {
-                var changed = (object.pickable != newValue);
+                const changed = (object.pickable != newValue);
                 object.pickable = newValue;
                 return changed;
             }
@@ -2572,10 +2572,10 @@
             if (xeogl._isString(ids)) {
                 ids = [ids];
             }
-            var changed = false;
-            for (var i = 0, len = ids.length; i < len; i++) {
-                var id = ids[i];
-                var object = this.objects[id];
+            let changed = false;
+            for (let i = 0, len = ids.length; i < len; i++) {
+                const id = ids[i];
+                let object = this.objects[id];
                 if (object) {
                     changed = callback(object) || changed;
                 } else {
@@ -2583,9 +2583,9 @@
                     if (object) {
                         changed = callback(object) || changed;
                     } else {
-                        var objects = this.entityTypes[id];
+                        const objects = this.entityTypes[id];
                         if (objects) {
-                            for (var objectId in objects) {
+                            for (const objectId in objects) {
                                 if (objects.hasOwnProperty(objectId)) {
                                     changed = callback(objects[objectId]) || changed;
                                 }

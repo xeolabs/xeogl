@@ -26,11 +26,11 @@
         if (!mesh._state.receiveShadow) {
             return false;
         }
-        var lights = mesh.scene._lightsState.lights;
+        const lights = mesh.scene._lightsState.lights;
         if (!lights || lights.length === 0) {
             return false;
         }
-        for (var i = 0, len = lights.length; i < len; i++) {
+        for (let i = 0, len = lights.length; i < len; i++) {
             if (lights[i].shadow) {
                 return true;
             }
@@ -42,7 +42,7 @@
         if (!mesh._geometry._state.uv) {
             return false;
         }
-        var material = mesh._material;
+        const material = mesh._material;
         return !!(material._ambientMap ||
         material._occlusionMap ||
         material._baseColorMap ||
@@ -60,7 +60,7 @@
     }
 
     function hasNormals(mesh) {
-        var primitive = mesh._geometry._state.primitiveName;
+        const primitive = mesh._geometry._state.primitiveName;
         if ((mesh._geometry._state.autoVertexNormals || mesh._geometry._state.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
@@ -81,17 +81,17 @@
     }
 
     function buildVertexLambert(mesh) {
-        var clipsState = mesh.scene._clipsState;
-        var lightsState = mesh.scene._lightsState;
-        var geometryState = mesh._geometry._state;
-        var billboard = mesh._state.billboard;
-        var stationary = mesh._state.stationary;
-        var clipping = clipsState.clips.length > 0;
-        var quantizedGeometry = !!geometryState.quantized;
-        var i;
-        var len;
-        var light;
-        var src = [];
+        const clipsState = mesh.scene._clipsState;
+        const lightsState = mesh.scene._lightsState;
+        const geometryState = mesh._geometry._state;
+        const billboard = mesh._state.billboard;
+        const stationary = mesh._state.stationary;
+        const clipping = clipsState.clips.length > 0;
+        const quantizedGeometry = !!geometryState.quantized;
+        let i;
+        let len;
+        let light;
+        const src = [];
         src.push("// Lambertian drawing vertex shader");
         src.push("attribute vec3 position;");
         src.push("uniform mat4 modelMatrix;");
@@ -244,16 +244,16 @@
     }
 
     function buildFragmentLambert(mesh) {
-        var scene = mesh.scene;
-        var clipsState = scene._clipsState;
-        var materialState = mesh._material._state;
-        var geometryState = mesh._geometry._state;
-        var i;
-        var len;
-        var clipping = clipsState.clips.length > 0;
-        var solid = false && materialState.backfaces;
-        var gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
-        var src = [];
+        const scene = mesh.scene;
+        const clipsState = scene._clipsState;
+        const materialState = mesh._material._state;
+        const geometryState = mesh._geometry._state;
+        let i;
+        let len;
+        const clipping = clipsState.clips.length > 0;
+        const solid = false && materialState.backfaces;
+        const gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
+        const src = [];
         src.push("// Lambertian drawing fragment shader");
         src.push("precision lowp float;");
         if (clipping) {
@@ -308,24 +308,24 @@
     }
 
     function buildVertexDraw(mesh) {
-        var scene = mesh.scene;
-        var material = mesh._material;
-        var meshState = mesh._state;
-        var clipsState = scene._clipsState;
-        var geometryState = mesh._geometry._state;
-        var materialState = mesh._material._state;
-        var lightsState = scene._lightsState;
-        var i;
-        var len;
-        var light;
-        var billboard = meshState.billboard;
-        var stationary = meshState.stationary;
-        var texturing = hasTextures(mesh);
-        var normals = hasNormals(mesh);
-        var clipping = clipsState.clips.length > 0;
-        var receiveShadow = receivesShadow(mesh);
-        var quantizedGeometry = !!geometryState.quantized;
-        var src = [];
+        const scene = mesh.scene;
+        const material = mesh._material;
+        const meshState = mesh._state;
+        const clipsState = scene._clipsState;
+        const geometryState = mesh._geometry._state;
+        const materialState = mesh._material._state;
+        const lightsState = scene._lightsState;
+        let i;
+        let len;
+        let light;
+        const billboard = meshState.billboard;
+        const stationary = meshState.stationary;
+        const texturing = hasTextures(mesh);
+        const normals = hasNormals(mesh);
+        const clipping = clipsState.clips.length > 0;
+        const receiveShadow = receivesShadow(mesh);
+        const quantizedGeometry = !!geometryState.quantized;
+        const src = [];
         if (normals && material._normalMap) {
             src.push("#extension GL_OES_standard_derivatives : enable");
         }
@@ -519,27 +519,27 @@
 
     function buildFragmentDraw(mesh) {
 
-        var scene = mesh.scene;
-        var gl = scene.canvas.gl;
-        var material = mesh._material;
-        var geometryState = mesh._geometry._state;
-        var clipsState = mesh.scene._clipsState;
-        var lightsState = mesh.scene._lightsState;
-        var materialState = mesh._material._state;
-        var clipping = clipsState.clips.length > 0;
-        var normals = hasNormals(mesh);
-        var uvs = geometryState.uv;
-        var solid = false && materialState.backfaces;
-        var phongMaterial = (materialState.type === "PhongMaterial");
-        var metallicMaterial = (materialState.type === "MetallicMaterial");
-        var specularMaterial = (materialState.type === "SpecularMaterial");
-        var receiveShadow = receivesShadow(mesh);
-        var gammaInput = scene.gammaInput; // If set, then it expects that all textures and colors are premultiplied gamma. Default is false.
-        var gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
+        const scene = mesh.scene;
+        const gl = scene.canvas.gl;
+        const material = mesh._material;
+        const geometryState = mesh._geometry._state;
+        const clipsState = mesh.scene._clipsState;
+        const lightsState = mesh.scene._lightsState;
+        const materialState = mesh._material._state;
+        const clipping = clipsState.clips.length > 0;
+        const normals = hasNormals(mesh);
+        const uvs = geometryState.uv;
+        const solid = false && materialState.backfaces;
+        const phongMaterial = (materialState.type === "PhongMaterial");
+        const metallicMaterial = (materialState.type === "MetallicMaterial");
+        const specularMaterial = (materialState.type === "SpecularMaterial");
+        const receiveShadow = receivesShadow(mesh);
+        const gammaInput = scene.gammaInput; // If set, then it expects that all textures and colors are premultiplied gamma. Default is false.
+        const gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
         var i;
-        var len;
-        var light;
-        var src = [];
+        let len;
+        let light;
+        const src = [];
 
         src.push("// Fragment vertex shader");
 
@@ -1407,7 +1407,7 @@
             src.push("float depth;");
             // }
 
-            var numShadows = 0;
+            const numShadows = 0;
             for (i = 0, len = lightsState.lights.length; i < len; i++) {
 
                 light = lightsState.lights[i];

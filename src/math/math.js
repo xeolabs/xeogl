@@ -4,14 +4,14 @@
 
     // Some temporary vars to help avoid garbage collection
 
-    var tempMat1 = new Float32Array(16);
-    var tempMat2 = new Float32Array(16);
+    const tempMat1 = new Float32Array(16);
+    const tempMat2 = new Float32Array(16);
 
-    var tempVec4 = new Float32Array(4);
+    const tempVec4 = new Float32Array(4);
 
-    var caching = false;
-    var vec3Cache = [];
-    var vec3CacheLen = 0;
+    let caching = false;
+    const vec3Cache = [];
+    let vec3CacheLen = 0;
 
     /**
      * This utility object provides math functions that are used within xeogl. These functions are also part of xeogl's
@@ -21,7 +21,7 @@
      * @class math
      * @static
      */
-    var math = xeogl.math = {
+    const math = xeogl.math = {
 
         MAX_DOUBLE: Number.MAX_VALUE,
         MIN_DOUBLE: Number.MIN_VALUE,
@@ -187,16 +187,16 @@
         //}(),
         //
         createUUID: (function () {
-            var self = {};
-            var lut = [];
-            for (var i = 0; i < 256; i++) {
+            const self = {};
+            const lut = [];
+            for (let i = 0; i < 256; i++) {
                 lut[i] = (i < 16 ? '0' : '') + (i).toString(16);
             }
             return function () {
-                var d0 = Math.random() * 0xffffffff | 0;
-                var d1 = Math.random() * 0xffffffff | 0;
-                var d2 = Math.random() * 0xffffffff | 0;
-                var d3 = Math.random() * 0xffffffff | 0;
+                const d0 = Math.random() * 0xffffffff | 0;
+                const d1 = Math.random() * 0xffffffff | 0;
+                const d2 = Math.random() * 0xffffffff | 0;
+                const d3 = Math.random() * 0xffffffff | 0;
                 return lut[d0 & 0xff] + lut[d0 >> 8 & 0xff] + lut[d0 >> 16 & 0xff] + lut[d0 >> 24 & 0xff] + '-' +
                     lut[d1 & 0xff] + lut[d1 >> 8 & 0xff] + '-' + lut[d1 >> 16 & 0x0f | 0x40] + lut[d1 >> 24 & 0xff] + '-' +
                     lut[d2 & 0x3f | 0x80] + lut[d2 >> 8 & 0xff] + '-' + lut[d2 >> 16 & 0xff] + lut[d2 >> 24 & 0xff] +
@@ -644,8 +644,8 @@
          * @return The cross product
          */
         cross3Vec4: function (u, v) {
-            var u0 = u[0], u1 = u[1], u2 = u[2];
-            var v0 = v[0], v1 = v[1], v2 = v[2];
+            const u0 = u[0], u1 = u[1], u2 = u[2];
+            const v0 = v[0], v1 = v[1], v2 = v[2];
             return [
                 u1 * v2 - u2 * v1,
                 u2 * v0 - u0 * v2,
@@ -665,8 +665,8 @@
             if (!dest) {
                 dest = u;
             }
-            var x = u[0], y = u[1], z = u[2];
-            var x2 = v[0], y2 = v[1], z2 = v[2];
+            const x = u[0], y = u[1], z = u[2];
+            const x2 = v[0], y2 = v[1], z2 = v[2];
             dest[0] = y * z2 - z * y2;
             dest[1] = z * x2 - x * z2;
             dest[2] = x * y2 - y * x2;
@@ -735,7 +735,7 @@
         },
 
         distVec3: (function () {
-            var vec = new Float32Array(3);
+            const vec = new Float32Array(3);
             return function (v, w) {
                 return math.lenVec3(math.subVec3(v, w, vec));
             };
@@ -753,7 +753,7 @@
         },
 
         distVec2: (function () {
-            var vec = new Float32Array(2);
+            const vec = new Float32Array(2);
             return function (v, w) {
                 return math.lenVec2(math.subVec2(v, w, vec));
             };
@@ -781,7 +781,7 @@
          *
          */
         normalizeVec4: function (v, dest) {
-            var f = 1.0 / math.lenVec4(v);
+            const f = 1.0 / math.lenVec4(v);
             return math.mulVec4Scalar(v, f, dest);
         },
 
@@ -791,7 +791,7 @@
          * @static
          */
         normalizeVec3: function (v, dest) {
-            var f = 1.0 / math.lenVec3(v);
+            const f = 1.0 / math.lenVec3(v);
             return math.mulVec3Scalar(v, f, dest);
         },
 
@@ -801,7 +801,7 @@
          * @static
          */
         normalizeVec2: function (v, dest) {
-            var f = 1.0 / math.lenVec2(v);
+            const f = 1.0 / math.lenVec2(v);
             return math.mulVec2Scalar(v, f, dest);
         },
 
@@ -813,7 +813,7 @@
          * @returns {number}
          */
         angleVec3: function (v, w) {
-            var theta = xeogl.math.dotVec3(v, w) / ( Math.sqrt(xeogl.math.sqLenVec3(v) * xeogl.math.sqLenVec3(w)) );
+            let theta = xeogl.math.dotVec3(v, w) / ( Math.sqrt(xeogl.math.sqLenVec3(v) * xeogl.math.sqLenVec3(w)) );
             theta = theta < -1 ? -1 : (theta > 1 ? 1 : theta);  // Clamp to handle numerical problems
             return Math.acos(theta);
         },
@@ -825,7 +825,7 @@
          */
         vec3FromMat4Scale: (function () {
 
-            var tempVec3 = new Float32Array(3);
+            const tempVec3 = new Float32Array(3);
 
             return function (m, dest) {
 
@@ -862,7 +862,7 @@
 
             return function (v) {
                 v = Array.prototype.slice.call(v);
-                for (var i = 0, len = v.length; i < len; i++) {
+                for (let i = 0, len = v.length; i < len; i++) {
                     v[i] = trunc(v[i]);
                 }
                 return v;
@@ -1214,15 +1214,15 @@
             }
 
             // Cache the matrix values (makes for huge speed increases!)
-            var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
-            var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
-            var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
-            var a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+            const a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
+            const a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
+            const a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
+            const a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
 
-            var b00 = b[0], b01 = b[1], b02 = b[2], b03 = b[3];
-            var b10 = b[4], b11 = b[5], b12 = b[6], b13 = b[7];
-            var b20 = b[8], b21 = b[9], b22 = b[10], b23 = b[11];
-            var b30 = b[12], b31 = b[13], b32 = b[14], b33 = b[15];
+            const b00 = b[0], b01 = b[1], b02 = b[2], b03 = b[3];
+            const b10 = b[4], b11 = b[5], b12 = b[6], b13 = b[7];
+            const b20 = b[8], b21 = b[9], b22 = b[10], b23 = b[11];
+            const b30 = b[12], b31 = b[13], b32 = b[14], b33 = b[15];
 
             dest[0] = b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30;
             dest[1] = b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31;
@@ -1255,13 +1255,13 @@
                 dest = new Float32Array(9);
             }
 
-            var a11 = a[0], a12 = a[3], a13 = a[6];
-            var a21 = a[1], a22 = a[4], a23 = a[7];
-            var a31 = a[2], a32 = a[5], a33 = a[8];
+            const a11 = a[0], a12 = a[3], a13 = a[6];
+            const a21 = a[1], a22 = a[4], a23 = a[7];
+            const a31 = a[2], a32 = a[5], a33 = a[8];
 
-            var b11 = b[0], b12 = b[3], b13 = b[6];
-            var b21 = b[1], b22 = b[4], b23 = b[7];
-            var b31 = b[2], b32 = b[5], b33 = b[8];
+            const b11 = b[0], b12 = b[3], b13 = b[6];
+            const b21 = b[1], b22 = b[4], b23 = b[7];
+            const b31 = b[2], b32 = b[5], b33 = b[8];
 
             dest[0] = a11 * b11 + a12 * b21 + a13 * b31;
             dest[3] = a11 * b12 + a12 * b22 + a13 * b32;
@@ -1313,7 +1313,7 @@
          */
         mulMat4v4: function (m, v, dest) {
             dest = dest || math.vec4();
-            var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
+            const v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
             dest[0] = m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
             dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
             dest[2] = m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3;
@@ -1328,12 +1328,12 @@
          */
         transposeMat4: function (mat, dest) {
             // If we are transposing ourselves we can skip a few steps but have to cache some values
-            var m4 = mat[4], m14 = mat[14], m8 = mat[8];
-            var m13 = mat[13], m12 = mat[12], m9 = mat[9];
+            const m4 = mat[4], m14 = mat[14], m8 = mat[8];
+            const m13 = mat[13], m12 = mat[12], m9 = mat[9];
             if (!dest || mat === dest) {
-                var a01 = mat[1], a02 = mat[2], a03 = mat[3];
-                var a12 = mat[6], a13 = mat[7];
-                var a23 = mat[11];
+                const a01 = mat[1], a02 = mat[2], a03 = mat[3];
+                const a12 = mat[6], a13 = mat[7];
+                const a23 = mat[11];
                 mat[1] = m4;
                 mat[2] = m8;
                 mat[3] = m12;
@@ -1375,9 +1375,9 @@
          */
         transposeMat3: function (mat, dest) {
             if (dest === mat) {
-                var a01 = mat[1];
-                var a02 = mat[2];
-                var a12 = mat[5];
+                const a01 = mat[1];
+                const a02 = mat[2];
+                const a12 = mat[5];
                 dest[1] = mat[3];
                 dest[2] = mat[6];
                 dest[3] = a01;
@@ -1405,10 +1405,10 @@
          */
         determinantMat4: function (mat) {
             // Cache the matrix values (makes for huge speed increases!)
-            var a00 = mat[0], a01 = mat[1], a02 = mat[2], a03 = mat[3];
-            var a10 = mat[4], a11 = mat[5], a12 = mat[6], a13 = mat[7];
-            var a20 = mat[8], a21 = mat[9], a22 = mat[10], a23 = mat[11];
-            var a30 = mat[12], a31 = mat[13], a32 = mat[14], a33 = mat[15];
+            const a00 = mat[0], a01 = mat[1], a02 = mat[2], a03 = mat[3];
+            const a10 = mat[4], a11 = mat[5], a12 = mat[6], a13 = mat[7];
+            const a20 = mat[8], a21 = mat[9], a22 = mat[10], a23 = mat[11];
+            const a30 = mat[12], a31 = mat[13], a32 = mat[14], a33 = mat[15];
             return a30 * a21 * a12 * a03 - a20 * a31 * a12 * a03 - a30 * a11 * a22 * a03 + a10 * a31 * a22 * a03 +
                 a20 * a11 * a32 * a03 - a10 * a21 * a32 * a03 - a30 * a21 * a02 * a13 + a20 * a31 * a02 * a13 +
                 a30 * a01 * a22 * a13 - a00 * a31 * a22 * a13 - a20 * a01 * a32 * a13 + a00 * a21 * a32 * a13 +
@@ -1427,25 +1427,25 @@
                 dest = mat;
             }
             // Cache the matrix values (makes for huge speed increases!)
-            var a00 = mat[0], a01 = mat[1], a02 = mat[2], a03 = mat[3];
-            var a10 = mat[4], a11 = mat[5], a12 = mat[6], a13 = mat[7];
-            var a20 = mat[8], a21 = mat[9], a22 = mat[10], a23 = mat[11];
-            var a30 = mat[12], a31 = mat[13], a32 = mat[14], a33 = mat[15];
-            var b00 = a00 * a11 - a01 * a10;
-            var b01 = a00 * a12 - a02 * a10;
-            var b02 = a00 * a13 - a03 * a10;
-            var b03 = a01 * a12 - a02 * a11;
-            var b04 = a01 * a13 - a03 * a11;
-            var b05 = a02 * a13 - a03 * a12;
-            var b06 = a20 * a31 - a21 * a30;
-            var b07 = a20 * a32 - a22 * a30;
-            var b08 = a20 * a33 - a23 * a30;
-            var b09 = a21 * a32 - a22 * a31;
-            var b10 = a21 * a33 - a23 * a31;
-            var b11 = a22 * a33 - a23 * a32;
+            const a00 = mat[0], a01 = mat[1], a02 = mat[2], a03 = mat[3];
+            const a10 = mat[4], a11 = mat[5], a12 = mat[6], a13 = mat[7];
+            const a20 = mat[8], a21 = mat[9], a22 = mat[10], a23 = mat[11];
+            const a30 = mat[12], a31 = mat[13], a32 = mat[14], a33 = mat[15];
+            const b00 = a00 * a11 - a01 * a10;
+            const b01 = a00 * a12 - a02 * a10;
+            const b02 = a00 * a13 - a03 * a10;
+            const b03 = a01 * a12 - a02 * a11;
+            const b04 = a01 * a13 - a03 * a11;
+            const b05 = a02 * a13 - a03 * a12;
+            const b06 = a20 * a31 - a21 * a30;
+            const b07 = a20 * a32 - a22 * a30;
+            const b08 = a20 * a33 - a23 * a30;
+            const b09 = a21 * a32 - a22 * a31;
+            const b10 = a21 * a33 - a23 * a31;
+            const b11 = a22 * a33 - a23 * a32;
 
             // Calculate the determinant (inlined to avoid double-caching)
-            var invDet = 1 / (b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06);
+            const invDet = 1 / (b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06);
 
             dest[0] = (a11 * b11 - a12 * b10 + a13 * b09) * invDet;
             dest[1] = (-a01 * b11 + a02 * b10 - a03 * b09) * invDet;
@@ -1482,7 +1482,7 @@
          * @static
          */
         translationMat4v: function (v, dest) {
-            var m = dest || math.identityMat4();
+            const m = dest || math.identityMat4();
             m[12] = v[0];
             m[13] = v[1];
             m[14] = v[2];
@@ -1495,7 +1495,7 @@
          * @static
          */
         translationMat3v: function (v, dest) {
-            var m = dest || math.identityMat3();
+            const m = dest || math.identityMat3();
             m[6] = v[0];
             m[7] = v[1];
             return m;
@@ -1507,7 +1507,7 @@
          * @static
          */
         translationMat4c: (function () {
-            var xyz = new Float32Array(3);
+            const xyz = new Float32Array(3);
             return function (x, y, z, dest) {
                 xyz[0] = x;
                 xyz[1] = y;
@@ -1543,22 +1543,22 @@
          */
         OLDtranslateMat4c: function (x, y, z, m) {
 
-            var m12 = m[12];
+            const m12 = m[12];
             m[0] += m12 * x;
             m[4] += m12 * y;
             m[8] += m12 * z;
 
-            var m13 = m[13];
+            const m13 = m[13];
             m[1] += m13 * x;
             m[5] += m13 * y;
             m[9] += m13 * z;
 
-            var m14 = m[14];
+            const m14 = m[14];
             m[2] += m14 * x;
             m[6] += m14 * y;
             m[10] += m14 * z;
 
-            var m15 = m[15];
+            const m15 = m[15];
             m[3] += m15 * x;
             m[7] += m15 * y;
             m[11] += m15 * z;
@@ -1568,22 +1568,22 @@
 
         translateMat4c: function (x, y, z, m) {
 
-            var m3 = m[3];
+            const m3 = m[3];
             m[0] += m3 * x;
             m[1] += m3 * y;
             m[2] += m3 * z;
 
-            var m7 = m[7];
+            const m7 = m[7];
             m[4] += m7 * x;
             m[5] += m7 * y;
             m[6] += m7 * z;
 
-            var m11 = m[11];
+            const m11 = m[11];
             m[8] += m11 * x;
             m[9] += m11 * y;
             m[10] += m11 * z;
 
-            var m15 = m[15];
+            const m15 = m[15];
             m[12] += m15 * x;
             m[13] += m15 * y;
             m[14] += m15 * z;
@@ -1596,16 +1596,16 @@
          * @static
          */
         rotationMat4v: function (anglerad, axis, m) {
-            var ax = math.normalizeVec4([axis[0], axis[1], axis[2], 0.0], []);
-            var s = Math.sin(anglerad);
-            var c = Math.cos(anglerad);
-            var q = 1.0 - c;
+            const ax = math.normalizeVec4([axis[0], axis[1], axis[2], 0.0], []);
+            const s = Math.sin(anglerad);
+            const c = Math.cos(anglerad);
+            const q = 1.0 - c;
 
-            var x = ax[0];
-            var y = ax[1];
-            var z = ax[2];
+            const x = ax[0];
+            const y = ax[1];
+            const z = ax[2];
 
-            var xy, yz, zx, xs, ys, zs;
+            let xy, yz, zx, xs, ys, zs;
 
             //xx = x * x; used once
             //yy = y * y; used once
@@ -1682,7 +1682,7 @@
          * @static
          */
         scalingMat4c: (function () {
-            var xyz = new Float32Array(3);
+            const xyz = new Float32Array(3);
             return function (x, y, z, dest) {
                 xyz[0] = x;
                 xyz[1] = y;
@@ -1727,9 +1727,9 @@
          */
         scaleMat4v: function (xyz, m) {
 
-            var x = xyz[0];
-            var y = xyz[1];
-            var z = xyz[2];
+            const x = xyz[0];
+            const y = xyz[1];
+            const z = xyz[2];
 
             m[0] *= x;
             m[4] *= y;
@@ -1768,23 +1768,23 @@
 
             dest = dest || math.mat4();
 
-            var x = q[0];
-            var y = q[1];
-            var z = q[2];
-            var w = q[3];
+            const x = q[0];
+            const y = q[1];
+            const z = q[2];
+            const w = q[3];
 
-            var x2 = x + x;
-            var y2 = y + y;
-            var z2 = z + z;
-            var xx = x * x2;
-            var xy = x * y2;
-            var xz = x * z2;
-            var yy = y * y2;
-            var yz = y * z2;
-            var zz = z * z2;
-            var wx = w * x2;
-            var wy = w * y2;
-            var wz = w * z2;
+            const x2 = x + x;
+            const y2 = y + y;
+            const z2 = z + z;
+            const xx = x * x2;
+            const xy = x * y2;
+            const xz = x * z2;
+            const yy = y * y2;
+            const yz = y * z2;
+            const zz = z * z2;
+            const wx = w * x2;
+            const wy = w * y2;
+            const wz = w * z2;
 
             dest[0] = 1 - (yy + zz);
             dest[1] = xy + wz;
@@ -1818,13 +1818,13 @@
 
             dest = dest || math.vec4();
 
-            var clamp = math.clamp;
+            const clamp = math.clamp;
 
             // Assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
-            var m11 = mat[0], m12 = mat[4], m13 = mat[8];
-            var m21 = mat[1], m22 = mat[5], m23 = mat[9];
-            var m31 = mat[2], m32 = mat[6], m33 = mat[10];
+            const m11 = mat[0], m12 = mat[4], m13 = mat[8];
+            const m21 = mat[1], m22 = mat[5], m23 = mat[9];
+            const m31 = mat[2], m32 = mat[6], m33 = mat[10];
 
             if (order === 'XYZ') {
 
@@ -1914,8 +1914,8 @@
 
         decomposeMat4: function () {
 
-            var vec = new Float32Array(3);
-            var matrix = new Float32Array(16);
+            const vec = new Float32Array(3);
+            const matrix = new Float32Array(16);
 
             return function decompose(mat, position, quaternion, scale) {
 
@@ -1923,22 +1923,22 @@
                 vec[1] = mat[1];
                 vec[2] = mat[2];
 
-                var sx = math.lenVec3(vec);
+                let sx = math.lenVec3(vec);
 
                 vec[0] = mat[4];
                 vec[1] = mat[5];
                 vec[2] = mat[6];
 
-                var sy = math.lenVec3(vec);
+                const sy = math.lenVec3(vec);
 
                 vec[8] = mat[8];
                 vec[9] = mat[9];
                 vec[10] = mat[10];
 
-                var sz = math.lenVec3(vec);
+                const sz = math.lenVec3(vec);
 
                 // if determine is negative, we need to invert one scale
-                var det = math.determinantMat4(mat);
+                const det = math.determinantMat4(mat);
 
                 if (det < 0) {
                     sx = -sx;
@@ -1951,9 +1951,9 @@
                 // scale the rotation part
                 matrix.set(mat);
 
-                var invSX = 1 / sx;
-                var invSY = 1 / sy;
-                var invSZ = 1 / sz;
+                const invSX = 1 / sx;
+                const invSY = 1 / sy;
+                const invSZ = 1 / sz;
 
                 matrix[0] *= invSX;
                 matrix[1] *= invSX;
@@ -1994,21 +1994,13 @@
                 dest = math.mat4();
             }
 
-            var posx = pos[0],
-                posy = pos[1],
-                posz = pos[2],
-                upx = up[0],
-                upy = up[1],
-                upz = up[2],
-                targetx = target[0],
-                targety = target[1],
-                targetz = target[2];
+            const posx = pos[0], posy = pos[1], posz = pos[2], upx = up[0], upy = up[1], upz = up[2], targetx = target[0], targety = target[1], targetz = target[2];
 
             if (posx === targetx && posy === targety && posz === targetz) {
                 return math.identityMat4();
             }
 
-            var z0, z1, z2, x0, x1, x2, y0, y1, y2, len;
+            let z0, z1, z2, x0, x1, x2, y0, y1, y2, len;
 
             //vec3.direction(eye, center, z);
             z0 = posx - targetx;
@@ -2092,9 +2084,9 @@
             if (!dest) {
                 dest = math.mat4();
             }
-            var rl = (right - left);
-            var tb = (top - bottom);
-            var fn = (far - near);
+            const rl = (right - left);
+            const tb = (top - bottom);
+            const fn = (far - near);
 
             dest[0] = 2.0 / rl;
             dest[1] = 0.0;
@@ -2130,15 +2122,15 @@
                 m = math.mat4();
             }
 
-            var fmin4 = [fmin[0], fmin[1], fmin[2], 0.0];
-            var fmax4 = [fmax[0], fmax[1], fmax[2], 0.0];
+            const fmin4 = [fmin[0], fmin[1], fmin[2], 0.0];
+            const fmax4 = [fmax[0], fmax[1], fmax[2], 0.0];
 
             math.addVec4(fmax4, fmin4, tempMat1);
             math.subVec4(fmax4, fmin4, tempMat2);
 
-            var t = 2.0 * fmin4[2];
+            const t = 2.0 * fmin4[2];
 
-            var tempMat20 = tempMat2[0], tempMat21 = tempMat2[1], tempMat22 = tempMat2[2];
+            const tempMat20 = tempMat2[0], tempMat21 = tempMat2[1], tempMat22 = tempMat2[2];
 
             m[0] = t / tempMat20;
             m[1] = 0.0;
@@ -2172,9 +2164,9 @@
             if (!dest) {
                 dest = math.mat4();
             }
-            var rl = (right - left);
-            var tb = (top - bottom);
-            var fn = (far - near);
+            const rl = (right - left);
+            const tb = (top - bottom);
+            const fn = (far - near);
             dest[0] = (near * 2) / rl;
             dest[1] = 0;
             dest[2] = 0;
@@ -2200,8 +2192,8 @@
          * @static
          */
         perspectiveMat4: function (fovyrad, aspectratio, znear, zfar, m) {
-            var pmin = [];
-            var pmax = [];
+            const pmin = [];
+            const pmax = [];
 
             pmin[2] = znear;
             pmax[2] = zfar;
@@ -2255,20 +2247,20 @@
          * @static
          */
         transformPoints3: function (m, points, points2) {
-            var result = points2 || [];
-            var len = points.length;
-            var p0, p1, p2;
-            var pi;
+            const result = points2 || [];
+            const len = points.length;
+            let p0, p1, p2;
+            let pi;
 
             // cache values
-            var m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3];
-            var m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7];
-            var m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11];
-            var m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15];
+            const m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3];
+            const m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7];
+            const m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11];
+            const m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15];
 
-            var r;
+            let r;
 
-            for (var i = 0; i < len; ++i) {
+            for (let i = 0; i < len; ++i) {
 
                 // cache values
                 pi = points[i];
@@ -2299,29 +2291,29 @@
 
             p2 = p2 || p;
 
-            var i;
-            var len = p.length;
+            let i;
+            const len = p.length;
 
-            var x;
-            var y;
-            var z;
+            let x;
+            let y;
+            let z;
 
-            var m0 = m[0];
-            var m1 = m[1];
-            var m2 = m[2];
-            var m3 = m[3];
-            var m4 = m[4];
-            var m5 = m[5];
-            var m6 = m[6];
-            var m7 = m[7];
-            var m8 = m[8];
-            var m9 = m[9];
-            var m10 = m[10];
-            var m11 = m[11];
-            var m12 = m[12];
-            var m13 = m[13];
-            var m14 = m[14];
-            var m15 = m[15];
+            const m0 = m[0];
+            const m1 = m[1];
+            const m2 = m[2];
+            const m3 = m[3];
+            const m4 = m[4];
+            const m5 = m[5];
+            const m6 = m[6];
+            const m7 = m[7];
+            const m8 = m[8];
+            const m9 = m[9];
+            const m10 = m[10];
+            const m11 = m[11];
+            const m12 = m[12];
+            const m13 = m[13];
+            const m14 = m[14];
+            const m15 = m[15];
 
             for (i = 0; i < len; i += 3) {
 
@@ -2347,29 +2339,29 @@
 
             p2 = p2 || p;
 
-            var i;
-            var len = p.length;
+            let i;
+            const len = p.length;
 
-            var x;
-            var y;
-            var z;
+            let x;
+            let y;
+            let z;
 
-            var m0 = m[0];
-            var m1 = m[1];
-            var m2 = m[2];
-            var m3 = m[3];
-            var m4 = m[4];
-            var m5 = m[5];
-            var m6 = m[6];
-            var m7 = m[7];
-            var m8 = m[8];
-            var m9 = m[9];
-            var m10 = m[10];
-            var m11 = m[11];
-            var m12 = m[12];
-            var m13 = m[13];
-            var m14 = m[14];
-            var m15 = m[15];
+            const m0 = m[0];
+            const m1 = m[1];
+            const m2 = m[2];
+            const m3 = m[3];
+            const m4 = m[4];
+            const m5 = m[5];
+            const m6 = m[6];
+            const m7 = m[7];
+            const m8 = m[8];
+            const m9 = m[9];
+            const m10 = m[10];
+            const m11 = m[11];
+            const m12 = m[12];
+            const m13 = m[13];
+            const m14 = m[14];
+            const m15 = m[15];
 
             for (i = 0; i < len; i += 4) {
 
@@ -2392,7 +2384,7 @@
          * @static
          */
         transformVec3: function (m, v, dest) {
-            var v0 = v[0], v1 = v[1], v2 = v[2];
+            const v0 = v[0], v1 = v[1], v2 = v[2];
             dest = dest || this.vec3();
             dest[0] = (m[0] * v0) + (m[4] * v1) + (m[8] * v2);
             dest[1] = (m[1] * v0) + (m[5] * v1) + (m[9] * v2);
@@ -2406,7 +2398,7 @@
          * @static
          */
         transformVec4: function (m, v, dest) {
-            var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
+            const v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
             dest = dest || math.vec4();
             dest[0] = m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
             dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
@@ -2428,7 +2420,7 @@
          */
         rotateVec3X: function (a, b, c, dest) {
 
-            var p = [], r = [];
+            const p = [], r = [];
 
             //Translate point to the origin
             p[0] = a[0] - b[0];
@@ -2461,7 +2453,7 @@
          */
         rotateVec3Y: function (a, b, c, dest) {
 
-            var p = [], r = [];
+            const p = [], r = [];
 
             //Translate point to the origin
             p[0] = a[0] - b[0];
@@ -2494,7 +2486,7 @@
          */
         rotateVec3Z: function (a, b, c, dest) {
 
-            var p = [], r = [];
+            const p = [], r = [];
 
             //Translate point to the origin
             p[0] = a[0] - b[0];
@@ -2524,7 +2516,7 @@
          * @static
          */
         projectVec4: function (p, q) {
-            var f = 1.0 / p[3];
+            const f = 1.0 / p[3];
             q = q || math.vec2();
             q[0] = v[0] * f;
             q[1] = v[1] * f;
@@ -2541,9 +2533,9 @@
          * @static
          */
         unprojectVec3: (function () {
-            var mat = new Float32Array(16);
-            var mat2 = new Float32Array(16);
-            var mat3 = new Float32Array(16);
+            const mat = new Float32Array(16);
+            const mat2 = new Float32Array(16);
+            const mat3 = new Float32Array(16);
             return function (p, viewMat, projMat, q) {
                 return this.transformVec3(this.mulMat4(this.inverseMat4(viewMat, mat), this.inverseMat4(projMat, mat2), mat3), p, q)
             };
@@ -2555,8 +2547,8 @@
          * @static
          */
         lerpVec3: function (t, t1, t2, p1, p2, dest) {
-            var result = dest || math.vec3();
-            var f = (t - t1) / (t2 - t1);
+            const result = dest || math.vec3();
+            const f = (t - t1) / (t2 - t1);
             result[0] = p1[0] + (f * (p2[0] - p1[0]));
             result[1] = p1[1] + (f * (p2[1] - p1[1]));
             result[2] = p1[2] + (f * (p2[2] - p1[2]));
@@ -2574,13 +2566,13 @@
          */
         flatten: function (a) {
 
-            var result = [];
+            const result = [];
 
-            var i;
-            var leni;
-            var j;
-            var lenj;
-            var item;
+            let i;
+            let leni;
+            let j;
+            let lenj;
+            let item;
 
             for (i = 0, leni = a.length; i < leni; i++) {
                 item = a[i];
@@ -2618,16 +2610,16 @@
             // 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
             //	content/SpinCalc.m
 
-            var a = (euler[0] * math.DEGTORAD) / 2;
-            var b = (euler[1] * math.DEGTORAD) / 2;
-            var c = (euler[2] * math.DEGTORAD) / 2;
+            const a = (euler[0] * math.DEGTORAD) / 2;
+            const b = (euler[1] * math.DEGTORAD) / 2;
+            const c = (euler[2] * math.DEGTORAD) / 2;
 
-            var c1 = Math.cos(a);
-            var c2 = Math.cos(b);
-            var c3 = Math.cos(c);
-            var s1 = Math.sin(a);
-            var s2 = Math.sin(b);
-            var s3 = Math.sin(c);
+            const c1 = Math.cos(a);
+            const c2 = Math.cos(b);
+            const c3 = Math.cos(c);
+            const s1 = Math.sin(a);
+            const s2 = Math.sin(b);
+            const s3 = Math.sin(c);
 
             if (order === 'XYZ') {
 
@@ -2683,18 +2675,18 @@
 
             // Assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
-            var m11 = m[0];
-            var m12 = m[4];
-            var m13 = m[8];
-            var m21 = m[1];
-            var m22 = m[5];
-            var m23 = m[9];
-            var m31 = m[2];
-            var m32 = m[6];
-            var m33 = m[10];
-            var s;
+            const m11 = m[0];
+            const m12 = m[4];
+            const m13 = m[8];
+            const m21 = m[1];
+            const m22 = m[5];
+            const m23 = m[9];
+            const m31 = m[2];
+            const m32 = m[6];
+            const m33 = m[10];
+            let s;
 
-            var trace = m11 + m22 + m33;
+            const trace = m11 + m22 + m33;
 
             if (trace > 0) {
 
@@ -2740,8 +2732,8 @@
 
             dest = dest || math.vec4();
 
-            var norm_u_norm_v = Math.sqrt(math.dotVec3(u, u) * math.dotVec3(v, v));
-            var real_part = norm_u_norm_v + math.dotVec3(u, v);
+            const norm_u_norm_v = Math.sqrt(math.dotVec3(u, u) * math.dotVec3(v, v));
+            let real_part = norm_u_norm_v + math.dotVec3(u, v);
 
             if (real_part < 0.00000001 * norm_u_norm_v) {
 
@@ -2776,8 +2768,8 @@
 
         angleAxisToQuaternion: function (angleAxis, dest) {
             dest = dest || math.vec4();
-            var halfAngle = angleAxis[3] / 2.0;
-            var fsin = Math.sin(halfAngle);
+            const halfAngle = angleAxis[3] / 2.0;
+            const fsin = Math.sin(halfAngle);
             dest[0] = fsin * angleAxis[0];
             dest[1] = fsin * angleAxis[1];
             dest[2] = fsin * angleAxis[2];
@@ -2786,7 +2778,7 @@
         },
 
         quaternionToEuler: (function () {
-            var mat = new Float32Array(16);
+            const mat = new Float32Array(16);
             return function (q, order, dest) {
                 dest = dest || math.vec3();
                 math.quaternionToRotationMat4(q, mat);
@@ -2797,8 +2789,8 @@
 
         mulQuaternions: function (p, q, dest) {
             dest = dest || math.vec4();
-            var p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3];
-            var q0 = q[0], q1 = q[1], q2 = q[2], q3 = q[3];
+            const p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3];
+            const q0 = q[0], q1 = q[1], q2 = q[2], q3 = q[3];
             dest[0] = p3 * q0 + p0 * q3 + p1 * q2 - p2 * q1;
             dest[1] = p3 * q1 + p1 * q3 + p2 * q0 - p0 * q2;
             dest[2] = p3 * q2 + p2 * q3 + p0 * q1 - p1 * q0;
@@ -2810,21 +2802,21 @@
 
             dest = dest || math.vec3();
 
-            var x = vec[0];
-            var y = vec[1];
-            var z = vec[2];
+            const x = vec[0];
+            const y = vec[1];
+            const z = vec[2];
 
-            var qx = q[0];
-            var qy = q[1];
-            var qz = q[2];
-            var qw = q[3];
+            const qx = q[0];
+            const qy = q[1];
+            const qz = q[2];
+            const qw = q[3];
 
             // calculate quat * vector
 
-            var ix = qw * x + qy * z - qz * y;
-            var iy = qw * y + qz * x - qx * z;
-            var iz = qw * z + qx * y - qy * x;
-            var iw = -qx * x - qy * y - qz * z;
+            const ix = qw * x + qy * z - qz * y;
+            const iy = qw * y + qz * x - qx * z;
+            const iz = qw * z + qx * y - qy * x;
+            const iw = -qx * x - qy * y - qz * z;
 
             // calculate result * inverse quat
 
@@ -2839,26 +2831,26 @@
 
             dest = math.identityMat4(dest);
 
-            var q0 = q[0];  //x
-            var q1 = q[1];  //y
-            var q2 = q[2];  //z
-            var q3 = q[3];  //w
+            const q0 = q[0];  //x
+            const q1 = q[1];  //y
+            const q2 = q[2];  //z
+            const q3 = q[3];  //w
 
-            var tx = 2.0 * q0;
-            var ty = 2.0 * q1;
-            var tz = 2.0 * q2;
+            const tx = 2.0 * q0;
+            const ty = 2.0 * q1;
+            const tz = 2.0 * q2;
 
-            var twx = tx * q3;
-            var twy = ty * q3;
-            var twz = tz * q3;
+            const twx = tx * q3;
+            const twy = ty * q3;
+            const twz = tz * q3;
 
-            var txx = tx * q0;
-            var txy = ty * q0;
-            var txz = tz * q0;
+            const txx = tx * q0;
+            const txy = ty * q0;
+            const txz = tz * q0;
 
-            var tyy = ty * q1;
-            var tyz = tz * q1;
-            var tzz = tz * q2;
+            const tyy = ty * q1;
+            const tyz = tz * q1;
+            const tzz = tz * q2;
 
             dest[0] = 1.0 - (tyy + tzz);
             dest[1] = txy + twz;
@@ -2878,15 +2870,15 @@
 
         quaternionToRotationMat4: function (q, m) {
 
-            var x = q[0];
-            var y = q[1];
-            var z = q[2];
-            var w = q[3];
+            const x = q[0];
+            const y = q[1];
+            const z = q[2];
+            const w = q[3];
 
-            var x2 = x + x, y2 = y + y, z2 = z + z;
-            var xx = x * x2, xy = x * y2, xz = x * z2;
-            var yy = y * y2, yz = y * z2, zz = z * z2;
-            var wx = w * x2, wy = w * y2, wz = w * z2;
+            const x2 = x + x, y2 = y + y, z2 = z + z;
+            const xx = x * x2, xy = x * y2, xz = x * z2;
+            const yy = y * y2, yz = y * z2, zz = z * z2;
+            const wx = w * x2, wy = w * y2, wz = w * z2;
 
             m[0] = 1 - ( yy + zz );
             m[4] = xy - wz;
@@ -2916,7 +2908,7 @@
 
         normalizeQuaternion: function (q, dest) {
             dest = dest || q;
-            var len = math.lenVec4([q[0], q[1], q[2], q[3]]);
+            const len = math.lenVec4([q[0], q[1], q[2], q[3]]);
             dest[0] = q[0] / len;
             dest[1] = q[1] / len;
             dest[2] = q[2] / len;
@@ -2940,9 +2932,9 @@
         quaternionToAngleAxis: function (q, angleAxis) {
             angleAxis = angleAxis || math.vec4();
             q = math.normalizeQuaternion(q, tempVec4);
-            var q3 = q[3];
-            var angle = 2 * Math.acos(q3);
-            var s = Math.sqrt(1 - q3 * q3);
+            const q3 = q[3];
+            const angle = 2 * Math.acos(q3);
+            const s = Math.sqrt(1 - q3 * q3);
             if (s < 0.001) { // test to avoid divide by zero, s is always positive due to sqrt
                 angleAxis[0] = q[0];
                 angleAxis[1] = q[1];
@@ -2964,7 +2956,7 @@
 
         decompressPositions: function (positions, decodeMatrix, dest) {
             dest = dest || new Float32Array(positions.length);
-            for (var i = 0, len = positions.length; i < len; i += 3) {
+            for (let i = 0, len = positions.length; i < len; i += 3) {
                 dest[i + 0] = positions[i + 0] * decodeMatrix[0] + decodeMatrix[12];
                 dest[i + 1] = positions[i + 1] * decodeMatrix[5] + decodeMatrix[13];
                 dest[i + 2] = positions[i + 2] * decodeMatrix[10] + decodeMatrix[14];
@@ -2979,7 +2971,7 @@
 
         decompressUVs: function (uvs, decodeMatrix, dest) {
             dest = dest || new Float32Array(uvs.length);
-            for (var i = 0, len = uvs.length; i < len; i += 3) {
+            for (let i = 0, len = uvs.length; i < len; i += 3) {
                 dest[i + 0] = uvs[i + 0] * decodeMatrix[0] + decodeMatrix[6];
                 dest[i + 1] = uvs[i + 1] * decodeMatrix[4] + decodeMatrix[7];
             }
@@ -2987,16 +2979,16 @@
         },
 
         octDecodeVec2: function (oct, result) {
-            var x = oct[0];
-            var y = oct[1];
+            let x = oct[0];
+            let y = oct[1];
             x = (2 * x + 1) / 255;
             y = (2 * y + 1) / 255;
-            var z = 1 - Math.abs(x) - Math.abs(y);
+            const z = 1 - Math.abs(x) - Math.abs(y);
             if (z < 0) {
                 x = (1 - Math.abs(y)) * (x >= 0 ? 1 : -1);
                 y = (1 - Math.abs(x)) * (y >= 0 ? 1 : -1);
             }
-            var length = Math.sqrt(x * x + y * y + z * z);
+            const length = Math.sqrt(x * x + y * y + z * z);
             result[0] = x / length;
             result[1] = y / length;
             result[2] = z / length;
@@ -3004,17 +2996,17 @@
         },
 
         octDecodeVec2s: function (octs, result) {
-            for (var i = 0, j = 0, len = octs.length; i < len; i += 2) {
-                var x = octs[i + 0];
-                var y = octs[i + 1];
+            for (let i = 0, j = 0, len = octs.length; i < len; i += 2) {
+                let x = octs[i + 0];
+                let y = octs[i + 1];
                 x = (2 * x + 1) / 255;
                 y = (2 * y + 1) / 255;
-                var z = 1 - Math.abs(x) - Math.abs(y);
+                const z = 1 - Math.abs(x) - Math.abs(y);
                 if (z < 0) {
                     x = (1 - Math.abs(y)) * (x >= 0 ? 1 : -1);
                     y = (1 - Math.abs(x)) * (y >= 0 ? 1 : -1);
                 }
-                var length = Math.sqrt(x * x + y * y + z * z);
+                const length = Math.sqrt(x * x + y * y + z * z);
                 result[j + 0] = x / length;
                 result[j + 1] = y / length;
                 result[j + 2] = z / length;

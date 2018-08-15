@@ -7,7 +7,7 @@
     "use strict";
 
     xeogl.renderer.PickVertexRenderer = function (hash, mesh) {
-        var gl = mesh.scene.canvas.gl;
+        const gl = mesh.scene.canvas.gl;
         this._hash = hash;
         this._shaderSource = new xeogl.renderer.PickVertexShaderSource(mesh);
         this._program = new xeogl.renderer.Program(gl, this._shaderSource);
@@ -17,14 +17,14 @@
             this.errors = this._program.errors;
             return;
         }
-        var program = this._program;
+        const program = this._program;
         this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
         this._uModelMatrix = program.getLocation("modelMatrix");
         this._uViewMatrix = program.getLocation("viewMatrix");
         this._uProjMatrix = program.getLocation("projMatrix");
         this._uClips = [];
-        var clips = mesh.scene._clipsState.clips;
-        for (var i = 0, len = clips.length; i < len; i++) {
+        const clips = mesh.scene._clipsState.clips;
+        for (let i = 0, len = clips.length; i < len; i++) {
             this._uClips.push({
                 active: program.getLocation("clipActive" + i),
                 pos: program.getLocation("clipPos" + i),
@@ -36,16 +36,16 @@
         this._uClippable = program.getLocation("clippable");
     };
 
-    var renderers = {};
+    const renderers = {};
 
     xeogl.renderer.PickVertexRenderer.get = function (scene, mesh) {
-        var hash = [
+        const hash = [
             mesh.scene.canvas.canvas.id,
             mesh.scene._clipsState.getHash(),
             mesh._geometry._state.quantized ? "cp" : "",
             mesh._state.hash
         ].join(";");
-        var renderer = renderers[hash];
+        let renderer = renderers[hash];
         if (!renderer) {
             renderer = new xeogl.renderer.PickVertexRenderer(hash, mesh);
             if (renderer.errors) {
@@ -74,11 +74,11 @@
     };
 
     xeogl.renderer.PickVertexRenderer.prototype._bindProgram = function (frame) {
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var clipsState = scene._clipsState;
-        var camera = scene.camera;
-        var cameraState = camera._state;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const clipsState = scene._clipsState;
+        const camera = scene.camera;
+        const cameraState = camera._state;
         this._program.bind();
         frame.useProgram++;
         this._lastVertexBufsId = null;
@@ -86,13 +86,13 @@
         gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
         gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
         if (clipsState.clips.length > 0) {
-            var clips = clipsState.clips;
-            var clipUniforms;
-            var uClipActive;
-            var clip;
-            var uClipPos;
-            var uClipDir;
-            for (var i = 0, len = this._uClips.length; i < len; i++) {
+            const clips = clipsState.clips;
+            let clipUniforms;
+            let uClipActive;
+            let clip;
+            let uClipPos;
+            let uClipDir;
+            for (let i = 0, len = this._uClips.length; i < len; i++) {
                 clipUniforms = this._uClips[i];
                 uClipActive = clipUniforms.active;
                 clip = clips[i];
@@ -112,9 +112,9 @@
     };
 
     xeogl.renderer.PickVertexRenderer.prototype.drawMesh = function (frame, mesh) {
-        var scene = this._scene;
-        var gl = scene.canvas.gl;
-        var geometryState = mesh._geometry._state;
+        const scene = this._scene;
+        const gl = scene.canvas.gl;
+        const geometryState = mesh._geometry._state;
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
@@ -125,14 +125,14 @@
         }
         // Bind VBOs
         if (geometryState.id !== this._lastGeometryId) {
-            var pickPositionsBuf = geometryState.getVertexPickPositions();
+            const pickPositionsBuf = geometryState.getVertexPickPositions();
             if (this._uPositionsDecodeMatrix) {
                 gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
                 this._aPosition.bindArrayBuffer(pickPositionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
             } else {
                 this._aPosition.bindArrayBuffer(pickPositionsBuf);
             }
-            var pickColorsBuf = geometryState.getVertexPickColors();
+            const pickColorsBuf = geometryState.getVertexPickColors();
             pickColorsBuf.bind();
             gl.enableVertexAttribArray(this._aColor.location);
             this._gl.vertexAttribPointer(this._aColor.location, pickColorsBuf.itemSize, pickColorsBuf.itemType, true, 0, 0); // Normalize

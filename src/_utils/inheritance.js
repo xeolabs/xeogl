@@ -6,9 +6,9 @@
 // Inspired by base2 and Prototype
 (function () {
 
-    var initializing = false;
+    let initializing = false;
 
-    var fnTest = /xyz/.test(function () {
+    const fnTest = /xyz/.test(function () {
         xyz;
     }) ? /\b_super\b/ : /.*/;
 
@@ -19,30 +19,30 @@
     // Create a new Class that inherits from this class
     Class.extend = function (prop) {
 
-        var _super = this.prototype;
+        const _super = this.prototype;
 
         // Instantiate a base class (but only create the instance,
         // don't run the init constructor)
         initializing = true;
-        var prototype = new this();
+        const prototype = new this();
         initializing = false;
 
         // Copy the properties over onto the new prototype
-        for (var name in prop) {
+        for (const name in prop) {
 
             //
             if (name === "_props") {
-                var props = prop[name];
-                var descriptor;
-                for (var key in props) {
+                const props = prop[name];
+                let descriptor;
+                for (const key in props) {
                     descriptor = props[key];
                     if (key.indexOf(",") >= 0) { // Aliased property name of form "foo, bar, baz": { .. }
-                        var aliases = key.split(",");
-                        for (var i = 0, len = aliases.length; i < len; i++) {
-                            var alias = aliases[i].trim();
+                        const aliases = key.split(",");
+                        for (let i = 0, len = aliases.length; i < len; i++) {
+                            const alias = aliases[i].trim();
                             if (!descriptor.set) {
                                 (function () {
-                                    var name3 = alias;
+                                    const name3 = alias;
                                     descriptor.set = function () {
                                         this.warn("Property '" + name3 + "' is read-only, ignoring assignment");
                                     };
@@ -59,7 +59,7 @@
 
                         if (!descriptor.set) {
                             (function () {
-                                var name = key;
+                                const name = key;
                                 descriptor.set = function () {
                                     this.warn("Property '" + name + "' is read-only, ignoring assignment");
                                 };
@@ -74,10 +74,10 @@
 
             // Check if we're overwriting an existing function
 
-            var existsOnSuper = !!_super[name];
-            var isFunc = typeof prop[name] === "function";
-            var superIsFunc = typeof _super[name] === "function";
-            var passFnTest = fnTest.test(prop[name]);
+            const existsOnSuper = !!_super[name];
+            const isFunc = typeof prop[name] === "function";
+            const superIsFunc = typeof _super[name] === "function";
+            const passFnTest = fnTest.test(prop[name]);
 
             if (existsOnSuper) {
                 if (isFunc && !superIsFunc) {
@@ -97,7 +97,7 @@
 
                     prototype[name] = (function (name, fn) {
                         return function () {
-                            var tmp = this._super;
+                            const tmp = this._super;
 
                             // Add a new ._super() method that is the same method
                             // but on the super-class
@@ -105,7 +105,7 @@
 
                             // The method only need to be bound temporarily, so we
                             // remove it when we're done executing
-                            var ret = fn.apply(this, arguments);
+                            const ret = fn.apply(this, arguments);
                             this._super = tmp;
 
                             return ret;
@@ -166,11 +166,11 @@
      */
     var createUUID = (function () {
         // http://www.broofa.com/Tools/Math.uuid.htm
-        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-        var uuid = new Array(36);
-        var rnd = 0, r;
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+        const uuid = new Array(36);
+        let rnd = 0, r;
         return function () {
-            for (var i = 0; i < 36; i++) {
+            for (let i = 0; i < 36; i++) {
                 if (i === 8 || i === 13 || i === 18 || i === 23) {
                     uuid[i] = '-';
                 } else if (i === 14) {

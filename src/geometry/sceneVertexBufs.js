@@ -1,26 +1,26 @@
 (function () {
 
     const CHUNK_LEN = bigIndicesSupported ? (Number.MAX_SAFE_INTEGER / 6) : (64000 * 4); // RGBA is largest item
-    var memoryStats = xeogl.stats.memory;
+    const memoryStats = xeogl.stats.memory;
     var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
-    var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
-    var nullVertexBufs = new xeogl.renderer.State({});
+    const IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
+    const nullVertexBufs = new xeogl.renderer.State({});
 
     xeogl.SceneVertexBufs = function (scene, hasPositions, hasNormals, hasColors, hasUVs, quantized) {
 
-        var gl = scene.canvas.gl;
-        var contextLost = false;
-        var geometries = {};
-        var geometryIndicesOffsets = {};
-        var newGeometries = [];
-        var geometryVertexBufs = {};
-        var needRebuild = false;
-        var needAppend = false;
-        var positions = [];
-        var normals = [];
-        var colors = [];
-        var uv = [];
-        var vertexBufs = null;
+        const gl = scene.canvas.gl;
+        let contextLost = false;
+        const geometries = {};
+        const geometryIndicesOffsets = {};
+        const newGeometries = [];
+        let geometryVertexBufs = {};
+        let needRebuild = false;
+        let needAppend = false;
+        let positions = [];
+        let normals = [];
+        let colors = [];
+        let uv = [];
+        let vertexBufs = null;
 
         this.addGeometry = function (geometry) {
             if (!geometry.positions || !geometry.indices) {
@@ -51,14 +51,14 @@
         };
 
         this.setPositions = function (geometry) {
-            var vertexBufs = geometryVertexBufs[geometry.id];
+            const vertexBufs = geometryVertexBufs[geometry.id];
             if (!vertexBufs) {
                 return;
             }
             if (!geometry.positions) {
                 return;
             }
-            var positionsBuf = vertexBufs.positionsBuf;
+            const positionsBuf = vertexBufs.positionsBuf;
             if (!positionsBuf) {
                 return;
             }
@@ -66,14 +66,14 @@
         };
 
         this.setNormals = function (geometry) {
-            var vertexBufs = geometryVertexBufs[geometry.id];
+            const vertexBufs = geometryVertexBufs[geometry.id];
             if (!vertexBufs) {
                 return;
             }
             if (!geometry.normals) {
                 return;
             }
-            var normalsBuf = vertexBufs.normalsBuf;
+            const normalsBuf = vertexBufs.normalsBuf;
             if (!normalsBuf) {
                 return;
             }
@@ -81,14 +81,14 @@
         };
 
         this.setUVs = function (geometry) {
-            var vertexBufs = geometryVertexBufs[geometry.id];
+            const vertexBufs = geometryVertexBufs[geometry.id];
             if (!vertexBufs) {
                 return;
             }
             if (!geometry.uv) {
                 return;
             }
-            var uvBuf = vertexBufs.uvBuf;
+            const uvBuf = vertexBufs.uvBuf;
             if (!uvBuf) {
                 return;
             }
@@ -96,14 +96,14 @@
         };
 
         this.setColors = function (geometry) {
-            var vertexBufs = geometryVertexBufs[geometry.id];
+            const vertexBufs = geometryVertexBufs[geometry.id];
             if (!vertexBufs) {
                 return;
             }
             if (!geometry.color) {
                 return;
             }
-            var colorsBuf = vertexBufs.colorsBuf;
+            const colorsBuf = vertexBufs.colorsBuf;
             if (!colorsBuf) {
                 return;
             }
@@ -111,7 +111,7 @@
         };
 
         this.removeGeometry = function (geometry) {
-            var id = geometry.id;
+            const id = geometry.id;
             if (!geometries[id]) {
                 return;
             }
@@ -129,7 +129,7 @@
 
         this.webglContextRestored = function () {
             if (contextLost) {
-                for (var id in geometries) {
+                for (const id in geometries) {
                     if (geometries.hasOwnProperty(id)) {
                         geometries[id].indicesBufCombined = null;
                     }
@@ -143,16 +143,16 @@
 
             geometryVertexBufs = {};
 
-            var id;
-            var geometry;
-            var indicesOffset = 0;
+            let id;
+            let geometry;
+            let indicesOffset = 0;
 
             vertexBufs = null;
 
-            var lenPositions = 0;
-            var lenNormals = 0;
-            var lenUVs = 0;
-            var lenColors = 0;
+            let lenPositions = 0;
+            let lenNormals = 0;
+            let lenUVs = 0;
+            let lenColors = 0;
 
             for (id in geometries) {
                 if (geometries.hasOwnProperty(id)) {
@@ -190,7 +190,7 @@
 
                     geometry = geometries[id];
 
-                    var needNew = (!vertexBufs) || (positions.length + geometry.positions.length > CHUNK_LEN);
+                    const needNew = (!vertexBufs) || (positions.length + geometry.positions.length > CHUNK_LEN);
 
                     if (needNew) {
                         if (vertexBufs) {
@@ -236,7 +236,7 @@
 
                     geometryIndicesOffsets[id] = indicesOffset;
 
-                    var indices;
+                    let indices;
 
                     if (indicesOffset) {
                         indices = new (bigIndicesSupported ? Uint32Array : Uint16Array)(geometry.indices);
@@ -271,8 +271,8 @@
         }
 
         function createBufs(vertexBufs) {
-            var gl = scene.canvas.gl;
-            var array;
+            const gl = scene.canvas.gl;
+            let array;
             if (hasPositions) {
                 array = quantized ? new Uint16Array(positions) : new Float32Array(positions);
                 vertexBufs.positionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
@@ -301,12 +301,12 @@
     }; // SceneVertexBufs
 
     xeogl.SceneVertexBufs.get = function (scene, geometry) {
-        var hasPositions = !!geometry.positions;
-        var quantized = !!geometry.quantized;
-        var hasNormals = !!geometry.normals;
-        var hasColors = !!geometry.colors;
-        var hasUVs = !!geometry.uv;
-        var hash = ([
+        const hasPositions = !!geometry.positions;
+        const quantized = !!geometry.quantized;
+        const hasNormals = !!geometry.normals;
+        const hasColors = !!geometry.colors;
+        const hasUVs = !!geometry.uv;
+        const hash = ([
             scene.id,
             hasPositions ? "p" : "",
             quantized ? "c" : "",
@@ -317,7 +317,7 @@
         if (!scene._sceneVertexBufs) {
             scene._sceneVertexBufs = {};
         }
-        var sceneVertexBufs = scene._sceneVertexBufs[hash];
+        let sceneVertexBufs = scene._sceneVertexBufs[hash];
         if (!sceneVertexBufs) {
             sceneVertexBufs = new xeogl.SceneVertexBufs(
                 scene,

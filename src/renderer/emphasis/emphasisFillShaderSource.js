@@ -12,17 +12,17 @@
     };
 
     function buildVertex(mesh) {
-        var scene = mesh.scene;
-        var lightsState = scene._lightsState;
-        var normals = hasNormals(mesh);
-        var clipping = scene._clipsState.clips.length > 0;
-        var quantizedGeometry = !!mesh._geometry._state.quantized;
-        var billboard = mesh._state.billboard;
-        var stationary = mesh._state.stationary;
-        var src = [];
-        var i;
-        var len;
-        var light;
+        const scene = mesh.scene;
+        const lightsState = scene._lightsState;
+        const normals = hasNormals(mesh);
+        const clipping = scene._clipsState.clips.length > 0;
+        const quantizedGeometry = !!mesh._geometry._state.quantized;
+        const billboard = mesh._state.billboard;
+        const stationary = mesh._state.stationary;
+        const src = [];
+        let i;
+        let len;
+        let light;
         src.push("// EmphasisFillShaderSource vertex shader");
         src.push("attribute vec3 position;");
         src.push("uniform mat4 modelMatrix;");
@@ -167,7 +167,7 @@
     }
 
     function hasNormals(mesh) {
-        var primitive = mesh._geometry._state.primitiveName;
+        const primitive = mesh._geometry._state.primitiveName;
         if ((mesh._geometry._state.autoVertexNormals || mesh._geometry._state.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
@@ -175,12 +175,12 @@
     }
 
     function buildFragment(mesh) {
-        var clipsState = mesh.scene._clipsState;
-        var gammaOutput = mesh.scene.gammaOutput;
-        var clipping = clipsState.clips.length > 0;
-        var i;
-        var len;
-        var src = [];
+        const clipsState = mesh.scene._clipsState;
+        const gammaOutput = mesh.scene.gammaOutput;
+        const clipping = clipsState.clips.length > 0;
+        let i;
+        let len;
+        const src = [];
         src.push("// Lambertian drawing fragment shader");
         src.push("precision lowp float;");
         if (gammaOutput) {

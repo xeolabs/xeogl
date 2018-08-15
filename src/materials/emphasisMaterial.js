@@ -322,7 +322,7 @@
              */
             edgeColor: {
                 set: function (value) {
-                    var edgeColor = this._state.edgeColor;
+                    let edgeColor = this._state.edgeColor;
                     if (!edgeColor) {
                         edgeColor = this._state.edgeColor = new Float32Array(3);
                     } else if (value && edgeColor[0] === value[0] && edgeColor[1] === value[1] && edgeColor[2] === value[2]) {
@@ -414,7 +414,7 @@
              */
             vertexColor: {
                 set: function (value) {
-                    var vertexColor = this._state.vertexColor;
+                    let vertexColor = this._state.vertexColor;
                     if (!vertexColor) {
                         vertexColor = this._state.vertexColor = new Float32Array(3);
                     } else if (value && vertexColor[0] === value[0] && vertexColor[1] === value[1] && vertexColor[2] === value[2]) {
@@ -506,7 +506,7 @@
              */
             fillColor: {
                 set: function (value) {
-                    var fillColor = this._state.fillColor;
+                    let fillColor = this._state.fillColor;
                     if (!fillColor) {
                         fillColor = this._state.fillColor = new Float32Array(3);
                     } else if (value && fillColor[0] === value[0] && fillColor[1] === value[1] && fillColor[2] === value[2]) {
@@ -599,7 +599,7 @@
                     if (this._preset === value) {
                         return;
                     }
-                    var preset = xeogl.EmphasisMaterial.presets[value];
+                    const preset = xeogl.EmphasisMaterial.presets[value];
                     if (!preset) {
                         this.error("unsupported preset: '" + value + "' - supported values are " + Object.keys(xeogl.EmphasisMaterial.presets).join(", "));
                         return;

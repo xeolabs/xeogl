@@ -202,10 +202,10 @@
         },
 
         _update: function () {
-            var state = this._state;
+            const state = this._state;
             if (this._matrixDirty) {
-                var matrix;
-                var t;
+                let matrix;
+                let t;
                 if (this._translate[0] !== 0 || this._translate[1] !== 0) {
                     matrix = xeogl.math.translationMat4v([this._translate[0], this._translate[1], 0], this._state.matrix);
                 }
@@ -263,8 +263,8 @@
                 set: function (src) {
                     this.scene.loading++;
                     this.scene.canvas.spinner.processes++;
-                    var self = this;
-                    var image = new Image();
+                    const self = this;
+                    let image = new Image();
                     image.onload = function () {
                         image = xeogl.renderer.ensureImageSizePowerOfTwo(image);
                         //self._image = image; // For faster WebGL context restore - memory inefficient?

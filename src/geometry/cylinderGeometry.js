@@ -64,25 +64,25 @@
 
         _init: function (cfg) {
 
-            var radiusTop = cfg.radiusTop || 1;
+            let radiusTop = cfg.radiusTop || 1;
             if (radiusTop < 0) {
                 this.error("negative radiusTop not allowed - will invert");
                 radiusTop *= -1;
             }
 
-            var radiusBottom = cfg.radiusBottom || 1;
+            let radiusBottom = cfg.radiusBottom || 1;
             if (radiusBottom < 0) {
                 this.error("negative radiusBottom not allowed - will invert");
                 radiusBottom *= -1;
             }
 
-            var height = cfg.height || 1;
+            let height = cfg.height || 1;
             if (height < 0) {
                 this.error("negative height not allowed - will invert");
                 height *= -1;
             }
 
-            var radialSegments = cfg.radialSegments || 32;
+            let radialSegments = cfg.radialSegments || 32;
             if (radialSegments < 0) {
                 this.error("negative radialSegments not allowed - will invert");
                 radialSegments *= -1;
@@ -91,7 +91,7 @@
                 radialSegments = 3;
             }
 
-            var heightSegments = cfg.heightSegments || 1;
+            let heightSegments = cfg.heightSegments || 1;
             if (heightSegments < 0) {
                 this.error("negative heightSegments not allowed - will invert");
                 heightSegments *= -1;
@@ -100,43 +100,43 @@
                 heightSegments = 1;
             }
 
-            var openEnded = !!cfg.openEnded;
+            const openEnded = !!cfg.openEnded;
 
-            var center = cfg.center;
-            var centerX = center ? center[0] : 0;
-            var centerY = center ? center[1] : 0;
-            var centerZ = center ? center[2] : 0;
+            let center = cfg.center;
+            const centerX = center ? center[0] : 0;
+            const centerY = center ? center[1] : 0;
+            const centerZ = center ? center[2] : 0;
 
-            var heightHalf = height / 2;
-            var heightLength = height / heightSegments;
-            var radialAngle = (2.0 * Math.PI / radialSegments);
-            var radialLength = 1.0 / radialSegments;
+            const heightHalf = height / 2;
+            const heightLength = height / heightSegments;
+            const radialAngle = (2.0 * Math.PI / radialSegments);
+            const radialLength = 1.0 / radialSegments;
             //var nextRadius = this._radiusBottom;
-            var radiusChange = (radiusTop - radiusBottom) / heightSegments;
+            const radiusChange = (radiusTop - radiusBottom) / heightSegments;
 
-            var positions = [];
-            var normals = [];
-            var uvs = [];
-            var indices = [];
+            const positions = [];
+            const normals = [];
+            const uvs = [];
+            const indices = [];
 
-            var h;
-            var i;
+            let h;
+            let i;
 
-            var x;
-            var z;
+            let x;
+            let z;
 
-            var currentRadius;
-            var currentHeight;
+            let currentRadius;
+            let currentHeight;
 
-            var first;
-            var second;
+            let first;
+            let second;
 
-            var startIndex;
-            var tu;
-            var tv;
+            let startIndex;
+            let tu;
+            let tv;
 
             // create vertices
-            var normalY = (90.0 - (Math.atan(height / (radiusBottom - radiusTop))) * 180 / Math.PI) / 90.0;
+            const normalY = (90.0 - (Math.atan(height / (radiusBottom - radiusTop))) * 180 / Math.PI) / 90.0;
 
             for (h = 0; h <= heightSegments; h++) {
                 currentRadius = radiusTop - h * radiusChange;

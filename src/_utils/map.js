@@ -9,7 +9,7 @@ xeogl.utils.Map = function (items, baseId) {
     this.items = items || [];
 
     baseId = baseId || 0;
-    var lastUniqueId = baseId + 1;
+    let lastUniqueId = baseId + 1;
 
     /**
      * Usage:
@@ -18,9 +18,9 @@ xeogl.utils.Map = function (items, baseId) {
      * id = myMap.addItem("foo", "bar") // ID is "foo"
      */
     this.addItem = function () {
-        var item;
+        let item;
         if (arguments.length === 2) {
-            var id = arguments[0];
+            const id = arguments[0];
             item = arguments[1];
             if (this.items[id]) { // Won't happen if given ID is string
                 throw "ID clash: '" + id + "'";
@@ -31,7 +31,7 @@ xeogl.utils.Map = function (items, baseId) {
         } else {
             item = arguments[0] || {};
             while (true) {
-                var findId = lastUniqueId++;
+                const findId = lastUniqueId++;
                 if (!this.items[findId]) {
                     this.items[findId] = item;
                     return findId;
@@ -41,7 +41,7 @@ xeogl.utils.Map = function (items, baseId) {
     };
 
     this.removeItem = function (id) {
-        var item = this.items[id];
+        const item = this.items[id];
         delete this.items[id];
         return item;
     };

@@ -5,7 +5,7 @@
 
     "use strict";
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
     /**
      * Calculates the normal vector of a triangle.
@@ -16,19 +16,19 @@
 
         normal = normal || math.vec3();
 
-        var p1x = b[0] - a[0];
-        var p1y = b[1] - a[1];
-        var p1z = b[2] - a[2];
+        const p1x = b[0] - a[0];
+        const p1y = b[1] - a[1];
+        const p1z = b[2] - a[2];
 
-        var p2x = c[0] - a[0];
-        var p2y = c[1] - a[1];
-        var p2z = c[2] - a[2];
+        const p2x = c[0] - a[0];
+        const p2y = c[1] - a[1];
+        const p2z = c[2] - a[2];
 
-        var p3x = p1y * p2z - p1z * p2y;
-        var p3y = p1z * p2x - p1x * p2z;
-        var p3z = p1x * p2y - p1y * p2x;
+        const p3x = p1y * p2z - p1z * p2y;
+        const p3y = p1z * p2x - p1x * p2z;
+        const p3z = p1x * p2y - p1y * p2x;
 
-        var mag = Math.sqrt(p3x * p3x + p3y * p3y + p3z * p3z);
+        const mag = Math.sqrt(p3x * p3x + p3y * p3y + p3z * p3z);
         if (mag === 0) {
             normal[0] = 0;
             normal[1] = 0;
@@ -49,40 +49,40 @@
      */
     math.rayTriangleIntersect = (function () {
 
-        var tempVec3 = new Float32Array(3);
-        var tempVec3b = new Float32Array(3);
-        var tempVec3c = new Float32Array(3);
-        var tempVec3d = new Float32Array(3);
-        var tempVec3e = new Float32Array(3);
+        const tempVec3 = new Float32Array(3);
+        const tempVec3b = new Float32Array(3);
+        const tempVec3c = new Float32Array(3);
+        const tempVec3d = new Float32Array(3);
+        const tempVec3e = new Float32Array(3);
 
         return function (origin, dir, a, b, c, isect) {
 
             isect = isect || math.vec3();
 
-            var EPSILON = 0.000001;
+            const EPSILON = 0.000001;
 
-            var edge1 = math.subVec3(b, a, tempVec3);
-            var edge2 = math.subVec3(c, a, tempVec3b);
+            const edge1 = math.subVec3(b, a, tempVec3);
+            const edge2 = math.subVec3(c, a, tempVec3b);
 
-            var pvec = math.cross3Vec3(dir, edge2, tempVec3c);
-            var det = math.dotVec3(edge1, pvec);
+            const pvec = math.cross3Vec3(dir, edge2, tempVec3c);
+            const det = math.dotVec3(edge1, pvec);
             if (det < EPSILON) {
                 return null;
             }
 
-            var tvec = math.subVec3(origin, a, tempVec3d);
-            var u = math.dotVec3(tvec, pvec);
+            const tvec = math.subVec3(origin, a, tempVec3d);
+            const u = math.dotVec3(tvec, pvec);
             if (u < 0 || u > det) {
                 return null;
             }
 
-            var qvec = math.cross3Vec3(tvec, edge1, tempVec3e);
-            var v = math.dotVec3(dir, qvec);
+            const qvec = math.cross3Vec3(tvec, edge1, tempVec3e);
+            const v = math.dotVec3(dir, qvec);
             if (v < 0 || u + v > det) {
                 return null;
             }
 
-            var t = math.dotVec3(edge2, qvec) / det;
+            const t = math.dotVec3(edge2, qvec) / det;
             isect[0] = origin[0] + t * dir[0];
             isect[1] = origin[1] + t * dir[1];
             isect[2] = origin[2] + t * dir[2];
@@ -98,10 +98,10 @@
      */
     math.rayPlaneIntersect = (function () {
 
-        var tempVec3 = new Float32Array(3);
-        var tempVec3b = new Float32Array(3);
-        var tempVec3c = new Float32Array(3);
-        var tempVec3d = new Float32Array(3);
+        const tempVec3 = new Float32Array(3);
+        const tempVec3b = new Float32Array(3);
+        const tempVec3c = new Float32Array(3);
+        const tempVec3d = new Float32Array(3);
 
         return function (origin, dir, a, b, c, isect) {
 
@@ -109,15 +109,15 @@
 
             dir = math.normalizeVec3(dir, tempVec3);
 
-            var edge1 = math.subVec3(b, a, tempVec3b);
-            var edge2 = math.subVec3(c, a, tempVec3c);
+            const edge1 = math.subVec3(b, a, tempVec3b);
+            const edge2 = math.subVec3(c, a, tempVec3c);
 
-            var n = math.cross3Vec3(edge1, edge2, tempVec3d);
+            const n = math.cross3Vec3(edge1, edge2, tempVec3d);
             math.normalizeVec3(n, n);
 
-            var d = -math.dotVec3(a, n);
+            const d = -math.dotVec3(a, n);
 
-            var t = -(math.dotVec3(origin, n) + d) / math.dotVec3(dir, n);
+            const t = -(math.dotVec3(origin, n) + d) / math.dotVec3(dir, n);
 
             isect[0] = origin[0] + t * dir[0];
             isect[1] = origin[1] + t * dir[1];
@@ -135,23 +135,23 @@
      */
     math.cartesianToBarycentric = (function () {
 
-        var tempVec3 = new Float32Array(3);
-        var tempVec3b = new Float32Array(3);
-        var tempVec3c = new Float32Array(3);
+        const tempVec3 = new Float32Array(3);
+        const tempVec3b = new Float32Array(3);
+        const tempVec3c = new Float32Array(3);
 
         return function (cartesian, a, b, c, dest) {
 
-            var v0 = math.subVec3(c, a, tempVec3);
-            var v1 = math.subVec3(b, a, tempVec3b);
-            var v2 = math.subVec3(cartesian, a, tempVec3c);
+            const v0 = math.subVec3(c, a, tempVec3);
+            const v1 = math.subVec3(b, a, tempVec3b);
+            const v2 = math.subVec3(cartesian, a, tempVec3c);
 
-            var dot00 = math.dotVec3(v0, v0);
-            var dot01 = math.dotVec3(v0, v1);
-            var dot02 = math.dotVec3(v0, v2);
-            var dot11 = math.dotVec3(v1, v1);
-            var dot12 = math.dotVec3(v1, v2);
+            const dot00 = math.dotVec3(v0, v0);
+            const dot01 = math.dotVec3(v0, v1);
+            const dot02 = math.dotVec3(v0, v2);
+            const dot11 = math.dotVec3(v1, v1);
+            const dot12 = math.dotVec3(v1, v2);
 
-            var denom = ( dot00 * dot11 - dot01 * dot01 );
+            const denom = ( dot00 * dot11 - dot01 * dot01 );
 
             // Colinear or singular triangle
 
@@ -162,10 +162,10 @@
                 return null;
             }
 
-            var invDenom = 1 / denom;
+            const invDenom = 1 / denom;
 
-            var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
-            var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+            const u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+            const v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
 
             dest[0] = 1 - u - v;
             dest[1] = v;
@@ -182,8 +182,8 @@
      */
     math.barycentricInsideTriangle = function (bary) {
 
-        var v = bary[1];
-        var u = bary[2];
+        const v = bary[1];
+        const u = bary[2];
 
         return (u >= 0) && (v >= 0) && (u + v < 1);
     };
@@ -197,9 +197,9 @@
 
         cartesian = cartesian || math.vec3();
 
-        var u = bary[0];
-        var v = bary[1];
-        var w = bary[2];
+        const u = bary[0];
+        const v = bary[1];
+        const w = bary[2];
 
         cartesian[0] = a[0] * u + b[0] * v + c[0] * w;
         cartesian[1] = a[1] * u + b[1] * v + c[1] * w;
@@ -222,21 +222,21 @@
      * @private
      */
     math.mergeVertices = function (positions, normals, uv, indices) {
-        var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-        var indicesLookup = [];
-        var uniquePositions = [];
-        var uniqueNormals = normals ? [] : null;
-        var uniqueUV = uv ? [] : null;
-        var indices2 = [];
-        var vx;
-        var vy;
-        var vz;
-        var key;
-        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-        var precision = Math.pow(10, precisionPoints);
-        var i;
-        var len;
-        var uvi = 0;
+        const positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+        const indicesLookup = [];
+        const uniquePositions = [];
+        const uniqueNormals = normals ? [] : null;
+        const uniqueUV = uv ? [] : null;
+        const indices2 = [];
+        let vx;
+        let vy;
+        let vz;
+        let key;
+        const precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+        const precision = Math.pow(10, precisionPoints);
+        let i;
+        let len;
+        let uvi = 0;
         for (i = 0, len = positions.length; i < len; i += 3) {
             vx = positions[i];
             vy = positions[i + 1];
@@ -263,7 +263,7 @@
         for (i = 0, len = indices.length; i < len; i++) {
             indices2[i] = indicesLookup[indices[i]];
         }
-        var result = {
+        const result = {
             positions: uniquePositions,
             indices: indices2
         };

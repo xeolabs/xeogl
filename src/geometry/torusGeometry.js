@@ -71,20 +71,20 @@
 
         _init: function (cfg) {
 
-            var radius = cfg.radius || 1;
+            let radius = cfg.radius || 1;
             if (radius < 0) {
                 this.error("negative radius not allowed - will invert");
                 radius *= -1;
             }
             radius *= 0.5;
 
-            var tube = cfg.tube || 0.3;
+            let tube = cfg.tube || 0.3;
             if (tube < 0) {
                 this.error("negative tube not allowed - will invert");
                 tube *= -1;
             }
 
-            var radialSegments = cfg.radialSegments || 32;
+            let radialSegments = cfg.radialSegments || 32;
             if (radialSegments < 0) {
                 this.error("negative radialSegments not allowed - will invert");
                 radialSegments *= -1;
@@ -93,7 +93,7 @@
                 radialSegments = 4;
             }
 
-            var tubeSegments = cfg.tubeSegments || 24;
+            let tubeSegments = cfg.tubeSegments || 24;
             if (tubeSegments < 0) {
                 this.error("negative tubeSegments not allowed - will invert");
                 tubeSegments *= -1;
@@ -102,7 +102,7 @@
                 tubeSegments = 4;
             }
 
-            var arc = cfg.arc || Math.PI * 2;
+            let arc = cfg.arc || Math.PI * 2;
             if (arc < 0) {
                 this.warn("negative arc not allowed - will invert");
                 arc *= -1;
@@ -111,25 +111,25 @@
                 arc = 360;
             }
 
-            var center = cfg.center;
-            var centerX = center ? center[0] : 0;
-            var centerY = center ? center[1] : 0;
-            var centerZ = center ? center[2] : 0;
+            const center = cfg.center;
+            let centerX = center ? center[0] : 0;
+            let centerY = center ? center[1] : 0;
+            const centerZ = center ? center[2] : 0;
 
-            var positions = [];
-            var normals = [];
-            var uvs = [];
-            var indices = [];
+            const positions = [];
+            const normals = [];
+            const uvs = [];
+            const indices = [];
 
-            var u;
-            var v;
-            var x;
-            var y;
-            var z;
-            var vec;
+            let u;
+            let v;
+            let x;
+            let y;
+            let z;
+            let vec;
 
-            var i;
-            var j;
+            let i;
+            let j;
 
             for (j = 0; j <= tubeSegments; j++) {
                 for (i = 0; i <= radialSegments; i++) {
@@ -159,10 +159,10 @@
                 }
             }
 
-            var a;
-            var b;
-            var c;
-            var d;
+            let a;
+            let b;
+            let c;
+            let d;
 
             for (j = 1; j <= tubeSegments; j++) {
                 for (i = 1; i <= radialSegments; i++) {

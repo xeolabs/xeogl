@@ -5,10 +5,10 @@
 
     "use strict";
 
-    var KD_TREE_MAX_DEPTH = 10;
-    var KD_TREE_MIN_TRIANGLES = 20;
+    const KD_TREE_MAX_DEPTH = 10;
+    const KD_TREE_MIN_TRIANGLES = 20;
 
-    var math = xeogl.math;
+    const math = xeogl.math;
 
     /**
      * Returns a KD-tree that contains the triangles of the given mesh
@@ -16,21 +16,21 @@
      * @private
      */
     math.buildKDTree = function (indices, positions) {
-        var numTris = indices.length / 3;
-        var triangles = new Array(numTris);
-        for (var i = 0; i < numTris; ++i) {
+        const numTris = indices.length / 3;
+        const triangles = new Array(numTris);
+        for (let i = 0; i < numTris; ++i) {
             triangles[i] = i;
         }
         return buildNode(triangles, indices, positions, 0);
     };
 
-    var dimLength = new Float32Array();
+    const dimLength = new Float32Array();
 
     function buildNode(triangles, indices, positions, depth) {
 
-        var aabb = new Float32Array(6);
+        const aabb = new Float32Array(6);
 
-        var node = {
+        const node = {
             triangles: null,
             left: null,
             right: null,
@@ -42,12 +42,12 @@
         aabb[0] = aabb[1] = aabb[2] = Number.POSITIVE_INFINITY;
         aabb[3] = aabb[4] = aabb[5] = Number.NEGATIVE_INFINITY;
 
-        var t, i, len;
+        let t, i, len;
 
         for (t = 0, len = triangles.length; t < len; ++t) {
             var ii = triangles[t] * 3;
-            for (var j = 0; j < 3; ++j) {
-                var pi = indices[ii + j] * 3;
+            for (let j = 0; j < 3; ++j) {
+                const pi = indices[ii + j] * 3;
                 if (positions[pi] < aabb[0]) {
                     aabb[0] = positions[pi]
                 }
@@ -79,7 +79,7 @@
         dimLength[1] = aabb[4] - aabb[1];
         dimLength[2] = aabb[5] - aabb[2];
 
-        var dim = 0;
+        let dim = 0;
 
         if (dimLength[1] > dimLength[dim]) {
             dim = 1;
@@ -91,22 +91,22 @@
 
         node.splitDim = dim;
 
-        var mid = (aabb[dim] + aabb[dim + 3]) / 2;
-        var left = new Array(triangles.length);
-        var numLeft = 0;
-        var right = new Array(triangles.length);
-        var numRight = 0;
+        const mid = (aabb[dim] + aabb[dim + 3]) / 2;
+        const left = new Array(triangles.length);
+        let numLeft = 0;
+        const right = new Array(triangles.length);
+        let numRight = 0;
 
         for (t = 0, len = triangles.length; t < len; ++t) {
 
             var ii = triangles[t] * 3;
-            var i0 = indices[ii];
-            var i1 = indices[ii + 1];
-            var i2 = indices[ii + 2];
+            const i0 = indices[ii];
+            const i1 = indices[ii + 1];
+            const i2 = indices[ii + 2];
 
-            var pi0 = i0 * 3;
-            var pi1 = i1 * 3;
-            var pi2 = i2 * 3;
+            const pi0 = i0 * 3;
+            const pi1 = i1 * 3;
+            const pi2 = i2 * 3;
 
             if (positions[pi0 + dim] <= mid || positions[pi1 + dim] <= mid || positions[pi2 + dim] <= mid) {
                 left[numLeft++] = triangles[t];

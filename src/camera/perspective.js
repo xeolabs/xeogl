@@ -62,10 +62,10 @@
         _update: function () {
             const WIDTH_INDEX = 2;
             const HEIGHT_INDEX = 3;
-            var boundary = this.scene.viewport.boundary;
-            var aspect = boundary[WIDTH_INDEX] / boundary[HEIGHT_INDEX];
-            var fov = this._fov;
-            var fovAxis = this._fovAxis;
+            const boundary = this.scene.viewport.boundary;
+            const aspect = boundary[WIDTH_INDEX] / boundary[HEIGHT_INDEX];
+            let fov = this._fov;
+            const fovAxis = this._fovAxis;
             if (fovAxis == "x" || (fovAxis == "min" && aspect < 1) || (fovAxis == "max" && aspect > 1)) {
                 fov = fov / aspect;
             }

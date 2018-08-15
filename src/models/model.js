@@ -168,8 +168,8 @@
         },
 
         _addComponent: function (component) {
-            var componentId;
-            var types;
+            let componentId;
+            let types;
             if (xeogl._isNumeric(component) || xeogl._isString(component)) { // Component ID
                 component = this.scene.components[component];
                 if (!component) {
@@ -177,7 +177,7 @@
                     return;
                 }
             } else if (xeogl._isObject(component)) { // Component config
-                var type = component.type || "xeogl.Component";
+                const type = component.type || "xeogl.Component";
                 if (!xeogl._isComponentType(type)) {
                     this.error("Not a xeogl component type: " + type);
                     return;
@@ -201,11 +201,11 @@
             }
             types[component.id] = component;
             if (component.isType("xeogl.Object")) {
-                var object = component;
+                const object = component;
                 this.objects[object.id] = object;
                 if (object.entityType) {
                     this.entities[object.id] = object;
-                    var objectsOfType = this.entityTypes[object.entityType];
+                    let objectsOfType = this.entityTypes[object.entityType];
                     if (!objectsOfType) {
                         objectsOfType = {};
                         this.entityTypes[object.entityType] = objectsOfType;
@@ -228,13 +228,13 @@
         },
 
         _removeComponent: function(component) {
-            var id = component.id;
+            const id = component.id;
             delete this.components[id];
             delete this.meshes[id];
             delete this.objects[id];
             if (component.entityType) {
                 delete this.entities[id];
-                var objectsOfType = this.entityTypes[component.entityType];
+                const objectsOfType = this.entityTypes[component.entityType];
                 if (objectsOfType) {
                     delete objectsOfType[id];
                 }
