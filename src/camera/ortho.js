@@ -23,8 +23,7 @@
  @module xeogl
  @submodule camera
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Ortho within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
@@ -36,176 +35,188 @@
  @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
-(function () {
+import {core} from "./../core.js";
+import {Component} from '../component.js';
+import {State} from '../renderer/state.js';
+import {math} from '../math/math.js';
 
-    "use strict";
+const type = "xeogl.Ortho";
 
-    xeogl.Ortho = xeogl.Component.extend({
+class Ortho extends Component {
 
-        type: "xeogl.Ortho",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-            this._state = new xeogl.renderer.State({
-                matrix: xeogl.math.mat4()
-            });
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return type;
+    }
 
-            this.scale = cfg.scale;
-            this.near = cfg.near;
-            this.far = cfg.far;
+    init(cfg) {
 
-            this._onCanvasBoundary = this.scene.canvas.on("boundary", this._needUpdate, this);
-        },
+        super.init(cfg);
 
-        _update: function () {
+        this._state = new State({
+            matrix: math.mat4()
+        });
 
-            const WIDTH_INDEX = 2;
-            const HEIGHT_INDEX = 3;
+        this.scale = cfg.scale;
+        this.near = cfg.near;
+        this.far = cfg.far;
 
-            const scene = this.scene;
-            const scale = this._scale;
-            const halfSize = 0.5 * scale;
+        this._onCanvasBoundary = this.scene.canvas.on("boundary", this._needUpdate, this);
+    }
 
-            const boundary = scene.viewport.boundary;
-            const boundaryWidth = boundary[WIDTH_INDEX];
-            const boundaryHeight = boundary[HEIGHT_INDEX];
-            const aspect = boundaryWidth / boundaryHeight;
+    _update() {
 
-            let left;
-            let right;
-            let top;
-            let bottom;
+        const WIDTH_INDEX = 2;
+        const HEIGHT_INDEX = 3;
 
-            if (boundaryWidth > boundaryHeight) {
-                left = -halfSize;
-                right = halfSize;
-                top = halfSize / aspect;
-                bottom = -halfSize / aspect;
+        const scene = this.scene;
+        const scale = this._scale;
+        const halfSize = 0.5 * scale;
 
-            } else {
-                left = -halfSize * aspect;
-                right = halfSize * aspect;
-                top = halfSize;
-                bottom = -halfSize;
-            }
+        const boundary = scene.viewport.boundary;
+        const boundaryWidth = boundary[WIDTH_INDEX];
+        const boundaryHeight = boundary[HEIGHT_INDEX];
+        const aspect = boundaryWidth / boundaryHeight;
 
-            xeogl.math.orthoMat4c(left, right, bottom, top, this._near, this._far, this._state.matrix);
+        let left;
+        let right;
+        let top;
+        let bottom;
 
-            this._renderer.imageDirty();
+        if (boundaryWidth > boundaryHeight) {
+            left = -halfSize;
+            right = halfSize;
+            top = halfSize / aspect;
+            bottom = -halfSize / aspect;
 
-            this.fire("matrix", this._state.matrix);
-        },
-
-        _props: {
-
-            /**
-             Scale factor for this Ortho's extents on X and Y axis.
-
-             Clamps to minimum value of ````0.01```.
-
-             Fires a {{#crossLink "Ortho/scale:event"}}{{/crossLink}} event on change.
-
-             @property scale
-             @default 1.0
-             @type Number
-             */
-            scale: {
-                set: function (value) {
-                    if (value === undefined || value === null) {
-                        value = 1.0;
-                    }
-                    if (value <= 0) {
-                        value = 0.01;
-                    }
-                    this._scale = value;
-                    this._needUpdate();
-                    /**
-                     Fired whenever this Ortho's {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property changes.
-
-                     @event scale
-                     @param value The property's new value
-                     */
-                    this.fire("scale", this._scale);
-                },
-                get: function () {
-                    return this._scale;
-                }
-            },
-
-            /**
-             Position of this Ortho's near plane on the positive View-space Z-axis.
-
-             Fires a {{#crossLink "Ortho/near:event"}}{{/crossLink}} event on change.
-
-             @property near
-             @default 0.1
-             @type Number
-             */
-            near: {
-                set: function (value) {
-                    this._near = (value !== undefined && value !== null) ? value : 0.1;
-                    this._needUpdate();
-                    /**
-                     Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
-
-                     @event near
-                     @param value The property's new value
-                     */
-                    this.fire("near", this._near);
-                },
-                get: function () {
-                    return this._near;
-                }
-            },
-
-            /**
-             Position of this Ortho's far plane on the positive View-space Z-axis.
-
-             Fires a {{#crossLink "Ortho/far:event"}}{{/crossLink}} event on change.
-
-             @property far
-             @default 10000.0
-             @type Number
-             */
-            far: {
-                set: function (value) {
-                    this._far = (value !== undefined && value !== null) ? value : 10000.0;
-                    this._needUpdate();
-                    /**
-                     Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
-
-                     @event far
-                     @param value The property's new value
-                     */
-                    this.fire("far", this._far);
-                },
-                get: function () {
-                    return this._far;
-                }
-            },
-
-            /**
-             The Ortho's projection transform matrix.
-
-             Fires a {{#crossLink "Ortho/matrix:event"}}{{/crossLink}} event on change.
-
-             @property matrix
-             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             @type {Float32Array}
-             */
-            matrix: {
-                get: function () {
-                    if (this._updateScheduled) {
-                        this._doUpdate();
-                    }
-                    return this._state.matrix;
-                }
-            }
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-            this.scene.canvas.off(this._onCanvasBoundary);
+        } else {
+            left = -halfSize * aspect;
+            right = halfSize * aspect;
+            top = halfSize;
+            bottom = -halfSize;
         }
-    });
-})();
+
+        math.orthoMat4c(left, right, bottom, top, this._near, this._far, this._state.matrix);
+
+        this._renderer.imageDirty();
+
+        this.fire("matrix", this._state.matrix);
+    }
+
+
+    /**
+     Scale factor for this Ortho's extents on X and Y axis.
+
+     Clamps to minimum value of ````0.01```.
+
+     Fires a {{#crossLink "Ortho/scale:event"}}{{/crossLink}} event on change.
+
+     @property scale
+     @default 1.0
+     @type Number
+     */
+
+    set scale(value) {
+        if (value === undefined || value === null) {
+            value = 1.0;
+        }
+        if (value <= 0) {
+            value = 0.01;
+        }
+        this._scale = value;
+        this._needUpdate();
+        /**
+         Fired whenever this Ortho's {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property changes.
+
+         @event scale
+         @param value The property's new value
+         */
+        this.fire("scale", this._scale);
+    }
+
+    get scale() {
+        return this._scale;
+    }
+
+    /**
+     Position of this Ortho's near plane on the positive View-space Z-axis.
+
+     Fires a {{#crossLink "Ortho/near:event"}}{{/crossLink}} event on change.
+
+     @property near
+     @default 0.1
+     @type Number
+     */
+    set near(value) {
+        this._near = (value !== undefined && value !== null) ? value : 0.1;
+        this._needUpdate();
+        /**
+         Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
+
+         @event near
+         @param value The property's new value
+         */
+        this.fire("near", this._near);
+    }
+
+    get near() {
+        return this._near;
+    }
+
+    /**
+     Position of this Ortho's far plane on the positive View-space Z-axis.
+
+     Fires a {{#crossLink "Ortho/far:event"}}{{/crossLink}} event on change.
+
+     @property far
+     @default 10000.0
+     @type Number
+     */
+    set far(value) {
+        this._far = (value !== undefined && value !== null) ? value : 10000.0;
+        this._needUpdate();
+        /**
+         Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
+
+         @event far
+         @param value The property's new value
+         */
+        this.fire("far", this._far);
+    }
+
+    get far() {
+        return this._far;
+    }
+
+    /**
+     The Ortho's projection transform matrix.
+
+     Fires a {{#crossLink "Ortho/matrix:event"}}{{/crossLink}} event on change.
+
+     @property matrix
+     @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+     @type {Float32Array}
+     */
+    get matrix() {
+        if (this._updateScheduled) {
+            this._doUpdate();
+        }
+        return this._state.matrix;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+        this.scene.canvas.off(this._onCanvasBoundary);
+    }
+}
+
+export{Ortho};

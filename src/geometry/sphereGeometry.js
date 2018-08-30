@@ -34,8 +34,7 @@
  @module xeogl
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this SphereGeometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
@@ -48,127 +47,140 @@
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
-(function () {
+import {core} from "./../core.js";
+import {utils} from '../utils.js';
+import {Geometry} from './geometry.js';
 
-    "use strict";
+const type = "xeogl.SphereGeometry";
 
-    xeogl.SphereGeometry = xeogl.Geometry.extend({
+class SphereGeometry extends Geometry {
 
-        type: "xeogl.SphereGeometry",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-            const lod = cfg.lod || 1;
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return type;
+    }
 
-            const centerX = cfg.center ? cfg.center[0] : 0;
-            const centerY = cfg.center ? cfg.center[1] : 0;
-            const centerZ = cfg.center ? cfg.center[2] : 0;
+    constructor(owner = nul, cfg) {
 
-            let radius = cfg.radius || 1;
-            if (radius < 0) {
-                this.warn("negative radius not allowed - will invert");
-                radius *= -1;
-            }
+        const lod = cfg.lod || 1;
 
-            let heightSegments = cfg.heightSegments || 18;
-            if (heightSegments < 0) {
-                this.warn("negative heightSegments not allowed - will invert");
-                heightSegments *= -1;
-            }
-            heightSegments = Math.floor(lod * heightSegments);
-            if (heightSegments < 18) {
-                heightSegments = 18;
-            }
+        const centerX = cfg.center ? cfg.center[0] : 0;
+        const centerY = cfg.center ? cfg.center[1] : 0;
+        const centerZ = cfg.center ? cfg.center[2] : 0;
 
-            let widthSegments = cfg.widthSegments || 18;
-            if (widthSegments < 0) {
-                this.warn("negative widthSegments not allowed - will invert");
-                widthSegments *= -1;
-            }
-            widthSegments = Math.floor(lod * widthSegments);
-            if (widthSegments < 18) {
-                widthSegments = 18;
-            }
-
-            const positions = [];
-            const normals = [];
-            const uvs = [];
-            const indices = [];
-
-            let i;
-            let j;
-
-            let theta;
-            let sinTheta;
-            let cosTheta;
-
-            let phi;
-            let sinPhi;
-            let cosPhi;
-
-            let x;
-            let y;
-            let z;
-
-            let u;
-            let v;
-
-            let first;
-            let second;
-
-            for (i = 0; i <= heightSegments; i++) {
-
-                theta = i * Math.PI / heightSegments;
-                sinTheta = Math.sin(theta);
-                cosTheta = Math.cos(theta);
-
-                for (j = 0; j <= widthSegments; j++) {
-
-                    phi = j * 2 * Math.PI / widthSegments;
-                    sinPhi = Math.sin(phi);
-                    cosPhi = Math.cos(phi);
-
-                    x = cosPhi * sinTheta;
-                    y = cosTheta;
-                    z = sinPhi * sinTheta;
-                    u = 1.0 - j / widthSegments;
-                    v = i / heightSegments;
-
-                    normals.push(x);
-                    normals.push(y);
-                    normals.push(z);
-
-                    uvs.push(u);
-                    uvs.push(v);
-
-                    positions.push(centerX + radius * x);
-                    positions.push(centerY + radius * y);
-                    positions.push(centerZ + radius * z);
-                }
-            }
-
-            for (i = 0; i < heightSegments; i++) {
-                for (j = 0; j < widthSegments; j++) {
-
-                    first = (i * (widthSegments + 1)) + j;
-                    second = first + widthSegments + 1;
-
-                    indices.push(first + 1);
-                    indices.push(second + 1);
-                    indices.push(second);
-                    indices.push(first + 1);
-                    indices.push(second);
-                    indices.push(first);
-                }
-            }
-
-            this._super(xeogl._apply(cfg, {
-                positions: positions,
-                normals: normals,
-                uv: uvs,
-                indices: indices
-            }));
+        let radius = cfg.radius || 1;
+        if (radius < 0) {
+            this.warn("negative radius not allowed - will invert");
+            radius *= -1;
         }
-    });
 
-})();
+        let heightSegments = cfg.heightSegments || 18;
+        if (heightSegments < 0) {
+            this.warn("negative heightSegments not allowed - will invert");
+            heightSegments *= -1;
+        }
+        heightSegments = Math.floor(lod * heightSegments);
+        if (heightSegments < 18) {
+            heightSegments = 18;
+        }
+
+        let widthSegments = cfg.widthSegments || 18;
+        if (widthSegments < 0) {
+            this.warn("negative widthSegments not allowed - will invert");
+            widthSegments *= -1;
+        }
+        widthSegments = Math.floor(lod * widthSegments);
+        if (widthSegments < 18) {
+            widthSegments = 18;
+        }
+
+        const positions = [];
+        const normals = [];
+        const uvs = [];
+        const indices = [];
+
+        let i;
+        let j;
+
+        let theta;
+        let sinTheta;
+        let cosTheta;
+
+        let phi;
+        let sinPhi;
+        let cosPhi;
+
+        let x;
+        let y;
+        let z;
+
+        let u;
+        let v;
+
+        let first;
+        let second;
+
+        for (i = 0; i <= heightSegments; i++) {
+
+            theta = i * Math.PI / heightSegments;
+            sinTheta = Math.sin(theta);
+            cosTheta = Math.cos(theta);
+
+            for (j = 0; j <= widthSegments; j++) {
+
+                phi = j * 2 * Math.PI / widthSegments;
+                sinPhi = Math.sin(phi);
+                cosPhi = Math.cos(phi);
+
+                x = cosPhi * sinTheta;
+                y = cosTheta;
+                z = sinPhi * sinTheta;
+                u = 1.0 - j / widthSegments;
+                v = i / heightSegments;
+
+                normals.push(x);
+                normals.push(y);
+                normals.push(z);
+
+                uvs.push(u);
+                uvs.push(v);
+
+                positions.push(centerX + radius * x);
+                positions.push(centerY + radius * y);
+                positions.push(centerZ + radius * z);
+            }
+        }
+
+        for (i = 0; i < heightSegments; i++) {
+            for (j = 0; j < widthSegments; j++) {
+
+                first = (i * (widthSegments + 1)) + j;
+                second = first + widthSegments + 1;
+
+                indices.push(first + 1);
+                indices.push(second + 1);
+                indices.push(second);
+                indices.push(first + 1);
+                indices.push(second);
+                indices.push(first);
+            }
+        }
+
+        super(owner, utils.apply(cfg, {
+            positions: positions,
+            normals: normals,
+            uv: uvs,
+            indices: indices
+        }));
+    }
+}
+
+export {SphereGeometry};

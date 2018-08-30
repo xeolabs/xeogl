@@ -20,8 +20,7 @@
  @module xeogl
  @submodule lighting
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ReflectionMap in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID for this ReflectionMap, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ReflectionMap.
@@ -30,21 +29,34 @@
  @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "ReflectionMap/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
-(function () {
+import {core} from "./../core.js";
+import {CubeTexture} from './cubeTexture.js';
 
-    "use strict";
+class ReflectionMap extends CubeTexture {
 
-    xeogl.ReflectionMap = xeogl.CubeTexture.extend({
-        type: "xeogl.ReflectionMap",
-        _init: function (cfg) {
-            this._super(cfg);
-            this.scene._lightsState.addReflectionMap(this._state);
-            this.scene._reflectionMapCreated(this);
-        },
+    /**
+     JavaScript class name for this Component.
 
-        _destroy: function () {
-            this._super();
-            this.scene._reflectionMapDestroyed(this);
-        }
-    });
-})();
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return "xeogl.ReflectionMap";
+    }
+
+    init(cfg) {
+        super.init(cfg);
+        this.scene._lightsState.addReflectionMap(this._state);
+        this.scene._reflectionMapCreated(this);
+    }
+
+    destroy() {
+        super.destroy();
+        this.scene._reflectionMapDestroyed(this);
+    }
+}
+
+export{ReflectionMap};

@@ -21,21 +21,34 @@
  @constructor
  @extends Component
  */
-(function () {
+import {core} from "./../core.js";
+import {Component} from '../component.js';
+import {stats} from './../stats.js';
 
-    "use strict";
+class Material extends Component{
 
-    xeogl.Material = xeogl.Component.extend({
+    /**
+     JavaScript class name for this Component.
 
-        type: "xeogl.Material",
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-        _init: function () {
-            xeogl.stats.memory.materials++;
-        },
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return "xeogl.Material";
+    }
 
-        _destroy: function() {
-            xeogl.stats.memory.materials--;
-        }
-    });
+    init(cfg) {
+        super.init(cfg);
+        stats.memory.materials++;
+    }
 
-})();
+    destroy() {
+        super.destroy();
+        stats.memory.materials--;
+    }
+}
+
+export{Material};

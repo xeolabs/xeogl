@@ -50,8 +50,7 @@
  @module xeogl
  @submodule lighting
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this AmbientLight within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} AmbientLight configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this AmbientLight.
@@ -59,65 +58,74 @@
  @param [cfg.intensity=[1.0]] {Number} The intensity of this AmbientLight, as a factor in range ````[0..1]````.
  @extends Component
  */
-(function () {
+import {math} from '../math/math.js';
+import {Component} from '../component.js';
 
-    "use strict";
+const type = "AmbientLight";
 
-    xeogl.AmbientLight = xeogl.Component.extend({
+class AmbientLight extends Component {
 
-        type: "xeogl.AmbientLight",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
-            this._state = {
-                type: "ambient",
-                color: xeogl.math.vec3([0.7, 0.7, 0.7]),
-                intensity: 1.0
-            };
-            this.color = cfg.color;
-            this.intensity = cfg.intensity;
-            this.scene._lightCreated(this);
-        },
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-        _props: {
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return type;
+    }
 
-            /**
-             The color of this AmbientLight.
+    init(cfg) {
+        super.init(cfg);
+        this._state = {
+            type: "ambient",
+            color: math.vec3([0.7, 0.7, 0.7]),
+            intensity: 1.0
+        };
+        this.color = cfg.color;
+        this.intensity = cfg.intensity;
+        this.scene._lightCreated(this);
+    }
 
-             @property color
-             @default [0.7, 0.7, 0.8]
-             @type Float32Array
-             */
-            color: {
-                set: function (value) {
-                    this._state.color.set(value ||  [ 0.7, 0.7, 0.8 ]);
-                    this._renderer.setImageForceDirty();
-                },
-                get: function () {
-                    return this._state.color;
-                }
-            },
+    /**
+     The color of this AmbientLight.
 
-            /**
-             The intensity of this AmbientLight.
+     @property color
+     @default [0.7, 0.7, 0.8]
+     @type Float32Array
+     */
+    set color(value) {
+        this._state.color.set(value || [0.7, 0.7, 0.8]);
+        this._renderer.setImageForceDirty();
+    }
 
-             @property intensity
-             @default 1.0
-             @type Number
-             */
-            intensity: {
-                set: function (value) {
-                    this._state.intensity = value !== undefined ? value :  1.0;
-                    this._renderer.setImageForceDirty();
-                },
-                get: function () {
-                    return this._state.intensity;
-                }
-            }
-        },
+    get color() {
+        return this._state.color;
+    }
 
-        _destroy: function () {
-            this.scene._lightDestroyed(this);
-        }
-    });
+    /**
+     The intensity of this AmbientLight.
 
-})();
+     @property intensity
+     @default 1.0
+     @type Number
+     */
+    set intensity(value) {
+        this._state.intensity = value !== undefined ? value : 1.0;
+        this._renderer.setImageForceDirty();
+    }
+
+    get intensity() {
+        return this._state.intensity;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+export {AmbientLight};

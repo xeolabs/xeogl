@@ -20,8 +20,7 @@
  @module xeogl
  @submodule lighting
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this LightMap in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID for this LightMap, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this LightMap.
@@ -30,21 +29,34 @@
  @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "LightMap/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
-(function () {
 
-    "use strict";
+import {core} from "./../core.js";
+import {CubeTexture} from './cubeTexture.js';
 
-    xeogl.LightMap = xeogl.CubeTexture.extend({
-        type: "xeogl.LightMap",
-        _init: function (cfg) {
-            this._super(cfg);
-            this.scene._lightMapCreated(this);
-        },
+class LightMap extends CubeTexture{
 
-        _destroy: function () {
-            this._super();
-            this.scene._lightMapDestroyed(this);
-        }
-    });
+    /**
+     JavaScript class name for this Component.
 
-})();
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return "xeogl.LightMap";
+    }
+
+    init(cfg) {
+        super.init(cfg);
+        this.scene._lightMapCreated(this);
+    }
+
+    destroy() {
+        super.destroy();
+        this.scene._lightMapDestroyed(this);
+    }
+}
+
+export{LightMap};

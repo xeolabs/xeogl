@@ -53,8 +53,7 @@
  @module xeogl
  @submodule rendering
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}, creates this Viewport within the
- default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Viewport configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent
  {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
@@ -67,59 +66,117 @@
 
  @extends Component
  */
-(function () {
+import {core} from "./../core.js";
+import {Component} from '../component.js';
+import {State} from '../renderer/state.js';
 
-    "use strict";
+class Viewport extends Component {
 
-    xeogl.Viewport = xeogl.Component.extend({
+    /**
+     JavaScript class name for this Component.
 
-        type: "xeogl.Viewport",
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-        _init: function (cfg) {
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return "xeogl.Viewport";
+    }
 
-            this._state = new xeogl.renderer.State({
-                boundary: [0, 0, 100, 100]
-            });
+    init(cfg) {
 
-            this.boundary = cfg.boundary;
-            this.autoBoundary = cfg.autoBoundary;
-        },
+        super.init(cfg);
 
-        _props: {
+        this._state = new State({
+            boundary: [0, 0, 100, 100]
+        });
 
-            /**
-             The canvas-space boundary of this Viewport, indicated as [min, max, width, height].
+        this.boundary = cfg.boundary;
+        this.autoBoundary = cfg.autoBoundary;
+    }
 
-             Defaults to the size of the parent
-             {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
 
-             Ignores attempts to set value when {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} is ````true````.
+    /**
+     The canvas-space boundary of this Viewport, indicated as [min, max, width, height].
 
-             Fires a {{#crossLink "Viewport/boundary:event"}}{{/crossLink}} event on change.
+     Defaults to the size of the parent
+     {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
 
-             @property boundary
-             @default [size of Scene Canvas]
-             @type {Array of Number}
-             */
-            boundary: {
+     Ignores attempts to set value when {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} is ````true````.
 
-                set: function (value) {
+     Fires a {{#crossLink "Viewport/boundary:event"}}{{/crossLink}} event on change.
 
-                    if (this._autoBoundary) {
-                        return;
-                    }
+     @property boundary
+     @default [size of Scene Canvas]
+     @type {Array of Number}
+     */
+    set boundary(value) {
 
-                    if (!value) {
+        if (this._autoBoundary) {
+            return;
+        }
 
-                        const canvasBoundary = this.scene.canvas.boundary;
+        if (!value) {
 
-                        const width = canvasBoundary[2];
-                        const height = canvasBoundary[3];
+            const canvasBoundary = this.scene.canvas.boundary;
 
-                        value = [0, 0, width, height];
-                    }
+            const width = canvasBoundary[2];
+            const height = canvasBoundary[3];
 
-                    this._state.boundary = value;
+            value = [0, 0, width, height];
+        }
+
+        this._state.boundary = value;
+
+        this._renderer.imageDirty();
+
+        /**
+         Fired whenever this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}} property changes.
+
+         @event boundary
+         @param value {Boolean} The property's new value
+         */
+        this.fire("boundary", this._state.boundary);
+    }
+
+    get boundary() {
+        return this._state.boundary;
+    }
+
+    /**
+     Indicates whether this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}} automatically
+     synchronizes with the size of the parent {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
+
+     When set true, then this Viewport will fire a {{#crossLink "Viewport/boundary/event"}}{{/crossLink}} whenever
+     the {{#crossLink "Canvas"}}{{/crossLink}} resizes. Also fires that event as soon as this ````autoBoundary````
+     property is changed.
+
+     Fires a {{#crossLink "Viewport/autoBoundary:event"}}{{/crossLink}} event on change.
+
+     @property autoBoundary
+     @default false
+     @type Boolean
+     */
+    set autoBoundary(value) {
+
+        value = !!value;
+
+        if (value === this._autoBoundary) {
+            return;
+        }
+
+        this._autoBoundary = value;
+
+        if (this._autoBoundary) {
+            this._onCanvasSize = this.scene.canvas.on("boundary",
+                function (boundary) {
+
+                    const width = boundary[2];
+                    const height = boundary[3];
+
+                    this._state.boundary = [0, 0, width, height];
 
                     this._renderer.imageDirty();
 
@@ -130,83 +187,35 @@
                      @param value {Boolean} The property's new value
                      */
                     this.fire("boundary", this._state.boundary);
-                },
 
-                get: function () {
-                    return this._state.boundary;
-                }
-            },
+                }, this);
 
-            /**
-             Indicates whether this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}} automatically
-             synchronizes with the size of the parent {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
-
-             When set true, then this Viewport will fire a {{#crossLink "Viewport/boundary/event"}}{{/crossLink}} whenever
-             the {{#crossLink "Canvas"}}{{/crossLink}} resizes. Also fires that event as soon as this ````autoBoundary````
-             property is changed.
-
-             Fires a {{#crossLink "Viewport/autoBoundary:event"}}{{/crossLink}} event on change.
-
-             @property autoBoundary
-             @default false
-             @type Boolean
-             */
-            autoBoundary: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (value === this._autoBoundary) {
-                        return;
-                    }
-
-                    this._autoBoundary = value;
-
-                    if (this._autoBoundary) {
-                        this._onCanvasSize = this.scene.canvas.on("boundary",
-                            function (boundary) {
-
-                                const width = boundary[2];
-                                const height = boundary[3];
-
-                                this._state.boundary = [0, 0, width, height];
-
-                                this._renderer.imageDirty();
-
-                                /**
-                                 Fired whenever this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}} property changes.
-
-                                 @event boundary
-                                 @param value {Boolean} The property's new value
-                                 */
-                                this.fire("boundary", this._state.boundary);
-
-                            }, this);
-
-                    } else if (this._onCanvasSize) {
-                        this.scene.canvas.off(this._onCanvasSize);
-                        this._onCanvasSize = null;
-                    }
-
-                    /**
-                     Fired whenever this Viewport's {{#crossLink "autoBoundary/autoBoundary:property"}}{{/crossLink}} property changes.
-
-                     @event autoBoundary
-                     @param value The property's new value
-                     */
-                    this.fire("autoBoundary", this._autoBoundary);
-                },
-
-                get: function () {
-                    return this._autoBoundary;
-                }
-            }
-        },
-
-        _getState: function () {
-            return this._state;
+        } else if (this._onCanvasSize) {
+            this.scene.canvas.off(this._onCanvasSize);
+            this._onCanvasSize = null;
         }
-    });
 
-})();
+        /**
+         Fired whenever this Viewport's {{#crossLink "autoBoundary/autoBoundary:property"}}{{/crossLink}} property changes.
+
+         @event autoBoundary
+         @param value The property's new value
+         */
+        this.fire("autoBoundary", this._autoBoundary);
+    }
+
+    get autoBoundary() {
+        return this._autoBoundary;
+    }
+
+    _getState() {
+        return this._state;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+export{Viewport};

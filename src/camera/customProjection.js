@@ -18,59 +18,73 @@
  @module xeogl
  @submodule camera
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this CustomProjection within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CustomProjection.
  @param [cfg.matrix=] {Float32Array} 4x4 transform matrix.
  @extends Component
  */
-(function () {
+import {math} from '../math/math.js';
+import {Component} from '../component.js';
+import {State} from '../renderer/state.js';
 
-    "use strict";
+const type = "xeogl.CustomProjection";
 
-    xeogl.CustomProjection = xeogl.Component.extend({
+class CustomProjection extends Component {
 
-        type: "xeogl.CustomProjection",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
-            this._state = new xeogl.renderer.State({
-                matrix: xeogl.math.mat4()
-            });
-            this.matrix = cfg.matrix;
-        },
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-        _props: {
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return type;
+    }
 
-            /**
-             The CustomProjection's projection transform matrix.
+    init(cfg) {
+        super.init(cfg);
+        this._state = new State({
+            matrix: math.mat4()
+        });
+        this.matrix = cfg.matrix;
+    }
 
-             Fires a {{#crossLink "CustomProjection/matrix:event"}}{{/crossLink}} event on change.
 
-             @property matrix
-             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             @type {Float32Array}
-             */
-            matrix: {
-                set: function (matrix) {
-                    this._state.matrix.set(matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-                    /**
-                     Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
+    /**
+     The CustomProjection's projection transform matrix.
 
-                     @event matrix
-                     @param value The property's new value
-                     */
-                    this.fire("far", this._state.matrix);
-                },
-                get: function () {
-                    return this._state.matrix;
-                }
-            }
-        },
+     Fires a {{#crossLink "CustomProjection/matrix:event"}}{{/crossLink}} event on change.
 
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-})();
+     @property matrix
+     @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+     @type {Float32Array}
+     */
+    set matrix(matrix) {
+
+        this._state.matrix.set(matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+
+        /**
+         Fired whenever this CustomProjection's {{#crossLink "CustomProjection/matrix:property"}}{{/crossLink}} property changes.
+
+         @event matrix
+         @param value The property's new value
+         */
+        this.fire("far", this._state.matrix);
+    }
+
+    get matrix() {
+        return this._state.matrix;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+export{CustomProjection};

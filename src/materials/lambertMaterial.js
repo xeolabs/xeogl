@@ -5,7 +5,7 @@
 
  ## Examples
 
-TODO
+ TODO
 
  ## Overview
 
@@ -49,8 +49,7 @@ TODO
  @submodule materials
  @constructor
  @extends Material
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this LambertMaterial within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} The LambertMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this LambertMaterial.
@@ -64,252 +63,258 @@ TODO
  @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  */
-(function () {
 
-    "use strict";
+import {core} from "./../core.js";
+import {Material} from './material.js';
+import {State} from '../renderer/state.js';
+import {math} from '../math/math.js';
 
-    xeogl.LambertMaterial = xeogl.Material.extend({
+class LambertMaterial extends Material {
 
-        type: "xeogl.LambertMaterial",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-            this._super(cfg);
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return "xeogl.LambertMaterial";
+    }
 
-            this._state = new xeogl.renderer.State({
-                type: "LambertMaterial",
-                ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
-                color: xeogl.math.vec3([1.0, 1.0, 1.0]),
-                emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
-                alpha: null,
-                alphaMode: 0, // 2 ("blend") when transparent, so renderer knows when to add to transparency bin
-                lineWidth: null,
-                pointSize: null,
-                backfaces: null,
-                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-                hash: "/lam;"
-            });
+    init(cfg) {
 
-            this.ambient = cfg.ambient;
-            this.color = cfg.color;
-            this.emissive = cfg.emissive;
-            this.alpha = cfg.alpha;
-            this.lineWidth = cfg.lineWidth;
-            this.pointSize = cfg.pointSize;
-            this.backfaces = cfg.backfaces;
-            this.frontface = cfg.frontface;
-        },
+        super.init(cfg);
 
-        _props: {
+        this._state = new State({
+            type: "LambertMaterial",
+            ambient: math.vec3([1.0, 1.0, 1.0]),
+            color: math.vec3([1.0, 1.0, 1.0]),
+            emissive: math.vec3([0.0, 0.0, 0.0]),
+            alpha: null,
+            alphaMode: 0, // 2 ("blend") when transparent, so renderer knows when to add to transparency bin
+            lineWidth: null,
+            pointSize: null,
+            backfaces: null,
+            frontface: null, // Boolean for speed; true == "ccw", false == "cw"
+            hash: "/lam;"
+        });
 
-            /**
-             The LambertMaterial's ambient color.
+        this.ambient = cfg.ambient;
+        this.color = cfg.color;
+        this.emissive = cfg.emissive;
+        this.alpha = cfg.alpha;
+        this.lineWidth = cfg.lineWidth;
+        this.pointSize = cfg.pointSize;
+        this.backfaces = cfg.backfaces;
+        this.frontface = cfg.frontface;
+    }
 
-             @property ambient
-             @default [0.3, 0.3, 0.3]
-             @type Float32Array
-             */
-            ambient: {
-                set: function (value) {
-                    let ambient = this._state.ambient;
-                    if (!ambient) {
-                        ambient = this._state.ambient = new Float32Array(3);
-                    } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        ambient[0] = value[0];
-                        ambient[1] = value[1];
-                        ambient[2] = value[2];
-                    } else {
-                        ambient[0] = .2;
-                        ambient[1] = .2;
-                        ambient[2] = .2;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.ambient;
-                }
-            },
+    /**
+     The LambertMaterial's ambient color.
 
-            /**
-             The LambertMaterial's diffuse color.
+     @property ambient
+     @default [0.3, 0.3, 0.3]
+     @type Float32Array
+     */
 
-             @property color
-             @default [1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            color: {
-                set: function (value) {
-                    let color = this._state.color;
-                    if (!color) {
-                        color = this._state.color = new Float32Array(3);
-                    } else if (value && color[0] === value[0] && color[1] === value[1] && color[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        color[0] = value[0];
-                        color[1] = value[1];
-                        color[2] = value[2];
-                    } else {
-                        color[0] = 1;
-                        color[1] = 1;
-                        color[2] = 1;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.color;
-                }
-            },
-
-            /**
-             The LambertMaterial's emissive color.
-
-             @property emissive
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            emissive: {
-                set: function (value) {
-                    let emissive = this._state.emissive;
-                    if (!emissive) {
-                        emissive = this._state.emissive = new Float32Array(3);
-                    } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        emissive[0] = value[0];
-                        emissive[1] = value[1];
-                        emissive[2] = value[2];
-                    } else {
-                        emissive[0] = 0;
-                        emissive[1] = 0;
-                        emissive[2] = 0;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.emissive;
-                }
-            },
-
-            /**
-             Factor in the range [0..1] indicating how transparent the LambertMaterial is.
-
-             A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
-             @property alpha
-             @default 1.0
-             @type Number
-             */
-            alpha: {
-                set: function (value) {
-                    value = (value !== undefined && value !== null) ? value : 1.0;
-                    if (this._state.alpha === value) {
-                        return;
-                    }
-                    this._state.alpha = value;
-                    this._state.alphaMode = value < 1.0 ? 2 /* blend */ : 0 /* opaque */
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.alpha;
-                }
-            },
-
-            /**
-             The LambertMaterial's line width.
-
-             @property lineWidth
-             @default 1.0
-             @type Number
-             */
-            lineWidth: {
-                set: function (value) {
-                    this._state.lineWidth = value || 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.lineWidth;
-                }
-            },
-
-            /**
-             The LambertMaterial's point size.
-
-             @property pointSize
-             @default 1.0
-             @type Number
-             */
-            pointSize: {
-                set: function (value) {
-                    this._state.pointSize = value || 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.pointSize;
-                }
-            },
-
-            /**
-             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             @property backfaces
-             @default false
-             @type Boolean
-             */
-            backfaces: {
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.backfaces === value) {
-                        return;
-                    }
-                    this._state.backfaces = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.backfaces;
-                }
-            },
-
-            /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             @property frontface
-             @default "ccw"
-             @type String
-             */
-            frontface: {
-                set: function (value) {
-                    value = value !== "cw";
-                    if (this._state.frontface === value) {
-                        return;
-                    }
-                    this._state.frontface = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.frontface ? "ccw" : "cw";
-                }
-            }
-        },
-
-        _getState: function () {
-            return this._state;
-        },
-
-        _destroy: function () {
-            this._super();
-            this._state.destroy();
+    set  ambient(value) {
+        let ambient = this._state.ambient;
+        if (!ambient) {
+            ambient = this._state.ambient = new Float32Array(3);
+        } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
+            return;
         }
-    });
+        if (value) {
+            ambient[0] = value[0];
+            ambient[1] = value[1];
+            ambient[2] = value[2];
+        } else {
+            ambient[0] = .2;
+            ambient[1] = .2;
+            ambient[2] = .2;
+        }
+        this._renderer.imageDirty();
+    }
 
-})();
+    get ambient() {
+        return this._state.ambient;
+    }
+
+    /**
+     The LambertMaterial's diffuse color.
+
+     @property color
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set color(value) {
+        let color = this._state.color;
+        if (!color) {
+            color = this._state.color = new Float32Array(3);
+        } else if (value && color[0] === value[0] && color[1] === value[1] && color[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            color[0] = value[0];
+            color[1] = value[1];
+            color[2] = value[2];
+        } else {
+            color[0] = 1;
+            color[1] = 1;
+            color[2] = 1;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get color() {
+        return this._state.color;
+    }
+
+    /**
+     The LambertMaterial's emissive color.
+
+     @property emissive
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set emissive(value) {
+        let emissive = this._state.emissive;
+        if (!emissive) {
+            emissive = this._state.emissive = new Float32Array(3);
+        } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            emissive[0] = value[0];
+            emissive[1] = value[1];
+            emissive[2] = value[2];
+        } else {
+            emissive[0] = 0;
+            emissive[1] = 0;
+            emissive[2] = 0;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get emissive() {
+        return this._state.emissive;
+    }
+
+    /**
+     Factor in the range [0..1] indicating how transparent the LambertMaterial is.
+
+     A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+
+     @property alpha
+     @default 1.0
+     @type Number
+     */
+
+    set alpha(value) {
+        value = (value !== undefined && value !== null) ? value : 1.0;
+        if (this._state.alpha === value) {
+            return;
+        }
+        this._state.alpha = value;
+        this._state.alphaMode = value < 1.0 ? 2 /* blend */ : 0
+        /* opaque */
+        this._renderer.imageDirty();
+    }
+
+    get alpha() {
+        return this._state.alpha;
+    }
+
+    /**
+     The LambertMaterial's line width.
+
+     @property lineWidth
+     @default 1.0
+     @type Number
+     */
+
+    set lineWidth(value) {
+        this._state.lineWidth = value || 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get lineWidth() {
+        return this._state.lineWidth;
+    }
+
+    /**
+     The LambertMaterial's point size.
+
+     @property pointSize
+     @default 1.0
+     @type Number
+     */
+    set pointSize(value) {
+        this._state.pointSize = value || 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get pointSize() {
+        return this._state.pointSize;
+    }
+
+    /**
+     Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+     the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     @property backfaces
+     @default false
+     @type Boolean
+     */
+    set backfaces(value) {
+        value = !!value;
+        if (this._state.backfaces === value) {
+            return;
+        }
+        this._state.backfaces = value;
+        this._renderer.imageDirty();
+    }
+
+    get backfaces() {
+        return this._state.backfaces;
+    }
+
+    /**
+     Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+     the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     @property frontface
+     @default "ccw"
+     @type String
+     */
+    set frontface(value) {
+        value = value !== "cw";
+        if (this._state.frontface === value) {
+            return;
+        }
+        this._state.frontface = value;
+        this._renderer.imageDirty();
+    }
+
+    get frontface() {
+        return this._state.frontface ? "ccw" : "cw";
+    }
+
+    _getState() {
+        return this._state;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+export{LambertMaterial};

@@ -2,17 +2,20 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-xeogl.renderer = xeogl.renderer || {};
+import {Frame} from './frame.js';
+import {RenderBuffer} from './renderBuffer.js';
+import {math} from '../math/math.js';
+import {stats} from './../stats.js';
+import {WEBGL_INFO} from './../webglInfo.js';
+import {Mesh} from '../objects/mesh.js';
 
-
-xeogl.renderer.Renderer = function (stats, scene, options) {
+const Renderer = function ( scene, options) {
 
     "use strict";
 
     options = options || {};
-    stats = stats || {};
 
-    const frame = new xeogl.renderer.Frame();
+    const frame = new Frame();
     const canvas = scene.canvas.canvas;
     const gl = scene.canvas.gl;
     const shadowLightMeshes = {};
@@ -121,7 +124,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
             stateSortDirty = true;
         }
         if (stateSortDirty) {
-            meshList.sort(xeogl.Mesh._compareState);
+            meshList.sort(Mesh._compareState);
             stateSortDirty = false;
             imageDirty = true;
         }
@@ -145,7 +148,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
     }
 
     function stateSort() {
-        meshList.sort(xeogl.Mesh._compareState);
+        meshList.sort(Mesh._compareState);
     }
 
     function drawShadowMaps() {
@@ -245,10 +248,10 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
 
         return function (params) {
 
-            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {  // In case context lost/recovered
+            if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {  // In case context lost/recovered
                 gl.getExtension("OES_element_index_uint");
             }
-            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping w/o precomputed tangents
+            if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping w/o precomputed tangents
                 gl.getExtension("OES_standard_derivatives");
             }
 
@@ -700,7 +703,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
             frameStats.bindTexture = frame.bindTexture;
             frameStats.bindArray = frame.bindArray;
 
-            const numTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+            const numTextureUnits = WEBGL_INFO.MAX_TEXTURE_UNITS;
             for (let ii = 0; ii < numTextureUnits; ii++) {
                 gl.activeTexture(gl.TEXTURE0 + ii);
             }
@@ -724,7 +727,6 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
      */
     this.pick = (function () {
 
-        const math = xeogl.math;
         const tempVec3a = math.vec3();
         const tempMat4a = math.mat4();
         const up = math.vec3([0, 1, 0]);
@@ -734,7 +736,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
 
             update();
 
-            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) { // In case context lost/recovered
+            if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) { // In case context lost/recovered
                 gl.getExtension("OES_element_index_uint");
             }
 
@@ -767,7 +769,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 canvasY = canvas.clientHeight * 0.5;
             }
 
-            pickBuf = pickBuf || new xeogl.renderer.RenderBuffer(canvas, gl);
+            pickBuf = pickBuf || new RenderBuffer(canvas, gl);
             pickBuf.bind();
 
             const mesh = pickMesh(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params);
@@ -881,7 +883,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
      * @param opaqueOnly
      */
     this.readPixels = function (pixels, colors, len, opaqueOnly) {
-        readPixelBuf = readPixelBuf || (readPixelBuf = new xeogl.renderer.RenderBuffer(canvas, gl));
+        readPixelBuf = readPixelBuf || (readPixelBuf = new RenderBuffer(canvas, gl));
         readPixelBuf.bind();
         readPixelBuf.clear();
         this.render({force: true, opaqueOnly: opaqueOnly});
@@ -914,3 +916,5 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
         }
     };
 };
+
+export{Renderer};

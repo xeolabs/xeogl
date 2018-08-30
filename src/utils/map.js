@@ -1,15 +1,9 @@
-xeogl.utils = xeogl.utils || {};
+class Map {
 
-/**
- * Generic map of IDs to items - can generate own IDs or accept given IDs. IDs should be strings in order to not
- * clash with internally generated IDs, which are numbers.
- */
-xeogl.utils.Map = function (items, baseId) {
-
-    this.items = items || [];
-
-    baseId = baseId || 0;
-    let lastUniqueId = baseId + 1;
+    constructor(items, baseId) {
+        this.items = items || [];
+        this._lastUniqueId = (baseId || 0) + 1;
+    }
 
     /**
      * Usage:
@@ -17,7 +11,7 @@ xeogl.utils.Map = function (items, baseId) {
      * id = myMap.addItem("foo") // ID internally generated
      * id = myMap.addItem("foo", "bar") // ID is "foo"
      */
-    this.addItem = function () {
+    addItem() {
         let item;
         if (arguments.length === 2) {
             const id = arguments[0];
@@ -31,18 +25,20 @@ xeogl.utils.Map = function (items, baseId) {
         } else {
             item = arguments[0] || {};
             while (true) {
-                const findId = lastUniqueId++;
+                const findId = this._lastUniqueId++;
                 if (!this.items[findId]) {
                     this.items[findId] = item;
                     return findId;
                 }
             }
         }
-    };
+    }
 
-    this.removeItem = function (id) {
+    removeItem(id) {
         const item = this.items[id];
         delete this.items[id];
         return item;
-    };
-};
+    }
+}
+
+export {Map};

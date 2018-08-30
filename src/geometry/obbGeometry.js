@@ -62,8 +62,7 @@
  @module xeogl
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this OBBGeometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
@@ -73,115 +72,113 @@
  containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
  @extends Component
  */
-(function () {
+import {core} from "./../core.js";
+import {utils} from '../utils.js';
+import {tasks} from '../tasks.js';
+import {Geometry} from './geometry.js';
 
-    "use strict";
+const type = "xeogl.OBBGeometry";
 
-    xeogl.OBBGeometry = xeogl.Geometry.extend({
+class OBBGeometry extends Geometry {
 
-        type: "xeogl.OBBGeometry",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-            this._super(xeogl._apply(cfg, {
-                combined: true,
-                quantized: false, // Quantized geometry is immutable
-                primitive: cfg.primitive || "lines",
-                positions: cfg.positions || [1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
-                    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0],
-                indices: [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]
-            }));
+     @property type
+     @type String
+     @final
+     */
+    static get type() {
+        return type;
+    }
 
-            if (cfg.target) {
-                this.target = cfg.target;
+    init(cfg) {
+        super(owner, utils.apply(cfg, {
+            combined: true,
+            quantized: false, // Quantized geometry is immutable
+            primitive: cfg.primitive || "lines",
+            positions: cfg.positions || [1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
+                1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0],
+            indices: [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]
+        }));
+        if (cfg.target) {
+            this.target = cfg.target;
+        } else if (cfg.targetOBB) {
+            this.targetOBB = cfg.targetOBB;
+        }
+    }
 
-            } else if (cfg.targetOBB) {
-                this.targetOBB = cfg.targetOBB;
-            }
-        },
+    /**
+     A component whose OBB we'll dynamically fit this AABBGeometry to.
 
-        _props: {
+     This property effectively replaces the {{#crossLink "OBBGeometry/targetOBB:property"}}{{/crossLink}} property.
 
-            /**
-             A component whose OBB we'll dynamically fit this AABBGeometry to.
-
-             This property effectively replaces the {{#crossLink "OBBGeometry/targetOBB:property"}}{{/crossLink}} property.
-
-             @property target
-             @type Component
-             */
-            target: {
-
-                set: function (value) {
-
-                    let geometryDirty = false;
-                    const self = this;
-
-                    this._attach({
-                        name: "target",
-                        type: "xeogl.Component",
-                        component: value,
-                        sceneDefault: false,
-                        on: {
-                            boundary: function () {
-                                if (geometryDirty) {
-                                    return;
-                                }
-                                geometryDirty = true;
-                                xeogl.scheduleTask(function () {
-                                    self._setPositionsFromOBB(self._attached.target.obb);
-                                    geometryDirty = false;
-                                });
-                            }
-                        },
-                        onAttached: function () {
-                            self._setPositionsFromOBB(self._attached.target.obb);
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.target;
-                }
-            },
-
-            /**
-             Sets this OBBGeometry to an mesh-oriented bounding box (OBB), given as a 32-element Float32Array
-             containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
-
-             This property effectively replaces the {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
-
-             @property targetOBB
-             @type Float32Array
-             */
-            targetOBB: {
-
-                set: function (value) {
-
-                    if (!value) {
+     @property target
+     @type Component
+     */
+    set  target(value) {
+        let geometryDirty = false;
+        const self = this;
+        this._attach({
+            name: "target",
+            type: "xeogl.Component",
+            component: value,
+            sceneDefault: false,
+            on: {
+                boundary: function () {
+                    if (geometryDirty) {
                         return;
                     }
-
-                    if (this._attached.target) {
-                        this.target = null;
-                    }
-
-                    this._setPositionsFromOBB(value);
+                    geometryDirty = true;
+                    tasks.scheduleTask(function () {
+                        self._setPositionsFromOBB(self._attached.target.obb);
+                        geometryDirty = false;
+                    });
                 }
+            },
+            onAttached: function () {
+                self._setPositionsFromOBB(self._attached.target.obb);
             }
-        },
+        });
+    }
 
-        _setPositionsFromOBB: function (obb) {
-            this.positions = [
-                obb[0], obb[1], obb[2],
-                obb[4], obb[5], obb[6],
-                obb[8], obb[9], obb[10],
-                obb[12], obb[13], obb[14],
-                obb[16], obb[17], obb[18],
-                obb[20], obb[21], obb[22],
-                obb[24], obb[25], obb[26],
-                obb[28], obb[29], obb[30]
-            ];
+    get target() {
+        return this._attached.target;
+    }
+
+    /**
+     Sets this OBBGeometry to an mesh-oriented bounding box (OBB), given as a 32-element Float32Array
+     containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+
+     This property effectively replaces the {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
+
+     @property targetOBB
+     @type Float32Array
+     */
+    set targetOBB(value) {
+        if (!value) {
+            return;
         }
-    });
-})();
+        if (this._attached.target) {
+            this.target = null;
+        }
+        this._setPositionsFromOBB(value);
+    }
+
+    _setPositionsFromOBB(obb) {
+        this.positions = [
+            obb[0], obb[1], obb[2],
+            obb[4], obb[5], obb[6],
+            obb[8], obb[9], obb[10],
+            obb[12], obb[13], obb[14],
+            obb[16], obb[17], obb[18],
+            obb[20], obb[21], obb[22],
+            obb[24], obb[25], obb[26],
+            obb[28], obb[29], obb[30]
+        ];
+    }
+}
+
+export{OBBGeometry};

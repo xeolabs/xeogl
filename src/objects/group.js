@@ -9,8 +9,7 @@
  @module xeogl
  @submodule objects
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
-
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata.
@@ -43,18 +42,26 @@
  {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
  @extends Object
  */
-xeogl.Group = xeogl.Object.extend({
+import {Object} from "./object.js";
+
+class Group extends Object{
 
     /**
-     JavaScript class name for this xeogl.Group.
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
      @property type
      @type String
      @final
      */
-    type: "xeogl.Group",
-
-    _init: function (cfg) {
-        this._super(cfg); // Call xeogl.Object._init()
+    static get type() {
+        return "xeogl.Group";
     }
-});
+
+    init(cfg) {
+        super.init(cfg);
+    }
+}
+
+export {Group};

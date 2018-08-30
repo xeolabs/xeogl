@@ -369,1420 +369,1459 @@
  @param [cfg.gammaFactor=2.2] {Number} The gamma factor to use when rendering with pre-multiplied gamma.
  @extends Component
  */
-(function () {
 
-    "use strict";
+import {core} from "./core.js";
+import {utils} from './utils.js';
+import {math} from './math/math.js';
+import {stats} from './stats.js';
+import {Component} from './component.js';
+import {Canvas} from './canvas/canvas.js';
+import {Renderer} from './renderer/renderer.js';
+import {Input} from './input/input.js';
+import {Viewport} from './viewport/viewport.js';
+import {Camera} from './camera/camera.js';
+import {DirLight} from './lighting/dirLight.js';
+import {BoxGeometry} from './geometry/boxGeometry.js';
+import {PhongMaterial} from './materials/phongMaterial.js';
+import {EmphasisMaterial} from './materials/emphasisMaterial.js';
+import {EdgeMaterial} from './materials/edgeMaterial.js';
+import {OutlineMaterial} from './materials/outlineMaterial.js';
+
+// Cached vars to avoid garbage collection
+
+const localRayOrigin = math.vec3();
+const localRayDir = math.vec3();
+const positionA = math.vec3();
+const positionB = math.vec3();
+const positionC = math.vec3();
+const triangleVertices = math.vec3();
+const position = math.vec4();
+const worldPos = math.vec3();
+const viewPos = math.vec3();
+const bary = math.vec3();
+const normalA = math.vec3();
+const normalB = math.vec3();
+const normalC = math.vec3();
+const uva = math.vec3();
+const uvb = math.vec3();
+const uvc = math.vec3();
+const tempVec4a = math.vec4();
+const tempVec4b = math.vec4();
+const tempVec4c = math.vec4();
+const tempVec3 = math.vec3();
+const tempVec3b = math.vec3();
+const tempVec3c = math.vec3();
+const tempVec3d = math.vec3();
+const tempVec3e = math.vec3();
+const tempVec3f = math.vec3();
+const tempVec3g = math.vec3();
+const tempVec3h = math.vec3();
+const tempVec3i = math.vec3();
+const tempVec3j = math.vec3();
+const tempVec3k = math.vec3();
+
+function getMeshIDMap(scene, meshIds) {
+    const map = {};
+    let meshId;
+    let mesh;
+    for (let i = 0, len = meshIds.length; i < len; i++) {
+        meshId = meshIds[i];
+        mesh = scene.meshes[meshId];
+        if (!mesh) {
+            scene.warn("pick(): Mesh not found: " + meshId);
+            continue;
+        }
+        map[meshId] = true;
+    }
+    return map;
+}
+
+function getMeshIDMapFromentityTypes(scene, entityTypes) {
+    // var objectIds = {};
+    // var entityType;
+    // var mesh;
+    // for (var i = 0, len = entityTypes.length; i < len; i++) {
+    //     entityType = entityTypes[i];
+    //     mesh = scene.meshes[entityType];
+    //     if (!mesh) {
+    //         scene.warn("pick(): Mesh not found: " + entityType);
+    //         continue;
+    //     }
+    //     objectIds[mesh._objectId] = true;
+    // }
+    // return objectIds;
+}
+
+/**
+ * Fired whenever a debug message is logged on a component within this Scene.
+ * @event log
+ * @param {String} value The debug message
+ */
+
+/**
+ * Fired whenever an error is logged on a component within this Scene.
+ * @event error
+ * @param {String} value The error message
+ */
+
+/**
+ * Fired whenever a warning is logged on a component within this Scene.
+ * @event warn
+ * @param {String} value The warning message
+ */
+class Scene extends Component {
 
     /**
-     * Fired whenever a debug message is logged on a component within this Scene.
-     * @event log
-     * @param {String} value The debug message
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+
+     @property type
+     @type String
+     @final
      */
+    static get type() {
+        return "xeogl.Scene";
+    }
 
-    /**
-     * Fired whenever an error is logged on a component within this Scene.
-     * @event error
-     * @param {String} value The error message
-     */
+    init(cfg) {
 
-    /**
-     * Fired whenever a warning is logged on a component within this Scene.
-     * @event warn
-     * @param {String} value The warning message
-     */
-    xeogl.Scene = xeogl.Component.extend({
+        super.init(cfg);
 
-        type: "xeogl.Scene",
+        const self = this;
 
-        _init: function (cfg) {
+        const transparent = !!cfg.transparent;
 
-            const self = this;
+        /**
+         The number of models currently loading.
 
-            const transparent = !!cfg.transparent;
+         @property loading
+         @final
+         @type {Number}
+         */
+        this.loading = 0;
 
-            /**
-             The number of models currently loading.
+        /**
+         The epoch time (in milliseconds since 1970) when this Scene was instantiated.
 
-             @property loading
-             @final
-             @type {Number}
-             */
-            this.loading = 0;
+         @property timeCreated
+         @final
+         @type {Number}
+         */
+        this.startTime = (new Date()).getTime();
 
-            /**
-             The epoch time (in milliseconds since 1970) when this Scene was instantiated.
+        /**
+         {{#crossLink "Model"}}{{/crossLink}}s in this Scene, mapped to their IDs.
 
-             @property timeCreated
-             @final
-             @type {Number}
-             */
-            this.startTime = (new Date()).getTime();
+         @property models
+         @final
+         @type {String:xeogl.Model}
+         */
+        this.models = {};
 
-            /**
-             {{#crossLink "Model"}}{{/crossLink}}s in this Scene, mapped to their IDs.
+        /**
+         The {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene, mapped to their IDs.
 
-             @property models
-             @final
-             @type {String:xeogl.Model}
-             */
-            this.models = {};
+         @property objects
+         @final
+         @type {{String:Object}}
+         */
+        this.objects = {};
 
-            /**
-             The {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene, mapped to their IDs.
+        /**
+         {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene that have GUIDs, mapped to their GUIDs.
 
-             @property objects
-             @final
-             @type {{String:Object}}
-             */
-            this.objects = {};
+         Each Object is registered in this map when its {{#crossLink "Object/guid:property"}}{{/crossLink}} is
+         assigned a value.
 
-            /**
-             {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene that have GUIDs, mapped to their GUIDs.
+         @property guidObjects
+         @final
+         @type {{String:Object}}
+         */
+        this.guidObjects = {};
 
-             Each Object is registered in this map when its {{#crossLink "Object/guid:property"}}{{/crossLink}} is
-             assigned a value.
+        /**
+         For each entity type, a map of IDs to {{#crossLink "Object"}}Objects{{/crossLink}} of that entity type.
 
-             @property guidObjects
-             @final
-             @type {{String:Object}}
-             */
-            this.guidObjects = {};
+         Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
+         assigned a value.
 
-            /**
-             For each entity type, a map of IDs to {{#crossLink "Object"}}Objects{{/crossLink}} of that entity type.
+         @property entityTypes
+         @final
+         @type {String:{String:xeogl.Component}}
+         */
+        this.entityTypes = {};
 
-             Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
-             assigned a value.
+        /**
+         {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene that have entity types, mapped to their IDs.
 
-             @property entityTypes
-             @final
-             @type {String:{String:xeogl.Component}}
-             */
-            this.entityTypes = {};
+         Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
+         assigned a value.
 
-            /**
-             {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene that have entity types, mapped to their IDs.
+         @property entities
+         @final
+         @type {{String:Object}}
+         */
+        this.entities = {};
 
-             Each Object is registered in this map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}} is
-             assigned a value.
+        /**
+         Visible entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
-             @property entities
-             @final
-             @type {{String:Object}}
-             */
-            this.entities = {};
+         Each Object is registered in this map when its {{#crossLink "Object/visible:property"}}{{/crossLink}} property is true and its
+         {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
 
-            /**
-             Visible entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
+         @property visibleEntities
+         @final
+         @type {{String:Object}}
+         */
+        this.visibleEntities = {};
 
-             Each Object is registered in this map when its {{#crossLink "Object/visible:property"}}{{/crossLink}} property is true and its
-             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
+        /**
+         Ghosted entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
-             @property visibleEntities
-             @final
-             @type {{String:Object}}
-             */
-            this.visibleEntities = {};
+         Each Object is registered in this map when its {{#crossLink "Object/ghosted:property"}}{{/crossLink}} property is true and its
+         {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
 
-            /**
-             Ghosted entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
+         @property ghostedEntities
+         @final
+         @type {{String:Object}}
+         */
+        this.ghostedEntities = {};
 
-             Each Object is registered in this map when its {{#crossLink "Object/ghosted:property"}}{{/crossLink}} property is true and its
-             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
+        /**
+         Highlighted entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
-             @property ghostedEntities
-             @final
-             @type {{String:Object}}
-             */
-            this.ghostedEntities = {};
+         Each Object is registered in this map when its {{#crossLink "Object/highlighted:property"}}{{/crossLink}} property is true and its
+         {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
 
-            /**
-             Highlighted entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
+         @property highlightedEntities
+         @final
+         @type {{String:Object}}
+         */
+        this.highlightedEntities = {};
 
-             Each Object is registered in this map when its {{#crossLink "Object/highlighted:property"}}{{/crossLink}} property is true and its
-             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
+        /**
+         Selected entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
 
-             @property highlightedEntities
-             @final
-             @type {{String:Object}}
-             */
-            this.highlightedEntities = {};
+         Each Object is registered in this map when its {{#crossLink "Object/selected:property"}}{{/crossLink}} property is true and its
+         {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
 
-            /**
-             Selected entity {{#crossLink "Object"}}Objects{{/crossLink}} within this Scene, mapped to their IDs.
+         @property selectedEntities
+         @final
+         @type {{String:Object}}
+         */
+        this.selectedEntities = {};
 
-             Each Object is registered in this map when its {{#crossLink "Object/selected:property"}}{{/crossLink}} property is true and its
-             {{#crossLink "Object/entityType:property"}}{{/crossLink}} is assigned a value.
+        // Cached ID arrays, lazy-rebuilt as needed when stale after map updates
 
-             @property selectedEntities
-             @final
-             @type {{String:Object}}
-             */
-            this.selectedEntities = {};
+        /**
+         Lazy-regenerated ID lists.
+         */
+        this._objectGUIDs = null;
+        this._entityIds = null;
+        this._visibleEntityIds = null;
+        this._ghostedEntityIds = null;
+        this._highlightedEntityIds = null;
+        this._selectedEntityIds = null;
 
-            // Cached ID arrays, lazy-rebuilt as needed when stale after map updates
+        /**
+         The {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene, mapped to their IDs.
 
-            /**
-             Lazy-regenerated ID lists.
-             */
-            this._objectGUIDs = null;
-            this._entityIds = null;
-            this._visibleEntityIds = null;
-            this._ghostedEntityIds = null;
-            this._highlightedEntityIds = null;
-            this._selectedEntityIds = null;
+         @property meshes
+         @final
+         @type {String:xeogl.Mesh}
+         */
+        this.meshes = {};
 
-            /**
-             The {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene, mapped to their IDs.
+        this._needRecompileMeshes = false;
 
-             @property meshes
-             @final
-             @type {String:xeogl.Mesh}
-             */
-            this.meshes = {};
+        /**
+         For each {{#crossLink "Component"}}{{/crossLink}} type, a map of
+         IDs to {{#crossLink "Component"}}Components{{/crossLink}} instances of that type.
 
-            this._needRecompileMeshes = false;
+         @property types
+         @final
+         @type {String:{String:xeogl.Component}}
+         */
+        this.types = {};
 
-            /**
-             For each {{#crossLink "Component"}}{{/crossLink}} type, a map of
-             IDs to {{#crossLink "Component"}}Components{{/crossLink}} instances of that type.
+        /**
+         The {{#crossLink "Component"}}Component{{/crossLink}} within this Scene, mapped to their IDs.
 
-             @property types
-             @final
-             @type {String:{String:xeogl.Component}}
-             */
-            this.types = {};
+         @property components
+         @final
+         @type {String:xeogl.Component}
+         */
+        this.components = {};
 
-            /**
-             The {{#crossLink "Component"}}Component{{/crossLink}} within this Scene, mapped to their IDs.
+        /**
+         The root {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene, mapped to their IDs.
 
-             @property components
-             @final
-             @type {String:xeogl.Component}
-             */
-            this.components = {};
+         @property rootObjects
+         @final
+         @type {{String:Object}}
+         */
+        this.rootObjects = {};
 
-            /**
-             The root {{#crossLink "Object"}}Objects{{/crossLink}} in this Scene, mapped to their IDs.
+        /**
+         The {{#crossLink "Clip"}}Clip{{/crossLink}} components in this Scene, mapped to their IDs.
 
-             @property rootObjects
-             @final
-             @type {{String:Object}}
-             */
-            this.rootObjects = {};
+         @property clips
+         @final
+         @type {{String:Clip}}
+         */
+        this.clips = {};
 
-            /**
-             The {{#crossLink "Clip"}}Clip{{/crossLink}} components in this Scene, mapped to their IDs.
+        /**
+         The {{#crossLink "PointLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
+         {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "AmbientLight"}}{{/crossLink}} components in this Scene, mapped to their IDs.
 
-             @property clips
-             @final
-             @type {{String:Clip}}
-             */
-            this.clips = {};
+         @property lights
+         @final
+         @type {{String:Object}}
+         */
+        this.lights = {};
 
-            /**
-             The {{#crossLink "PointLight"}}{{/crossLink}}, {{#crossLink "DirLight"}}{{/crossLink}},
-             {{#crossLink "SpotLight"}}{{/crossLink}} and {{#crossLink "AmbientLight"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+        /**
+         The {{#crossLink "LightMap"}}{{/crossLink}} components in this Scene, mapped to their IDs.
 
-             @property lights
-             @final
-             @type {{String:Object}}
-             */
-            this.lights = {};
+         @property lightMaps
+         @final
+         @type {{String:LightMap}}
+         */
+        this.lightMaps = {};
 
-            /**
-             The {{#crossLink "LightMap"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+        /**
+         The {{#crossLink "ReflectionMap"}}{{/crossLink}} components in this Scene, mapped to their IDs.
 
-             @property lightMaps
-             @final
-             @type {{String:LightMap}}
-             */
-            this.lightMaps = {};
+         @property reflectionMaps
+         @final
+         @type {{String:ReflectionMap}}
+         */
+        this.reflectionMaps = {};
 
-            /**
-             The {{#crossLink "ReflectionMap"}}{{/crossLink}} components in this Scene, mapped to their IDs.
+        /**
+         Manages the HTML5 canvas for this Scene.
+         @final
+         @property canvas
+         @type {Canvas}
+         */
+        this.canvas = new Canvas(this, {
+            canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
+            transparent: transparent,
+            backgroundColor: cfg.backgroundColor,
+            backgroundImage: cfg.backgroundImage,
+            webgl2: cfg.webgl2 !== false,
+            contextAttr: cfg.contextAttr || {},
+            simulateWebGLContextLost: cfg.simulateWebGLContextLost
+        });
 
-             @property reflectionMaps
-             @final
-             @type {{String:ReflectionMap}}
-             */
-            this.reflectionMaps = {};
+        // Redraw as canvas resized
+        this.canvas.on("boundary", function () {
+            self._renderer.imageDirty();
+        });
 
-            /**
-             Manages the HTML5 canvas for this Scene.
-             @final
-             @property canvas
-             @type {Canvas}
-             */
-            this.canvas = new xeogl.Canvas(this, {
-                canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
-                transparent: transparent,
-                backgroundColor: cfg.backgroundColor,
-                backgroundImage: cfg.backgroundImage,
-                webgl2: cfg.webgl2 !== false,
-                contextAttr: cfg.contextAttr || {},
-                simulateWebGLContextLost: cfg.simulateWebGLContextLost
-            });
+        this.canvas.on("webglContextFailed", function () {
+            alert("xeogl failed to find WebGL!");
+        });
 
-            // Redraw as canvas resized
-            this.canvas.on("boundary", function () {
-                self._renderer.imageDirty();
-            });
+        this._renderer = new Renderer(this, {
+            transparent: transparent
+        });
 
-            this.canvas.on("webglContextFailed", function () {
-                alert("xeogl failed to find WebGL!");
-            });
+        this._clipsState = new (function () {
 
-            this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this, {
-                transparent: transparent
-            });
+            this.clips = [];
 
-            this._clipsState = new (function () {
+            let hash = null;
 
-                this.clips = [];
-
-                let hash = null;
-
-                this.getHash = function () {
-                    if (hash) {
-                        return hash;
-                    }
-                    const clips = this.clips;
-                    if (clips.length === 0) {
-                        return this.hash = ";";
-                    }
-                    let clip;
-                    const hashParts = [];
-                    for (let i = 0, len = clips.length; i < len; i++) {
-                        clip = clips[i];
-                        hashParts.push("cp");
-                    }
-                    hashParts.push(";");
-                    hash = hashParts.join("");
+            this.getHash = function () {
+                if (hash) {
                     return hash;
-                };
+                }
+                const clips = this.clips;
+                if (clips.length === 0) {
+                    return this.hash = ";";
+                }
+                let clip;
+                const hashParts = [];
+                for (let i = 0, len = clips.length; i < len; i++) {
+                    clip = clips[i];
+                    hashParts.push("cp");
+                }
+                hashParts.push(";");
+                hash = hashParts.join("");
+                return hash;
+            };
 
-                this.addClip = function (clip) {
-                    this.clips.push(clip);
-                    hash = null;
-                };
+            this.addClip = function (clip) {
+                this.clips.push(clip);
+                hash = null;
+            };
 
-                this.removeClip = function (clip) {
-                    for (let i = 0, len = this.clips.length; i < len; i++) {
-                        if (this.clips[i].id === clip.id) {
-                            this.clips.splice(i, 1);
-                            hash = null;
-                            return;
-                        }
+            this.removeClip = function (clip) {
+                for (let i = 0, len = this.clips.length; i < len; i++) {
+                    if (this.clips[i].id === clip.id) {
+                        this.clips.splice(i, 1);
+                        hash = null;
+                        return;
                     }
-                };
-            })();
+                }
+            };
+        })();
 
-            this._lightsState = new (function () {
+        this._lightsState = new (function () {
 
-                const DEFAULT_AMBIENT = xeogl.math.vec3([0, 0, 0]);
-                const ambientColor = xeogl.math.vec3();
+            const DEFAULT_AMBIENT = math.vec3([0, 0, 0]);
+            const ambientColor = math.vec3();
 
-                this.lights = [];
-                this.reflectionMaps = [];
-                this.lightMaps = [];
+            this.lights = [];
+            this.reflectionMaps = [];
+            this.lightMaps = [];
 
-                let hash = null;
-                let ambientLight = null;
+            let hash = null;
+            let ambientLight = null;
 
-                this.getHash = function () {
-                    if (hash) {
-                        return hash;
-                    }
-                    const hashParts = [];
-                    const lights = this.lights;
-                    let light;
-                    for (let i = 0, len = lights.length; i < len; i++) {
-                        light = lights[i];
-                        hashParts.push("/");
-                        hashParts.push(light.type);
-                        hashParts.push((light.space === "world") ? "w" : "v");
-                        if (light.shadow) {
-                            hashParts.push("sh");
-                        }
-                    }
-                    if (this.lightMaps.length > 0) {
-                        hashParts.push("/lm");
-                    }
-                    if (this.reflectionMaps.length > 0) {
-                        hashParts.push("/rm");
-                    }
-                    hashParts.push(";");
-                    hash = hashParts.join("");
+            this.getHash = function () {
+                if (hash) {
                     return hash;
-                };
+                }
+                const hashParts = [];
+                const lights = this.lights;
+                let light;
+                for (let i = 0, len = lights.length; i < len; i++) {
+                    light = lights[i];
+                    hashParts.push("/");
+                    hashParts.push(light.type);
+                    hashParts.push((light.space === "world") ? "w" : "v");
+                    if (light.shadow) {
+                        hashParts.push("sh");
+                    }
+                }
+                if (this.lightMaps.length > 0) {
+                    hashParts.push("/lm");
+                }
+                if (this.reflectionMaps.length > 0) {
+                    hashParts.push("/rm");
+                }
+                hashParts.push(";");
+                hash = hashParts.join("");
+                return hash;
+            };
 
-                this.addLight = function (state) {
-                    this.lights.push(state);
-                    ambientLight = null;
-                    hash = null;
-                };
+            this.addLight = function (state) {
+                this.lights.push(state);
+                ambientLight = null;
+                hash = null;
+            };
 
-                this.removeLight = function (state) {
+            this.removeLight = function (state) {
+                for (let i = 0, len = this.lights.length; i < len; i++) {
+                    const light = this.lights[i];
+                    if (light.id === state.id) {
+                        this.lights.splice(i, 1);
+                        if (ambientLight && ambientLight.id === state.id) {
+                            ambientLight = null;
+                        }
+                        hash = null;
+                        return;
+                    }
+                }
+            };
+
+            this.addReflectionMap = function (state) {
+                this.reflectionMaps.push(state);
+                hash = null;
+            };
+
+            this.removeReflectionMap = function (state) {
+                for (let i = 0, len = this.reflectionMaps.length; i < len; i++) {
+                    if (this.reflectionMaps[i].id === state.id) {
+                        this.reflectionMaps.splice(i, 1);
+                        hash = null;
+                        return;
+                    }
+                }
+            };
+
+            this.addLightMap = function (state) {
+                this.lightMaps.push(state);
+                hash = null;
+            };
+
+            this.removeLightMap = function (state) {
+                for (let i = 0, len = this.lightMaps.length; i < len; i++) {
+                    if (this.lightMaps[i].id === state.id) {
+                        this.lightMaps.splice(i, 1);
+                        hash = null;
+                        return;
+                    }
+                }
+            };
+
+            this.getAmbientColor = function () {
+                if (!ambientLight) {
                     for (let i = 0, len = this.lights.length; i < len; i++) {
                         const light = this.lights[i];
-                        if (light.id === state.id) {
-                            this.lights.splice(i, 1);
-                            if (ambientLight && ambientLight.id === state.id) {
-                                ambientLight = null;
-                            }
-                            hash = null;
-                            return;
-                        }
-                    }
-                };
-
-                this.addReflectionMap = function (state) {
-                    this.reflectionMaps.push(state);
-                    hash = null;
-                };
-
-                this.removeReflectionMap = function (state) {
-                    for (let i = 0, len = this.reflectionMaps.length; i < len; i++) {
-                        if (this.reflectionMaps[i].id === state.id) {
-                            this.reflectionMaps.splice(i, 1);
-                            hash = null;
-                            return;
-                        }
-                    }
-                };
-
-                this.addLightMap = function (state) {
-                    this.lightMaps.push(state);
-                    hash = null;
-                };
-
-                this.removeLightMap = function (state) {
-                    for (let i = 0, len = this.lightMaps.length; i < len; i++) {
-                        if (this.lightMaps[i].id === state.id) {
-                            this.lightMaps.splice(i, 1);
-                            hash = null;
-                            return;
-                        }
-                    }
-                };
-
-                this.getAmbientColor = function () {
-                    if (!ambientLight) {
-                        for (let i = 0, len = this.lights.length; i < len; i++) {
-                            const light = this.lights[i];
-                            if (light.type === "ambient") {
-                                ambientLight = light;
-                                break;
-                            }
-                        }
-                    }
-                    if (ambientLight) {
-                        const color = ambientLight.color;
-                        const intensity = ambientLight.intensity;
-                        ambientColor[0] = color[0] * intensity;
-                        ambientColor[1] = color[1] * intensity;
-                        ambientColor[2] = color[2] * intensity;
-                        return ambientColor;
-                    } else {
-                        return DEFAULT_AMBIENT;
-                    }
-                };
-
-            })();
-            /**
-             Publishes input events that occur on this Scene's canvas.
-
-             @final
-             @property input
-             @type {Input}
-             @final
-             */
-            this.input = new xeogl.Input(this, {
-                element: this.canvas.canvas
-            });
-
-            // Register Scene on engine
-            // Do this BEFORE we add components below
-            xeogl._addScene(this);
-
-            // Add components specified as JSON
-
-            const componentJSONs = cfg.components;
-
-            if (componentJSONs) {
-                let componentJSON;
-                let type;
-                let constr;
-                for (let i = 0, len = componentJSONs.length; i < len; i++) {
-                    componentJSON = componentJSONs[i];
-                    type = componentJSON.type;
-                    if (type) {
-                        constr = window[type];
-                        if (constr) {
-                            new constr(this, componentJSON);
+                        if (light.type === "ambient") {
+                            ambientLight = light;
+                            break;
                         }
                     }
                 }
-            }
-
-            // Init default components
-
-            this._initDefaults();
-
-            // Global components
-
-            this._viewport = new xeogl.Viewport(this, {
-                id: "default.viewport",
-                autoBoundary: true
-            });
-
-            this._camera = new xeogl.Camera(this, {
-                id: "default.camera"
-            });
-
-            // Default lights
-
-            new xeogl.DirLight(this, {
-                dir: [0.8, -0.6, -0.8],
-                color: [1.0, 1.0, 1.0],
-                intensity: 1.0,
-                space: "view"
-            });
-
-            new xeogl.DirLight(this, {
-                dir: [-0.8, -0.4, -0.4],
-                color: [1.0, 1.0, 1.0],
-                intensity: 1.0,
-                space: "view"
-            });
-
-            new xeogl.DirLight(this, {
-                dir: [0.2, -0.8, 0.8],
-                color: [0.6, 0.6, 0.6],
-                intensity: 1.0,
-                space: "view"
-            });
-
-            // Plug global components into renderer
-
-            const viewport = this._viewport;
-            const renderer = this._renderer;
-            const camera = this._camera;
-
-            camera.on("dirty", function () {
-                renderer.imageDirty();
-            });
-
-            this.ticksPerRender = cfg.ticksPerRender;
-            this.passes = cfg.passes;
-            this.clearEachPass = cfg.clearEachPass;
-            this.gammaInput = cfg.gammaInput;
-            this.gammaOutput = cfg.gammaOutput;
-            this.gammaFactor = cfg.gammaFactor;
-        },
-
-        _initDefaults: function () {
-
-            // Call this Scene's property accessors to lazy-init their properties
-
-            let dummy; // Keeps Codacy happy
-
-            dummy = this.geometry;
-            dummy = this.material;
-            dummy = this.ghostMaterial;
-            dummy = this.outlineMaterial;
-        },
-
-        _addComponent: function (c) {
-            if (c.id) { // Manual ID
-                if (this.components[c.id]) {
-                    this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
-                    c.id = null;
+                if (ambientLight) {
+                    const color = ambientLight.color;
+                    const intensity = ambientLight.intensity;
+                    ambientColor[0] = color[0] * intensity;
+                    ambientColor[1] = color[1] * intensity;
+                    ambientColor[2] = color[2] * intensity;
+                    return ambientColor;
+                } else {
+                    return DEFAULT_AMBIENT;
                 }
-            }
-            if (!c.id) { // Auto ID
-                if (window.nextID === undefined) {
-                    window.nextID = 0;
-                }
-                //c.id = xeogl.math.createUUID();
-                c.id = "_" + window.nextID++;
-                while (this.components[c.id]) {
-                    c.id = xeogl.math.createUUID();
-                }
-            }
-            this.components[c.id] = c;
-            // Register for class type
-            const type = c.type;
-            let types = this.types[c.type];
-            if (!types) {
-                types = this.types[type] = {};
-            }
-            types[c.id] = c;
-        },
+            };
 
-        _removeComponent: function (c) {
-            delete this.components[c.id];
-            const types = this.types[c.type];
-            if (types) {
-                delete types[c.id];
-                if (xeogl._isEmptyObject(types)) {
-                    delete this.types[c.type];
-                }
-            }
-        },
-
-        // Methods below are called by various component types to register themselves on their
-        // Scene. Violates Hollywood Principle, where we could just filter on type in _addComponent,
-        // but this is faster than checking the type of each component in such a filter.
-
-        _clipCreated: function (clip) {
-            this.clips[clip.id] = clip;
-            this.scene._clipsState.addClip(clip._state);
-            this._needRecompileMeshes = true;
-        },
-
-        _lightCreated: function (light) {
-            this.lights[light.id] = light;
-            this.scene._lightsState.addLight(light._state);
-            this._needRecompileMeshes = true;
-        },
-
-        _lightMapCreated: function (lightMap) {
-            this.lightMaps[lightMap.id] = lightMap;
-            this.scene._lightsState.addLightMap(lightMap._state);
-            this._needRecompileMeshes = true;
-        },
-
-        _reflectionMapCreated: function (reflectionMap) {
-            this.reflectionMaps[reflectionMap.id] = reflectionMap;
-            this.scene._lightsState.addReflectionMap(reflectionMap._state);
-            this._needRecompileMeshes = true;
-        },
-
-        _objectCreated: function (object) {
-            this.objects[object.id] = object;
-            if (object.guid) {
-                this.guidObjects[object.id] = object;
-                this._objectGUIDs = null; // To lazy-rebuild
-            }
-            if (!object.parent) {
-                this.rootObjects[object.id] = object; // TODO: What about when a root Object is added as child to another?
-            }
-            xeogl.stats.components.objects++;
-        },
-
-        _meshCreated: function (mesh) {
-            this.meshes[mesh.id] = mesh;
-            xeogl.stats.components.meshes++;
-        },
-
-        _modelCreated: function (model) {
-            this.models[model.id] = model;
-            xeogl.stats.components.models++;
-        },
-
-        _clipDestroyed: function (clip) {
-            delete this.clips[clip.id];
-            this.scene._clipsState.removeClip(clip._state);
-            this._needRecompileMeshes = true;
-        },
-
-        _lightDestroyed: function (light) {
-            delete this.lights[light.id];
-            this.scene._lightsState.removeLight(light._state);
-            this._needRecompileMeshes = true;
-        },
-
-        _lightMapDestroyed: function (lightMap) {
-            delete this.lightMaps[lightMap.id];
-            this.scene._lightsState.removeLightMap(lightMap._state);
-            this._needRecompileMeshes = true;
-        },
-
-        _reflectionMapDestroyed: function (reflectionMap) {
-            delete this.reflectionMaps[reflectionMap.id];
-            this.scene._lightsState.removeReflectionMap(reflectionMap._state);
-            this._needRecompileMeshes = true;
-        },
-
-        _objectDestroyed: function (object) {
-            delete this.objects[object.id];
-            if (object.guid) {
-                delete this.guidObjects[object.guid];
-                this._objectGUIDs = null; // To lazy-rebuild
-            }
-            if (!object.parent) {
-                delete this.rootObjects[object.id];
-            }
-            xeogl.stats.components.objects--;
-        },
-
-        _meshDestroyed: function (mesh) {
-            xeogl.stats.components.meshes--;
-            delete this.meshes[mesh.id];
-            xeogl.stats.components.meshes--;
-        },
-
-        _modelDestroyed: function (model) {
-            this.models[model.id] = model;
-            xeogl.stats.components.models++;
-        },
-
-        _entityTypeAssigned: function (object, newEntityType) {
-            this.entities[object.id] = object;
-            let objectsOfType = this.entityTypes[newEntityType];
-            if (!objectsOfType) {
-                objectsOfType = {};
-                this.entityTypes[newEntityType] = objectsOfType;
-            }
-            objectsOfType[object.id] = object;
-            this._entityIds = null; // Lazy regenerate
-            this._entityTypeIds = null; // Lazy regenerate
-        },
-
-        _entityTypeRemoved: function (object, oldEntityType) {
-            delete this.entities[object.id];
-            const objectsOfType = this.entityTypes[oldEntityType];
-            if (objectsOfType) {
-                delete objectsOfType[object.id];
-            }
-            this._entityIds = null; // Lazy regenerate
-            this._entityTypeIds = null; // Lazy regenerate
-        },
-
-        _entityVisibilityUpdated: function (object, visible) {
-            if (visible) {
-                this.visibleEntities[object.id] = object;
-            } else {
-                delete this.visibleEntities[object.id];
-            }
-            this._visibleEntityIds = null; // Lazy regenerate
-        },
-
-        _entityGhostedUpdated: function (object, ghosted) {
-            if (ghosted) {
-                this.ghostedEntities[object.id] = object;
-            } else {
-                delete this.ghostedEntities[object.id];
-            }
-            this._ghostedEntityIds = null; // Lazy regenerate
-        },
-
-        _entityHighlightedUpdated: function (object, highlighted) {
-            if (highlighted) {
-                this.highlightedEntities[object.id] = object;
-            } else {
-                delete this.highlightedEntities[object.id];
-            }
-            this._highlightedEntityIds = null; // Lazy regenerate
-        },
-
-        _entitySelectedUpdated: function (object, selected) {
-            if (selected) {
-                this.selectedEntities[object.id] = object;
-            } else {
-                delete this.selectedEntities[object.id];
-            }
-            this._selectedEntityIds = null; // Lazy regenerate
-        },
-
-        _webglContextLost: function () {
-          //  this.loading++;
-            this.canvas.spinner.processes++;
-            for (const id in this.components) {
-                if (this.components.hasOwnProperty(id)) {
-                    const c = this.components[id];
-                    if (c._webglContextLost) {
-                        c._webglContextLost();
-                    }
-                }
-            }
-            this._renderer.webglContextLost();
-        },
-
-        _webglContextRestored: function () {
-            const gl = this.canvas.gl;
-            for (const id in this.components) {
-                if (this.components.hasOwnProperty(id)) {
-                    const c = this.components[id];
-                    if (c._webglContextRestored) {
-                        c._webglContextRestored(gl);
-                    }
-                }
-            }
-            this._renderer.webglContextRestored(gl);
-            //this.loading--;
-            this.canvas.spinner.processes--;
-        },
+        })();
 
         /**
-         * Renders a single frame of this Scene.
-         *
-         * The Scene will periodically render itself after any updates, but you can call this method to force a render
-         * if required. This method is typically used when we want to synchronously take a snapshot of the canvas and
-         * need everything rendered right at that moment.
-         *
-         * @method render
-         * @param {Boolean} [forceRender=false] Forces a render when true, otherwise only renders if something has changed in this Scene
-         * since the last render.
+         Publishes input events that occur on this Scene's canvas.
+
+         @final
+         @property input
+         @type {Input}
+         @final
          */
-        render: (function () {
+        this.input = new Input(this, {
+            element: this.canvas.canvas
+        });
 
-            const renderEvent = {
-                sceneId: null,
-                pass: 0
-            };
+        // Register Scene on engine
+        // Do this BEFORE we add components below
+        utils.addScene(this);
 
-            return function (forceRender) {
+        // Add components specified as JSON
 
-                if (this._needRecompileMeshes) {
-                    this._recompileMeshes();
-                    this._needRecompileMeshes = false;
-                }
+        const componentJSONs = cfg.components;
 
-                if (this.loading > 0 || this.canvas.spinner.processes > 0) {
-                    this.canvas.canvas.style.opacity = 0.0;
-                    return;
-                }
-
-                let opacity = Number.parseFloat(this.canvas.canvas.style.opacity);
-                if (opacity < 1.0) {
-                    opacity += 0.1;
-                    this.canvas.canvas.style.opacity = opacity;
-                }
-
-                renderEvent.sceneId = this.id;
-
-                const passes = this._passes;
-                const clearEachPass = this._clearEachPass;
-                let pass;
-                let clear;
-
-                for (pass = 0; pass < passes; pass++) {
-
-                    renderEvent.pass = pass;
-
-                    /**
-                     * Fired when about to render a frame for a Scene.
-                     *
-                     * @event rendering
-                     * @param {String} sceneID The ID of this Scene.
-                     * @param {Number} pass Index of the pass we are about to render (see {{#crossLink "Scene/passes:property"}}{{/crossLink}}).
-                     */
-                    this.fire("rendering", renderEvent, true);
-
-                    clear = clearEachPass || (pass === 0);
-
-                    this._renderer.render({pass: pass, clear: clear, force: forceRender});
-
-                    /**
-                     * Fired when we have just rendered a frame for a Scene.
-                     *
-                     * @event rendering
-                     * @param {String} sceneID The ID of this Scene.
-                     * @param {Number} pass Index of the pass we rendered (see {{#crossLink "Scene/passes:property"}}{{/crossLink}}).
-                     */
-                    this.fire("rendered", renderEvent, true);
-                }
-
-                this._saveAmbientColor();
-            };
-        })(),
-
-        _recompileMeshes: function () {
-            for (const id in this.meshes) {
-                if (this.meshes.hasOwnProperty(id)) {
-                    this.meshes[id]._compile();
+        if (componentJSONs) {
+            let componentJSON;
+            let type;
+            let constr;
+            for (let i = 0, len = componentJSONs.length; i < len; i++) {
+                componentJSON = componentJSONs[i];
+                type = componentJSON.type;
+                if (type) {
+                    constr = window[type];
+                    if (constr) {
+                        new constr(this, componentJSON);
+                    }
                 }
             }
-        },
+        }
 
-        _saveAmbientColor: function () {
-            const canvas = this.canvas;
-            if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
-                const ambientColor = this._lightsState.getAmbientColor();
-                if (!this._lastAmbientColor ||
-                    this._lastAmbientColor[0] !== ambientColor[0] ||
-                    this._lastAmbientColor[1] !== ambientColor[1] ||
-                    this._lastAmbientColor[2] !== ambientColor[2] ||
-                    this._lastAmbientColor[3] !== ambientColor[3]) {
-                    canvas.backgroundColor = ambientColor;
-                    if (!this._lastAmbientColor) {
-                        this._lastAmbientColor = xeogl.math.vec4([0, 0, 0, 1]);
-                    }
-                    this._lastAmbientColor.set(ambientColor);
-                }
-            } else {
-                this._lastAmbientColor = null;
+        // Init default components
+
+        this._initDefaults();
+
+        // Global components
+
+        this._viewport = new Viewport(this, {
+            id: "default.viewport",
+            autoBoundary: true
+        });
+
+        this._camera = new Camera(this, {
+            id: "default.camera"
+        });
+
+        // Default lights
+
+        new DirLight(this, {
+            dir: [0.8, -0.6, -0.8],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        });
+
+        new DirLight(this, {
+            dir: [-0.8, -0.4, -0.4],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        });
+
+        new DirLight(this, {
+            dir: [0.2, -0.8, 0.8],
+            color: [0.6, 0.6, 0.6],
+            intensity: 1.0,
+            space: "view"
+        });
+
+        // Plug global components into renderer
+
+        const viewport = this._viewport;
+        const renderer = this._renderer;
+        const camera = this._camera;
+
+        camera.on("dirty", function () {
+            renderer.imageDirty();
+        });
+
+        this.ticksPerRender = cfg.ticksPerRender;
+        this.passes = cfg.passes;
+        this.clearEachPass = cfg.clearEachPass;
+        this.gammaInput = cfg.gammaInput;
+        this.gammaOutput = cfg.gammaOutput;
+        this.gammaFactor = cfg.gammaFactor;
+    }
+
+    _initDefaults() {
+
+        // Call this Scene's property accessors to lazy-init their properties
+
+        let dummy; // Keeps Codacy happy
+
+        dummy = this.geometry;
+        dummy = this.material;
+        dummy = this.ghostMaterial;
+        dummy = this.outlineMaterial;
+    }
+
+    _addComponent(component) {
+        if (component.id) { // Manual ID
+            if (this.components[component.id]) {
+                this.error("Component " + utils.inQuotes(component.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
+                component.id = null;
             }
-        },
+        }
+        if (!component.id) { // Auto ID
+            if (window.nextID === undefined) {
+                window.nextID = 0;
+            }
+            //component.id = math.createUUID();
+            component.id = "_" + window.nextID++;
+            while (this.components[component.id]) {
+                component.id = math.createUUID();
+            }
+        }
+        this.components[component.id] = component;
+        // Register for class type
+        const type = component.type;
+        let types = this.types[component.type];
+        if (!types) {
+            types = this.types[type] = {};
+        }
+        types[component.id] = component;
+    }
 
-        _props: {
+    _removeComponent(component) {
+        delete this.components[component.id];
+        const types = this.types[component.type];
+        if (types) {
+            delete types[component.id];
+            if (utils.isEmptyObject(types)) {
+                delete this.types[component.type];
+            }
+        }
+    }
 
-            /**
-             Convenience array of entity type IDs in {{#crossLink "Scene/entityTypes:property"}}{{/crossLink}}.
-             @property entityTypeIds
-             @final
-             @type {Array of String}
-             */
-            objectGUIDs: {
-                get: function () {
-                    if (!this._objectGUIDs) {
-                        this._objectGUIDs = Object.keys(this.guidObjects);
-                    }
-                    return this._objectGUIDs;
-                }
-            },
+    // Methods below are called by various component types to register themselves on their
+    // Scene. Violates Hollywood Principle, where we could just filter on type in _addComponent,
+    // but this is faster than checking the type of each component in such a filter.
 
-            /**
-             Convenience array of entity type IDs in {{#crossLink "Scene/entityTypes:property"}}{{/crossLink}}.
-             @property entityTypeIds
-             @final
-             @type {Array of String}
-             */
-            entityTypeIds: {
-                get: function () {
-                    if (!this._entityTypeIds) {
-                        this._entityTypeIds = Object.keys(this.entityTypes);
-                    }
-                    return this._entityTypeIds;
-                }
-            },
+    _clipCreated(clip) {
+        this.clips[clip.id] = clip;
+        this.scene._clipsState.addClip(clip._state);
+        this._needRecompileMeshes = true;
+    }
 
-            /**
-             Convenience array of IDs in {{#crossLink "Scene/entities:property"}}{{/crossLink}}.
-             @property entityIds
-             @final
-             @type {Array of String}
-             */
-            entityIds: {
-                get: function () {
-                    if (!this._entityIds) {
-                        this._entityIds = Object.keys(this.entities);
-                    }
-                    return this._entityIds;
-                }
-            },
+    _lightCreated(light) {
+        this.lights[light.id] = light;
+        this.scene._lightsState.addLight(light._state);
+        this._needRecompileMeshes = true;
+    }
 
-            /**
-             Convenience array of IDs in {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}}.
-             @property visibleEntityIds
-             @final
-             @type {Array of String}
-             */
-            visibleEntityIds: {
-                get: function () {
-                    if (!this._visibleEntityIds) {
-                        this._visibleEntityIds = Object.keys(this.visibleEntities);
-                    }
-                    return this._visibleEntityIds;
-                }
-            },
+    _lightMapCreated(lightMap) {
+        this.lightMaps[lightMap.id] = lightMap;
+        this.scene._lightsState.addLightMap(lightMap._state);
+        this._needRecompileMeshes = true;
+    }
 
-            /**
-             Convenience array of IDs in {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}}.
-             @property ghostedEntityIds
-             @final
-             @type {Array of String}
-             */
-            ghostedEntityIds: {
-                get: function () {
-                    if (!this._ghostedEntityIds) {
-                        this._ghostedEntityIds = Object.keys(this.ghostedEntities);
-                    }
-                    return this._ghostedEntityIds;
-                }
-            },
+    _reflectionMapCreated(reflectionMap) {
+        this.reflectionMaps[reflectionMap.id] = reflectionMap;
+        this.scene._lightsState.addReflectionMap(reflectionMap._state);
+        this._needRecompileMeshes = true;
+    }
 
-            /**
-             Convenience array of IDs in {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}}.
-             @property highlightedEntityIds
-             @final
-             @type {Array of String}
-             */
-            highlightedEntityIds: {
-                get: function () {
-                    if (!this._highlightedEntityIds) {
-                        this._highlightedEntityIds = Object.keys(this.highlightedEntities);
-                    }
-                    return this._highlightedEntityIds;
-                }
-            },
+    _objectCreated(object) {
+        this.objects[object.id] = object;
+        if (object.guid) {
+            this.guidObjects[object.id] = object;
+            this._objectGUIDs = null; // To lazy-rebuild
+        }
+        if (!object.parent) {
+            this.rootObjects[object.id] = object; // TODO: What about when a root Object is added as child to another?
+        }
+        stats.components.objects++;
+    }
 
-            /**
-             Convenience array of IDs in {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}}.
-             @property selectedEntityIds
-             @final
-             @type {Array of String}
-             */
-            selectedEntityIds: {
-                get: function () {
-                    if (!this._selectedEntityIds) {
-                        this._selectedEntityIds = Object.keys(this.selectedEntities);
-                    }
-                    return this._selectedEntityIds;
-                }
-            },
+    _meshCreated(mesh) {
+        this.meshes[mesh.id] = mesh;
+        stats.components.meshes++;
+    }
 
-            /**
-             The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+    _modelCreated(model) {
+        this.models[model.id] = model;
+        stats.components.models++;
+    }
 
-             @property ticksPerRender
-             @default 1
-             @type Number
-             */
-            ticksPerRender: {
-                set: function (value) {
-                    if (value === undefined || value === null) {
-                        value = 1;
-                    } else if (!xeogl._isNumeric(value) || value <= 0) {
-                        this.error("Unsupported value for 'ticksPerRender': '" + value +
-                            "' - should be an integer greater than zero.");
-                        value = 1;
-                    }
-                    if (value === this._ticksPerRender) {
-                        return;
-                    }
-                    this._ticksPerRender = value;
-                },
-                get: function () {
-                    return this._ticksPerRender;
-                }
-            },
+    _clipDestroyed(clip) {
+        delete this.clips[clip.id];
+        this.scene._clipsState.removeClip(clip._state);
+        this._needRecompileMeshes = true;
+    }
 
-            /**
-             The number of times this Scene renders per frame.
+    _lightDestroyed(light) {
+        delete this.lights[light.id];
+        this.scene._lightsState.removeLight(light._state);
+        this._needRecompileMeshes = true;
+    }
 
-             @property passes
-             @default 1
-             @type Number
-             */
-            passes: {
-                set: function (value) {
-                    if (value === undefined || value === null) {
-                        value = 1;
-                    } else if (!xeogl._isNumeric(value) || value <= 0) {
-                        this.error("Unsupported value for 'passes': '" + value +
-                            "' - should be an integer greater than zero.");
-                        value = 1;
-                    }
-                    if (value === this._passes) {
-                        return;
-                    }
-                    this._passes = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._passes;
-                }
-            },
+    _lightMapDestroyed(lightMap) {
+        delete this.lightMaps[lightMap.id];
+        this.scene._lightsState.removeLightMap(lightMap._state);
+        this._needRecompileMeshes = true;
+    }
 
-            /**
-             When doing multiple passes per frame, specifies whether to clear the
-             canvas before each pass (true) or just before the first pass (false).
+    _reflectionMapDestroyed(reflectionMap) {
+        delete this.reflectionMaps[reflectionMap.id];
+        this.scene._lightsState.removeReflectionMap(reflectionMap._state);
+        this._needRecompileMeshes = true;
+    }
 
-             @property clearEachPass
-             @default false
-             @type Boolean
-             */
-            clearEachPass: {
-                set: function (value) {
-                    value = !!value;
-                    if (value === this._clearEachPass) {
-                        return;
-                    }
-                    this._clearEachPass = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._clearEachPass;
-                }
-            },
+    _objectDestroyed(object) {
+        delete this.objects[object.id];
+        if (object.guid) {
+            delete this.guidObjects[object.guid];
+            this._objectGUIDs = null; // To lazy-rebuild
+        }
+        if (!object.parent) {
+            delete this.rootObjects[object.id];
+        }
+        stats.components.objects--;
+    }
 
-            /**
-             When true, expects all textures and colors are premultiplied gamma.
+    _meshDestroyed(mesh) {
+        stats.components.meshes--;
+        delete this.meshes[mesh.id];
+        stats.components.meshes--;
+    }
 
-             @property gammaInput
-             @default false
-             @type Boolean
-             */
-            gammaInput: {
-                set: function (value) {
-                    value = value !== false;
-                    if (value === this._renderer.gammaInput) {
-                        return;
-                    }
-                    this._renderer.gammaInput = value;
-                    this._needRecompileMeshes = true;
-                },
-                get: function () {
-                    return this._renderer.gammaInput;
-                }
-            },
+    _modelDestroyed(model) {
+        this.models[model.id] = model;
+        stats.components.models++;
+    }
 
-            /**
-             Whether or not to render pixels with pre-multiplied gama.
+    _entityTypeAssigned(object, newEntityType) {
+        this.entities[object.id] = object;
+        let objectsOfType = this.entityTypes[newEntityType];
+        if (!objectsOfType) {
+            objectsOfType = {};
+            this.entityTypes[newEntityType] = objectsOfType;
+        }
+        objectsOfType[object.id] = object;
+        this._entityIds = null; // Lazy regenerate
+        this._entityTypeIds = null; // Lazy regenerate
+    }
 
-             @property gammaOutput
-             @default true
-             @type Boolean
-             */
-            gammaOutput: {
-                set: function (value) {
-                    value = value !== false;
-                    if (value === this._renderer.gammaOutput) {
-                        return;
-                    }
-                    this._renderer.gammaOutput = value;
-                    this._needRecompileMeshes = true;
-                },
-                get: function () {
-                    return this._renderer.gammaOutput;
-                }
-            },
+    _entityTypeRemoved(object, oldEntityType) {
+        delete this.entities[object.id];
+        const objectsOfType = this.entityTypes[oldEntityType];
+        if (objectsOfType) {
+            delete objectsOfType[object.id];
+        }
+        this._entityIds = null; // Lazy regenerate
+        this._entityTypeIds = null; // Lazy regenerate
+    }
 
-            /**
-             The gamma factor to use when {{#crossLink "Scene/property:gammaOutput"}}{{/crossLink}} is set true.
+    _entityVisibilityUpdated(object, visible) {
+        if (visible) {
+            this.visibleEntities[object.id] = object;
+        } else {
+            delete this.visibleEntities[object.id];
+        }
+        this._visibleEntityIds = null; // Lazy regenerate
+    }
 
-             @property gammaOutput
-             @default 1.0
-             @type Number
-             */
-            gammaFactor: {
-                set: function (value) {
-                    value = (value === undefined || value === null) ? 2.2 : value;
-                    if (value === this._renderer.gammaFactor) {
-                        return;
-                    }
-                    this._renderer.gammaFactor = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._renderer.gammaFactor;
-                }
-            },
+    _entityGhostedUpdated(object, ghosted) {
+        if (ghosted) {
+            this.ghostedEntities[object.id] = object;
+        } else {
+            delete this.ghostedEntities[object.id];
+        }
+        this._ghostedEntityIds = null; // Lazy regenerate
+    }
 
-            /**
-             The default geometry for this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
+    _entityHighlightedUpdated(object, highlighted) {
+        if (highlighted) {
+            this.highlightedEntities[object.id] = object;
+        } else {
+            delete this.highlightedEntities[object.id];
+        }
+        this._highlightedEntityIds = null; // Lazy regenerate
+    }
 
-             This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
+    _entitySelectedUpdated(object, selected) {
+        if (selected) {
+            this.selectedEntities[object.id] = object;
+        } else {
+            delete this.selectedEntities[object.id];
+        }
+        this._selectedEntityIds = null; // Lazy regenerate
+    }
 
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
-             {{#crossLink "Geometry"}}Geometry{{/crossLink}} by default.
-             @property geometry
-             @final
-             @type BoxGeometry
-             */
-            geometry: {
-                get: function () {
-                    return this.components["default.geometry"] ||
-                        new xeogl.BoxGeometry(this, {
-                            id: "default.geometry",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             The default drawing material for this Scene, which is a {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}}.
-
-             This {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} has
-             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
-             other properties initialised to their default values.
-
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
-             {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} by default.
-             @property material
-             @final
-             @type PhongMaterial
-             */
-            material: {
-                get: function () {
-                    return this.components["default.material"] ||
-                        new xeogl.PhongMaterial(this, {
-                            id: "default.material",
-                            isDefault: true,
-                            emissive: [0.4, 0.4, 0.4] // Visible by default on geometry without normals
-                        });
-                }
-            },
-
-            /**
-             The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are ghosted.
-
-             This {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} has
-             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
-             other properties initialised to their default values.
-
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
-             {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} by default.
-             @property ghostMaterial
-             @final
-             @type EmphasisMaterial
-             */
-            ghostMaterial: {
-                get: function () {
-                    return this.components["default.ghostMaterial"] ||
-                        new xeogl.EmphasisMaterial(this, {
-                            id: "default.ghostMaterial",
-                            preset: "sepia",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are highlighted.
-
-             This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
-             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
-             other properties initialised to their default values.
-
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
-             {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} by default.
-             @property highlightMaterial
-             @final
-             @type HighlightMaterial
-             */
-            highlightMaterial: {
-                get: function () {
-                    return this.components["default.highlightMaterial"] ||
-                        new xeogl.EmphasisMaterial(this, {
-                            id: "default.highlightMaterial",
-                            preset: "yellowHighlight",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are selected.
-
-             This {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} has
-             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.selectedMaterial", with all
-             other properties initialised to their default values.
-
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
-             {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} by default.
-             @property selectedMaterial
-             @final
-             @type SelectedMaterial
-             */
-            selectedMaterial: {
-                get: function () {
-                    return this.components["default.selectedMaterial"] ||
-                        new xeogl.EmphasisMaterial(this, {
-                            id: "default.selectedMaterial",
-                            preset: "greenSelected",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             The Scene's default {{#crossLink "EdgeMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when edges are emphasized.
-
-             This {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} has
-             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.edgeMaterial", with all
-             other properties initialised to their default values.
-
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
-             {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} by default.
-             @property edgeMaterial
-             @final
-             @type EdgeMaterial
-             */
-            edgeMaterial: {
-                get: function () {
-                    return this.components["default.edgeMaterial"] ||
-                        new xeogl.EdgeMaterial(this, {
-                            id: "default.edgeMaterial",
-                            preset: "default",
-                            edgeColor: [0.0, 0.0, 0.0],
-                            edgeAlpha: 1.0,
-                            edgeWidth: 1,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are outlined.
-
-             This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
-             an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outlineMaterial", with all
-             other properties initialised to their default values.
-
-             {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
-             {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} by default.
-             @property outlineMaterial
-             @final
-             @type OutlineMaterial
-             */
-            outlineMaterial: {
-                get: function () {
-                    return this.components["default.outlineMaterial"] ||
-                        new xeogl.OutlineMaterial(this, {
-                            id: "default.outlineMaterial",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             The {{#crossLink "Viewport"}}{{/crossLink}} belonging to this Scene.
-
-             @property viewport
-             @final
-             @type Viewport
-             */
-            viewport: {
-                get: function () {
-                    return this._viewport;
-                }
-            },
-
-            /**
-             The {{#crossLink "Camera"}}Camera{{/crossLink}} belonging to this Scene.
-
-             @property camera
-             @final
-             @type Camera
-             */
-            camera: {
-                get: function () {
-                    return this._camera;
-                }
-            },
-
-            /**
-             World-space 3D center of this Scene.
-
-             @property center
-             @final
-             @type {Float32Array}
-             */
-            center: {
-                get: function () {
-                    if (this._aabbDirty || !this._center) {
-                        if (!this._center || !this._center) {
-                            this._center = xeogl.math.vec3();
-                        }
-                        const aabb = this.aabb;
-                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
-                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
-                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
-                    }
-                    return this._center;
-                }
-            },
-
-            /**
-             World-space axis-aligned 3D boundary (AABB) of this Scene.
-
-             The AABB is represented by a six-element Float32Array containing the min/max extents of the
-             axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-
-             @property aabb
-             @final
-             @type {Float32Array}
-             */
-            aabb: {
-                get: function () {
-                    //   console.log("get aabb")
-                    if (this._aabbDirty) {
-                        if (!this._aabb) {
-                            this._aabb = xeogl.math.AABB3();
-                        }
-                        let xmin = xeogl.math.MAX_DOUBLE;
-                        let ymin = xeogl.math.MAX_DOUBLE;
-                        let zmin = xeogl.math.MAX_DOUBLE;
-                        let xmax = -xeogl.math.MAX_DOUBLE;
-                        let ymax = -xeogl.math.MAX_DOUBLE;
-                        let zmax = -xeogl.math.MAX_DOUBLE;
-                        let aabb;
-                        const meshes = this.meshes;
-                        let mesh;
-                        for (const meshId in meshes) {
-                            if (meshes.hasOwnProperty(meshId)) {
-                                mesh = meshes[meshId];
-                                if (!mesh.collidable) {
-                                    continue;
-                                }
-                                aabb = mesh.aabb;
-                                if (aabb[0] < xmin) {
-                                    xmin = aabb[0];
-                                }
-                                if (aabb[1] < ymin) {
-                                    ymin = aabb[1];
-                                }
-                                if (aabb[2] < zmin) {
-                                    zmin = aabb[2];
-                                }
-                                if (aabb[3] > xmax) {
-                                    xmax = aabb[3];
-                                }
-                                if (aabb[4] > ymax) {
-                                    ymax = aabb[4];
-                                }
-                                if (aabb[5] > zmax) {
-                                    zmax = aabb[5];
-                                }
-                            }
-                        }
-                        this._aabb[0] = xmin;
-                        this._aabb[1] = ymin;
-                        this._aabb[2] = zmin;
-                        this._aabb[3] = xmax;
-                        this._aabb[4] = ymax;
-                        this._aabb[5] = zmax;
-                        this._aabbDirty = false;
-                    }
-                    return this._aabb;
+    _webglContextLost() {
+        //  this.loading++;
+        this.canvas.spinner.processes++;
+        for (const id in this.components) {
+            if (this.components.hasOwnProperty(id)) {
+                const component = this.components[id];
+                if (component._webglContextLost) {
+                    component._webglContextLost();
                 }
             }
-        },
+        }
+        this._renderer.webglContextLost();
+    }
 
-        _setBoundaryDirty: function () {
-            //if (!this._aabbDirty) {
-            this._aabbDirty = true;
-            this.fire("boundary");
-            // }
-        },
+    _webglContextRestored() {
+        const gl = this.canvas.gl;
+        for (const id in this.components) {
+            if (this.components.hasOwnProperty(id)) {
+                const component = this.components[id];
+                if (component._webglContextRestored) {
+                    component._webglContextRestored(gl);
+                }
+            }
+        }
+        this._renderer.webglContextRestored(gl);
+        //this.loading--;
+        this.canvas.spinner.processes--;
+    }
 
-        /**
-         Attempts to pick an {{#crossLink "Mesh"}}Mesh{{/crossLink}} in this Scene.
+    /**
+     * Renders a single frame of this Scene.
+     *
+     * The Scene will periodically render itself after any updates, but you can call this method to force a render
+     * if required. This method is typically used when we want to synchronously take a snapshot of the canvas and
+     * need everything rendered right at that moment.
+     *
+     * @method render
+     * @param {Boolean} [forceRender=false] Forces a render when true, otherwise only renders if something has changed in this Scene
+     * since the last render.
+     */
+    render(forceRender) {
 
-         Ignores {{#crossLink "Mesh"}}Meshes{{/crossLink}} with {{#crossLink "Mesh/pickable:property"}}pickable{{/crossLink}}
-         set *false*.
+        const renderEvent = {
+            sceneId: null,
+            pass: 0
+        };
 
-         When a {{#crossLink "Mesh"}}{{/crossLink}} is picked, fires a "pick" event on the {{#crossLink "Mesh"}}{{/crossLink}}
-         with the hit result as parameters.
 
-         Picking the {{#crossLink "Mesh"}}{{/crossLink}} at the given canvas coordinates:
+        if (this._needRecompileMeshes) {
+            this._recompileMeshes();
+            this._needRecompileMeshes = false;
+        }
 
-         ````javascript
-         var hit = scene.pick({
+        if (this.loading > 0 || this.canvas.spinner.processes > 0) {
+            this.canvas.canvas.style.opacity = 0.0;
+            return;
+        }
+
+        let opacity = Number.parseFloat(this.canvas.canvas.style.opacity);
+        if (opacity < 1.0) {
+            opacity += 0.1;
+            this.canvas.canvas.style.opacity = opacity;
+        }
+
+        renderEvent.sceneId = this.id;
+
+        const passes = this._passes;
+        const clearEachPass = this._clearEachPass;
+        let pass;
+        let clear;
+
+        for (pass = 0; pass < passes; pass++) {
+
+            renderEvent.pass = pass;
+
+            /**
+             * Fired when about to render a frame for a Scene.
+             *
+             * @event rendering
+             * @param {String} sceneID The ID of this Scene.
+             * @param {Number} pass Index of the pass we are about to render (see {{#crossLink "Scene/passes:property"}}{{/crossLink}}).
+             */
+            this.fire("rendering", renderEvent, true);
+
+            clear = clearEachPass || (pass === 0);
+
+            this._renderer.render({pass: pass, clear: clear, force: forceRender});
+
+            /**
+             * Fired when we have just rendered a frame for a Scene.
+             *
+             * @event rendering
+             * @param {String} sceneID The ID of this Scene.
+             * @param {Number} pass Index of the pass we rendered (see {{#crossLink "Scene/passes:property"}}{{/crossLink}}).
+             */
+            this.fire("rendered", renderEvent, true);
+        }
+
+        this._saveAmbientColor();
+    }
+
+    _recompileMeshes() {
+        for (const id in this.meshes) {
+            if (this.meshes.hasOwnProperty(id)) {
+                this.meshes[id]._compile();
+            }
+        }
+    }
+
+    _saveAmbientColor() {
+        const canvas = this.canvas;
+        if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
+            const ambientColor = this._lightsState.getAmbientColor();
+            if (!this._lastAmbientColor ||
+                this._lastAmbientColor[0] !== ambientColor[0] ||
+                this._lastAmbientColor[1] !== ambientColor[1] ||
+                this._lastAmbientColor[2] !== ambientColor[2] ||
+                this._lastAmbientColor[3] !== ambientColor[3]) {
+                canvas.backgroundColor = ambientColor;
+                if (!this._lastAmbientColor) {
+                    this._lastAmbientColor = math.vec4([0, 0, 0, 1]);
+                }
+                this._lastAmbientColor.set(ambientColor);
+            }
+        } else {
+            this._lastAmbientColor = null;
+        }
+    }
+
+    /**
+     Convenience array of entity type IDs in {{#crossLink "Scene/entityTypes:property"}}{{/crossLink}}.
+     @property entityTypeIds
+     @final
+     @type {Array of String}
+     */
+    get objectGUIDs() {
+        if (!this._objectGUIDs) {
+            this._objectGUIDs = Object.keys(this.guidObjects);
+        }
+        return this._objectGUIDs;
+    }
+
+    /**
+     Convenience array of entity type IDs in {{#crossLink "Scene/entityTypes:property"}}{{/crossLink}}.
+     @property entityTypeIds
+     @final
+     @type {Array of String}
+     */
+    get entityTypeIds() {
+        if (!this._entityTypeIds) {
+            this._entityTypeIds = Object.keys(this.entityTypes);
+        }
+        return this._entityTypeIds;
+    }
+
+    /**
+     Convenience array of IDs in {{#crossLink "Scene/entities:property"}}{{/crossLink}}.
+     @property entityIds
+     @final
+     @type {Array of String}
+     */
+    get entityIds() {
+        if (!this._entityIds) {
+            this._entityIds = Object.keys(this.entities);
+        }
+        return this._entityIds;
+    }
+
+    /**
+     Convenience array of IDs in {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}}.
+     @property visibleEntityIds
+     @final
+     @type {Array of String}
+     */
+    get visibleEntityIds() {
+        if (!this._visibleEntityIds) {
+            this._visibleEntityIds = Object.keys(this.visibleEntities);
+        }
+        return this._visibleEntityIds;
+    }
+
+    /**
+     Convenience array of IDs in {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}}.
+     @property ghostedEntityIds
+     @final
+     @type {Array of String}
+     */
+    get ghostedEntityIds() {
+        if (!this._ghostedEntityIds) {
+            this._ghostedEntityIds = Object.keys(this.ghostedEntities);
+        }
+        return this._ghostedEntityIds;
+    }
+
+    /**
+     Convenience array of IDs in {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}}.
+     @property highlightedEntityIds
+     @final
+     @type {Array of String}
+     */
+    get highlightedEntityIds() {
+        if (!this._highlightedEntityIds) {
+            this._highlightedEntityIds = Object.keys(this.highlightedEntities);
+        }
+        return this._highlightedEntityIds;
+    }
+
+    /**
+     Convenience array of IDs in {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}}.
+     @property selectedEntityIds
+     @final
+     @type {Array of String}
+     */
+    get selectedEntityIds() {
+        if (!this._selectedEntityIds) {
+            this._selectedEntityIds = Object.keys(this.selectedEntities);
+        }
+        return this._selectedEntityIds;
+    }
+
+    /**
+     The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+
+     @property ticksPerRender
+     @default 1
+     @type Number
+     */
+    set ticksPerRender(value) {
+        if (value === undefined || value === null) {
+            value = 1;
+        } else if (!utils.isNumeric(value) || value <= 0) {
+            this.error("Unsupported value for 'ticksPerRender': '" + value +
+                "' - should be an integer greater than zero.");
+            value = 1;
+        }
+        if (value === this._ticksPerRender) {
+            return;
+        }
+        this._ticksPerRender = value;
+    }
+
+    get ticksPerRender() {
+        return this._ticksPerRender;
+    }
+
+    /**
+     The number of times this Scene renders per frame.
+
+     @property passes
+     @default 1
+     @type Number
+     */
+    set passes(value) {
+        if (value === undefined || value === null) {
+            value = 1;
+        } else if (!utils.isNumeric(value) || value <= 0) {
+            this.error("Unsupported value for 'passes': '" + value +
+                "' - should be an integer greater than zero.");
+            value = 1;
+        }
+        if (value === this._passes) {
+            return;
+        }
+        this._passes = value;
+        this._renderer.imageDirty();
+    }
+
+    get passes() {
+        return this._passes;
+    }
+
+    /**
+     When doing multiple passes per frame, specifies whether to clear the
+     canvas before each pass (true) or just before the first pass (false).
+
+     @property clearEachPass
+     @default false
+     @type Boolean
+     */
+    set clearEachPass(value) {
+        value = !!value;
+        if (value === this._clearEachPass) {
+            return;
+        }
+        this._clearEachPass = value;
+        this._renderer.imageDirty();
+    }
+
+    get clearEachPass() {
+        return this._clearEachPass;
+    }
+
+    /**
+     When true, expects all textures and colors are premultiplied gamma.
+
+     @property gammaInput
+     @default false
+     @type Boolean
+     */
+    set gammaInput(value) {
+        value = value !== false;
+        if (value === this._renderer.gammaInput) {
+            return;
+        }
+        this._renderer.gammaInput = value;
+        this._needRecompileMeshes = true;
+    }
+
+    get gammaInput() {
+        return this._renderer.gammaInput;
+    }
+
+    /**
+     Whether or not to render pixels with pre-multiplied gama.
+
+     @property gammaOutput
+     @default true
+     @type Boolean
+     */
+    set gammaOutput(value) {
+        value = value !== false;
+        if (value === this._renderer.gammaOutput) {
+            return;
+        }
+        this._renderer.gammaOutput = value;
+        this._needRecompileMeshes = true;
+    }
+
+    get gammaOutput() {
+        return this._renderer.gammaOutput;
+    }
+
+    /**
+     The gamma factor to use when {{#crossLink "Scene/property:gammaOutput"}}{{/crossLink}} is set true.
+
+     @property gammaOutput
+     @default 1.0
+     @type Number
+     */
+    set gammaFactor(value) {
+        value = (value === undefined || value === null) ? 2.2 : value;
+        if (value === this._renderer.gammaFactor) {
+            return;
+        }
+        this._renderer.gammaFactor = value;
+        this._renderer.imageDirty();
+    }
+
+    get gammaFactor() {
+        return this._renderer.gammaFactor;
+    }
+
+    /**
+     The default geometry for this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
+
+     This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
+
+     {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+     {{#crossLink "Geometry"}}Geometry{{/crossLink}} by default.
+     @property geometry
+     @final
+     @type BoxGeometry
+     */
+    get geometry() {
+        return this.components["default.geometry"] ||
+            new BoxGeometry(this, {
+                id: "default.geometry",
+                isDefault: true
+            });
+    }
+
+    /**
+     The default drawing material for this Scene, which is a {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}}.
+
+     This {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} has
+     an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
+     other properties initialised to their default values.
+
+     {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+     {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} by default.
+     @property material
+     @final
+     @type PhongMaterial
+     */
+    get material() {
+        return this.components["default.material"] || new PhongMaterial(this, {
+                id: "default.material",
+                isDefault: true,
+                emissive: [0.4, 0.4, 0.4] // Visible by default on geometry without normals
+            });
+    }
+
+    /**
+     The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are ghosted.
+
+     This {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} has
+     an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
+     other properties initialised to their default values.
+
+     {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+     {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} by default.
+     @property ghostMaterial
+     @final
+     @type EmphasisMaterial
+     */
+    get ghostMaterial() {
+        return this.components["default.ghostMaterial"] || new EmphasisMaterial(this, {
+                id: "default.ghostMaterial",
+                preset: "sepia",
+                isDefault: true
+            });
+    }
+
+    /**
+     The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are highlighted.
+
+     This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
+     an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
+     other properties initialised to their default values.
+
+     {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+     {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} by default.
+     @property highlightMaterial
+     @final
+     @type HighlightMaterial
+     */
+    get highlightMaterial() {
+        return this.components["default.highlightMaterial"] || new EmphasisMaterial(this, {
+                id: "default.highlightMaterial",
+                preset: "yellowHighlight",
+                isDefault: true
+            });
+    }
+
+    /**
+     The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are selected.
+
+     This {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} has
+     an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.selectedMaterial", with all
+     other properties initialised to their default values.
+
+     {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+     {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} by default.
+     @property selectedMaterial
+     @final
+     @type SelectedMaterial
+     */
+    get selectedMaterial() {
+        return this.components["default.selectedMaterial"] || new EmphasisMaterial(this, {
+                id: "default.selectedMaterial",
+                preset: "greenSelected",
+                isDefault: true
+            });
+    }
+
+    /**
+     The Scene's default {{#crossLink "EdgeMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when edges are emphasized.
+
+     This {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} has
+     an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.edgeMaterial", with all
+     other properties initialised to their default values.
+
+     {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+     {{#crossLink "EdgeMaterial"}}EdgeMaterial{{/crossLink}} by default.
+     @property edgeMaterial
+     @final
+     @type EdgeMaterial
+     */
+    get edgeMaterial() {
+        return this.components["default.edgeMaterial"] || new EdgeMaterial(this, {
+                id: "default.edgeMaterial",
+                preset: "default",
+                edgeColor: [0.0, 0.0, 0.0],
+                edgeAlpha: 1.0,
+                edgeWidth: 1,
+                isDefault: true
+            });
+    }
+
+    /**
+     The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Meshes"}}Meshes{{/crossLink}} when they are outlined.
+
+     This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
+     an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outlineMaterial", with all
+     other properties initialised to their default values.
+
+     {{#crossLink "Mesh"}}Meshes{{/crossLink}} in this Scene are attached to this
+     {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} by default.
+     @property outlineMaterial
+     @final
+     @type OutlineMaterial
+     */
+    get outlineMaterial() {
+        return this.components["default.outlineMaterial"] || new OutlineMaterial(this, {
+                id: "default.outlineMaterial",
+                isDefault: true
+            });
+    }
+
+    /**
+     The {{#crossLink "Viewport"}}{{/crossLink}} belonging to this Scene.
+
+     @property viewport
+     @final
+     @type Viewport
+     */
+    get viewport() {
+        return this._viewport;
+    }
+
+    /**
+     The {{#crossLink "Camera"}}Camera{{/crossLink}} belonging to this Scene.
+
+     @property camera
+     @final
+     @type Camera
+     */
+    get camera() {
+        return this._camera;
+    }
+
+    /**
+     World-space 3D center of this Scene.
+
+     @property center
+     @final
+     @type {Float32Array}
+     */
+    get center() {
+        if (this._aabbDirty || !this._center) {
+            if (!this._center || !this._center) {
+                this._center = math.vec3();
+            }
+            const aabb = this.aabb;
+            this._center[0] = (aabb[0] + aabb[3] ) / 2;
+            this._center[1] = (aabb[1] + aabb[4] ) / 2;
+            this._center[2] = (aabb[2] + aabb[5] ) / 2;
+        }
+        return this._center;
+    }
+
+    /**
+     World-space axis-aligned 3D boundary (AABB) of this Scene.
+
+     The AABB is represented by a six-element Float32Array containing the min/max extents of the
+     axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+
+     @property aabb
+     @final
+     @type {Float32Array}
+     */
+    get aabb() {
+        if (this._aabbDirty) {
+            if (!this._aabb) {
+                this._aabb = math.AABB3();
+            }
+            let xmin = math.MAX_DOUBLE;
+            let ymin = math.MAX_DOUBLE;
+            let zmin = math.MAX_DOUBLE;
+            let xmax = -math.MAX_DOUBLE;
+            let ymax = -math.MAX_DOUBLE;
+            let zmax = -math.MAX_DOUBLE;
+            let aabb;
+            const meshes = this.meshes;
+            let mesh;
+            for (const meshId in meshes) {
+                if (meshes.hasOwnProperty(meshId)) {
+                    mesh = meshes[meshId];
+                    if (!mesh.collidable) {
+                        continue;
+                    }
+                    aabb = mesh.aabb;
+                    if (aabb[0] < xmin) {
+                        xmin = aabb[0];
+                    }
+                    if (aabb[1] < ymin) {
+                        ymin = aabb[1];
+                    }
+                    if (aabb[2] < zmin) {
+                        zmin = aabb[2];
+                    }
+                    if (aabb[3] > xmax) {
+                        xmax = aabb[3];
+                    }
+                    if (aabb[4] > ymax) {
+                        ymax = aabb[4];
+                    }
+                    if (aabb[5] > zmax) {
+                        zmax = aabb[5];
+                    }
+                }
+            }
+            this._aabb[0] = xmin;
+            this._aabb[1] = ymin;
+            this._aabb[2] = zmin;
+            this._aabb[3] = xmax;
+            this._aabb[4] = ymax;
+            this._aabb[5] = zmax;
+            this._aabbDirty = false;
+        }
+        return this._aabb;
+    }
+
+    _setBoundaryDirty() {
+        //if (!this._aabbDirty) {
+        this._aabbDirty = true;
+        this.fire("boundary");
+        // }
+    }
+
+    /**
+     Attempts to pick an {{#crossLink "Mesh"}}Mesh{{/crossLink}} in this Scene.
+
+     Ignores {{#crossLink "Mesh"}}Meshes{{/crossLink}} with {{#crossLink "Mesh/pickable:property"}}pickable{{/crossLink}}
+     set *false*.
+
+     When a {{#crossLink "Mesh"}}{{/crossLink}} is picked, fires a "pick" event on the {{#crossLink "Mesh"}}{{/crossLink}}
+     with the hit result as parameters.
+
+     Picking the {{#crossLink "Mesh"}}{{/crossLink}} at the given canvas coordinates:
+
+     ````javascript
+     var hit = scene.pick({
               canvasPos: [23, 131]
            });
 
-         if (hit) { // Picked a Mesh
+     if (hit) { // Picked a Mesh
               var mesh = hit.mesh;
           }
-         ````
+     ````
 
-         **Usage:**
+     **Usage:**
 
-         Picking the {{#crossLink "Mesh"}}{{/crossLink}} that intersects a ray cast through the canvas:
+     Picking the {{#crossLink "Mesh"}}{{/crossLink}} that intersects a ray cast through the canvas:
 
-         ````javascript
-         var hit = scene.pick({
+     ````javascript
+     var hit = scene.pick({
               pickSurface: true,
               canvasPos: [23, 131]
            });
 
-         if (hit) { // Picked a Mesh
+     if (hit) { // Picked a Mesh
 
               var mesh = hit.mesh;
 
@@ -1798,18 +1837,18 @@
               var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
               var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
           }
-         ````
+     ````
 
-         Picking the {{#crossLink "Mesh"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:
+     Picking the {{#crossLink "Mesh"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:
 
-         ````javascript
-         var hit = scene.pick({
+     ````javascript
+     var hit = scene.pick({
               pickSurface: true,       // Picking with arbitrarily-positioned ray
               origin: [0,0,-5],    // Ray origin
               direction: [0,0,1]   // Ray direction
           });
 
-         if (hit) { // Picked a Mesh with the ray
+     if (hit) { // Picked a Mesh with the ray
 
               var mesh = hit.mesh;
 
@@ -1825,380 +1864,316 @@
               var origin = hit.origin; // Float32Array containing the World-space ray origin
               var direction = hit.direction; // Float32Array containing the World-space ray direction
           }
-         ````
-         @method pick
-
-         @param {*} params Picking parameters.
-         @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Mesh.
-         @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
-         **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
-         directly along the negative View-space Z-axis.
-         @param {Float32Array} [params.origin] World-space ray origin when ray-picking. Ignored when canvasPos given.
-         @param {Float32Array} [params.direction] World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.
-         @param {Array} [params.includeMeshes] IDs of {{#crossLink "Mesh"}}Meshes{{/crossLink}} to restrict picking to. When given, ignores {{#crossLink "Mesh"}}Meshes{{/crossLink}} whose IDs are not in this list.
-         @param {Array} [params.excludeMeshes] IDs of {{#crossLink "Mesh"}}Meshes{{/crossLink}} to ignore. When given, will pick *through* these {{#crossLink "Mesh"}}Meshes{{/crossLink}}, as if they were not there.
-         @returns {*} Hit record, returned when an {{#crossLink "Mesh"}}{{/crossLink}} is picked, else null. See
-         method comments for description.
-         */
-        pick: (function () {
-
-            // Cached vectors to avoid garbage collection
-
-            const math = xeogl.math;
-
-            const localRayOrigin = math.vec3();
-            const localRayDir = math.vec3();
-
-            const a = math.vec3();
-            const b = math.vec3();
-            const c = math.vec3();
-
-            const triangleVertices = math.vec3();
-            const position = math.vec4();
-            const worldPos = math.vec3();
-            const viewPos = math.vec3();
-            const bary = math.vec3();
-
-            const na = math.vec3();
-            const nb = math.vec3();
-            const nc = math.vec3();
-
-            const uva = math.vec3();
-            const uvb = math.vec3();
-            const uvc = math.vec3();
-
-            const tempVec4a = math.vec4();
-            const tempVec4b = math.vec4();
-            const tempVec4c = math.vec4();
-
-            const tempVec3 = math.vec3();
-            const tempVec3b = math.vec3();
-            const tempVec3c = math.vec3();
-            const tempVec3d = math.vec3();
-            const tempVec3e = math.vec3();
-            const tempVec3f = math.vec3();
-            const tempVec3g = math.vec3();
-            const tempVec3h = math.vec3();
-            const tempVec3i = math.vec3();
-            const tempVec3j = math.vec3();
-            const tempVec3k = math.vec3();
-
-            function getMeshIDMap(scene, meshIds) {
-                const map = {};
-                let meshId;
-                let mesh;
-                for (let i = 0, len = meshIds.length; i < len; i++) {
-                    meshId = meshIds[i];
-                    mesh = scene.meshes[meshId];
-                    if (!mesh) {
-                        scene.warn("pick(): Mesh not found: " + meshId);
-                        continue;
-                    }
-                    map[meshId] = true;
-                }
-                return map;
-            }
-
-            function getMeshIDMapFromentityTypes(scene, entityTypes) {
-                // var objectIds = {};
-                // var entityType;
-                // var mesh;
-                // for (var i = 0, len = entityTypes.length; i < len; i++) {
-                //     entityType = entityTypes[i];
-                //     mesh = scene.meshes[entityType];
-                //     if (!mesh) {
-                //         scene.warn("pick(): Mesh not found: " + entityType);
-                //         continue;
-                //     }
-                //     objectIds[mesh._objectId] = true;
-                // }
-                // return objectIds;
-            }
-
-            return function (params) {
-
-                if (this.canvas.boundary[2] === 0 || this.canvas.boundary[3] === 0) {
-                    this.error("Picking not allowed while canvas has zero width or height");
-                    return null;
-                }
-
-                params = params || {};
-
-                params.pickSurface = params.pickSurface || params.rayPick; // Backwards compatibility
-
-                if (!params.canvasPos && (!params.origin || !params.direction)) {
-                    this.warn("picking without canvasPos or ray origin and direction");
-                }
+     ````
+     @method pick
 
-                const includeMeshes = params.includeMeshes || params.include; // Backwards compat
-                if (includeMeshes) {
-                    params.includeMeshIds = getMeshIDMap(this, includeMeshes);
-                }
+     @param {*} params Picking parameters.
+     @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Mesh.
+     @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
+     **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
+     directly along the negative View-space Z-axis.
+     @param {Float32Array} [params.origin] World-space ray origin when ray-picking. Ignored when canvasPos given.
+     @param {Float32Array} [params.direction] World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.
+     @param {Array} [params.includeMeshes] IDs of {{#crossLink "Mesh"}}Meshes{{/crossLink}} to restrict picking to. When given, ignores {{#crossLink "Mesh"}}Meshes{{/crossLink}} whose IDs are not in this list.
+     @param {Array} [params.excludeMeshes] IDs of {{#crossLink "Mesh"}}Meshes{{/crossLink}} to ignore. When given, will pick *through* these {{#crossLink "Mesh"}}Meshes{{/crossLink}}, as if they were not there.
+     @returns {*} Hit record, returned when an {{#crossLink "Mesh"}}{{/crossLink}} is picked, else null. See
+     method comments for description.
+     */
+    pick(params) {
 
-                const excludeMeshes = params.excludeMeshes || params.exclude; // Backwards compat
-                if (excludeMeshes) {
-                    params.excludeMeshIds = getMeshIDMap(this, excludeMeshes);
-                }
+        if (this.canvas.boundary[2] === 0 || this.canvas.boundary[3] === 0) {
+            this.error("Picking not allowed while canvas has zero width or height");
+            return null;
+        }
 
-                // if (params.includeEntityTypes) {
-                //     params.includeObjects = getMeshIDMapFromEntityTypes(this, params.includeEntityTypes);
-                // }
-                //
-                // if (params.excludeEntityTypes) {
-                //     params.excludeObjects = getMeshIDMapFromEntityTypes(this, params.excludeEntityTypes);
-                // }
+        params = params || {};
 
-                const hit = this._renderer.pick(params);
+        params.pickSurface = params.pickSurface || params.rayPick; // Backwards compatibility
 
-                if (hit) {
+        if (!params.canvasPos && (!params.origin || !params.direction)) {
+            this.warn("picking without canvasPos or ray origin and direction");
+        }
 
-                    hit.object = hit.mesh; // Backwards compat
+        const includeMeshes = params.includeMeshes || params.include; // Backwards compat
+        if (includeMeshes) {
+            params.includeMeshIds = getMeshIDMap(this, includeMeshes);
+        }
 
-                    if (params.pickSurface) {
+        const excludeMeshes = params.excludeMeshes || params.exclude; // Backwards compat
+        if (excludeMeshes) {
+            params.excludeMeshIds = getMeshIDMap(this, excludeMeshes);
+        }
 
-                        if (hit.primIndex !== undefined && hit.primIndex > -1) {
+        // if (params.includeEntityTypes) {
+        //     params.includeObjects = getMeshIDMapFromEntityTypes(this, params.includeEntityTypes);
+        // }
+        //
+        // if (params.excludeEntityTypes) {
+        //     params.excludeObjects = getMeshIDMapFromEntityTypes(this, params.excludeEntityTypes);
+        // }
 
-                            const geometry = hit.mesh.geometry._state;
+        const hit = this._renderer.pick(params);
 
-                            if (geometry.primitiveName === "triangles") {
+        if (hit) {
 
-                                // Triangle picked; this only happens when the
-                                // Mesh has a Geometry that has primitives of type "triangle"
+            hit.object = hit.mesh; // Backwards compat
 
-                                hit.primitive = "triangle";
+            if (params.pickSurface) {
 
-                                // Get the World-space positions of the triangle's vertices
+                if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
-                                const i = hit.primIndex; // Indicates the first triangle index in the indices array
+                    const geometry = hit.mesh.geometry._state;
 
-                                const indices = geometry.indices; // Indices into geometry arrays, not into shared VertexBufs
-                                const positions = geometry.positions;
+                    if (geometry.primitiveName === "triangles") {
 
-                                let ia3;
-                                let ib3;
-                                let ic3;
+                        // Triangle picked; this only happens when the
+                        // Mesh has a Geometry that has primitives of type "triangle"
 
-                                if (indices) {
+                        hit.primitive = "triangle";
 
-                                    var ia = indices[i + 0];
-                                    var ib = indices[i + 1];
-                                    var ic = indices[i + 2];
+                        // Get the World-space positions of the triangle's vertices
 
-                                    triangleVertices[0] = ia;
-                                    triangleVertices[1] = ib;
-                                    triangleVertices[2] = ic;
+                        const i = hit.primIndex; // Indicates the first triangle index in the indices array
 
-                                    hit.indices = triangleVertices;
+                        const indices = geometry.indices; // Indices into geometry arrays, not into shared VertexBufs
+                        const positions = geometry.positions;
 
-                                    ia3 = ia * 3;
-                                    ib3 = ib * 3;
-                                    ic3 = ic * 3;
+                        let ia3;
+                        let ib3;
+                        let ic3;
 
-                                } else {
+                        if (indices) {
 
-                                    ia3 = i * 3;
-                                    ib3 = ia3 + 3;
-                                    ic3 = ib3 + 3;
-                                }
+                            var ia = indices[i + 0];
+                            var ib = indices[i + 1];
+                            var ic = indices[i + 2];
 
-                                a[0] = positions[ia3 + 0];
-                                a[1] = positions[ia3 + 1];
-                                a[2] = positions[ia3 + 2];
+                            triangleVertices[0] = ia;
+                            triangleVertices[1] = ib;
+                            triangleVertices[2] = ic;
 
-                                b[0] = positions[ib3 + 0];
-                                b[1] = positions[ib3 + 1];
-                                b[2] = positions[ib3 + 2];
+                            hit.indices = triangleVertices;
 
-                                c[0] = positions[ic3 + 0];
-                                c[1] = positions[ic3 + 1];
-                                c[2] = positions[ic3 + 2];
+                            ia3 = ia * 3;
+                            ib3 = ib * 3;
+                            ic3 = ic * 3;
 
-                                if (geometry.quantized) {
+                        } else {
 
-                                    // Decompress vertex positions
+                            ia3 = i * 3;
+                            ib3 = ia3 + 3;
+                            ic3 = ib3 + 3;
+                        }
 
-                                    const positionsDecodeMatrix = geometry.positionsDecodeMatrix;
-                                    if (positionsDecodeMatrix) {
-                                        math.decompressPosition(a, positionsDecodeMatrix, a);
-                                        math.decompressPosition(b, positionsDecodeMatrix, b);
-                                        math.decompressPosition(c, positionsDecodeMatrix, c);
-                                    }
-                                }
+                        positionA[0] = positions[ia3 + 0];
+                        positionA[1] = positions[ia3 + 1];
+                        positionA[2] = positions[ia3 + 2];
 
-                                // Attempt to ray-pick the triangle in local space
+                        positionB[0] = positions[ib3 + 0];
+                        positionB[1] = positions[ib3 + 1];
+                        positionB[2] = positions[ib3 + 2];
 
-                                let canvasPos;
+                        positionC[0] = positions[ic3 + 0];
+                        positionC[1] = positions[ic3 + 1];
+                        positionC[2] = positions[ic3 + 2];
 
-                                if (params.canvasPos) {
-                                    canvasPos = params.canvasPos;
-                                    hit.canvasPos = params.canvasPos;
-                                    math.canvasPosToLocalRay(this.camera, hit.mesh, canvasPos, localRayOrigin, localRayDir);
+                        if (geometry.quantized) {
 
-                                } else if (params.origin && params.direction) {
-                                    math.worldRayToLocalRay(hit.mesh, params.origin, params.direction, localRayOrigin, localRayDir);
-                                }
+                            // Decompress vertex positions
 
-                                math.normalizeVec3(localRayDir);
-                                math.rayPlaneIntersect(localRayOrigin, localRayDir, a, b, c, position);
-
-                                // Get Local-space cartesian coordinates of the ray-triangle intersection
-
-                                hit.localPos = position;
-                                hit.position = position;
-
-                                // Get interpolated World-space coordinates
-
-                                // Need to transform homogeneous coords
-
-                                tempVec4a[0] = position[0];
-                                tempVec4a[1] = position[1];
-                                tempVec4a[2] = position[2];
-                                tempVec4a[3] = 1;
-
-                                // Get World-space cartesian coordinates of the ray-triangle intersection
-
-                                math.transformVec4(hit.mesh.worldMatrix, tempVec4a, tempVec4b);
-
-                                worldPos[0] = tempVec4b[0];
-                                worldPos[1] = tempVec4b[1];
-                                worldPos[2] = tempVec4b[2];
-
-                                hit.worldPos = worldPos;
-
-                                // Get View-space cartesian coordinates of the ray-triangle intersection
-
-                                math.transformVec4(hit.mesh.scene.camera.matrix, tempVec4b, tempVec4c);
-
-                                viewPos[0] = tempVec4c[0];
-                                viewPos[1] = tempVec4c[1];
-                                viewPos[2] = tempVec4c[2];
-
-                                hit.viewPos = viewPos;
-
-                                // Get barycentric coordinates of the ray-triangle intersection
-
-                                math.cartesianToBarycentric(position, a, b, c, bary);
-
-                                hit.bary = bary;
-
-                                // Get interpolated normal vector
-
-                                const normals = geometry.normals;
-
-                                if (normals) {
-
-                                    if (geometry.quantized) {
-
-                                        // Decompress vertex normals
-
-                                        const ia2 = ia * 2;
-                                        const ib2 = ib * 2;
-                                        const ic2 = ic * 2;
-
-                                        math.octDecodeVec2(normals.subarray(ia2, ia2 + 2), na);
-                                        math.octDecodeVec2(normals.subarray(ib2, ib2 + 2), nb);
-                                        math.octDecodeVec2(normals.subarray(ic2, ic2 + 2), nc);
-
-                                    } else {
-
-                                        na[0] = normals[ia3];
-                                        na[1] = normals[ia3 + 1];
-                                        na[2] = normals[ia3 + 2];
-
-                                        nb[0] = normals[ib3];
-                                        nb[1] = normals[ib3 + 1];
-                                        nb[2] = normals[ib3 + 2];
-
-                                        nc[0] = normals[ic3];
-                                        nc[1] = normals[ic3 + 1];
-                                        nc[2] = normals[ic3 + 2];
-                                    }
-
-                                    const normal = math.addVec3(math.addVec3(
-                                        math.mulVec3Scalar(na, bary[0], tempVec3),
-                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
-                                        math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
-
-                                    hit.normal = math.transformVec3(hit.mesh.worldNormalMatrix, normal, tempVec3f);
-                                }
-
-                                // Get interpolated UV coordinates
-
-                                const uvs = geometry.uv;
-
-                                if (uvs) {
-
-                                    uva[0] = uvs[(ia * 2)];
-                                    uva[1] = uvs[(ia * 2) + 1];
-
-                                    uvb[0] = uvs[(ib * 2)];
-                                    uvb[1] = uvs[(ib * 2) + 1];
-
-                                    uvc[0] = uvs[(ic * 2)];
-                                    uvc[1] = uvs[(ic * 2) + 1];
-
-                                    if (geometry.quantized) {
-
-                                        // Decompress vertex UVs
-
-                                        const uvDecodeMatrix = geometry.uvDecodeMatrix;
-                                        if (uvDecodeMatrix) {
-                                            math.decompressUV(uva, uvDecodeMatrix, uva);
-                                            math.decompressUV(uvb, uvDecodeMatrix, uvb);
-                                            math.decompressUV(uvc, uvDecodeMatrix, uvc);
-                                        }
-                                    }
-
-                                    hit.uv = math.addVec3(
-                                        math.addVec3(
-                                            math.mulVec2Scalar(uva, bary[0], tempVec3g),
-                                            math.mulVec2Scalar(uvb, bary[1], tempVec3h), tempVec3i),
-                                        math.mulVec2Scalar(uvc, bary[2], tempVec3j), tempVec3k);
-                                }
+                            const positionsDecodeMatrix = geometry.positionsDecodeMatrix;
+                            if (positionsDecodeMatrix) {
+                                math.decompressPosition(positionA, positionsDecodeMatrix, positionA);
+                                math.decompressPosition(positionB, positionsDecodeMatrix, positionB);
+                                math.decompressPosition(positionC, positionsDecodeMatrix, positionC);
                             }
                         }
+
+                        // Attempt to ray-pick the triangle in local space
+
+                        let canvasPos;
+
+                        if (params.canvasPos) {
+                            canvasPos = params.canvasPos;
+                            hit.canvasPos = params.canvasPos;
+                            math.canvasPosToLocalRay(this.camera, hit.mesh, canvasPos, localRayOrigin, localRayDir);
+
+                        } else if (params.origin && params.direction) {
+                            math.worldRayToLocalRay(hit.mesh, params.origin, params.direction, localRayOrigin, localRayDir);
+                        }
+
+                        math.normalizeVec3(localRayDir);
+                        math.rayPlaneIntersect(localRayOrigin, localRayDir, positionA, positionB, positionC, position);
+
+                        // Get Local-space cartesian coordinates of the ray-triangle intersection
+
+                        hit.localPos = position;
+                        hit.position = position;
+
+                        // Get interpolated World-space coordinates
+
+                        // Need to transform homogeneous coords
+
+                        tempVec4a[0] = position[0];
+                        tempVec4a[1] = position[1];
+                        tempVec4a[2] = position[2];
+                        tempVec4a[3] = 1;
+
+                        // Get World-space cartesian coordinates of the ray-triangle intersection
+
+                        math.transformVec4(hit.mesh.worldMatrix, tempVec4a, tempVec4b);
+
+                        worldPos[0] = tempVec4b[0];
+                        worldPos[1] = tempVec4b[1];
+                        worldPos[2] = tempVec4b[2];
+
+                        hit.worldPos = worldPos;
+
+                        // Get View-space cartesian coordinates of the ray-triangle intersection
+
+                        math.transformVec4(hit.mesh.scene.camera.matrix, tempVec4b, tempVec4c);
+
+                        viewPos[0] = tempVec4c[0];
+                        viewPos[1] = tempVec4c[1];
+                        viewPos[2] = tempVec4c[2];
+
+                        hit.viewPos = viewPos;
+
+                        // Get barycentric coordinates of the ray-triangle intersection
+
+                        math.cartesianToBarycentric(position, positionA, positionB, positionC, bary);
+
+                        hit.bary = bary;
+
+                        // Get interpolated normal vector
+
+                        const normals = geometry.normals;
+
+                        if (normals) {
+
+                            if (geometry.quantized) {
+
+                                // Decompress vertex normals
+
+                                const ia2 = ia * 2;
+                                const ib2 = ib * 2;
+                                const ic2 = ic * 2;
+
+                                math.octDecodeVec2(normals.subarray(ia2, ia2 + 2), normalA);
+                                math.octDecodeVec2(normals.subarray(ib2, ib2 + 2), normalB);
+                                math.octDecodeVec2(normals.subarray(ic2, ic2 + 2), normalC);
+
+                            } else {
+
+                                normalA[0] = normals[ia3];
+                                normalA[1] = normals[ia3 + 1];
+                                normalA[2] = normals[ia3 + 2];
+
+                                normalB[0] = normals[ib3];
+                                normalB[1] = normals[ib3 + 1];
+                                normalB[2] = normals[ib3 + 2];
+
+                                normalC[0] = normals[ic3];
+                                normalC[1] = normals[ic3 + 1];
+                                normalC[2] = normals[ic3 + 2];
+                            }
+
+                            const normal = math.addVec3(math.addVec3(
+                                math.mulVec3Scalar(normalA, bary[0], tempVec3),
+                                math.mulVec3Scalar(normalB, bary[1], tempVec3b), tempVec3c),
+                                math.mulVec3Scalar(normalC, bary[2], tempVec3d), tempVec3e);
+
+                            hit.normal = math.transformVec3(hit.mesh.worldNormalMatrix, normal, tempVec3f);
+                        }
+
+                        // Get interpolated UV coordinates
+
+                        const uvs = geometry.uv;
+
+                        if (uvs) {
+
+                            uva[0] = uvs[(ia * 2)];
+                            uva[1] = uvs[(ia * 2) + 1];
+
+                            uvb[0] = uvs[(ib * 2)];
+                            uvb[1] = uvs[(ib * 2) + 1];
+
+                            uvc[0] = uvs[(ic * 2)];
+                            uvc[1] = uvs[(ic * 2) + 1];
+
+                            if (geometry.quantized) {
+
+                                // Decompress vertex UVs
+
+                                const uvDecodeMatrix = geometry.uvDecodeMatrix;
+                                if (uvDecodeMatrix) {
+                                    math.decompressUV(uva, uvDecodeMatrix, uva);
+                                    math.decompressUV(uvb, uvDecodeMatrix, uvb);
+                                    math.decompressUV(uvc, uvDecodeMatrix, uvc);
+                                }
+                            }
+
+                            hit.uv = math.addVec3(
+                                math.addVec3(
+                                    math.mulVec2Scalar(uva, bary[0], tempVec3g),
+                                    math.mulVec2Scalar(uvb, bary[1], tempVec3h), tempVec3i),
+                                math.mulVec2Scalar(uvc, bary[2], tempVec3j), tempVec3k);
+                        }
                     }
-
-                    hit.mesh.fire("picked", hit);
-
-                    return hit;
                 }
-            };
-        })(),
+            }
 
-        /**
-         Returns the collective axis-aligned bounding box of the {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+            hit.mesh.fire("picked", hit);
 
-         When no arguments are given, returns the total boundary of all objects in the scene.
+            return hit;
+        }
+    }
 
-         Only {{#crossLink "Mesh"}}Meshes{{/crossLink}} with {{#crossLink "Mesh/collidable:property"}}collidable{{/crossLink}}
-         set ````true```` are included in the boundary.
+    /**
+     Returns the collective axis-aligned bounding box of the {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-         ## Usage
+     When no arguments are given, returns the total boundary of all objects in the scene.
 
-         ````JavaScript
-         scene.getAABB(); // Gets collective boundary of all objects in the scene
-         scene.getAABB("saw"); // Gets collective boundary of all objects in saw model
-         scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all objects in saw and gearbox models
-         scene.getAABB("saw#0.1"); // Get boundary of an object in the saw model
-         scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two objects in saw model
-         scene.getAABB(["saw#0.1", "surface", "support"]); // Get collective boundary an object, and all objects of the given two entity classes.
-         ````
+     Only {{#crossLink "Mesh"}}Meshes{{/crossLink}} with {{#crossLink "Mesh/collidable:property"}}collidable{{/crossLink}}
+     set ````true```` are included in the boundary.
 
-         @method getAABB
-         @param {String|String[]} target {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @returns {[Number, Number, Number, Number, Number, Number]} An axis-aligned World-space bounding box, given as elements ````[xmin, ymin, zmin, xmax, ymax, zmax]````.
-         */
-        getAABB: (function () {
-            let xmin = 100000;
-            let ymin = 100000;
-            let zmin = 100000;
-            let xmax = -100000;
-            let ymax = -100000;
-            let zmax = -100000;
-            let valid;
+     ## Usage
 
-            function callback(object) {
+     ````JavaScript
+     scene.getAABB(); // Gets collective boundary of all objects in the scene
+     scene.getAABB("saw"); // Gets collective boundary of all objects in saw model
+     scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all objects in saw and gearbox models
+     scene.getAABB("saw#0.1"); // Get boundary of an object in the saw model
+     scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two objects in saw model
+     scene.getAABB(["saw#0.1", "surface", "support"]); // Get collective boundary an object, and all objects of the given two entity classes.
+     ````
+
+     @method getAABB
+     @param {String|String[]} target {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @returns {[Number, Number, Number, Number, Number, Number]} An axis-aligned World-space bounding box, given as elements ````[xmin, ymin, zmin, xmax, ymax, zmax]````.
+     */
+    getAABB(target) {
+        if (target === undefined) {
+            return this.aabb;
+        }
+        if (utils.isString(target)) {
+            const object = this.objects[target];
+            if (object) {
+                return object.aabb;
+            }
+            target = [target]; // Must be an entity type
+        }
+        if (target.length === 0) {
+            return this.aabb;
+        }
+        let xmin = 100000;
+        let ymin = 100000;
+        let zmin = 100000;
+        let xmax = -100000;
+        let ymax = -100000;
+        let zmax = -100000;
+        let valid;
+        this.withObjects(target, object => {
                 const aabb = object.aabb;
                 if (aabb[0] < xmin) {
                     xmin = aabb[0];
@@ -2220,419 +2195,329 @@
                 }
                 valid = true;
             }
+        );
+        if (valid) {
+            const aabb2 = new math.AABB3();
+            aabb2[0] = xmin;
+            aabb2[1] = ymin;
+            aabb2[2] = zmin;
+            aabb2[3] = xmax;
+            aabb2[4] = ymax;
+            aabb2[5] = zmax;
+            return aabb2;
+        } else {
+            return this.aabb; // Scene AABB
+        }
+    }
 
-            return function (target) {
-                if (target === undefined) {
-                    return this.aabb;
-                }
-                if (xeogl._isString(target)) {
-                    const object = this.objects[target];
-                    if (object) {
-                        return object.aabb;
-                    }
-                    target = [target]; // Must be an entity type
-                }
-                if (target.length === 0) {
-                    return this.aabb;
-                }
-                xmin = 100000;
-                ymin = 100000;
-                zmin = 100000;
-                xmax = -100000;
-                ymax = -100000;
-                zmax = -100000;
-                this.withObjects(target, callback);
-                if (valid) {
-                    const aabb2 = new xeogl.math.AABB3();
-                    aabb2[0] = xmin;
-                    aabb2[1] = ymin;
-                    aabb2[2] = zmin;
-                    aabb2[3] = xmax;
-                    aabb2[4] = ymax;
-                    aabb2[5] = zmax;
-                    return aabb2;
-                } else {
-                    return this.aabb; // Scene AABB
-                }
-            };
-        })(),
+    /**
+     Resets this Scene to its default state.
 
-        /**
-         Resets this Scene to its default state.
+     References to any components in this Scene will become invalid.
 
-         References to any components in this Scene will become invalid.
-
-         @method clear
-         */
-        clear: function () {  // FIXME: should only clear user-created components
-            for (const id in this.components) {
-                if (this.components.hasOwnProperty(id)) {
-                    // Each component fires "destroyed" as it is destroyed,
-                    // which this Scene handles by removing the component
-                    this.components[id].destroy();
-                }
+     @method clear
+     */
+    clear() {  // FIXME: should only clear user-created components
+        for (const id in this.components) {
+            if (this.components.hasOwnProperty(id)) {
+                // Each component fires "destroyed" as it is destroyed,
+                // which this Scene handles by removing the component
+                this.components[id].destroy();
             }
-            // Reinitialise defaults
-            this._initDefaults();
-        },
+        }
+        // Reinitialise defaults
+        this._initDefaults();
+    }
 
-        /**
-         Convenience method that destroys all light sources.
+    /**
+     Convenience method that destroys all light sources.
 
-         Removes all {{#crossLink "AmbientLight"}}AmbientLights{{/crossLink}}, {{#crossLink "PointLight"}}PointLights{{/crossLink}},
-         {{#crossLink "DirLight"}}DirLights{{/crossLink}} and {{#crossLink "SpotLight"}}SpotLights{{/crossLink}}.
+     Removes all {{#crossLink "AmbientLight"}}AmbientLights{{/crossLink}}, {{#crossLink "PointLight"}}PointLights{{/crossLink}},
+     {{#crossLink "DirLight"}}DirLights{{/crossLink}} and {{#crossLink "SpotLight"}}SpotLights{{/crossLink}}.
 
-         @method clearLights
-         */
-        clearLights: function () {
-            const ids = Object.keys(this.lights);
-            for (let i = 0, len = ids.length; i < len; i++) {
-                this.lights[ids[i]].destroy();
-            }
-        },
+     @method clearLights
+     */
+    clearLights() {
+        const ids = Object.keys(this.lights);
+        for (let i = 0, len = ids.length; i < len; i++) {
+            this.lights[ids[i]].destroy();
+        }
+    }
 
-        /**
-         Convenience method that destroys all {{#crossLink "Clip"}}Clips{{/crossLink}}.
+    /**
+     Convenience method that destroys all {{#crossLink "Clip"}}Clips{{/crossLink}}.
 
-         @method clearClips
-         */
-        clearClips: function () {
-            const ids = Object.keys(this.clips);
-            for (let i = 0, len = ids.length; i < len; i++) {
-                this.clips[ids[i]].destroy();
-            }
-        },
+     @method clearClips
+     */
+    clearClips() {
+        const ids = Object.keys(this.clips);
+        for (let i = 0, len = ids.length; i < len; i++) {
+            this.clips[ids[i]].destroy();
+        }
+    }
 
-        /**
-         Shows or hides a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+    /**
+     Shows or hides a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-         Each Object indicates its visibility status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
+     Each Object indicates its visibility status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
 
-         Each visible Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is assigned a value.
+     Each visible Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is assigned a value.
 
-         @method setVisible
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param visible {Boolean} The new visibility state.
-         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed visibility, else false if all updates were redundant and not applied.
-         */
-        setVisible: (function () {
-            let newValue;
+     @method setVisible
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param visible {Boolean} The new visibility state.
+     @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed visibility, else false if all updates were redundant and not applied.
+     */
+    setVisible(ids, visible) {
+        return this.withObjects(ids, object => {
+            const changed = (object.visible !== visible);
+            object.visible = visible;
+            return changed;
+        });
+    }
 
-            function callback(object) {
-                const changed = (object.visible != newValue);
-                object.visible = newValue;
-                return changed;
-            }
+    /**
+     Culls or unculls a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-            return function (ids, visible) {
-                newValue = visible;
-                return this.withObjects(ids, callback);
-            };
-        })(),
+     Each Object indicates its culled status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
 
-        /**
-         Culls or unculls a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+     @method setVisible
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param culled {Boolean} The new cull state.
+     @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed culled state, else false if all updates were redundant and not applied.
+     */
+    setCulled(ids, culled) {
+        return this.withObjects(ids, object => {
+            const changed = (object.culled !== culled);
+            object.culled = culled;
+            return changed;
+        });
+    }
 
-         Each Object indicates its culled status in its {{#crossLink "Object/visibility:property"}}{{/crossLink}} property.
+    /**
+     Selects or de-selects a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-         @method setVisible
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param visible {Boolean} The new cull state.
-         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed culled state, else false if all updates were redundant and not applied.
-         */
-        setCulled: (function () {
-            let newValue;
+     Each Object indicates its selected status in its {{#crossLink "Object/selected:property"}}{{/crossLink}} property.
 
-            function callback(object) {
-                const changed = (object.culled != newValue);
-                object.culled = newValue;
-                return changed;
-            }
+     Each selected Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is assigned a value.
 
-            return function (ids, culled) {
-                newValue = culled;
-                return this.withObjects(ids, callback);
-            };
-        })(),
+     @method setSelected
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param selected {Boolean} Whether to select or deselect.
+     @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed selection state, else false if all updates were redundant and not applied.
+     */
+    setSelected(ids, selected) {
+        return this.withObjects(ids, object => {
+            const changed = (object.selected !== selected);
+            object.selected = selected;
+            return changed;
+        });
+    }
 
-        /**
-         Selects or de-selects a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+    /**
+     Highlights or de-highlights a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-         Each Object indicates its selected status in its {{#crossLink "Object/selected:property"}}{{/crossLink}} property.
+     Each Object indicates its highlight status in its {{#crossLink "Object/highlighted:property"}}{{/crossLink}} property.
 
-         Each selected Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is assigned a value.
+     Each highlighted Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is assigned a value.
 
-         @method setSelected
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param selected {Boolean} Whether to select or deselect.
-         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed selection state, else false if all updates were redundant and not applied.
-         */
-        setSelected: (function () {
-            let newValue;
+     @method setHighlighted
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param highlighted {Boolean} Whether to highlight or un-highlight.
+     @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed highlighted state, else false if all updates were redundant and not applied.
+     */
+    setHighlighted(ids, highlighted) {
+        return this.withObjects(ids, object => {
+            const changed = (object.highlighted !== highlighted);
+            object.highlighted = highlighted;
+            return changed;
+        });
+    }
 
-            function callback(object) {
-                const changed = (object.selected != newValue);
-                object.selected = newValue;
-                return changed;
-            }
+    /**
+     Ghosts or un-ghosts a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-            return function (ids, selected) {
-                newValue = selected;
-                return this.withObjects(ids, callback);
-            };
-        })(),
+     Each Object indicates its ghosted status in its {{#crossLink "Object/ghosted:property"}}{{/crossLink}} property.
 
-        /**
-         Highlights or de-highlights a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+     Each ghosted Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is assigned a value.
 
-         Each Object indicates its highlight status in its {{#crossLink "Object/highlighted:property"}}{{/crossLink}} property.
+     @method setGhosted
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param ghosted {Float32Array} Whether to ghost or un-ghost.
+     @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed ghosted state, else false if all updates were redundant and not applied.
+     */
+    setGhosted(ids, ghosted) {
+        return this.withObjects(ids, object => {
+            const changed = (object.ghosted !== ghosted);
+            object.ghosted = ghosted;
+            return changed;
+        });
+    }
 
-         Each highlighted Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is assigned a value.
+    /**
+     Shows or hides wireeframe edges for batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-         @method setHighlighted
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param highlighted {Boolean} Whether to highlight or un-highlight.
-         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed highlighted state, else false if all updates were redundant and not applied.
-         */
-        setHighlighted: (function () {
-            let newValue;
+     @method setEdges
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param edges {Float32Array} Whether to show or hide edges.
+     @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed edges state, else false if all updates were redundant and not applied.
+     */
+    setEdges(ids, edges) {
+        return this.withObjects(ids, object => {
+            const changed = (object.edges !== edges);
+            object.edges = edges;
+            return changed;
+        });
+    }
 
-            function callback(object) {
-                const changed = (object.highlighted != newValue);
-                object.highlighted = newValue;
-                return changed;
-            }
+    /**
+     Shows or hides an outline around a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-            return function (ids, highlighted) {
-                newValue = highlighted;
-                return this.withObjects(ids, callback);
-            };
-        })(),
+     Each Object indicates its outlined status in its {{#crossLink "Object/outlined:property"}}{{/crossLink}} property.
 
-        /**
-         Ghosts or un-ghosts a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+     Each outlined Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/outlinedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is assigned a value.
 
-         Each Object indicates its ghosted status in its {{#crossLink "Object/ghosted:property"}}{{/crossLink}} property.
+     @method setOutlined
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param outlined {Float32Array} Whether to show or hide the outline.
+     @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed outlined state, else false if all updates were redundant and not applied.
+     */
+    setOutlined(ids, outlined) {
+        return this.withObjects(ids, object => {
+            const changed = (object.outlined !== outlined);
+            object.outlined = outlined;
+            return changed;
+        });
+    }
 
-         Each ghosted Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is assigned a value.
+    /**
+     Colorizes a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-         @method setGhosted
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param ghosted {Float32Array} Whether to ghost or un-ghost.
-         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed ghosted state, else false if all updates were redundant and not applied.
-         */
-        setGhosted: (function () {
-            let newValue;
+     @method setColorize
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param [colorize=(1,1,1)] Float32Array RGB colorize factors, multiplied by the rendered pixel colors.
+     */
+    setColorize(ids, colorize) {
+        return this.withObjects(ids, object => {
+            object.colorize = colorize;
+        });
+    }
 
-            function callback(object) {
-                const changed = (object.ghosted != newValue);
-                object.ghosted = newValue;
-                return changed;
-            }
+    /**
+     Updates opacities of a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-            return function (ids, ghosted) {
-                newValue = ghosted;
-                return this.withObjects(ids, callback);
-            };
-        })(),
+     @method setOpacity
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param [opacity=1] Number Opacity factor in range ````[0..1]````, multiplies by the rendered pixel alphas.
+     */
+    setOpacity(ids, opacity) {
+        return this.withObjects(ids, object => {
+            object.opacity = opacity;
+        });
+    }
 
-        /**
-         Shows or hides wireeframe edges for batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
+    /**
+     Sets a batch of {{#crossLink "Object"}}Objects{{/crossLink}} pickable or unpickable, specified by their IDs, GUIDs and/or entity types.
 
-         @method setEdges
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param edges {Float32Array} Whether to show or hide edges.
-         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed edges state, else false if all updates were redundant and not applied.
-         */
-        setEdges: (function () {
-            let newValue;
+     Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
 
-            function callback(object) {
-                const changed = (object.edges != newValue);
-                object.edges = newValue;
-                return changed;
-            }
+     @method setPickable
+     @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param pickable {Float32Array} Whether to ghost or un-ghost.
+     @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed pickable state, else false if all updates were redundant and not applied.
+     */
+    setPickable(ids, pickable) {
+        return this.withObjects(ids, object => {
+            const changed = (object.pickable !== pickable);
+            object.pickable = pickable;
+            return changed;
+        });
+    }
 
-            return function (ids, edges) {
-                newValue = edges;
-                return this.withObjects(ids, callback);
-            };
-        })(),
+    /**
+     Iterates with a callback over {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
 
-        /**
-         Shows or hides an outline around a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
-
-         Each Object indicates its outlined status in its {{#crossLink "Object/outlined:property"}}{{/crossLink}} property.
-
-         Each outlined Object is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/outlinedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is assigned a value.
-
-         @method setOutlined
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param outlined {Float32Array} Whether to show or hide the outline.
-         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed outlined state, else false if all updates were redundant and not applied.
-         */
-        setOutlined: (function () {
-            // var newValue;
-            //
-            // function callback(object) {
-            //     var changed = (object.outlined != newValue);
-            //     object.outlined = newValue;
-            //     return changed;
-            // }
-            //
-            // return function (ids, outlined) {
-            //     newValue = outlined;
-            //     return this.withObjects(ids, callback);
-            // };
-        })(),
-
-        /**
-         Colorizes a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
-
-         @method setColorize
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param [colorize=(1,1,1)] Float32Array RGB colorize factors, multiplied by the rendered pixel colors.
-         */
-        setColorize: (function () {
-            let newValue;
-
-            function callback(object) {
-                object.colorize = newValue;
-            }
-
-            return function (ids, colorize) {
-                newValue = colorize;
-                this.withObjects(ids, callback);
-            };
-        })(),
-
-        /**
-         Updates opacities of a batch of {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
-
-         @method setOpacity
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param [opacity=1] Number Opacity factor in range ````[0..1]````, multiplies by the rendered pixel alphas.
-         */
-        setOpacity: (function () {
-            let newValue;
-
-            function callback(object) {
-                object.opacity = newValue;
-            }
-
-            return function (ids, opacity) {
-                newValue = opacity;
-                this.withObjects(ids, callback);
-            };
-        })(),
-
-        /**
-         Sets a batch of {{#crossLink "Object"}}Objects{{/crossLink}} pickable or unpickable, specified by their IDs, GUIDs and/or entity types.
-
-         Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
-
-         @method setPickable
-         @param ids {Array} Array of  {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param pickable {Float32Array} Whether to ghost or un-ghost.
-         @returns {Boolean} True if any {{#crossLink "Object"}}Objects{{/crossLink}} changed pickable state, else false if all updates were redundant and not applied.
-         */
-        setPickable: (function () {
-            let newValue;
-
-            function callback(object) {
-                const changed = (object.pickable != newValue);
-                object.pickable = newValue;
-                return changed;
-            }
-
-            return function (ids, pickable) {
-                newValue = pickable;
-                return this.withObjects(ids, callback);
-            };
-        })(),
-
-        /**
-         Iterates with a callback over {{#crossLink "Object"}}Objects{{/crossLink}}, specified by their IDs, GUIDs and/or entity types.
-
-         @method withObjects
-         @param ids {String|Array} One or more {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
-         @param callback {Function} The callback, which takes each object as its argument.
-         */
-        withObjects: function (ids, callback) {
-            if (xeogl._isString(ids)) {
-                ids = [ids];
-            }
-            let changed = false;
-            for (let i = 0, len = ids.length; i < len; i++) {
-                const id = ids[i];
-                let object = this.objects[id];
+     @method withObjects
+     @param ids {String|Array} One or more {{#crossLink "Object"}}{{/crossLink}} IDs, GUIDs or entity types.
+     @param callback {Function} The callback, which takes each object as its argument.
+     */
+    withObjects(ids, callback) {
+        if (utils.isString(ids)) {
+            ids = [ids];
+        }
+        let changed = false;
+        for (let i = 0, len = ids.length; i < len; i++) {
+            const id = ids[i];
+            let object = this.objects[id];
+            if (object) {
+                changed = callback(object) || changed;
+            } else {
+                object = this.guidObjects[id];
                 if (object) {
                     changed = callback(object) || changed;
                 } else {
-                    object = this.guidObjects[id];
-                    if (object) {
-                        changed = callback(object) || changed;
-                    } else {
-                        const objects = this.entityTypes[id];
-                        if (objects) {
-                            for (const objectId in objects) {
-                                if (objects.hasOwnProperty(objectId)) {
-                                    changed = callback(objects[objectId]) || changed;
-                                }
+                    const objects = this.entityTypes[id];
+                    if (objects) {
+                        for (const objectId in objects) {
+                            if (objects.hasOwnProperty(objectId)) {
+                                changed = callback(objects[objectId]) || changed;
                             }
                         }
                     }
                 }
             }
-            return changed;
-        },
-
-        _destroy: function () {
-
-            this.clear();
-
-            this.canvas.gl = null;
-
-            // Memory leak prevention
-            this.models = null;
-            this.objects = null;
-            this.guidObjects = null;
-            this.entityTypes = null;
-            this.entities = null;
-            this.visibleEntities = null;
-            this.ghostedEntities = null;
-            this.highlightedEntities = null;
-            this.selectedEntities = null;
-            this.clips = null;
-            this.lights = null;
-            this.lightMaps = null;
-            this.reflectionMaps = null;
-            this._objectGUIDs = null;
-            this._entityIds = null;
-            this._visibleEntityIds = null;
-            this._ghostedEntityIds = null;
-            this._highlightedEntityIds = null;
-            this._selectedEntityIds = null;
-            this.meshes = null;
-            this.types = null;
-            this.components = null;
-            this.rootObjects = null;
-            this.canvas = null;
-            this._renderer = null;
-            this.input = null;
-            this._viewport = null;
-            this._camera = null;
         }
-    });
+        return changed;
+    }
 
-})();
+    destroy() {
+
+        super.destroy();
+
+        this.clear();
+
+        this.canvas.gl = null;
+
+        // Memory leak prevention
+        this.models = null;
+        this.objects = null;
+        this.guidObjects = null;
+        this.entityTypes = null;
+        this.entities = null;
+        this.visibleEntities = null;
+        this.ghostedEntities = null;
+        this.highlightedEntities = null;
+        this.selectedEntities = null;
+        this.clips = null;
+        this.lights = null;
+        this.lightMaps = null;
+        this.reflectionMaps = null;
+        this._objectGUIDs = null;
+        this._entityIds = null;
+        this._visibleEntityIds = null;
+        this._ghostedEntityIds = null;
+        this._highlightedEntityIds = null;
+        this._selectedEntityIds = null;
+        this.meshes = null;
+        this.types = null;
+        this.components = null;
+        this.rootObjects = null;
+        this.canvas = null;
+        this._renderer = null;
+        this.input = null;
+        this._viewport = null;
+        this._camera = null;
+    }
+}
+
+export {Scene};

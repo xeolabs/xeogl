@@ -53,7 +53,10 @@
  @submodule geometry
  @extends Geometry
  */
-xeogl.PathGeometry = xeogl.Geometry.extend({
+
+import {Geometry} from './geometry.js';
+
+const PathGeometry = Geometry.extend({
 
     type: "xeogl.PathGeometry",
 
@@ -167,3 +170,5 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         }
     }
 });
+
+export{PathGeometry};
