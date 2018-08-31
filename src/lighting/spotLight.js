@@ -86,6 +86,9 @@ import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
 import {RenderBuffer} from '../renderer/renderBuffer.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.SpotLight";
 
 class SpotLight extends Component {
 
@@ -98,8 +101,8 @@ class SpotLight extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.SpotLight";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -323,5 +326,7 @@ class SpotLight extends Component {
 
     }
 }
+
+componentClasses[type] = SpotLight;
 
 export{SpotLight};

@@ -21,9 +21,11 @@
  @constructor
  @extends Component
  */
-import {core} from "./../core.js";
 import {Component} from '../component.js';
 import {stats} from './../stats.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.Material";
 
 class Material extends Component{
 
@@ -36,8 +38,8 @@ class Material extends Component{
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Material";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -50,5 +52,7 @@ class Material extends Component{
         stats.memory.materials--;
     }
 }
+
+componentClasses[type] = Material;
 
 export{Material};

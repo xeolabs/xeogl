@@ -66,9 +66,11 @@
 
  @extends Component
  */
-import {core} from "./../core.js";
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.Viewport";
 
 class Viewport extends Component {
 
@@ -81,8 +83,8 @@ class Viewport extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Viewport";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -217,5 +219,7 @@ class Viewport extends Component {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = Viewport;
 
 export{Viewport};

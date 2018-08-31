@@ -62,6 +62,9 @@
  */
 import {Component} from '../component.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.Shadow";
 
 class Shadow extends Component {
 
@@ -74,8 +77,8 @@ class Shadow extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Shadow";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -151,5 +154,7 @@ class Shadow extends Component {
         //this._state.destroy();
     }
 }
+
+componentClasses[type] = Shadow;
 
 export{Shadow};

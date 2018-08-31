@@ -73,10 +73,10 @@
  @extends Component
  */
 
-import {core} from "./../core.js";
 import {utils} from '../utils.js';
 import {tasks} from '../tasks.js';
 import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.AABBGeometry";
 
@@ -91,13 +91,13 @@ class AABBGeometry extends Geometry {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
     init(cfg) {
 
-        super(owner, utils.apply(cfg, {
+        super.init(utils.apply(cfg, {
             combined: true,
             quantized: true, // Quantized geometry is immutable
             primitive: cfg.primitive || "lines",
@@ -198,5 +198,7 @@ class AABBGeometry extends Geometry {
         ];
     }
 }
+
+componentClasses[type] = AABBGeometry;
 
 export{AABBGeometry};

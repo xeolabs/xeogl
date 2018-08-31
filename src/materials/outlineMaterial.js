@@ -20,6 +20,9 @@
 import {core} from "./../core.js";
 import {Material} from './material.js';
 import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.OutlineMaterial";
 
 class OutlineMaterial extends Material {
 
@@ -32,8 +35,8 @@ class OutlineMaterial extends Material {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.OutlineMaterial";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -124,5 +127,7 @@ class OutlineMaterial extends Material {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = OutlineMaterial;
 
 export{OutlineMaterial};

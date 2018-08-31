@@ -73,9 +73,9 @@
  @param [cfg.dir=[0,0 -1]] {Array of Number} Vector perpendicular to the plane surface, indicating its orientation.
  @extends Component
  */
-import {core} from "./../core.js";
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.Clip";
 
@@ -90,7 +90,7 @@ class Clip extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -188,5 +188,7 @@ class Clip extends Component {
         super.destroy();
     }
 }
+
+componentClasses[type] = Clip;
 
 export{Clip};

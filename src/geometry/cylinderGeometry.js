@@ -53,9 +53,9 @@
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
-import {core} from "./../core.js";
 import {utils} from '../utils.js';
 import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.CylinderGeometry";
 
@@ -70,11 +70,11 @@ class CylinderGeometry extends Geometry {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
-    constructor(owner = nul, cfg) {
+    init(cfg) {
 
         let radiusTop = cfg.radiusTop || 1;
         if (radiusTop < 0) {
@@ -282,7 +282,7 @@ class CylinderGeometry extends Geometry {
             }
         }
 
-        super(owner, utils.apply(cfg, {
+        super.init(utils.apply(cfg, {
             positions: positions,
             normals: normals,
             uv: uvs,
@@ -290,5 +290,7 @@ class CylinderGeometry extends Geometry {
         }));
     }
 }
+
+componentClasses[type] = CylinderGeometry;
 
 export{CylinderGeometry};

@@ -28,6 +28,7 @@
 import {math} from '../math/math.js';
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.CustomProjection";
 
@@ -42,7 +43,7 @@ class CustomProjection extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -86,5 +87,7 @@ class CustomProjection extends Component {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = CustomProjection;
 
 export{CustomProjection};

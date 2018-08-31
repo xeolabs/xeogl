@@ -562,9 +562,8 @@
  The event parameters will be the hit result returned by the {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} method.
  @event picked
  */
-import {core} from "./../core.js";
 import {math} from '../math/math.js';
-import {Object} from './object.js';
+import {xeoglObject} from './object.js';
 import {State} from '../renderer/state.js';
 import {DrawRenderer} from "../renderer/draw/drawRenderer.js";
 import {EmphasisFillRenderer} from "../renderer/emphasis/emphasisFillRenderer.js";
@@ -575,12 +574,13 @@ import {OutlineRenderer} from "../renderer/outline/outlineRenderer.js";
 import {PickMeshRenderer} from "../renderer/pick/pickMeshRenderer.js";
 import {PickVertexRenderer} from "../renderer/pick/pickVertexRenderer.js";
 import {PickTriangleRenderer} from "../renderer/pick/pickTriangleRenderer.js";
+import {componentClasses} from "./../componentClasses.js";
 
 const obb = math.OBB3();
 
 const type = "xeogl.Mesh";
 
-class Mesh extends Object {
+class Mesh extends xeoglObject {
 
     /**
      JavaScript class name for this Component.
@@ -591,7 +591,7 @@ class Mesh extends Object {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -1376,5 +1376,7 @@ class Mesh extends Object {
         this.scene._meshDestroyed(this);
     }
 }
+
+componentClasses[type] = Mesh;
 
 export {Mesh};

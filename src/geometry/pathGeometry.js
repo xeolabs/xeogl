@@ -55,10 +55,13 @@
  */
 
 import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.PathGeometry";
 
 const PathGeometry = Geometry.extend({
 
-    type: "xeogl.PathGeometry",
+    type: type,
 
     // Constructor
 
@@ -170,5 +173,7 @@ const PathGeometry = Geometry.extend({
         }
     }
 });
+
+componentClasses[type] = PathGeometry;
 
 export{PathGeometry};

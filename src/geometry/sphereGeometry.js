@@ -50,6 +50,7 @@
 import {core} from "./../core.js";
 import {utils} from '../utils.js';
 import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.SphereGeometry";
 
@@ -64,11 +65,11 @@ class SphereGeometry extends Geometry {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
-    constructor(owner = nul, cfg) {
+    init(cfg) {
 
         const lod = cfg.lod || 1;
 
@@ -174,7 +175,7 @@ class SphereGeometry extends Geometry {
             }
         }
 
-        super(owner, utils.apply(cfg, {
+        super.init(utils.apply(cfg, {
             positions: positions,
             normals: normals,
             uv: uvs,
@@ -182,5 +183,7 @@ class SphereGeometry extends Geometry {
         }));
     }
 }
+
+componentClasses[type] = SphereGeometry;
 
 export {SphereGeometry};

@@ -35,10 +35,10 @@
  @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
-import {core} from "./../core.js";
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.Ortho";
 
@@ -53,7 +53,7 @@ class Ortho extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -218,5 +218,7 @@ class Ortho extends Component {
         this.scene.canvas.off(this._onCanvasBoundary);
     }
 }
+
+componentClasses[type] = Ortho;
 
 export{Ortho};

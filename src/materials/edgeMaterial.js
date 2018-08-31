@@ -187,6 +187,7 @@
 
 import {Material} from './material.js';
 import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const PRESETS = {
     "default": {
@@ -211,6 +212,9 @@ const PRESETS = {
     }
 };
 
+
+const type = "xeogl.EdgeMaterial";
+
 class EdgeMaterial extends Material {
 
     /**
@@ -233,8 +237,8 @@ class EdgeMaterial extends Material {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.EdgeMaterial";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -380,5 +384,7 @@ class EdgeMaterial extends Material {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = EdgeMaterial;
 
 export {EdgeMaterial};

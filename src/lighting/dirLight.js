@@ -77,6 +77,9 @@ import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
 import {RenderBuffer} from '../renderer/renderBuffer.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.DirLight";
 
 class DirLight extends Component {
 
@@ -89,8 +92,8 @@ class DirLight extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.DirLight";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -238,5 +241,7 @@ class DirLight extends Component {
         this.scene._lightDestroyed(this);
     }
 }
+
+componentClasses[type] = DirLight;
 
 export {DirLight};

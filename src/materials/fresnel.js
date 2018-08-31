@@ -59,6 +59,9 @@
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.Fresnel";
 
 class Fresnel extends Component {
 
@@ -71,8 +74,8 @@ class Fresnel extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Fresnel";
+    get type() {
+        return type;
     }
 
     constructor(owner = null, cfg = {}) {
@@ -179,5 +182,7 @@ class Fresnel extends Component {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = Fresnel;
 
 export{Fresnel};

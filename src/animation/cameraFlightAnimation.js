@@ -87,7 +87,6 @@
  @extends Component
  */
 
-import {core} from "./../core.js";
 import {math} from '../math/math.js';
 import {utils} from '../utils.js';
 import {tasks} from '../tasks.js';
@@ -95,10 +94,14 @@ import {Component} from '../component.js';
 import {Mesh} from '../objects/mesh.js';
 import {AABBGeometry} from '../geometry/aabbGeometry.js';
 import {PhongMaterial} from '../materials/phongMaterial.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.CameraFlightAnimation";
 
 const tempVec3 = math.vec3();
+const newLook = math.vec3();
+const newEye = math.vec3();
+const newUp = math.vec3();
 const newLookEyeVec = math.vec3();
 const lookEyeVec = math.vec3();
 
@@ -113,7 +116,7 @@ class CameraFlightAnimation extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -617,5 +620,7 @@ class CameraFlightAnimation extends Component {
         super.destroy();
     }
 }
+
+componentClasses[type] = CameraFlightAnimation;
 
 export {CameraFlightAnimation};

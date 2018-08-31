@@ -43,9 +43,10 @@
 
  @extends Group
  */
-import {core} from "./../core.js";
+import {core} from "../core.js";
 import {utils} from '../utils.js';
 import {Group} from "../objects/group.js";
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.Model";
 
@@ -60,7 +61,7 @@ class Model extends Group {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -183,7 +184,7 @@ class Model extends Group {
             }
         } else if (utils.isObject(component)) { // Component config
             const type = component.type || "xeogl.Component";
-            if (!utils.isComponentType(type)) {
+            if (!core.isComponentType(type)) {
                 this.error("Not a xeogl component type: " + type);
                 return;
             }
@@ -329,5 +330,7 @@ class Model extends Group {
         this.scene._modelDestroyed(this);
     }
 }
+
+componentClasses[type] = Model;
 
 export{Model};

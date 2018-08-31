@@ -53,9 +53,9 @@
  @extends Geometry
  */
 
-import {core} from "./../core.js";
 import {utils} from '../utils.js';
 import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.BoxGeometry";
 
@@ -70,7 +70,7 @@ class BoxGeometry extends Geometry {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -106,7 +106,7 @@ class BoxGeometry extends Geometry {
         const ymax = ySize + centerY;
         const zmax = zSize + centerZ;
 
-        super(owner, utils.apply(cfg, {
+        super.init(utils.apply(cfg, {
 
             // The vertices - eight for our cube, each
             // one spanning three array elements for X,Y and Z
@@ -272,5 +272,7 @@ class BoxGeometry extends Geometry {
         this.box = true;
     }
 }
+
+componentClasses[type] = BoxGeometry;
 
 export{BoxGeometry};

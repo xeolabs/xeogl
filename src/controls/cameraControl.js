@@ -77,6 +77,7 @@ import {Mesh} from '../objects/mesh.js';
 import {AABBGeometry} from '../geometry/aabbGeometry.js';
 import {PhongMaterial} from '../materials/phongMaterial.js';
 import {CameraFlightAnimation} from '../animation/cameraFlightAnimation.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.CameraControl";
 
@@ -91,7 +92,7 @@ class CameraControl extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -1646,10 +1647,10 @@ class CameraControl extends Component {
             const KEY_NUM_5 = 53;
             const KEY_NUM_6 = 54;
 
-            const center = new math.vec3();
-            const tempVec3a = new math.vec3();
-            const tempVec3b = new math.vec3();
-            const tempVec3c = new math.vec3();
+            const center = math.vec3();
+            const tempVec3a = math.vec3();
+            const tempVec3b = math.vec3();
+            const tempVec3c = math.vec3();
 
             const cameraTarget = {
                 eye: new Float32Array(3),
@@ -1799,5 +1800,7 @@ class CameraControl extends Component {
         super.destroy();
     }
 }
+
+componentClasses[type] = CameraControl;
 
 export {CameraControl};

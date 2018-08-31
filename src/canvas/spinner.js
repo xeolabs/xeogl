@@ -53,7 +53,6 @@
  @extends Component
  */
 
-import {core} from "./../core.js";
 import {Component} from '../component.js';
 
 const type = "xeogl.Spinner";
@@ -204,7 +203,7 @@ class Spinner extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 

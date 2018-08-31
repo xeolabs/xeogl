@@ -30,10 +30,11 @@
  @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
-import {core} from "./../core.js";
+
 import {math} from '../math/math.js';
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.Perspective";
 
@@ -48,15 +49,15 @@ class Perspective extends Component {
      @type String
      @final
      */
-    static get type() {
-      return type;
+    get type() {
+        return type;
     }
 
     init(cfg) {
 
         super.init(cfg);
 
-        this._state = State({
+        this._state = new State({
             matrix: math.mat4()
         });
 
@@ -222,5 +223,7 @@ class Perspective extends Component {
         this.scene.canvas.off(this._canvasResized);
     }
 }
+
+componentClasses[type] = Perspective;
 
 export{Perspective};

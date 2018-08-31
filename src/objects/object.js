@@ -602,14 +602,15 @@
  @extends Component
  */
 
-import {core} from "./../core.js";
 import {utils} from '../utils.js';
 import {Component} from '../component.js';
 // import {Mesh} from './mesh.js';
 // import {AABBGeometry} from '../geometry/aabbGeometry.js';
 // import {PhongMaterial} from '../materials/phongMaterial.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
+const type = "xeogl.OutlineMaterial";
 const angleAxis = new Float32Array(4);
 const q1 = new Float32Array(4);
 const q2 = new Float32Array(4);
@@ -622,7 +623,7 @@ const vecb = new Float32Array(3);
 
 const identityMat = math.identityMat4();
 
-class Object extends Component {
+class xeoglObject extends Component {
 
 
     /**
@@ -634,8 +635,8 @@ class Object extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Object";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -1772,4 +1773,6 @@ class Object extends Component {
     }
 }
 
-export {Object};
+componentClasses[type] = xeoglObject;
+
+export {xeoglObject};

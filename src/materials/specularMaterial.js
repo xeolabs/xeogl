@@ -289,11 +289,12 @@
  @param [cfg.pointSize=1] {Number} Scalar that controls the size of points for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "points".
 
  */
-import {core} from "./../core.js";
 import {Material} from './material.js';
 import {State} from '../renderer/state.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
+const type = "xeogl.SpecularMaterial";
 const alphaModes = {"opaque": 0, "mask": 1, "blend": 2};
 const alphaModeNames = ["opaque", "mask", "blend"];
 
@@ -308,8 +309,8 @@ class SpecularMaterial extends Material {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.SpecularMaterial";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -859,5 +860,7 @@ class SpecularMaterial extends Material {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = SpecularMaterial;
 
 export{SpecularMaterial};

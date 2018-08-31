@@ -160,7 +160,9 @@ import {core} from "./../core.js";
 import {Material} from './material.js';
 import {State} from '../renderer/state.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
+const type = "xeogl.PhongMaterial";
 const alphaModes = {"opaque": 0, "mask": 1, "blend": 2};
 const alphaModeNames = ["opaque", "mask", "blend"];
 
@@ -175,8 +177,8 @@ class PhongMaterial extends Material {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.PhongMaterial";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -849,5 +851,7 @@ class PhongMaterial extends Material {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = PhongMaterial;
 
 export{PhongMaterial};

@@ -297,15 +297,16 @@
 
  */
 
-import {core} from "./../core.js";
 import {Material} from './material.js';
 import {State} from '../renderer/state.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const modes = {"opaque": 0, "mask": 1, "blend": 2};
 const modeNames = ["opaque", "mask", "blend"];
+const type = "xeogl.MetallicMaterial";
 
-class MetallicMaterial extends Material {
+ class MetallicMaterial extends Material {
 
     /**
      JavaScript class name for this Component.
@@ -316,8 +317,8 @@ class MetallicMaterial extends Material {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.MetallicMaterial";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -866,5 +867,7 @@ class MetallicMaterial extends Material {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = MetallicMaterial;
 
 export{MetallicMaterial};

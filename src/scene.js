@@ -370,7 +370,7 @@
  @extends Component
  */
 
-import {core} from "./core.js";
+import {core} from './core.js';
 import {utils} from './utils.js';
 import {math} from './math/math.js';
 import {stats} from './stats.js';
@@ -386,6 +386,9 @@ import {PhongMaterial} from './materials/phongMaterial.js';
 import {EmphasisMaterial} from './materials/emphasisMaterial.js';
 import {EdgeMaterial} from './materials/edgeMaterial.js';
 import {OutlineMaterial} from './materials/outlineMaterial.js';
+import {componentClasses} from "./componentClasses.js";
+
+const type = "xeogl.Scene";
 
 // Cached vars to avoid garbage collection
 
@@ -480,8 +483,8 @@ class Scene extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Scene";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -895,9 +898,9 @@ class Scene extends Component {
             element: this.canvas.canvas
         });
 
-        // Register Scene on engine
+        // Register Scene on xeogl
         // Do this BEFORE we add components below
-        utils.addScene(this);
+        core.addScene(this);
 
         // Add components specified as JSON
 
@@ -2519,5 +2522,7 @@ class Scene extends Component {
         this._camera = null;
     }
 }
+
+componentClasses[type] = Scene;
 
 export {Scene};

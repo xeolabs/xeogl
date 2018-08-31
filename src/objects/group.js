@@ -42,9 +42,12 @@
  {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
  @extends Object
  */
-import {Object} from "./object.js";
+import {xeoglObject} from "./object.js";
+import {componentClasses} from "./../componentClasses.js";
 
-class Group extends Object{
+const type = "xeogl.Group";
+
+ class Group extends xeoglObject{
 
     /**
      JavaScript class name for this Component.
@@ -55,13 +58,15 @@ class Group extends Object{
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Group";
+    get type() {
+        return type;
     }
 
     init(cfg) {
         super.init(cfg);
     }
 }
+
+componentClasses[type] = Group;
 
 export {Group};

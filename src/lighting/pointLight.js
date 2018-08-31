@@ -87,6 +87,9 @@ import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
 import {RenderBuffer} from '../renderer/renderBuffer.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.PointLight";
 
 class PointLight extends Component {
 
@@ -99,8 +102,8 @@ class PointLight extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.PointLight";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -301,5 +304,7 @@ class PointLight extends Component {
         this.scene._lightDestroyed(this);
     }
 }
+
+componentClasses[type] = PointLight;
 
 export {PointLight};

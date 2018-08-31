@@ -35,7 +35,7 @@ var utils = {
      @private
      */
     isID: function (value) {
-        return utils._isString(value) || utils._isNumeric(value);
+        return utils.isString(value) || utils.isNumeric(value);
     },
 
     /**
@@ -49,8 +49,8 @@ var utils = {
         if (!c1 || !c2) {
             return false;
         }
-        const id1 = (utils._isNumeric(c1) || utils._isString(c1)) ? `${c1}` : c1.id;
-        const id2 = (utils._isNumeric(c2) || utils._isString(c2)) ? `${c2}` : c2.id;
+        const id1 = (utils.isNumeric(c1) || utils.isString(c1)) ? `${c1}` : c1.id;
+        const id2 = (utils.isNumeric(c2) || utils.isString(c2)) ? `${c2}` : c2.id;
         return id1 === id2;
     },
 
@@ -70,38 +70,15 @@ var utils = {
      @returns {boolean}
      @private
      */
-    isObject: function () {
+    isObject: function (value) {
         const objectConstructor = {}.constructor;
-        return value => !!value && value.constructor === objectConstructor;
-    },
-
-    /**
-     Tests if the given component type is a subtype of another component supertype.
-     @param {String} type
-     @param {String} [superType="xeogl.Component"]
-     @returns {boolean}
-     @private
-     */
-    isComponentType: function (type, superType = "xeogl.Component") {
-        if (type === superType) {
-            return true;
-        }
-        const types = utils._superTypes[type];
-        if (!types) {
-            return false;
-        }
-        for (let i = types.length - 1; i >= 0; i--) {
-            if (types[i] === superType) {
-                return true;
-            }
-        }
-        return false;
+        return (!!value && value.constructor === objectConstructor);
     },
 
     /** Returns a shallow copy
      */
     copy: function (o) {
-        return utils._apply(o, {});
+        return utils.apply(o, {});
     },
 
     /** Add properties of o to o2, overwriting them on o2 if already there
@@ -170,7 +147,7 @@ var utils = {
      @private
      */
     inQuotes: function (id) {
-        return utils._isNumeric(id) ? (`${id}`) : (`'${id}'`);
+        return utils.isNumeric(id) ? (`${id}`) : (`'${id}'`);
     },
 
     /**

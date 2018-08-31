@@ -58,10 +58,12 @@
  @param [cfg.intensity=[1.0]] {Number} The intensity of this AmbientLight, as a factor in range ````[0..1]````.
  @extends Component
  */
+import {core} from '../core.js';
 import {math} from '../math/math.js';
 import {Component} from '../component.js';
+import {componentClasses} from "./../componentClasses.js";
 
-const type = "AmbientLight";
+const type = "xeogl.AmbientLight";
 
 class AmbientLight extends Component {
 
@@ -74,7 +76,7 @@ class AmbientLight extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -127,5 +129,7 @@ class AmbientLight extends Component {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = AmbientLight;
 
 export {AmbientLight};

@@ -68,6 +68,9 @@ import {core} from "./../core.js";
 import {Material} from './material.js';
 import {State} from '../renderer/state.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.LambertMaterial";
 
 class LambertMaterial extends Material {
 
@@ -80,8 +83,8 @@ class LambertMaterial extends Material {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.LambertMaterial";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -316,5 +319,7 @@ class LambertMaterial extends Material {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = LambertMaterial;
 
 export{LambertMaterial};

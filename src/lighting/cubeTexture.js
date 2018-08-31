@@ -18,11 +18,13 @@
  @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "CubeTexture/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
-
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
 import {Texture2D} from '../renderer/texture2d.js';
 import {stats} from './../stats.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.CubeTexture";
 
 function ensureImageSizePowerOfTwo(image) {
     if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
@@ -61,8 +63,8 @@ class CubeTexture extends Component{
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.CubeTexture";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -168,5 +170,7 @@ class CubeTexture extends Component{
         this._state.destroy();
     }
 }
+
+componentClasses[type] = CubeTexture;
 
 export {CubeTexture};

@@ -104,6 +104,7 @@ import {stats} from './../stats.js';
 import {Component} from '../component.js';
 import {Spinner} from './spinner.js';
 import {WEBGL_INFO} from './../webglInfo.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.Canvas";
 
@@ -126,7 +127,7 @@ class Canvas extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -626,7 +627,7 @@ class Canvas extends Component {
         if (!value) {
             this._backgroundColor = null;
         } else {
-            (this._backgroundColor = this._backgroundColor || new math.vec4()).set(value || [0, 0, 0, 1]);
+            (this._backgroundColor = this._backgroundColor || math.vec4()).set(value || [0, 0, 0, 1]);
             if (!this._backgroundImageSrc) {
                 const rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
                 this._backgroundElement.style.background = rgb;
@@ -690,5 +691,7 @@ class Canvas extends Component {
         super.destroy();
     }
 }
+
+componentClasses[type] = Canvas;
 
 export {Canvas};

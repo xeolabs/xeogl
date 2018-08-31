@@ -12,6 +12,10 @@ class Queue {
         this._length = 0;
     }
 
+    get length() {
+        return this._length;
+    }
+
     shift() {
         if (this._index >= this._headLength) {
             const t = this._head;

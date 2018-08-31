@@ -77,6 +77,9 @@ import {State} from '../renderer/state.js';
 import {Texture2D} from '../renderer/texture2d.js';
 import {math} from '../math/math.js';
 import {stats} from './../stats.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.Texture";
 
 function ensureImageSizePowerOfTwo(image) {
     if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
@@ -115,8 +118,8 @@ class Texture extends Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Texture";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -509,5 +512,7 @@ class Texture extends Component {
         stats.memory.textures--;
     }
 }
+
+componentClasses[type] = Texture;
 
 export{Texture};

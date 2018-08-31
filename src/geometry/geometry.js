@@ -92,7 +92,6 @@
  @extends Component
  */
 
-import {core} from "./../core.js";
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
 import {ArrayBuffer} from '../renderer/arrayBuffer.js';
@@ -100,6 +99,7 @@ import {getSceneVertexBufs} from './sceneVertexBufs.js';
 import {math} from '../math/math.js';
 import {stats} from './../stats.js';
 import {WEBGL_INFO} from './../webglInfo.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.Geometry";
 
@@ -120,7 +120,7 @@ class Geometry extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -1081,5 +1081,7 @@ var buildEdgesIndices = (function () {
         return (largeIndex || combined) ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
     };
 })();
+
+componentClasses[type] = Geometry;
 
 export {Geometry};

@@ -72,10 +72,10 @@
  containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
  @extends Component
  */
-import {core} from "./../core.js";
 import {utils} from '../utils.js';
 import {tasks} from '../tasks.js';
 import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.OBBGeometry";
 
@@ -90,12 +90,12 @@ class OBBGeometry extends Geometry {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
     init(cfg) {
-        super(owner, utils.apply(cfg, {
+        super.init(utils.apply(cfg, {
             combined: true,
             quantized: false, // Quantized geometry is immutable
             primitive: cfg.primitive || "lines",
@@ -180,5 +180,7 @@ class OBBGeometry extends Geometry {
         ];
     }
 }
+
+componentClasses[type] = OBBGeometry;
 
 export{OBBGeometry};

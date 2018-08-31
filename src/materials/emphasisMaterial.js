@@ -230,6 +230,7 @@
 
 import {Material} from './material.js';
 import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const PRESETS = {
     "default": {
@@ -389,6 +390,8 @@ const PRESETS = {
     }
 };
 
+const type = "xeogl.EmphasisMaterial";
+
 class EmphasisMaterial extends Material {
 
     /**
@@ -411,8 +414,8 @@ class EmphasisMaterial extends Material {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.EmphasisMaterial";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -814,5 +817,7 @@ class EmphasisMaterial extends Material {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = EmphasisMaterial;
 
 export {EmphasisMaterial};

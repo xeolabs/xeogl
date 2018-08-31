@@ -32,6 +32,9 @@
 
 import {core} from "./../core.js";
 import {CubeTexture} from './cubeTexture.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.LightMap";
 
 class LightMap extends CubeTexture{
 
@@ -44,8 +47,8 @@ class LightMap extends CubeTexture{
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.LightMap";
+    get type() {
+        return type;
     }
 
     init(cfg) {
@@ -58,5 +61,7 @@ class LightMap extends CubeTexture{
         this.scene._lightMapDestroyed(this);
     }
 }
+
+componentClasses[type] = LightMap;
 
 export{LightMap};

@@ -196,7 +196,6 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
  @extends Component
  */
-import {core} from "./../core.js";
 import {math} from '../math/math.js';
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
@@ -204,6 +203,7 @@ import {Perspective} from './perspective.js';
 import {Ortho} from './ortho.js';
 import {Frustum} from './frustum.js';
 import {CustomProjection} from './customProjection.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const tempVec3 = math.vec3();
 const tempVec3b = math.vec3();
@@ -230,7 +230,7 @@ class Camera extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -873,5 +873,7 @@ class Camera extends Component {
         this._state.destroy();
     }
 }
+
+componentClasses[type] = Camera;
 
 export{Camera};

@@ -106,11 +106,11 @@ class Input extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
-    constructor(owner=null, cfg) {
+    init(cfg) {
 
         super.init(cfg);
 

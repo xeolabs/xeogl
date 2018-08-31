@@ -57,9 +57,9 @@
  @param [cfg.zSegments=1] {Number} Number of segments on the Z-axis.
  @extends Geometry
  */
-import {core} from "./../core.js";
 import {utils} from '../utils.js';
 import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.PlaneGeometry";
 
@@ -74,11 +74,11 @@ class PlaneGeometry extends Geometry {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
-    constructor(owner = null, cfg = {}) {
+    init(cfg) {
 
         let xSize = cfg.xSize || 1;
         if (xSize < 0) {
@@ -189,7 +189,7 @@ class PlaneGeometry extends Geometry {
             }
         }
 
-        super(owner, utils.apply(cfg, {
+        super.init(utils.apply(cfg, {
             positions: positions,
             normals: normals,
             uv: uvs,
@@ -197,5 +197,7 @@ class PlaneGeometry extends Geometry {
         }));
     }
 }
+
+componentClasses[type] = PlaneGeometry;
 
 export {PlaneGeometry};

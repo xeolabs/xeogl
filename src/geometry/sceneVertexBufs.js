@@ -149,6 +149,8 @@ class SceneVertexBufs {
 
     build() {
 
+        const gl = this.scene.canvas.gl;
+
         this.geometryVertexBufs = {};
 
         let id;

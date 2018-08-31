@@ -34,10 +34,10 @@
  @param [cfg.far=1000] {Number} Position of the Frustum's far plane on the positive View-space Z-axis.
  @extends Component
  */
-import {core} from "./../core.js";
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
 import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
 const type = "xeogl.Frustum";
 
@@ -52,7 +52,7 @@ class Frustum extends Component {
      @type String
      @final
      */
-    static get type() {
+    get type() {
         return type;
     }
 
@@ -260,5 +260,7 @@ class Frustum extends Component {
         super.destroy();
     }
 }
+
+componentClasses[type] = Frustum;
 
 export{Frustum};

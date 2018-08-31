@@ -164,7 +164,7 @@
  ````javascript
  class ColoredTorus extends xeogl.Component{
 
-     static get type() {
+     get type() {
         return "ColoredTorus";
      }
 
@@ -222,6 +222,9 @@ import {core} from "./core.js";
 import {utils} from './utils.js';
 import {tasks} from './tasks.js';
 import {Map} from "./utils/map.js";
+import {componentClasses} from "./componentClasses.js";
+
+const type = "xeogl.Component";
 
 class Component {
 
@@ -234,8 +237,8 @@ class Component {
      @type String
      @final
      */
-    static get type() {
-        return "xeogl.Component";
+    get type() {
+        return type;
     }
 
     constructor() {
@@ -247,12 +250,20 @@ class Component {
 
         var owner = null;
 
+        /**
+         The parent {{#crossLink "Scene"}}{{/crossLink}} that contains this Component.
+
+         @property scene
+         @type {Scene}
+         @final
+         */
+        this.scene = null;
+
         if (this.type === "xeogl.Scene") {
             this.scene = this;
             if (arg1) {
                 cfg = arg1;
             }
-
         } else {
             if (arg1) {
                 if (arg1.type === "xeogl.Scene") {
@@ -262,7 +273,7 @@ class Component {
                         cfg = arg2;
                     }
 
-                } else if (arg1.isType && arg1.isType("xeogl.Component")) {
+                } else if (arg1 instanceof Component) {
                     this.scene = arg1.scene;
                     owner = arg1;
                     if (arg2) {
@@ -271,26 +282,18 @@ class Component {
 
                 } else {
                     // Create this component within the default xeogl Scene
-                    this.scene = core.scene;
+                    this.scene = core.getDefaultScene();
                     owner = this.scene;
                     cfg = arg1;
                 }
             } else {
                 // Create this component within the default xeogl Scene
-                this.scene = core.scene;
+                this.scene = core.getDefaultScene();
                 owner = this.scene;
             }
             this._renderer = this.scene._renderer;
         }
 
-        /**
-         The parent {{#crossLink "Scene"}}{{/crossLink}} that contains this Component.
-
-         @property scene
-         @type {Scene}
-         @final
-         */
-        this.scene = owner.scene; // Note that a xeogl.Scene has a 'scene' property set to itself
 
         this._model = null;
         this._renderer = this.scene._renderer;
@@ -329,7 +332,7 @@ class Component {
         this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
         this._adoptees = null; // // Components created with #create - lazy-instantiated
 
-        if (this === this.scene) { // Don't add scene to itself
+        if (this !== this.scene) { // Don't add scene to itself
             this.scene._addComponent(this); // Assigns this component an automatic ID if not yet assigned
         }
 
@@ -421,7 +424,7 @@ class Component {
                 return false;
             }
         }
-        return utils.isComponentType(this.type, type);
+        return core.isComponentType(this.type, type);
     }
 
     /**
@@ -683,7 +686,7 @@ class Component {
 
                 const componentCfg = component;
                 const componentType = componentCfg.type || type || "xeogl.Component";
-                const componentClass = window[componentType];
+                const componentClass = componentClasses[componentType];
 
                 if (!componentClass) {
                     this.error("Component type not found: " + componentType);
@@ -691,7 +694,7 @@ class Component {
                 }
 
                 if (type) {
-                    if (!utils.isComponentType(componentType, type)) {
+                    if (!core.isComponentType(componentType, type)) {
                         this.error("Expected a " + type + " type or subtype, not a " + componentType);
                         return;
                     }
@@ -884,14 +887,14 @@ class Component {
     _checkComponent(expectedType, component) {
         if (utils.isObject(component)) {
             if (component.type) {
-                if (!utils.isComponentType(component.type, expectedType)) {
+                if (!core.isComponentType(component.type, expectedType)) {
                     this.error("Expected a " + expectedType + " type or subtype: " + component.type + " " + utils.inQuotes(component.id));
                     return;
                 }
             } else {
                 component.type = expectedType;
             }
-            component = new window[component.type](this.scene, component);
+            component = new componentClasses[component.type](this.scene, component);
         } else {
             if (utils.isID(component)) { // Expensive test
                 const id = component;
@@ -937,11 +940,11 @@ class Component {
 
         if (utils.isObject(cfg)) {
             type = cfg.type || "xeogl.Component";
-            claz = xeogl[type.substring(6)];
+            claz = componentClasses[type];
 
         } else if (utils.isString(cfg)) {
             type = cfg;
-            claz = xeogl[type.substring(6)];
+            claz = componentClasses[type];
 
         } else {
             claz = cfg;
@@ -954,7 +957,7 @@ class Component {
             return;
         }
 
-        if (!utils.isComponentType(type, "xeogl.Component")) {
+        if (!core.isComponentType(type, "xeogl.Component")) {
             this.error("Expected a xeogl.Component type or subtype");
             return;
         }
@@ -1097,5 +1100,7 @@ class Component {
         this.fire("destroyed", this.destroyed = true);
     }
 }
+
+componentClasses[type] = Component;
 
 export {Component};
