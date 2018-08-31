@@ -100,4 +100,8 @@ function renderScenes() {
 
 window.requestAnimationFrame(frame);
 
+const loop = {};
+
+export{loop};
+
 
