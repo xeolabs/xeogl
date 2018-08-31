@@ -6,7 +6,7 @@ import {core} from "./../core.js";
 import {utils} from '../utils.js';
 import {webglEnums} from './webglEnums.js';
 
-function getGLEnum(name, defaultVal) {
+function getGLEnum(gl, name, defaultVal) {
     if (name === undefined) {
         return defaultVal;
     }
@@ -14,7 +14,7 @@ function getGLEnum(name, defaultVal) {
     if (glName === undefined) {
         return defaultVal;
     }
-    return this.gl[glName];
+    return gl[glName];
 }
 
 const color = new Uint8Array([0, 0, 0, 1]);
@@ -146,7 +146,7 @@ class Texture2D {
         const gl = this.gl;
         gl.bindTexture(this.target, this.texture);
         if (props.minFilter) {
-            const minFilter = getGLEnum(props.minFilter);
+            const minFilter = getGLEnum(gl, props.minFilter);
             if (minFilter) {
                 gl.texParameteri(this.target, gl.TEXTURE_MIN_FILTER, minFilter);
                 if (minFilter === gl.NEAREST_MIPMAP_NEAREST ||
@@ -159,19 +159,19 @@ class Texture2D {
             }
         }
         if (props.magFilter) {
-            const magFilter = getGLEnum(props.magFilter);
+            const magFilter = getGLEnum(gl, props.magFilter);
             if (magFilter) {
                 gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, magFilter);
             }
         }
         if (props.wrapS) {
-            const wrapS = getGLEnum(props.wrapS);
+            const wrapS = getGLEnum(gl, props.wrapS);
             if (wrapS) {
                 gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, wrapS);
             }
         }
         if (props.wrapT) {
-            const wrapT = getGLEnum(props.wrapT);
+            const wrapT = getGLEnum(gl, props.wrapT);
             if (wrapT) {
                 gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, wrapT);
             }
