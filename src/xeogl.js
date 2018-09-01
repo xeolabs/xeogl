@@ -10,6 +10,7 @@
 import {core} from "./core.js";
 import {tasks} from "./tasks.js";
 import {loop} from "./loop.js";
+import {utils} from "./utils.js";
 
 // Core framework
 
@@ -17,8 +18,11 @@ export {WEBGL_INFO} from "./webglInfo.js";
 export {stats}  from "./stats.js";
 export {math} from "./math/math.js";
 
+export const getDefaultScene = core.getDefaultScene;
 export const scheduleTask = tasks.scheduleTask;
 export const clear = core.clear;
+export const _isString = utils.isString; // Backward compat
+export const _apply = utils.apply; // Backward compat
 
 // Component classes
 
