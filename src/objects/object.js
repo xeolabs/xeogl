@@ -610,7 +610,7 @@ import {Component} from '../component.js';
 import {math} from '../math/math.js';
 import {componentClasses} from "./../componentClasses.js";
 
-const type = "xeogl.OutlineMaterial";
+const type = "xeogl.Object";
 const angleAxis = new Float32Array(4);
 const q1 = new Float32Array(4);
 const q2 = new Float32Array(4);
