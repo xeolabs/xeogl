@@ -202,3 +202,5 @@ const Canvas2Image = (function () {
         }
     };
 })();
+
+export {Canvas2Image};

@@ -97,14 +97,15 @@
  @param {Scene} scene Parent scene
  @extends Component
  */
-import {core} from "./../core.js";
+import {Canvas2Image} from "../libs/canvas2image.js";
+import {core} from "../core.js";
 import {utils} from '../utils.js';
 import {math} from '../math/math.js';
-import {stats} from './../stats.js';
+import {stats} from '../stats.js';
 import {Component} from '../component.js';
 import {Spinner} from './spinner.js';
-import {WEBGL_INFO} from './../webglInfo.js';
-import {componentClasses} from "./../componentClasses.js";
+import {WEBGL_INFO} from '../webglInfo.js';
+import {componentClasses} from "../componentClasses.js";
 
 const type = "xeogl.Canvas";
 
