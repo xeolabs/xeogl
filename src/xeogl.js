@@ -6,7 +6,6 @@
  @static
  @author xeolabs / http://xeolabs.com/
  */
-
 import {core} from "./core.js";
 import {tasks} from "./tasks.js";
 import {loop} from "./loop.js";
@@ -19,6 +18,7 @@ export {stats}  from "./stats.js";
 export {math} from "./math/math.js";
 
 export const getDefaultScene = core.getDefaultScene;
+export const setDefaultScene = core.setDefaultScene;
 export const scheduleTask = tasks.scheduleTask;
 export const clear = core.clear;
 export const _isString = utils.isString; // Backward compat
