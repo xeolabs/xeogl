@@ -27,7 +27,7 @@
      density: 4 // How many buildings on each axis
  });
  ````
- 
+
  @class TestModel
  @module xeogl
  @submodule models
@@ -47,25 +47,19 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The TestModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
-(function () {
+{
 
-    "use strict";
+    xeogl.TestModel = class TestModel extends xeogl.BuildableModel {
 
-    xeogl.TestModel = xeogl.BuildableModel.extend({
-
-        type: "xeogl.TestModel",
-
-        _init: function (cfg) {
-            
-            this._super(cfg);
-            
+        init(cfg) {
+            super.init(cfg);
             this._generate(cfg);
-        },
+        }
 
-        _generate: function (options) {
+        _generate(options) {
 
             this.destroyAll();
-            
+
             options = options || {};
 
             // Create some geometry and material assets
@@ -116,9 +110,9 @@
                     this._generateBuilding(x + 2, z + 2, x + spacing - 2, z + spacing - 2, options);
                 }
             }
-        },
+        }
 
-        _generateBuilding: function (xmin, zmin, xmax, zmax, options) {
+        _generateBuilding(xmin, zmin, xmax, zmax, options) {
 
             var xpos = (xmin + xmax) * 0.5;
             var ypos = 0;
@@ -206,13 +200,6 @@
                 // Decrease current vertical box size
                 ySize -= (Math.random() * 5) + 2;
             }
-        },
-
-        _props: {},
-
-        _destroy: function () {
-            this.destroyAll();
         }
-    });
-
-})();
+    };
+}

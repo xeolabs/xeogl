@@ -226,232 +226,211 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The SceneJSModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Geometry
  */
-(function () {
+{
 
-    "use strict";
+    xeogl.SceneJSModel = class SceneJSModel extends xeogl.Model {
 
-    xeogl.SceneJSModel = xeogl.Model.extend({
-
-        type: "xeogl.SceneJSModel",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
+        init(cfg) {
+            super.init(cfg);
             this._src = null;
-
             this.materialWorkflow = cfg.materialWorkflow;
-
             this.src = cfg.src;
-
             this.data = cfg.data;
-        },
+        }
 
-        _props: {
+        /**
+         Selects which xeogl material type to create from each SceneJS Phong material.
 
-            /**
-             Selects which xeogl material type to create from each SceneJS Phong material.
+         Causes the SceneJSModel to attempt a best-effort conversion.
 
-             Causes the SceneJSModel to attempt a best-effort conversion.
+         Update this at any time to reconvert the materials.
 
-             Update this at any time to reconvert the materials.
+         Fires a {{#crossLink "SceneJSModel/materialWorkFlow:event"}}{{/crossLink}} event on change.
 
-             Fires a {{#crossLink "SceneJSModel/materialWorkFlow:event"}}{{/crossLink}} event on change.
+         @property materialWorkflow
+         @type {*}
+         */
+        set materialWorkflow(value) {
 
-             @property materialWorkflow
-             @type {*}
-             */
-            materialWorkflow: {
+            value = value || "PhongMaterial";
 
-                set: function (value) {
+            if (value !== "MetallicMaterial" && value !== "SpecularMaterial" && value !== "PhongMaterial") {
+                this.error("Unsupported value for 'materialWorkflow' - defaulting to 'PhongMaterial'");
+                value = "PhongMaterial";
+            }
 
-                    value = value || "PhongMaterial";
+            if (this._materialWorkflow === value) {
+                return;
+            }
 
-                    if (value !== "MetallicMaterial" && value !== "SpecularMaterial" && value !== "PhongMaterial") {
-                        this.error("Unsupported value for 'materialWorkflow' - defaulting to 'PhongMaterial'");
-                        value = "PhongMaterial";
-                    }
+            this._materialWorkflow = value;
 
-                    if (this._materialWorkflow === value) {
-                        return;
-                    }
-
-                    this._materialWorkflow = value;
-
-                    //this.destroyAll();
-                    //
-                    //this._src = null;
-                    //
-                    //this._parse(this._materialWorkflow, null, null, null);
-
-                    /**
-                     Fired whenever this SceneJSModel's  {{#crossLink "SceneJSModel/materialWorkflow:property"}}{{/crossLink}} property changes.
-                     @event materialWorkflow
-                     @param value The property's new value
-                     */
-                    this.fire("materialWorkflow", this._materialWorkflow);
-                },
-
-                get: function () {
-                    return this._materialWorkflow;
-                }
-            },
+            //this.destroyAll();
+            //
+            //this._src = null;
+            //
+            //this._parse(this._materialWorkflow, null, null, null);
 
             /**
-             Path to the SceneJS JSON scene description file.
-
-             Update this at any time to clear and re-import content.
-
-             Fires a {{#crossLink "SceneJSModel/src:event"}}{{/crossLink}} event on change.
-
-             @property src
-             @type String
+             Fired whenever this SceneJSModel's  {{#crossLink "SceneJSModel/materialWorkflow:property"}}{{/crossLink}} property changes.
+             @event materialWorkflow
+             @param value The property's new value
              */
-            src: {
+            this.fire("materialWorkflow", this._materialWorkflow);
+        }
 
-                set: function (value) {
+        get materialWorkFlow() {
+            return this._materialWorkflow;
+        }
 
-                    if (!value) {
-                        return;
-                    }
+        /**
+         Path to the SceneJS JSON scene description file.
 
-                    if (!xeogl._isString(value)) {
-                        this.error("Value for 'src' should be a string");
-                        return;
-                    }
+         Update this at any time to clear and re-import content.
 
-                    if (value === this._src) { // Already loaded this SceneJSModel
+         Fires a {{#crossLink "SceneJSModel/src:event"}}{{/crossLink}} event on change.
 
-                        /**
-                         Fired whenever this SceneJSModel has finished loading the SceneJS JSON file
-                         specified by {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}}.
-                         @event loaded
-                         */
-                        this.fire("loaded", true, true);
+         @property src
+         @type String
+         */
+        set src(value) {
 
-                        return;
-                    }
+            if (!value) {
+                return;
+            }
 
-                    this.destroyAll();
+            if (!xeogl._isString(value)) {
+                this.error("Value for 'src' should be a string");
+                return;
+            }
 
-                    this._data = null;
+            if (value === this._src) { // Already loaded this SceneJSModel
 
-                    this._src = value;
+                /**
+                 Fired whenever this SceneJSModel has finished loading the SceneJS JSON file
+                 specified by {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}}.
+                 @event loaded
+                 */
+                this.fire("loaded", true, true);
 
-                    // Increment processes represented by loading spinner
-                    // Spinner appears as soon as count is non-zero
+                return;
+            }
 
-                    var spinner = this.scene.canvas.spinner;
-                    spinner.processes++;
+            this.destroyAll();
 
-                    var self = this;
+            this._data = null;
 
-                    load(this._src, function (node) {
+            this._src = value;
 
-                            var group = self;
+            // Increment processes represented by loading spinner
+            // Spinner appears as soon as count is non-zero
 
-                            self._parse(node, group, null, null);
+            var spinner = this.scene.canvas.spinner;
+            spinner.processes++;
 
-                            // Decrement processes represented by loading spinner
-                            // Spinner disappears if the count is now zero
-                            spinner.processes--;
+            var self = this;
 
-                            xeogl.scheduleTask(function () {
-                                self.fire("loaded", true);
-                            });
-                        },
+            load(this._src, function (node) {
 
-                        function (msg) {
+                    var group = self;
 
-                            spinner.processes--;
+                    self._parse(node, group, null, null);
 
-                            self.error("Failed to load JSON file: " + msg);
-
-                            self.fire("failed", msg);
-                        });
-
-                    /**
-                     Fired whenever this SceneJSModel's  {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}} property changes.
-                     @event src
-                     @param value The property's new value
-                     */
-                    this.fire("src", this._src);
-                },
-
-                get: function () {
-                    return this._src;
-                }
-            },
-
-            /**
-             A SceneJS POJO scene definition.
-
-             Update this at any time to clear and re-import content.
-
-             Fires a {{#crossLink "SceneJSModel/data:event"}}{{/crossLink}} event on change.
-
-             @property data
-             @type {*}
-             */
-            data: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
-                    }
-
-                    this.destroyAll();
-
-                    this._src = null;
-
-                    this._data = value;
-
-                    var group = this;
-
-                    this._parse(this._data, group, null, null);
-
-                    var self = this;
+                    // Decrement processes represented by loading spinner
+                    // Spinner disappears if the count is now zero
+                    spinner.processes--;
 
                     xeogl.scheduleTask(function () {
                         self.fire("loaded", true);
                     });
-
-                    /**
-                     Fired whenever this SceneJSModel's  {{#crossLink "SceneJSModel/data:property"}}{{/crossLink}} property changes.
-                     @event data
-                     @param value The property's new value
-                     */
-                    this.fire("data", this._data);
                 },
 
-                get: function () {
-                    return this._data;
-                }
+                function (msg) {
+
+                    spinner.processes--;
+
+                    self.error("Failed to load JSON file: " + msg);
+
+                    self.fire("failed", msg);
+                });
+
+            /**
+             Fired whenever this SceneJSModel's  {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}} property changes.
+             @event src
+             @param value The property's new value
+             */
+            this.fire("src", this._src);
+        }
+
+        get src() {
+            return this._src;
+        }
+
+        /**
+         A SceneJS POJO scene definition.
+
+         Update this at any time to clear and re-import content.
+
+         Fires a {{#crossLink "SceneJSModel/data:event"}}{{/crossLink}} event on change.
+
+         @property data
+         @type {*}
+         */
+        set data(value) {
+
+            if (!value) {
+                return;
             }
-        },
+
+            this.destroyAll();
+
+            this._src = null;
+
+            this._data = value;
+
+            var group = this;
+
+            this._parse(this._data, group, null, null);
+
+            var self = this;
+
+            xeogl.scheduleTask(function () {
+                self.fire("loaded", true);
+            });
+
+            /**
+             Fired whenever this SceneJSModel's  {{#crossLink "SceneJSModel/data:property"}}{{/crossLink}} property changes.
+             @event data
+             @param value The property's new value
+             */
+            this.fire("data", this._data);
+        }
+
+        get data() {
+            return this._data;
+        }
 
         //---------------------------------------------------------------------------------------------------------------
         // A simple recursive descent parser that loads SceneJS JSON into a xeogl.Model.
         // This is just the bare essentials to prove the concept - just transforms, diffuse material and geometry.
         //---------------------------------------------------------------------------------------------------------------
 
-        _parse: function (node,
-                          group,
-                          material,
-                          diffuseMap,
-                          specularMap,
-                          emissiveMap,
-                          normalMap,
-                          alphaMap,
-                          diffuseFresnel,
-                          specularFresnel,
-                          emissiveFresnel,
-                          normalFresnel,
-                          alphaFresnel,
-                          transparent,
-                          backfaces,
-                          layer) {
+        _parse(node,
+               group,
+               material,
+               diffuseMap,
+               specularMap,
+               emissiveMap,
+               normalMap,
+               alphaMap,
+               diffuseFresnel,
+               specularFresnel,
+               emissiveFresnel,
+               normalFresnel,
+               alphaFresnel,
+               transparent,
+               backfaces,
+               layer) {
 
             switch (node.type) {
 
@@ -679,7 +658,7 @@
 
                     var material2 = this.scene.components[material.id];
                     if (!material2) {
-                        material2 = new window[material.type](this.scene, material);
+                        material2 = new xeogl[material.type.substring(6)](this.scene, material);
                     }
 
                     var mesh = new xeogl.Mesh(this.scene, {
@@ -723,25 +702,12 @@
                         layer);
                 }
             }
-        },
-
-        _createID: function (node, type) {
-            return (node.id !== null && node.id !== undefined) ? ("" + this.id + "." + (type ? type + "." : "") + node.id) : null;
-        },
-
-        _getJSON: function () {
-            var json = {};
-            if (this._src) {
-                json.src = this._src;
-            } else if (this._data) {
-                json.data = this._data;
-            }
-            if (this._materialWorkflow) {
-                json.materialWorkflow = this._materialWorkflow;
-            }
-            return json;
         }
-    });
+
+        _createID(node, type) {
+            return (node.id !== null && node.id !== undefined) ? ("" + this.id + "." + (type ? type + "." : "") + node.id) : null;
+        }
+    };
 
     function load(url, ok, error) {
         var xhr = new XMLHttpRequest();
@@ -764,4 +730,4 @@
         xhr.send(null);
     }
 
-})();
+}

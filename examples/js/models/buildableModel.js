@@ -73,22 +73,16 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The BuildableModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
-(function () {
+{
 
-    "use strict";
+    xeogl.BuildableModel = class BuildableModel extends xeogl.Model {
 
-    xeogl.BuildableModel = xeogl.Model.extend({
-
-        type: "xeogl.BuildableModel",
-
-        _init: function (cfg) {
-
+        init(cfg) {
+            super.init(cfg);
             this._initState();
-            
-            this._super(cfg);
-        },
+        }
 
-        _initState: function () {
+        _initState() {
             this._state = {
                 material: null,
                 geometry: null,
@@ -100,7 +94,7 @@
                 assetCfgs: {},
                 assets: {}
             };
-        },
+        }
 
         /**
          * Adds an asset to this BuildableModel.
@@ -138,10 +132,10 @@
          * @param {String|Number} assetId A unique ID for the asset.
          * @param {*} cfg Configuration object for the asset.
          */
-        createAsset: function (assetId, cfg) {
+        createAsset(assetId, cfg) {
             this._state.assetCfgs[assetId] = cfg;
             delete this._state.assets[assetId];
-        },
+        }
 
         /**
          * Selects the {{#crossLink "Geometry"}}{{/crossLink}} asset that will be added to
@@ -154,9 +148,9 @@
          * @method geometry
          * @param {String|Number} assetId The asset ID.
          */
-        setGeometry: function (assetId) {
+        setGeometry(assetId) {
             this._state.geometry = assetId;
-        },
+        }
 
         /**
          * Selects the {{#crossLink "Material"}}{{/crossLink}} asset that will be added to
@@ -169,9 +163,9 @@
          * @method setMaterial
          * @param {String|Number} assetId The asset ID.
          */
-        setMaterial: function (assetId) {
+        setMaterial(assetId) {
             this._state.material = assetId;
-        },
+        }
 
         /**
          * Sets the 3D position of each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created with
@@ -182,11 +176,11 @@
          * @param {Number} y Position on Y-axis.
          * @param {Number} z Position on Z-axis.
          */
-        setPosition: function (x, y, z) {
+        setPosition(x, y, z) {
             this._state.pos[0] = x;
             this._state.pos[1] = y;
             this._state.pos[2] = z;
-        },
+        }
 
         /**
          * Sets the 3D scale of each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created with
@@ -197,11 +191,11 @@
          * @param {Number} y Scale on Y-axis.
          * @param {Number} z Scale on Z-axis.
          */
-        setScale: function (x, y, z) {
+        setScale(x, y, z) {
             this._state.scale[0] = x;
             this._state.scale[1] = y;
             this._state.scale[2] = z;
-        },
+        }
 
         /**
          * Sets the 3D Euler rotation angles for each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created
@@ -212,11 +206,11 @@
          * @param {Number} y Angle on Y-axis in degrees.
          * @param {Number} z Angle on Z-axis in degrees.
          */
-        setRotation: function (x, y, z) {
+        setRotation(x, y, z) {
             this._state.angles[0] = x;
             this._state.angles[1] = y;
             this._state.angles[2] = z;
-        },
+        }
 
         /**
          * Sets the order of 3D rotations for each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created
@@ -237,11 +231,11 @@
          * @param {Number} b Indicates the second rotation axis.
          * @param {Number} c Indicates the third rotation axis.
          */
-        setRotationAxis: function (a, b, c) {
+        setRotationAxis(a, b, c) {
             this._state.axis[0] = a;
             this._state.axis[1] = b;
             this._state.axis[2] = c;
-        },
+        }
 
         /**
          * Sets the RGBA colorize factors each {{#crossLink "Mesh"}}{{/crossLink}} subsequently created
@@ -259,12 +253,12 @@
          * @param {Number} b Indicates the amount of blue.
          * @param {Number} z Indicates the alpha.
          */
-        setColorize: function (r, g, b, a) {
+        setColorize(r, g, b, a) {
             this._state.colorize[0] = r;
             this._state.colorize[1] = g;
             this._state.colorize[2] = b;
             this._state.colorize[3] = a;
-        },
+        }
 
         /**
          * Creates an {{#crossLink "Mesh"}}{{/crossLink}} with whatever assets and states are currently
@@ -273,7 +267,7 @@
          * @method createMesh
          * @param {String|Number} [id] A unique ID for the new {{#crossLink "Mesh"}}{{/crossLink}}.
          */
-        createMesh: function (id) {
+        createMesh(id) {
             var mesh = new xeogl.Mesh({
                 id: id,
                 material: this._getAsset(this._state.material),
@@ -284,9 +278,9 @@
             });
             this._addComponent(mesh);
             this.addChild(mesh, false); // Don't inherit state from this Model
-        },
+        }
 
-        _getAsset: function (assetId) {
+        _getAsset(assetId) {
             if (assetId === null) {
                 return;
             }
@@ -302,22 +296,22 @@
                 this._addComponent(asset);
             }
             return asset;
-        },
+        }
 
         /**
          * Removes all assets and {{#crossLink "Mesh"}}Meshes{{/crossLink}} from this BuildableModel.
          * @method clear
          */
-        clear: function () {
+        clear() {
             this._super();
             this._initState();
-        },
+        }
 
         /**
          * Resets the state of this BuildableModel to defaults.
          * @method reset
          */
-        reset: function () {
+        reset() {
             this.setPosition(0, 0, 0);
             this.setScale(1, 1, 1);
             this.setRotation(0, 0, 0);
@@ -326,5 +320,5 @@
             this.setMaterial(null);
             this.setGeometry(null);
         }
-    });
-})();
+    };
+}
