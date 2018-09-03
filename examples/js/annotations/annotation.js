@@ -192,13 +192,24 @@
  @param [cfg.labelShown=true] {Boolean} Specifies whether the Annotation's label is shown.
  @extends Pin
  */
-xeogl.Annotation = xeogl.Pin.extend({
+xeogl.Annotation = class Annotation extends xeogl.Pin {
 
-    type: "xeogl.Annotation",
+    /**
+     JavaScript class name for this Component.
 
-    _init: function (cfg) {
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-        this._super(cfg);
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return "xeogl.Annotation";
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
 
         this._link = document.createElement("a");
         this._link.href = "javascript:xeogl.scenes[\"" + this.scene.id + "\"].components[\"" + this.id + "\"]._pinClicked()";
@@ -242,9 +253,9 @@ xeogl.Annotation = xeogl.Pin.extend({
         this.on("visible", this._updateVisibility, this);
 
         //  this._updateVisibility();
-    },
+    }
 
-    _pinClicked: function () {
+    _pinClicked() {
 
         /**
          Fired whenever the mouse is clicked on this Annotation's {{#crossLink "Annotation/pin:property"}}{{/crossLink}}.
@@ -252,312 +263,302 @@ xeogl.Annotation = xeogl.Pin.extend({
          @event pinClicked
          */
         this.fire("pinClicked", this)
-    },
+    }
 
-    _props: {
+    /**
+     Short piece of text to show inside the pin for the Annotation.
 
-        /**
-         Short piece of text to show inside the pin for the Annotation.
+     Usually this would be a single number or letter.
 
-         Usually this would be a single number or letter.
+     Automatically truncated to 2 characters.
 
-         Automatically truncated to 2 characters.
+     Fires a {{#crossLink "Annotation/glyph:event"}}{{/crossLink}} event on change.
 
-         Fires a {{#crossLink "Annotation/glyph:event"}}{{/crossLink}} event on change.
+     @property glyph
+     @default ""
+     @type {String}
+     */
+    set glyph(glyph) {
 
-         @property glyph
-         @default ""
-         @type {String}
-         */
-        glyph: {
-            set: function (glyph) {
-
-                if (this._glyph === glyph) {
-                    return;
-                }
-
-                this._glyph = glyph || ""; // TODO: Limit to 2 chars
-                this._spot.innerText = this._glyph;
-
-                /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/glyph:property"}}{{/crossLink}} property changes.
-
-                 @event glyph
-                 @param value {Number} The property's new value
-                 */
-                this.fire("glyph", this._glyph);
-            },
-            get: function () {
-                return this._glyph;
-            }
-        },
-
-        /**
-         Title text for the Annotation's label.
-
-         Automatically truncated to 64 characters.
-
-         Fires a {{#crossLink "Annotation/title:event"}}{{/crossLink}} event on change.
-
-         @property title
-         @default ""
-         @type {String}
-         */
-        title: {
-            set: function (title) {
-
-                if (this._title === title) {
-                    return;
-                }
-
-                this._title = title || ""; // TODO: Limit to 64 chars
-                this._titleElement.innerHTML = this._title;
-
-                /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/title:property"}}{{/crossLink}} property changes.
-
-                 @event title
-                 @param value {Number} The property's new value
-                 */
-                this.fire("title", this._title);
-            },
-            get: function () {
-                return this._title;
-            }
-        },
-
-        /**
-         Description text for the Annotation's label.
-
-         Automatically truncated to 1025 characters.
-
-         Fires a {{#crossLink "Annotation/desc:event"}}{{/crossLink}} event on change.
-
-         @property desc
-         @default ""
-         @type {String}
-         */
-        desc: {
-            set: function (desc) {
-
-                if (this._desc === desc) {
-                    return;
-                }
-
-                this._desc = desc || ""; // TODO: Limit to 1025 chars
-                this._descElement.innerHTML = this._desc;
-
-                /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/desc:property"}}{{/crossLink}} property changes.
-
-                 @event desc
-                 @param value {Number} The property's new value
-                 */
-                this.fire("desc", this._desc);
-            },
-            get: function () {
-                return this._desc;
-            }
-        },
-
-        /**
-         Position of the eye when looking at the Annotation.
-
-         Fires a {{#crossLink "Annotation/eye:event"}}{{/crossLink}} event on change.
-
-         @property eye
-         @default [0,0,10]
-         @type {Float32Array}
-         */
-        eye: {
-            set: function (value) {
-
-                value = value || [0, 0, 10];
-
-                if (this._eye && this._eye[0] === value[0] && this._eye[1] === value[1] && this._eye[2] === value[2]) {
-                    return;
-                }
-
-                (this._eye = this._eye || new xeogl.math.vec3()).set(value);
-
-                /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/eye:property"}}{{/crossLink}} property changes.
-
-                 @event eye
-                 @param value {Number} The property's new value
-                 */
-                this.fire("eye", this._eye);
-            },
-            get: function () {
-                return this._eye;
-            }
-        },
-
-        /**
-         Point-of-interest when looking at the Annotation.
-
-         Fires a {{#crossLink "Annotation/look:event"}}{{/crossLink}} event on change.
-
-         @property look
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-        look: {
-            set: function (value) {
-
-                value = value || [0, 0, 0];
-
-                if (this._look && this._look[0] === value[0] && this._look[1] === value[1] && this._look[2] === value[2]) {
-                    return;
-                }
-
-                (this._look = this._look || new xeogl.math.vec3()).set(value);
-
-                /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/look:property"}}{{/crossLink}} property changes.
-
-                 @event look
-                 @param value {Number} The property's new value
-                 */
-                this.fire("look", this._look);
-            },
-            get: function () {
-                return this._look;
-            }
-        },
-
-        /**
-         "Up" vector when looking at the Annotation.
-
-         Fires a {{#crossLink "Annotation/up:event"}}{{/crossLink}} event on change.
-
-         @property up
-         @default [0,1,0]
-         @type {Float32Array}
-         */
-        up: {
-            set: function (value) {
-
-                value = value || [0, 1, 0];
-
-                if (this._up && this._up[0] === value[0] && this._up[1] === value[1] && this._up[2] === value[2]) {
-                    return;
-                }
-
-                (this._up = this._up || new xeogl.math.vec3()).set(value);
-
-                /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/up:property"}}{{/crossLink}} property changes.
-
-                 @event up
-                 @param value {Number} The property's new value
-                 */
-                this.fire("up", this._up);
-            },
-            get: function () {
-                return this._up;
-            }
-        },
-
-        /**
-         Specifies whether a UI element is shown at the Annotation's pin position (typically a circle).
-
-         Fires a {{#crossLink "Annotation/pinShown:event"}}{{/crossLink}} event on change.
-
-         @property pinShown
-         @default true
-         @type {Boolean}
-         */
-        pinShown: {
-            set: function (shown) {
-
-                shown = shown !== false;
-
-                if (this._pinShown === shown) {
-                    return;
-                }
-
-                this._pinShown = shown;
-                this._spot.style.visibility = this._pinShown ? "visible" : "hidden";
-                this._spotClickable.style.visibility = this._pinShown ? "visible" : "hidden";
-
-                /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/pinShown:property"}}{{/crossLink}} property changes.
-
-                 @event pinShown
-                 @param value {Number} The property's new value
-                 */
-                this.fire("pinShown", this._pinShown);
-            },
-            get: function () {
-                return this._pinShown;
-            }
-        },
-
-        /**
-         Specifies whether the label is shown for the Annotation.
-
-         Fires a {{#crossLink "Annotation/labelShown:event"}}{{/crossLink}} event on change.
-
-         @property labelShown
-         @default true
-         @type {Boolean}
-         */
-        labelShown: {
-            set: function (shown) {
-
-                shown = shown !== false;
-
-                if (this._labelShown === shown) {
-                    return;
-                }
-
-                this._labelShown = shown;
-                this._label.style.visibility = this._labelShown && this.visible ? "visible" : "hidden";
-
-                /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/labelShown:property"}}{{/crossLink}} property changes.
-
-                 @event labelShown
-                 @param value {Number} The property's new value
-                 */
-                this.fire("labelShown", this._labelShown);
-            },
-            get: function () {
-                return this._labelShown;
-            }
+        if (this._glyph === glyph) {
+            return;
         }
-    },
 
-    _updateVisibility: function () {
-        var visible = this.visible;
+        this._glyph = glyph || ""; // TODO: Limit to 2 chars
+        this._spot.innerText = this._glyph;
+
+        /**
+         Fired whenever this Annotation's {{#crossLink "Annotation/glyph:property"}}{{/crossLink}} property changes.
+
+         @event glyph
+         @param value {Number} The property's new value
+         */
+        this.fire("glyph", this._glyph);
+    }
+
+    get glyph() {
+        return this._glyph;
+    }
+
+
+    /**
+     Title text for the Annotation's label.
+
+     Automatically truncated to 64 characters.
+
+     Fires a {{#crossLink "Annotation/title:event"}}{{/crossLink}} event on change.
+
+     @property title
+     @default ""
+     @type {String}
+     */
+    set title(title) {
+
+        if (this._title === title) {
+            return;
+        }
+
+        this._title = title || ""; // TODO: Limit to 64 chars
+        this._titleElement.innerHTML = this._title;
+
+        /**
+         Fired whenever this Annotation's {{#crossLink "Annotation/title:property"}}{{/crossLink}} property changes.
+
+         @event title
+         @param value {Number} The property's new value
+         */
+        this.fire("title", this._title);
+    }
+
+    get title() {
+        return this._title;
+    }
+
+    /**
+     Description text for the Annotation's label.
+
+     Automatically truncated to 1025 characters.
+
+     Fires a {{#crossLink "Annotation/desc:event"}}{{/crossLink}} event on change.
+
+     @property desc
+     @default ""
+     @type {String}
+     */
+    set desc(desc) {
+
+        if (this._desc === desc) {
+            return;
+        }
+
+        this._desc = desc || ""; // TODO: Limit to 1025 chars
+        this._descElement.innerHTML = this._desc;
+
+        /**
+         Fired whenever this Annotation's {{#crossLink "Annotation/desc:property"}}{{/crossLink}} property changes.
+
+         @event desc
+         @param value {Number} The property's new value
+         */
+        this.fire("desc", this._desc);
+    }
+
+    get desc() {
+        return this._desc;
+    }
+
+    /**
+     Position of the eye when looking at the Annotation.
+
+     Fires a {{#crossLink "Annotation/eye:event"}}{{/crossLink}} event on change.
+
+     @property eye
+     @default [0,0,10]
+     @type {Float32Array}
+     */
+    set eye(value) {
+
+        value = value || [0, 0, 10];
+
+        if (this._eye && this._eye[0] === value[0] && this._eye[1] === value[1] && this._eye[2] === value[2]) {
+            return;
+        }
+
+        (this._eye = this._eye || xeogl.math.vec3()).set(value);
+
+        /**
+         Fired whenever this Annotation's {{#crossLink "Annotation/eye:property"}}{{/crossLink}} property changes.
+
+         @event eye
+         @param value {Number} The property's new value
+         */
+        this.fire("eye", this._eye);
+    }
+
+    get eye() {
+        return this._eye;
+    }
+
+    /**
+     Point-of-interest when looking at the Annotation.
+
+     Fires a {{#crossLink "Annotation/look:event"}}{{/crossLink}} event on change.
+
+     @property look
+     @default [0,0,0]
+     @type {Float32Array}
+     */
+    set look(value) {
+
+        value = value || [0, 0, 0];
+
+        if (this._look && this._look[0] === value[0] && this._look[1] === value[1] && this._look[2] === value[2]) {
+            return;
+        }
+
+        (this._look = this._look || xeogl.math.vec3()).set(value);
+
+        /**
+         Fired whenever this Annotation's {{#crossLink "Annotation/look:property"}}{{/crossLink}} property changes.
+
+         @event look
+         @param value {Number} The property's new value
+         */
+        this.fire("look", this._look);
+    }
+
+    get look() {
+        return this._look;
+    }
+
+    /**
+     "Up" vector when looking at the Annotation.
+
+     Fires a {{#crossLink "Annotation/up:event"}}{{/crossLink}} event on change.
+
+     @property up
+     @default [0,1,0]
+     @type {Float32Array}
+     */
+    set up(value) {
+
+        value = value || [0, 1, 0];
+
+        if (this._up && this._up[0] === value[0] && this._up[1] === value[1] && this._up[2] === value[2]) {
+            return;
+        }
+
+        (this._up = this._up || xeogl.math.vec3()).set(value);
+
+        /**
+         Fired whenever this Annotation's {{#crossLink "Annotation/up:property"}}{{/crossLink}} property changes.
+
+         @event up
+         @param value {Number} The property's new value
+         */
+        this.fire("up", this._up);
+    }
+
+    get up() {
+        return this._up;
+    }
+
+    /**
+     Specifies whether a UI element is shown at the Annotation's pin position (typically a circle).
+
+     Fires a {{#crossLink "Annotation/pinShown:event"}}{{/crossLink}} event on change.
+
+     @property pinShown
+     @default true
+     @type {Boolean}
+     */
+    set pinShown(shown) {
+
+        shown = shown !== false;
+
+        if (this._pinShown === shown) {
+            return;
+        }
+
+        this._pinShown = shown;
+        this._spot.style.visibility = this._pinShown ? "visible" : "hidden";
+        this._spotClickable.style.visibility = this._pinShown ? "visible" : "hidden";
+
+        /**
+         Fired whenever this Annotation's {{#crossLink "Annotation/pinShown:property"}}{{/crossLink}} property changes.
+
+         @event pinShown
+         @param value {Number} The property's new value
+         */
+        this.fire("pinShown", this._pinShown);
+    }
+
+    get pinShown() {
+        return this._pinShown;
+    }
+
+    /**
+     Specifies whether the label is shown for the Annotation.
+
+     Fires a {{#crossLink "Annotation/labelShown:event"}}{{/crossLink}} event on change.
+
+     @property labelShown
+     @default true
+     @type {Boolean}
+     */
+    set labelShown(shown) {
+
+        shown = shown !== false;
+
+        if (this._labelShown === shown) {
+            return;
+        }
+
+        this._labelShown = shown;
+        this._label.style.visibility = this._labelShown && this.visible ? "visible" : "hidden";
+
+        /**
+         Fired whenever this Annotation's {{#crossLink "Annotation/labelShown:property"}}{{/crossLink}} property changes.
+
+         @event labelShown
+         @param value {Number} The property's new value
+         */
+        this.fire("labelShown", this._labelShown);
+    }
+
+    get labelShown() {
+        return this._labelShown;
+    }
+
+    _updateVisibility() {
+        const visible = this.visible;
         this._spotClickable.style.visibility = visible && this._pinShown ? "visible" : "hidden";
         this._spot.style.visibility = visible && this._pinShown ? "visible" : "hidden";
         this._label.style.visibility = visible && this._labelShown ? "visible" : "hidden";
-    },
+    }
 
-    _updateLayout: function () {
-        var visible = this.visible;
+    _updateLayout() {
+        const visible = this.visible;
         if (visible) {
-            var canvas = this.scene.canvas.canvas;
-            var left = canvas.offsetLeft;
-            var top = canvas.offsetTop;
-            var canvasPos = this.canvasPos;
+            const canvas = this.scene.canvas.canvas;
+            const left = canvas.offsetLeft;
+            const top = canvas.offsetTop;
+            const canvasPos = this.canvasPos;
             this._spot.style.left = (Math.floor(left + canvasPos[0]) - 12) + "px";
             this._spot.style.top = (Math.floor(top + canvasPos[1]) - 12) + "px";
             this._spotClickable.style.left = (Math.floor(left + canvasPos[0]) - 25 + 1) + "px";
             this._spotClickable.style.top = (Math.floor(top + canvasPos[1]) - 25 + 1) + "px";
-            var offsetX = 20;
-            var offsetY = -17;
+            const offsetX = 20;
+            const offsetY = -17;
             this._label.style.left = 20 + (canvasPos[0] + offsetX) + "px";
             this._label.style.top = (canvasPos[1] + offsetY) + "px";
             this._spot.style["z-index"] = 90005 + Math.floor(this.viewPos[2] * 10) + 1;
         }
-    },
+    }
 
-    getJSON: function () {
-        var math = xeogl.math;
-        var json = {
+    getJSON() {
+        const math = xeogl.math;
+        const json = {
             primIndex: this.primIndex,
             bary: math.vecToArray(this.bary),
             offset: this.offset,
@@ -575,13 +576,13 @@ xeogl.Annotation = xeogl.Pin.extend({
             json.mesh = this._attached.mesh.id;
         }
         return json;
-    },
+    }
 
-    _destroy: function () {
-        this._super();
+    destroy() {
+        super.destroy();
         this.scene.off(this._tick);
         this._link.parentNode.removeChild(this._link);
         this._spot.parentNode.removeChild(this._spot);
         this._label.parentNode.removeChild(this._label);
     }
-});
+};
