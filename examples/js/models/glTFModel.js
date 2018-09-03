@@ -345,19 +345,6 @@
 {
     xeogl.GLTFModel = class GLTFModel extends xeogl.Model {
 
-        /**
-         JavaScript class name for this Component.
-
-         For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
-
-         @property type
-         @type String
-         @final
-         */
-        get type() {
-            return "xeogl.GLTFModel";
-        }
-
         init(cfg) {
 
             super.init(cfg); // Call xeogl.Model._init()
