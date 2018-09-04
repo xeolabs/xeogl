@@ -23,6 +23,7 @@ export const scheduleTask = tasks.scheduleTask;
 export const clear = core.clear;
 export const _isString = utils.isString; // Backward compat
 export const _apply = utils.apply; // Backward compat
+export const _isNumeric = utils.isNumeric;
 
 // Component classes
 
