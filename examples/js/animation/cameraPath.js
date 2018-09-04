@@ -39,9 +39,9 @@
 
             this._frames = [];
 
-            this._eyeCurve = this.create(xeogl.SplineCurve);
-            this._lookCurve = this.create(xeogl.SplineCurve);
-            this._upCurve = this.create(xeogl.SplineCurve);
+            this._eyeCurve = new xeogl.SplineCurve(this);
+            this._lookCurve = new xeogl.SplineCurve(this);
+            this._upCurve = new xeogl.SplineCurve(this);
 
             if (cfg.frames) {
                 this.addFrames(cfg.frames);

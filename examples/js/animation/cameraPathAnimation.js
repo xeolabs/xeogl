@@ -354,9 +354,7 @@ xeogl.CameraPathAnimation = class xeoglCameraPathAnimation extends xeogl.Compone
      * @method scrubToFrame
      * @param {Number} frameIdx Index of the frame to scrub to.
      */
-    scrubToFrame:
-
-    function (frameIdx) {
+    scrubToFrame(frameIdx) {
         const cameraPath = this._attached.cameraPath;
         if (!cameraPath) {
             return;
