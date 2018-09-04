@@ -192,7 +192,7 @@
  @param [cfg.labelShown=true] {Boolean} Specifies whether the Annotation's label is shown.
  @extends Pin
  */
-xeogl.Annotation = class Annotation extends xeogl.Pin {
+xeogl.Annotation = class xeoglAnnotation extends xeogl.Pin {
 
     /**
      JavaScript class name for this Component.

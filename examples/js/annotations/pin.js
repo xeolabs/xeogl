@@ -261,7 +261,7 @@
         return visibilityTester;
     }
 
-    xeogl.Pin = class Pin extends xeogl.Component {
+    xeogl.Pin = class xeoglPin extends xeogl.Component {
 
         /**
          JavaScript class name for this Component.
