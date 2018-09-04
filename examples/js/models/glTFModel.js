@@ -343,7 +343,7 @@
  @extends Model
  */
 {
-    xeogl.GLTFModel = class GLTFModel extends xeogl.Model {
+    xeogl.GLTFModel = class xeoglGLTFModel extends xeogl.Model {
 
         init(cfg) {
 

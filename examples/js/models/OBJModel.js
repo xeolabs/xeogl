@@ -143,7 +143,7 @@
  */
 {
 
-    xeogl.OBJModel = class OBJModel extends xeogl.Model {
+    xeogl.OBJModel = class xeoglOBJModel extends xeogl.Model {
 
 
         init(cfg) {

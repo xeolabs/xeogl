@@ -265,7 +265,7 @@
  @extends Model
  */
 {
-    xeogl.STLModel = class STLModel extends xeogl.Model {
+    xeogl.STLModel = class xeoglSTLModel extends xeogl.Model {
 
         init(cfg) {
             super.init(cfg);

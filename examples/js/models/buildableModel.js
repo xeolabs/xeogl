@@ -75,7 +75,7 @@
  */
 {
 
-    xeogl.BuildableModel = class BuildableModel extends xeogl.Model {
+    xeogl.BuildableModel = class xeoglBuildableModel extends xeogl.Model {
 
         init(cfg) {
             super.init(cfg);
@@ -303,7 +303,7 @@
          * @method clear
          */
         clear() {
-            this._super();
+            super.clear();
             this._initState();
         }
 

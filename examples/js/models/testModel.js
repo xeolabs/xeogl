@@ -47,159 +47,157 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The TestModel's local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
-{
+xeogl.TestModel = class xeoglTestModel extends xeogl.BuildableModel {
 
-    xeogl.TestModel = class TestModel extends xeogl.BuildableModel {
+    init(cfg) {
+        super.init(cfg);
+        this._generate(cfg);
+    }
 
-        init(cfg) {
-            super.init(cfg);
-            this._generate(cfg);
-        }
+    _generate(options) {
 
-        _generate(options) {
+        this.destroyAll();
 
-            this.destroyAll();
+        options = options || {};
 
-            options = options || {};
+        // Create some geometry and material assets
 
-            // Create some geometry and material assets
+        this.createAsset("box", {
+            type: "xeogl.BoxGeometry",
+            xSize: 1,
+            ySize: 1,
+            zSize: 1
+        });
 
-            this.createAsset("box", {
-                type: "xeogl.BoxGeometry",
-                xSize: 1,
-                ySize: 1,
-                zSize: 1
-            });
+        this.createAsset("asphalt", {
+            type: "xeogl.LambertMaterial",
+            diffuse: [0.2, 0.2, 0.2],
+            ambient: [0.2, 0.2, 0.2],
+            specular: [0.0, 0.0, 0.0]
+        });
 
-            this.createAsset("asphalt", {
-                type: "xeogl.LambertMaterial",
-                diffuse: [0.2, 0.2, 0.2],
-                ambient: [0.2, 0.2, 0.2],
-                specular: [0.0, 0.0, 0.0]
-            });
+        this.createAsset("lightConcrete", {
+            type: "xeogl.LambertMaterial",
+            diffuse: [0.6, 0.6, 0.6],
+            ambient: [0.2, 0.2, 0.2]
+        });
 
-            this.createAsset("lightConcrete", {
-                type: "xeogl.LambertMaterial",
-                diffuse: [0.6, 0.6, 0.6],
-                ambient: [0.2, 0.2, 0.2]
-            });
+        this.createAsset("grass", {
+            type: "xeogl.LambertMaterial",
+            diffuse: [0, 0.5, 0.2],
+            ambient: [0.1, 0.1, 0.1]
+        });
 
-            this.createAsset("grass", {
-                type: "xeogl.LambertMaterial",
-                diffuse: [0, 0.5, 0.2],
-                ambient: [0.1, 0.1, 0.1]
-            });
+        // Select a couple of assets and generate the asphalt ground
 
-            // Select a couple of assets and generate the asphalt ground
+        this.setGeometry("box");
+        this.setMaterial("asphalt");
+        this.setPosition(20, -.5, 20);
+        this.setScale(140, 0.1, 140);
+        this.createMesh();
 
-            this.setGeometry("box");
-            this.setMaterial("asphalt");
-            this.setPosition(20, -.5, 20);
-            this.setScale(140, 0.1, 140);
-            this.createMesh();
+        // Generate the buildings
 
-            // Generate the buildings
+        var size = options.size || 1000;
+        var halfSize = size * 0.5;
+        var density = options.density || 10;
+        var spacing = size / density;
 
-            var size = options.size || 1000;
-            var halfSize = size * 0.5;
-            var density = options.density || 10;
-            var spacing = size / density;
-
-            for (var x = -halfSize; x <= halfSize; x += spacing) {
-                for (var z = -halfSize; z <= halfSize; z += spacing) {
-                    this._generateBuilding(x + 2, z + 2, x + spacing - 2, z + spacing - 2, options);
-                }
+        for (var x = -halfSize; x <= halfSize; x += spacing) {
+            for (var z = -halfSize; z <= halfSize; z += spacing) {
+                this._generateBuilding(x + 2, z + 2, x + spacing - 2, z + spacing - 2, options);
             }
         }
+    }
 
-        _generateBuilding(xmin, zmin, xmax, zmax, options) {
+    _generateBuilding(xmin, zmin, xmax, zmax, options) {
 
-            var xpos = (xmin + xmax) * 0.5;
-            var ypos = 0;
-            var zpos = (zmin + zmax) * 0.5;
+        var xpos = (xmin + xmax) * 0.5;
+        var ypos = 0;
+        var zpos = (zmin + zmax) * 0.5;
 
-            // Each building gets a green lawn under it
+        // Each building gets a green lawn under it
+
+        this.setGeometry("box");
+        this.setMaterial("grass");
+        this.setPosition(xpos, ypos, zpos);
+        this.setScale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
+        this.setColorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
+        this.createMesh();
+
+        // Now generate the building as a bunch of boxes
+
+        var yMaxSize = (Math.random() * 30) + 15;
+        var ySize = yMaxSize + 10;
+        var width;
+        var axis;
+        var sign;
+
+        var xminBox;
+        var zminBox;
+        var xmaxBox;
+        var zmaxBox;
+
+        while (ySize > 5) {
+
+            width = (Math.random() * 5) + 2;
+            axis = Math.round(Math.random());
+            sign = Math.round(Math.random());
+
+            switch (axis) {
+
+                case 0:
+
+                    if (sign == 0) {
+
+                        xminBox = xmin;
+                        zminBox = zpos - width;
+
+                        xmaxBox = xpos + width;
+                        zmaxBox = zpos + width;
+
+                    } else {
+
+                        xminBox = xpos - width;
+                        zminBox = zpos - width;
+
+                        xmaxBox = xmax;
+                        zmaxBox = zpos + width;
+                    }
+
+                    break;
+
+                case 1:
+
+                    if (sign == 0) {
+
+                        xminBox = xpos - width;
+                        zminBox = zmin;
+
+                        xmaxBox = xpos + width;
+                        zmaxBox = zpos + width;
+
+                    } else {
+
+                        xminBox = xpos - width;
+                        zminBox = zpos - width;
+
+                        xmaxBox = xpos + width;
+                        zmaxBox = zmax;
+                    }
+
+                    break;
+            }
 
             this.setGeometry("box");
-            this.setMaterial("grass");
-            this.setPosition(xpos, ypos, zpos);
-            this.setScale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
-            this.setColorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
+            this.setMaterial("lightConcrete");
+            this.setPosition(xpos, ypos + ySize, zpos);
+            this.setScale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
             this.createMesh();
 
-            // Now generate the building as a bunch of boxes
-
-            var yMaxSize = (Math.random() * 30) + 15;
-            var ySize = yMaxSize + 10;
-            var width;
-            var axis;
-            var sign;
-
-            var xminBox;
-            var zminBox;
-            var xmaxBox;
-            var zmaxBox;
-
-            while (ySize > 5) {
-
-                width = (Math.random() * 5) + 2;
-                axis = Math.round(Math.random());
-                sign = Math.round(Math.random());
-
-                switch (axis) {
-
-                    case 0:
-
-                        if (sign == 0) {
-
-                            xminBox = xmin;
-                            zminBox = zpos - width;
-
-                            xmaxBox = xpos + width;
-                            zmaxBox = zpos + width;
-
-                        } else {
-
-                            xminBox = xpos - width;
-                            zminBox = zpos - width;
-
-                            xmaxBox = xmax;
-                            zmaxBox = zpos + width;
-                        }
-
-                        break;
-
-                    case 1:
-
-                        if (sign == 0) {
-
-                            xminBox = xpos - width;
-                            zminBox = zmin;
-
-                            xmaxBox = xpos + width;
-                            zmaxBox = zpos + width;
-
-                        } else {
-
-                            xminBox = xpos - width;
-                            zminBox = zpos - width;
-
-                            xmaxBox = xpos + width;
-                            zmaxBox = zmax;
-                        }
-
-                        break;
-                }
-
-                this.setGeometry("box");
-                this.setMaterial("lightConcrete");
-                this.setPosition(xpos, ypos + ySize, zpos);
-                this.setScale((xmaxBox - xminBox) * 0.5, ySize, (zmaxBox - zminBox) * 0.5);
-                this.createMesh();
-
-                // Decrease current vertical box size
-                ySize -= (Math.random() * 5) + 2;
-            }
+            // Decrease current vertical box size
+            ySize -= (Math.random() * 5) + 2;
         }
-    };
-}
+    }
+};
+

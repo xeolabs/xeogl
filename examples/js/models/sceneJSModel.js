@@ -228,7 +228,7 @@
  */
 {
 
-    xeogl.SceneJSModel = class SceneJSModel extends xeogl.Model {
+    xeogl.SceneJSModel = class xeoglSceneJSModel extends xeogl.Model {
 
         init(cfg) {
             super.init(cfg);
