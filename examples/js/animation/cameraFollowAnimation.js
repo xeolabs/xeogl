@@ -92,7 +92,7 @@
  @param [cfg.trail] {Boolean} When true, will cause this CameraFollowAnimation to point the camera in the direction that it is travelling.
  @extends Component
  */
-xeogl.CameraFollowAnimation = class CameraFollowAnimation extends xeogl.Component {
+xeogl.CameraFollowAnimation = class xeoglCameraFollowAnimation extends xeogl.Component {
 
     /**
      JavaScript class name for this Component.
