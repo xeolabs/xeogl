@@ -139,7 +139,7 @@
             var i;
             var boundary = canvas.boundary;
             var canvasWidth = boundary[2];
-            var canvasHeight = boundary[2];
+            var canvasHeight = boundary[3];//modified!!! from [2] to [3] - I'm quite sure height and width is not always the same ;)
             var testListLen = 0;
 
             // Hide pins that fall outside canvas
