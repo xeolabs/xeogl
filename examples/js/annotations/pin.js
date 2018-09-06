@@ -553,11 +553,36 @@
 
                         xeogl.math.transformPoint4(this.scene.camera.projMatrix, tempVec4a, tempVec4b);
 
+
+                        if(tempVec4b[2]<0)//&&tempVec4b[3]<0)//modified!!!!#######################################################
+                        {  
+                            /*there was the problem that pins were also shown in a 2nd position, mirrowed backwards on the 
+                            viewpoint so when rotating 180 degrees, the pin (and the annotation) were also shown, which is 
+                            quite confusing for the user, especially inside the building. 
+                            Those coordinates (tempVec4a/4b) seem somehow related to the position of the pin (probably 
+                            relative position of viewpoint/viewdirection to pin), so they are not the same for different pins. 
+
+                            I noticed that tempVec4b[2] and tempVec4b[3] are always positive when correctly viewing the pin,
+                            so I just check if one of them is negative and set x position to negative number so that it is not
+                            shown on the screen
+                            maybe working with checking for tempVec4a[0] (correct if positive), but not 100% sure 
+                            about that
+                            */
+
+                            //console.log("negative!!")  
+                            this._canvasPos[0]=-10000;
+                            return this._canvasPos;//return here, make it a bit more efficient
+                        }
+
+
+
                         var aabb = this.scene.canvas.boundary;
 
-                        this._canvasPos[0] = Math.floor((1 + tempVec4b[0] / tempVec4b[3]) * aabb[2] / 2);
-                        this._canvasPos[1] = Math.floor((1 - tempVec4b[1] / tempVec4b[3]) * aabb[3] / 2);
-
+                        this._canvasPos[0] = Math.floor((1 + tempVec4b[0] / tempVec4b[3]) * aabb[2]/2);
+                        this._canvasPos[1] = Math.floor((1 - tempVec4b[1] / tempVec4b[3]) * aabb[3]/2);
+                        //taking tempVec4b[3] twice, and [2] never??! Not sure if that is correct. Both versions seem to work, 
+                        //could not spot any difference, so I let the original
+                        
                         return this._canvasPos;
                     };
                 })()
