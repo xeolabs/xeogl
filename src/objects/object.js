@@ -604,9 +604,9 @@
 
 import {utils} from '../utils.js';
 import {Component} from '../component.js';
-// import {Mesh} from './mesh.js';
-// import {AABBGeometry} from '../geometry/aabbGeometry.js';
-// import {PhongMaterial} from '../materials/phongMaterial.js';
+import {Mesh} from './mesh.js';
+import {AABBGeometry} from '../geometry/aabbGeometry.js';
+import {PhongMaterial} from '../materials/phongMaterial.js';
 import {math} from '../math/math.js';
 import {componentClasses} from "./../componentClasses.js";
 
@@ -1712,22 +1712,22 @@ class xeoglObject extends Component {
      @type {Boolean}
      */
     set aabbVisible(visible) {
-        // if (!show && !this._aabbHelper) {
-        //     return;
-        // }
-        // if (!this._aabbHelper) {
-        //     this._aabbHelper = new Mesh(this, {
-        //         geometry: new AABBGeometry(this, {
-        //             target: this
-        //         }),
-        //         material: new PhongMaterial(this, {
-        //             diffuse: [0.5, 1.0, 0.5],
-        //             emissive: [0.5, 1.0, 0.5],
-        //             lineWidth: 2
-        //         })
-        //     });
-        // }
-        // this._aabbHelper.visible = visible;
+        if (!visible && !this._aabbHelper) {
+            return;
+        }
+        if (!this._aabbHelper) {
+            this._aabbHelper = new Mesh(this, {
+                geometry: new AABBGeometry(this, {
+                    target: this
+                }),
+                material: new PhongMaterial(this, {
+                    diffuse: [0.5, 1.0, 0.5],
+                    emissive: [0.5, 1.0, 0.5],
+                    lineWidth: 2
+                })
+            });
+        }
+        this._aabbHelper.visible = visible;
     }
 
     get aabbVisible() {

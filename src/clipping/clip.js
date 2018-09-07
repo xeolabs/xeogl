@@ -98,7 +98,7 @@ class Clip extends Component {
 
         super.init(cfg);
 
-        this._state = State({
+        this._state = new State({
             active: true,
             pos: new Float32Array(3),
             dir: new Float32Array(3)
@@ -184,6 +184,7 @@ class Clip extends Component {
     }
 
     destroy() {
+        this._state.destroy();
         this.scene._clipDestroyed(this);
         super.destroy();
     }
