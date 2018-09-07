@@ -78,7 +78,7 @@ class Fresnel extends Component {
         return type;
     }
 
-    constructor(owner = null, cfg = {}) {
+    init(cfg) {
 
         super.init(cfg);
 
