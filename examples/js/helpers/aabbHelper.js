@@ -10,113 +10,89 @@
  @param [cfg.visible=true] {Boolean} Indicates whether or not this helper is visible.
 
  */
-(function () {
+xeogl.AABBHelper = class xeoglAABBHelper extends xeogl.Component{
 
-    "use strict";
+    /**
+     JavaScript class name for this Component.
 
-    xeogl.AABBHelper = xeogl.Component.extend({
+     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
-        type: "xeogl.AABBHelper",
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return "xeogl.AABBHelper";
+    }
 
-        _init: function (cfg) {
+    init(cfg) {
 
-            this._box = new xeogl.Mesh(this, {
-                geometry: new xeogl.AABBGeometry(this),
-                material: new xeogl.PhongMaterial(this, {
-                    emissive: [1, 0, 0],
-                    diffuse: [0, 0, 0],
-                    lineWidth: 4
-                }),
-                pickable: false,
-                collidable: false,
-                clippable: false
-            });
+        super.init(cfg);
 
-            this.target = cfg.target;
-            this.color = cfg.color;
-            this.visible = cfg.visible;
-        },
+        this._box = new xeogl.Mesh(this, {
+            geometry: new xeogl.AABBGeometry(this),
+            material: new xeogl.PhongMaterial(this, {
+                emissive: [1, 0, 0],
+                diffuse: [0, 0, 0],
+                lineWidth: 4
+            }),
+            pickable: false,
+            collidable: false,
+            clippable: false
+        });
 
-        _props: {
+        this.target = cfg.target;
+        this.color = cfg.color;
+        this.visible = cfg.visible;
+    }
 
-            /**
-             * The target {{#crossLink "Component"}}{{/crossLink}} subtype.
-             *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}} when set to a null or undefined value.
-             *
-             * @property target
-             * @type Component
-             */
-            target: {
+    /**
+     * The target {{#crossLink "Component"}}{{/crossLink}} subtype.
+     *
+     * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent
+     * {{#crossLink "Scene"}}Scene{{/crossLink}} when set to a null or undefined value.
+     *
+     * @property target
+     * @type Component
+     */
+    set target(target) {
+        this._box.geometry.target = target;
+    }
 
-                set: function (target) {
-                  this._box.geometry.target = target;
-                },
+    get target() {
+        return this._box.geometry.target;
+    }
 
-                get: function () {
-                    return this._box.geometry.target;
-                }
-            },
+    /**
+     * Emissive color of this AABBHelper.
+     *
+     * @property color
+     * @default [0,1,0]
+     * @type {Float32Array}
+     */
+    set color(value) {
+        this._box.material.emissive = value || [0, 1, 0];
+    }
 
-            /**
-             * Emissive color of this AABBHelper.
-             *
-             * Fires an {{#crossLink "AABBHelper/color:event"}}{{/crossLink}} event on change.
-             *
-             * @property color
-             * @default [0,1,0]
-             * @type {Float32Array}
-             */
-            color: {
+    get color() {
+        return this._box.emissive;
+    }
 
-                set: function (value) {
+    /**
+     Indicates whether this AABBHelper is visible or not.
 
-                    this._box.material.emissive = value || [0, 1, 0];
+     Fires a {{#crossLink "AABBHelper/visible:event"}}{{/crossLink}} event on change.
 
-                    /**
-                     Fired whenever this AABBHelper's {{#crossLink "AABBHelper/color:property"}}{{/crossLink}} property changes.
-                     @event color
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("color", this._color);
-                },
+     @property visible
+     @default true
+     @type Boolean
+     */
+    set visible(value) {
+        value = value !== false;
+        this._box.visible = value;
+    }
 
-                get: function () {
-                    return this._box.emissive;
-                }
-            },
-
-            /**
-             Indicates whether this AABBHelper is visible or not.
-
-             Fires a {{#crossLink "AABBHelper/visible:event"}}{{/crossLink}} event on change.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    this._box.visible = value;
-
-                    /**
-                     Fired whenever this helper's {{#crossLink "AABBHelper/visible:property"}}{{/crossLink}} property changes.
-
-                     @event visible
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("visible", this._box.visible);
-                },
-
-                get: function () {
-                    return this._box.visible;
-                }
-            }
-        }
-    });
-})();
+    get visible() {
+        return this._box.visible;
+    }
+};
