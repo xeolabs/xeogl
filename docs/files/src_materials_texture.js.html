@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -241,8 +238,7 @@
  @module xeogl
  @submodule materials
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Texture in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID for this Texture, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Texture.
@@ -259,423 +255,451 @@
  @param [cfg.encoding=&quot;linear&quot;] {String} Encoding format.  See the {{#crossLink &quot;Texture/encoding:property&quot;}}{{/crossLink}} property for more info.
  @extends Component
  */
-(function () {
+import {core} from &quot;./../core.js&quot;;
+import {Component} from &#x27;../component.js&#x27;;
+import {State} from &#x27;../renderer/state.js&#x27;;
+import {Texture2D} from &#x27;../renderer/texture2d.js&#x27;;
+import {math} from &#x27;../math/math.js&#x27;;
+import {stats} from &#x27;./../stats.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const type = &quot;xeogl.Texture&quot;;
 
-    xeogl.Texture = xeogl.Component.extend({
+function ensureImageSizePowerOfTwo(image) {
+    if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
+        const canvas = document.createElement(&quot;canvas&quot;);
+        canvas.width = nextHighestPowerOfTwo(image.width);
+        canvas.height = nextHighestPowerOfTwo(image.height);
+        const ctx = canvas.getContext(&quot;2d&quot;);
+        ctx.drawImage(image,
+            0, 0, image.width, image.height,
+            0, 0, canvas.width, canvas.height);
+        image = canvas;
+    }
+    return image;
+}
 
-        type: &quot;xeogl.Texture&quot;,
+function isPowerOfTwo(x) {
+    return (x &amp; (x - 1)) === 0;
+}
 
-        _init: function (cfg) {
+function nextHighestPowerOfTwo(x) {
+    --x;
+    for (let i = 1; i &lt; 32; i &lt;&lt;= 1) {
+        x = x | x &gt;&gt; i;
+    }
+    return x + 1;
+}
 
-            this._state = new xeogl.renderer.State({
-                texture: new xeogl.renderer.Texture2D(this.scene.canvas.gl),
-                matrix: xeogl.math.identityMat4(),   // Float32Array
-                hasMatrix: (cfg.translate &amp;&amp; (cfg.translate[0] !== 0 || cfg.translate[1] !== 0)) || (!!cfg.rotate) || (cfg.scale &amp;&amp; (cfg.scale[0] !== 0 || cfg.scale[1] !== 0)),
-                minFilter: this._checkMinFilter(cfg.minFilter),
-                magFilter: this._checkMagFilter(cfg.minFilter),
-                wrapS: this._checkWrapS(cfg.wrapS),
-                wrapT: this._checkWrapT(cfg.wrapT),
-                flipY: this._checkFlipY(cfg.flipY),
-                encoding: this._checkEncoding(cfg.encoding)
-            });
+class Texture extends Component {
 
-            // Data source
+    /**
+     JavaScript class name for this Component.
 
-            this._src = null;
-            this._image = null;
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-            // Transformation
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            this._translate = xeogl.math.vec2([0, 0]);
-            this._scale = xeogl.math.vec2([1, 1]);
-            this._rotate = xeogl.math.vec2([0, 0]);
+    init(cfg) {
 
-            this._matrixDirty = false;
+        super.init(cfg);
 
-            // Transform
+        this._state = new State({
+            texture: new Texture2D(this.scene.canvas.gl),
+            matrix: math.identityMat4(),   // Float32Array
+            hasMatrix: (cfg.translate &amp;&amp; (cfg.translate[0] !== 0 || cfg.translate[1] !== 0)) || (!!cfg.rotate) || (cfg.scale &amp;&amp; (cfg.scale[0] !== 0 || cfg.scale[1] !== 0)),
+            minFilter: this._checkMinFilter(cfg.minFilter),
+            magFilter: this._checkMagFilter(cfg.minFilter),
+            wrapS: this._checkWrapS(cfg.wrapS),
+            wrapT: this._checkWrapT(cfg.wrapT),
+            flipY: this._checkFlipY(cfg.flipY),
+            encoding: this._checkEncoding(cfg.encoding)
+        });
 
-            this.translate = cfg.translate;
-            this.scale = cfg.scale;
-            this.rotate = cfg.rotate;
+        // Data source
 
-            // Data source
+        this._src = null;
+        this._image = null;
 
-            if (cfg.src) {
-                this.src = cfg.src; // Image file
-            } else if (cfg.image) {
-                this.image = cfg.image; // Image object
-            }
+        // Transformation
 
-            xeogl.stats.memory.textures++;
-        },
+        this._translate = math.vec2([0, 0]);
+        this._scale = math.vec2([1, 1]);
+        this._rotate = math.vec2([0, 0]);
 
-        _checkMinFilter: function (value) {
-            value = value || &quot;linearMipmapLinear&quot;;
-            if (value !== &quot;linear&quot; &amp;&amp;
-                value !== &quot;linearMipmapNearest&quot; &amp;&amp;
-                value !== &quot;linearMipmapLinear&quot; &amp;&amp;
-                value !== &quot;nearestMipmapLinear&quot; &amp;&amp;
-                value !== &quot;nearestMipmapNearest&quot;) {
-                this.error(&quot;Unsupported value for &#x27;minFilter&#x27;: &#x27;&quot; + value +
-                    &quot;&#x27; - supported values are &#x27;linear&#x27;, &#x27;linearMipmapNearest&#x27;, &#x27;nearestMipmapNearest&#x27;, &quot; +
-                    &quot;&#x27;nearestMipmapLinear&#x27; and &#x27;linearMipmapLinear&#x27;. Defaulting to &#x27;linearMipmapLinear&#x27;.&quot;);
-                value = &quot;linearMipmapLinear&quot;;
-            }
-            return value;
-        },
+        this._matrixDirty = false;
 
-        _checkMagFilter: function (value) {
-            value = value || &quot;linear&quot;;
-            if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;nearest&quot;) {
-                this.error(&quot;Unsupported value for &#x27;magFilter&#x27;: &#x27;&quot; + value +
-                    &quot;&#x27; - supported values are &#x27;linear&#x27; and &#x27;nearest&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
-                value = &quot;linear&quot;;
-            }
-            return value;
-        },
+        // Transform
 
-        _checkFilter: function (value) {
-            value = value || &quot;linear&quot;;
-            if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;nearest&quot;) {
-                this.error(&quot;Unsupported value for &#x27;magFilter&#x27;: &#x27;&quot; + value +
-                    &quot;&#x27; - supported values are &#x27;linear&#x27; and &#x27;nearest&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
-                value = &quot;linear&quot;;
-            }
-            return value;
-        },
+        this.translate = cfg.translate;
+        this.scale = cfg.scale;
+        this.rotate = cfg.rotate;
 
-        _checkWrapS: function (value) {
-            value = value || &quot;repeat&quot;;
-            if (value !== &quot;clampToEdge&quot; &amp;&amp; value !== &quot;mirroredRepeat&quot; &amp;&amp; value !== &quot;repeat&quot;) {
-                this.error(&quot;Unsupported value for &#x27;wrapS&#x27;: &#x27;&quot; + value +
-                    &quot;&#x27; - supported values are &#x27;clampToEdge&#x27;, &#x27;mirroredRepeat&#x27; and &#x27;repeat&#x27;. Defaulting to &#x27;repeat&#x27;.&quot;);
-                value = &quot;repeat&quot;;
-            }
-            return value;
-        },
+        // Data source
 
-        _checkWrapT: function (value) {
-            value = value || &quot;repeat&quot;;
-            if (value !== &quot;clampToEdge&quot; &amp;&amp; value !== &quot;mirroredRepeat&quot; &amp;&amp; value !== &quot;repeat&quot;) {
-                this.error(&quot;Unsupported value for &#x27;wrapT&#x27;: &#x27;&quot; + value +
-                    &quot;&#x27; - supported values are &#x27;clampToEdge&#x27;, &#x27;mirroredRepeat&#x27; and &#x27;repeat&#x27;. Defaulting to &#x27;repeat&#x27;.&quot;);
-                value = &quot;repeat&quot;;
-            }
-            return value;
-        },
-
-        _checkFlipY: function (value) {
-            return !!value;
-        },
-
-        _checkEncoding: function (value) {
-            value = value || &quot;linear&quot;;
-            if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;sRGB&quot; &amp;&amp; value !== &quot;gamma&quot;) {
-                this.error(&quot;Unsupported value for &#x27;encoding&#x27;: &#x27;&quot; + value + &quot;&#x27; - supported values are &#x27;linear&#x27;, &#x27;sRGB&#x27;, &#x27;gamma&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
-                value = &quot;linear&quot;;
-            }
-            return value;
-        },
-
-        _webglContextRestored: function () {
-            this._state.texture = new xeogl.renderer.Texture2D(this.scene.canvas.gl);
-            if (this._image) {
-                this.image = this._image;
-            } else if (this._src) {
-                this.src = this._src;
-            }
-        },
-
-        _update: function () {
-            var state = this._state;
-            if (this._matrixDirty) {
-                var matrix;
-                var t;
-                if (this._translate[0] !== 0 || this._translate[1] !== 0) {
-                    matrix = xeogl.math.translationMat4v([this._translate[0], this._translate[1], 0], this._state.matrix);
-                }
-                if (this._scale[0] !== 1 || this._scale[1] !== 1) {
-                    t = xeogl.math.scalingMat4v([this._scale[0], this._scale[1], 1]);
-                    matrix = matrix ? xeogl.math.mulMat4(matrix, t) : t;
-                }
-                if (this._rotate !== 0) {
-                    t = xeogl.math.rotationMat4v(this._rotate * 0.0174532925, [0, 0, 1]);
-                    matrix = matrix ? xeogl.math.mulMat4(matrix, t) : t;
-                }
-                if (matrix) {
-                    state.matrix = matrix;
-                }
-                this._matrixDirty = false;
-            }
-            this._renderer.imageDirty();
-        },
-
-        _props: {
-
-            /**
-             Indicates an HTML DOM Image object to source this Texture from.
-
-             Sets the {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} property to null.
-
-             @property image
-             @default null
-             @type {HTMLImageElement}
-             */
-            image: {
-                set: function (value) {
-                    this._image = xeogl.renderer.ensureImageSizePowerOfTwo(value);
-                    this._image.crossOrigin = &quot;Anonymous&quot;;
-                    this._state.texture.setImage(this._image, this._state);
-                    this._state.texture.setProps(this._state); // Generate mipmaps
-                    this._src = null;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._image;
-                }
-            },
-
-            /**
-             Indicates a path to an image file to source this Texture from.
-
-             Sets the {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} property to null.
-
-             @property src
-             @default null
-             @type String
-             */
-            src: {
-                set: function (src) {
-                    this.scene.loading++;
-                    this.scene.canvas.spinner.processes++;
-                    var self = this;
-                    var image = new Image();
-                    image.onload = function () {
-                        image = xeogl.renderer.ensureImageSizePowerOfTwo(image);
-                        //self._image = image; // For faster WebGL context restore - memory inefficient?
-                        self._state.texture.setImage(image, self._state);
-                        self._state.texture.setProps(self._state); // Generate mipmaps
-                        self.scene.loading--;
-                        self.scene.canvas.spinner.processes--;
-                        self._renderer.imageDirty();
-                    };
-                    image.src = src;
-                    this._src = src;
-                    this._image = null;
-                },
-                get: function () {
-                    return this._src;
-                }
-            },
-
-            /**
-             2D translation vector that will be added to this Texture&#x27;s *S* and *T* coordinates.
-
-             @property translate
-             @default [0, 0]
-             @type Array(Number)
-             */
-            translate: {
-                set: function (value) {
-                    this._translate.set(value || [0, 0]);
-                    this._matrixDirty = true;
-                    this._needUpdate();
-                },
-                get: function () {
-                    return this._translate;
-                }
-            },
-
-            /**
-             2D scaling vector that will be applied to this Texture&#x27;s *S* and *T* coordinates.
-
-             @property scale
-             @default [1, 1]
-             @type Array(Number)
-             */
-            scale: {
-                set: function (value) {
-                    this._scale.set(value || [1, 1]);
-                    this._matrixDirty = true;
-                    this._needUpdate();
-                },
-                get: function () {
-                    return this._scale;
-                }
-            },
-
-            /**
-             Rotation, in degrees, that will be applied to this Texture&#x27;s *S* and *T* coordinates.
-
-             @property rotate
-             @default 0
-             @type Number
-             */
-            rotate: {
-                set: function (value) {
-                    value = value || 0;
-                    if (this._rotate === value) {
-                        return;
-                    }
-                    this._rotate = value;
-                    this._matrixDirty = true;
-                    this._needUpdate();
-                },
-                get: function () {
-                    return this._rotate;
-                }
-            }
-            //,
-
-            /**
-             How this Texture is sampled when a texel covers less than one pixel.
-
-             Options are:
-
-             * **&quot;nearest&quot;** - Uses the value of the texture element that is nearest
-             (in Manhattan distance) to the center of the pixel being textured.
-
-             * **&quot;linear&quot;** - Uses the weighted average of the four texture elements that are
-             closest to the center of the pixel being textured.
-
-             * **&quot;nearestMipmapNearest&quot;** - Chooses the mipmap that most closely matches the
-             size of the pixel being textured and uses the &quot;nearest&quot; criterion (the texture
-             element nearest to the center of the pixel) to produce a texture value.
-
-             * **&quot;linearMipmapNearest&quot;** - Chooses the mipmap that most closely matches the size of
-             the pixel being textured and uses the &quot;linear&quot; criterion (a weighted average of the
-             four texture elements that are closest to the center of the pixel) to produce a
-             texture value.
-
-             * **&quot;nearestMipmapLinear&quot;** - Chooses the two mipmaps that most closely
-             match the size of the pixel being textured and uses the &quot;nearest&quot; criterion
-             (the texture element nearest to the center of the pixel) to produce a texture
-             value from each mipmap. The final texture value is a weighted average of those two
-             values.
-
-             * **&quot;linearMipmapLinear&quot;** - **(default)** - Chooses the two mipmaps that most closely match the size
-             of the pixel being textured and uses the &quot;linear&quot; criterion (a weighted average
-             of the four texture elements that are closest to the center of the pixel) to
-             produce a texture value from each mipmap. The final texture value is a weighted
-             average of those two values.
-
-             @property minFilter
-             @default &quot;linearMipmapLinear&quot;
-             @type String
-             @final
-             */
-            // minFilter: {
-            //     get: function () {
-            //         return this._state.minFilter;
-            //     }
-            // },
-
-            /**
-             How this Texture is sampled when a texel covers more than one pixel.
-
-             Options are:
-
-             * **&quot;nearest&quot;** - Uses the value of the texture element that is nearest
-             (in Manhattan distance) to the center of the pixel being textured.
-             * **&quot;linear&quot;** - **(default)** - Uses the weighted average of the four texture elements that are
-             closest to the center of the pixel being textured.
-
-             @property magFilter
-             @default &quot;linear&quot;
-             @type String
-             @final
-             */
-            // magFilter: {
-            //     get: function () {
-            //         return this._state.magFilter;
-            //     }
-            // },
-
-            /**
-             Wrap parameter for this Texture&#x27;s *S* coordinate.
-
-             Options are:
-
-             * **&quot;clampToEdge&quot;** -  causes *S* coordinates to be clamped to the size of the texture.
-             * **&quot;mirroredRepeat&quot;** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
-             if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is
-             set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.
-             * **&quot;repeat&quot;** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
-             fractional part, thereby creating a repeating pattern.
-
-             @property wrapS
-             @default &quot;repeat&quot;
-             @type String
-             @final
-             */
-            // wrapS: {
-            //     get: function () {
-            //         return this._state.wrapS;
-            //     }
-            // },
-
-            /**
-             Wrap parameter for this Texture&#x27;s *T* coordinate.
-
-             Options are:
-
-             * **&quot;clampToEdge&quot;** -  Causes *T* coordinates to be clamped to the size of the texture.
-             * **&quot;mirroredRepeat&quot;** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
-             if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is
-             set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.
-             * **&quot;repeat&quot;** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
-             fractional part, thereby creating a repeating pattern.
-
-             @property wrapT
-             @default &quot;repeat&quot;
-             @type String
-             @final
-             */
-            // wrapT: {
-            //     get: function () {
-            //         return this._state.wrapT;
-            //     }
-            // },
-
-            /**
-             Flips this Texture&#x27;s source data along its vertical axis when true.
-
-             @property flipY
-             @type Boolean
-             @final
-             */
-            // flipY: {
-            //     get: function () {
-            //         return this._state.flipY;
-            //     }
-            // },
-
-            /**
-             The Texture&#x27;s encoding format.
-
-             @property encoding
-             @type String
-             @final
-             */
-            // encoding: {
-            //     get: function () {
-            //         return this._state.encoding;
-            //     }
-            // }
-        },
-
-        _destroy: function () {
-            if (this._state.texture) {
-                this._state.texture.destroy();
-            }
-            xeogl.stats.memory.textures--;
+        if (cfg.src) {
+            this.src = cfg.src; // Image file
+        } else if (cfg.image) {
+            this.image = cfg.image; // Image object
         }
-    });
 
-})();
+        stats.memory.textures++;
+    }
 
+    _checkMinFilter(value) {
+        value = value || &quot;linearMipmapLinear&quot;;
+        if (value !== &quot;linear&quot; &amp;&amp;
+            value !== &quot;linearMipmapNearest&quot; &amp;&amp;
+            value !== &quot;linearMipmapLinear&quot; &amp;&amp;
+            value !== &quot;nearestMipmapLinear&quot; &amp;&amp;
+            value !== &quot;nearestMipmapNearest&quot;) {
+            this.error(&quot;Unsupported value for &#x27;minFilter&#x27;: &#x27;&quot; + value +
+                &quot;&#x27; - supported values are &#x27;linear&#x27;, &#x27;linearMipmapNearest&#x27;, &#x27;nearestMipmapNearest&#x27;, &quot; +
+                &quot;&#x27;nearestMipmapLinear&#x27; and &#x27;linearMipmapLinear&#x27;. Defaulting to &#x27;linearMipmapLinear&#x27;.&quot;);
+            value = &quot;linearMipmapLinear&quot;;
+        }
+        return value;
+    }
+
+    _checkMagFilter(value) {
+        value = value || &quot;linear&quot;;
+        if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;nearest&quot;) {
+            this.error(&quot;Unsupported value for &#x27;magFilter&#x27;: &#x27;&quot; + value +
+                &quot;&#x27; - supported values are &#x27;linear&#x27; and &#x27;nearest&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
+            value = &quot;linear&quot;;
+        }
+        return value;
+    }
+
+    _checkFilter(value) {
+        value = value || &quot;linear&quot;;
+        if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;nearest&quot;) {
+            this.error(&quot;Unsupported value for &#x27;magFilter&#x27;: &#x27;&quot; + value +
+                &quot;&#x27; - supported values are &#x27;linear&#x27; and &#x27;nearest&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
+            value = &quot;linear&quot;;
+        }
+        return value;
+    }
+
+    _checkWrapS(value) {
+        value = value || &quot;repeat&quot;;
+        if (value !== &quot;clampToEdge&quot; &amp;&amp; value !== &quot;mirroredRepeat&quot; &amp;&amp; value !== &quot;repeat&quot;) {
+            this.error(&quot;Unsupported value for &#x27;wrapS&#x27;: &#x27;&quot; + value +
+                &quot;&#x27; - supported values are &#x27;clampToEdge&#x27;, &#x27;mirroredRepeat&#x27; and &#x27;repeat&#x27;. Defaulting to &#x27;repeat&#x27;.&quot;);
+            value = &quot;repeat&quot;;
+        }
+        return value;
+    }
+
+    _checkWrapT(value) {
+        value = value || &quot;repeat&quot;;
+        if (value !== &quot;clampToEdge&quot; &amp;&amp; value !== &quot;mirroredRepeat&quot; &amp;&amp; value !== &quot;repeat&quot;) {
+            this.error(&quot;Unsupported value for &#x27;wrapT&#x27;: &#x27;&quot; + value +
+                &quot;&#x27; - supported values are &#x27;clampToEdge&#x27;, &#x27;mirroredRepeat&#x27; and &#x27;repeat&#x27;. Defaulting to &#x27;repeat&#x27;.&quot;);
+            value = &quot;repeat&quot;;
+        }
+        return value;
+    }
+
+    _checkFlipY(value) {
+        return !!value;
+    }
+
+    _checkEncoding(value) {
+        value = value || &quot;linear&quot;;
+        if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;sRGB&quot; &amp;&amp; value !== &quot;gamma&quot;) {
+            this.error(&quot;Unsupported value for &#x27;encoding&#x27;: &#x27;&quot; + value + &quot;&#x27; - supported values are &#x27;linear&#x27;, &#x27;sRGB&#x27;, &#x27;gamma&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
+            value = &quot;linear&quot;;
+        }
+        return value;
+    }
+
+    _webglContextRestored() {
+        this._state.texture = new Texture2D(this.scene.canvas.gl);
+        if (this._image) {
+            this.image = this._image;
+        } else if (this._src) {
+            this.src = this._src;
+        }
+    }
+
+    _update() {
+        const state = this._state;
+        if (this._matrixDirty) {
+            let matrix;
+            let t;
+            if (this._translate[0] !== 0 || this._translate[1] !== 0) {
+                matrix = math.translationMat4v([this._translate[0], this._translate[1], 0], this._state.matrix);
+            }
+            if (this._scale[0] !== 1 || this._scale[1] !== 1) {
+                t = math.scalingMat4v([this._scale[0], this._scale[1], 1]);
+                matrix = matrix ? math.mulMat4(matrix, t) : t;
+            }
+            if (this._rotate !== 0) {
+                t = math.rotationMat4v(this._rotate * 0.0174532925, [0, 0, 1]);
+                matrix = matrix ? math.mulMat4(matrix, t) : t;
+            }
+            if (matrix) {
+                state.matrix = matrix;
+            }
+            this._matrixDirty = false;
+        }
+        this._renderer.imageDirty();
+    }
+
+
+    /**
+     Indicates an HTML DOM Image object to source this Texture from.
+
+     Sets the {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} property to null.
+
+     @property image
+     @default null
+     @type {HTMLImageElement}
+     */
+    set image(value) {
+        this._image = ensureImageSizePowerOfTwo(value);
+        this._image.crossOrigin = &quot;Anonymous&quot;;
+        this._state.texture.setImage(this._image, this._state);
+        this._state.texture.setProps(this._state); // Generate mipmaps
+        this._src = null;
+        this._renderer.imageDirty();
+    }
+
+    get image() {
+        return this._image;
+    }
+
+    /**
+     Indicates a path to an image file to source this Texture from.
+
+     Sets the {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} property to null.
+
+     @property src
+     @default null
+     @type String
+     */
+    set src(src) {
+        this.scene.loading++;
+        this.scene.canvas.spinner.processes++;
+        const self = this;
+        let image = new Image();
+        image.onload = function () {
+            image = ensureImageSizePowerOfTwo(image);
+            //self._image = image; // For faster WebGL context restore - memory inefficient?
+            self._state.texture.setImage(image, self._state);
+            self._state.texture.setProps(self._state); // Generate mipmaps
+            self.scene.loading--;
+            self.scene.canvas.spinner.processes--;
+            self._renderer.imageDirty();
+        };
+        image.src = src;
+        this._src = src;
+        this._image = null;
+    }
+
+    get src() {
+        return this._src;
+    }
+
+    /**
+     2D translation vector that will be added to this Texture&#x27;s *S* and *T* coordinates.
+
+     @property translate
+     @default [0, 0]
+     @type Array(Number)
+     */
+    set translate(value) {
+        this._translate.set(value || [0, 0]);
+        this._matrixDirty = true;
+        this._needUpdate();
+    }
+
+    get translate() {
+        return this._translate;
+    }
+
+    /**
+     2D scaling vector that will be applied to this Texture&#x27;s *S* and *T* coordinates.
+
+     @property scale
+     @default [1, 1]
+     @type Array(Number)
+     */
+    set scale(value) {
+        this._scale.set(value || [1, 1]);
+        this._matrixDirty = true;
+        this._needUpdate();
+    }
+
+    get scale() {
+        return this._scale;
+    }
+
+    /**
+     Rotation, in degrees, that will be applied to this Texture&#x27;s *S* and *T* coordinates.
+
+     @property rotate
+     @default 0
+     @type Number
+     */
+    set rotate(value) {
+        value = value || 0;
+        if (this._rotate === value) {
+            return;
+        }
+        this._rotate = value;
+        this._matrixDirty = true;
+        this._needUpdate();
+    }
+
+    get rotate() {
+        return this._rotate;
+    }
+
+    /**
+     How this Texture is sampled when a texel covers less than one pixel.
+
+     Options are:
+
+     * **&quot;nearest&quot;** - Uses the value of the texture element that is nearest
+     (in Manhattan distance) to the center of the pixel being textured.
+
+     * **&quot;linear&quot;** - Uses the weighted average of the four texture elements that are
+     closest to the center of the pixel being textured.
+
+     * **&quot;nearestMipmapNearest&quot;** - Chooses the mipmap that most closely matches the
+     size of the pixel being textured and uses the &quot;nearest&quot; criterion (the texture
+     element nearest to the center of the pixel) to produce a texture value.
+
+     * **&quot;linearMipmapNearest&quot;** - Chooses the mipmap that most closely matches the size of
+     the pixel being textured and uses the &quot;linear&quot; criterion (a weighted average of the
+     four texture elements that are closest to the center of the pixel) to produce a
+     texture value.
+
+     * **&quot;nearestMipmapLinear&quot;** - Chooses the two mipmaps that most closely
+     match the size of the pixel being textured and uses the &quot;nearest&quot; criterion
+     (the texture element nearest to the center of the pixel) to produce a texture
+     value from each mipmap. The final texture value is a weighted average of those two
+     values.
+
+     * **&quot;linearMipmapLinear&quot;** - **(default)** - Chooses the two mipmaps that most closely match the size
+     of the pixel being textured and uses the &quot;linear&quot; criterion (a weighted average
+     of the four texture elements that are closest to the center of the pixel) to
+     produce a texture value from each mipmap. The final texture value is a weighted
+     average of those two values.
+
+     @property minFilter
+     @default &quot;linearMipmapLinear&quot;
+     @type String
+     @final
+     */
+    get minFilter() {
+        return this._state.minFilter;
+    }
+
+    /**
+     How this Texture is sampled when a texel covers more than one pixel.
+
+     Options are:
+
+     * **&quot;nearest&quot;** - Uses the value of the texture element that is nearest
+     (in Manhattan distance) to the center of the pixel being textured.
+     * **&quot;linear&quot;** - **(default)** - Uses the weighted average of the four texture elements that are
+     closest to the center of the pixel being textured.
+
+     @property magFilter
+     @default &quot;linear&quot;
+     @type String
+     @final
+     */
+    get magFilter() {
+        return this._state.magFilter;
+    }
+
+    /**
+     Wrap parameter for this Texture&#x27;s *S* coordinate.
+
+     Options are:
+
+     * **&quot;clampToEdge&quot;** -  causes *S* coordinates to be clamped to the size of the texture.
+     * **&quot;mirroredRepeat&quot;** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
+     if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is
+     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.
+     * **&quot;repeat&quot;** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
+     fractional part, thereby creating a repeating pattern.
+
+     @property wrapS
+     @default &quot;repeat&quot;
+     @type String
+     @final
+     */
+    get wrapS() {
+        return this._state.wrapS;
+    }
+
+    /**
+     Wrap parameter for this Texture&#x27;s *T* coordinate.
+
+     Options are:
+
+     * **&quot;clampToEdge&quot;** -  Causes *T* coordinates to be clamped to the size of the texture.
+     * **&quot;mirroredRepeat&quot;** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
+     if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is
+     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.
+     * **&quot;repeat&quot;** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
+     fractional part, thereby creating a repeating pattern.
+
+     @property wrapT
+     @default &quot;repeat&quot;
+     @type String
+     @final
+     */
+    get wrapT() {
+        return this._state.wrapT;
+    }
+
+    /**
+     Flips this Texture&#x27;s source data along its vertical axis when true.
+
+     @property flipY
+     @type Boolean
+     @final
+     */
+    get flipY() {
+        return this._state.flipY;
+    }
+
+    /**
+     The Texture&#x27;s encoding format.
+
+     @property encoding
+     @type String
+     @final
+     */
+    get encoding() {
+        return this._state.encoding;
+    }
+
+    destroy() {
+        super.destroy();
+        if (this._state.texture) {
+            this._state.texture.destroy();
+        }
+        this._state.destroy();
+        stats.memory.textures--;
+    }
+}
+
+componentClasses[type] = Texture;
+
+export{Texture};
     </pre>
 </div>
                     </div>

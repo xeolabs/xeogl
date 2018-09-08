@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -328,167 +325,142 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The STLModel&#x27;s local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
-(function () {
+{
 
-    &quot;use strict&quot;;
+    xeogl.OBJModel = class xeoglOBJModel extends xeogl.Model {
 
-    xeogl.OBJModel = xeogl.Model.extend({
 
-        type: &quot;xeogl.OBJModel&quot;,
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
+        init(cfg) {
+            super.init(cfg);
             this._src = null;
-
             this.src = cfg.src;
-        },
+        }
 
-        _props: {
+
+        /**
+         Path to a Wavefront OBJ file.
+
+         You can set this to a new file path at any time, which will cause the OBJModel to load components from
+         the new file (after first destroying any components loaded from a previous file path).
+
+         Also loads materials from any MTL files referenced in the OBJ.
+
+         Fires a {{#crossLink &quot;OBJModel/src:event&quot;}}{{/crossLink}} event on change.
+
+         @property src
+         @type String
+         */
+        set src(value) {
+
+            if (!value) {
+                return;
+            }
+
+            if (!xeogl._isString(value)) {
+                this.error(&quot;Value for &#x27;src&#x27; should be a string&quot;);
+                return;
+            }
+
+            if (value === this._src) { // Already loaded this OBJModel
+
+                /**
+                 Fired whenever this OBJModel has finished loading components from the OBJ file
+                 specified by {{#crossLink &quot;OBJModel/src:property&quot;}}{{/crossLink}}.
+                 @event loaded
+                 */
+                this.fire(&quot;loaded&quot;, true, true);
+
+                return;
+            }
+
+            this.destroyAll();
+
+            this._src = value;
+
+            xeogl.OBJModel.load(this, this._src);
 
             /**
-             Path to a Wavefront OBJ file.
-
-             You can set this to a new file path at any time, which will cause the OBJModel to load components from
-             the new file (after first destroying any components loaded from a previous file path).
-
-             Also loads materials from any MTL files referenced in the OBJ.
-
-             Fires a {{#crossLink &quot;OBJModel/src:event&quot;}}{{/crossLink}} event on change.
-
-             @property src
-             @type String
+             Fired whenever this OBJModel&#x27;s {{#crossLink &quot;OBJModel/src:property&quot;}}{{/crossLink}} property changes.
+             @event src
+             @param value The property&#x27;s new value
              */
-            src: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
-                    }
-
-                    if (!xeogl._isString(value)) {
-                        this.error(&quot;Value for &#x27;src&#x27; should be a string&quot;);
-                        return;
-                    }
-
-                    if (value === this._src) { // Already loaded this OBJModel
-
-                        /**
-                         Fired whenever this OBJModel has finished loading components from the OBJ file
-                         specified by {{#crossLink &quot;OBJModel/src:property&quot;}}{{/crossLink}}.
-                         @event loaded
-                         */
-                        this.fire(&quot;loaded&quot;, true, true);
-
-                        return;
-                    }
-
-                    this.destroyAll();
-
-                    this._src = value;
-
-                    xeogl.OBJModel.load(this, this._src);
-
-                    /**
-                     Fired whenever this OBJModel&#x27;s {{#crossLink &quot;OBJModel/src:property&quot;}}{{/crossLink}} property changes.
-                     @event src
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;src&quot;, this._src);
-                },
-
-                get: function () {
-                    return this._src;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {};
-
-            if (this.src) {
-                json.src = this._src;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.destroyAll();
+            this.fire(&quot;src&quot;, this._src);
         }
-    });
 
-    /**
-     * Loads OBJ and MTL from file(s) into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
-     *
-     * @method load
-     * @static
-     * @param {Model} model Model to load into.
-     * @param {String} src Path to OBJ file.
-     * @param {Function} [ok] Completion callback.
-     */
-    xeogl.OBJModel.load = function (model, src, ok) {
+        get src() {
+            return this._src;
+        }
 
-        var spinner = model.scene.canvas.spinner;
-        spinner.processes++;
 
-        loadOBJ(model, src, function (state) {
-            loadMTLs(model, state, function () {
+        /**
+         * Loads OBJ and MTL from file(s) into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
+         *
+         * @method load
+         * @static
+         * @param {Model} model Model to load into.
+         * @param {String} src Path to OBJ file.
+         * @param {Function} [ok] Completion callback.
+         */
+        static load(model, src, ok) {
 
-                createMeshes(model, state);
+            var spinner = model.scene.canvas.spinner;
+            spinner.processes++;
 
-                spinner.processes--;
+            loadOBJ(model, src, function (state) {
+                loadMTLs(model, state, function () {
 
-                xeogl.scheduleTask(function () {
-                    model.fire(&quot;loaded&quot;, true);
+                    createMeshes(model, state);
+
+                    spinner.processes--;
+
+                    xeogl.scheduleTask(function () {
+                        model.fire(&quot;loaded&quot;, true);
+                    });
+
+                    if (ok) {
+                        ok();
+                    }
                 });
-
-                if (ok) {
-                    ok();
-                }
             });
-        });
+        }
+
+        /**
+         * Parses OBJ and MTL text strings into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
+         *
+         * @method parse
+         * @static
+         * @param {Model} model Model to load into.
+         * @param {String} objText OBJ text string.
+         * @param {String} [mtlText] MTL text string.
+         * @param {String} [basePath] Base path for external resources.
+         */
+        static parse(model, objText, mtlText, basePath) {
+            if (!objText) {
+                this.warn(&quot;load() param expected: objText&quot;);
+                return;
+            }
+            var state = parseOBJ(model, objText, null);
+            if (mtlText) {
+                parseMTL(model, mtlText, basePath);
+            }
+            createMeshes(model, state);
+            model.src = null;
+            model.fire(&quot;loaded&quot;, true, true);
+        }
     };
 
-    /**
-     * Parses OBJ and MTL text strings into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
-     *
-     * @method parse
-     * @static
-     * @param {Model} model Model to load into.
-     * @param {String} objText OBJ text string.
-     * @param {String} [mtlText] MTL text string.
-     * @param {String} [basePath] Base path for external resources.
-     */
-    xeogl.OBJModel.parse = function (model, objText, mtlText, basePath) {
-        if (!objText) {
-            this.warn(&quot;load() param expected: objText&quot;);
-            return;
-        }
-        var state = parseOBJ(model, objText, null);
-        if (mtlText) {
-            parseMTL(model, mtlText, basePath);
-        }
-        createMeshes(model, state);
-        model.src = null;
-        model.fire(&quot;loaded&quot;, true, true);
-    };
-
-    //--------------------------------------------------------------------------------------------
-    // Loads OBJ
-    //
-    // Parses OBJ into an intermediate state object. The object will contain geometry data
-    // and material IDs from which meshes can be created later. The object will also
-    // contain a list of filenames of the MTL files referenced by the OBJ, is any.
-    //
-    // Originally based on the THREE.js OBJ and MTL loaders:
-    //
-    // https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/OBJLoader.js
-    // https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/MTLLoader.js
-    //--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+// Loads OBJ
+//
+// Parses OBJ into an intermediate state object. The object will contain geometry data
+// and material IDs from which meshes can be created later. The object will also
+// contain a list of filenames of the MTL files referenced by the OBJ, is any.
+//
+// Originally based on the THREE.js OBJ and MTL loaders:
+//
+// https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/OBJLoader.js
+// https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/MTLLoader.js
+//--------------------------------------------------------------------------------------------
 
     var loadOBJ = function (model, url, ok) {
 
@@ -904,9 +876,9 @@
         }
     })();
 
-    //--------------------------------------------------------------------------------------------
-    // Loads MTL files listed in parsed state
-    //--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+// Loads MTL files listed in parsed state
+//--------------------------------------------------------------------------------------------
 
     function loadMTLs(model, state, ok) {
         var basePath = state.basePath;
@@ -921,9 +893,9 @@
         }
     }
 
-    //--------------------------------------------------------------------------------------------
-    // Loads an MTL file
-    //--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+// Loads an MTL file
+//--------------------------------------------------------------------------------------------
 
     var loadMTL = function (model, basePath, src, ok) {
         loadFile(src, function (text) {
@@ -1003,7 +975,7 @@
 
                     case &#x27;map_ks&#x27;:
                         if (!materialCfg.specularMap) {
-                            materialCfg.specularMap = createTexture(model, basePath, value,&quot;linear&quot;);
+                            materialCfg.specularMap = createTexture(model, basePath, value, &quot;linear&quot;);
                         }
                         break;
 
@@ -1035,7 +1007,7 @@
                         break;
 
                     default:
-                       // model.error(&quot;Unrecognized token: &quot; + key);
+                    // model.error(&quot;Unrecognized token: &quot; + key);
                 }
             }
 
@@ -1082,9 +1054,9 @@
         }
 
     })();
-    //--------------------------------------------------------------------------------------------
-    // Creates meshes from parsed state
-    //--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+// Creates meshes from parsed state
+//--------------------------------------------------------------------------------------------
 
     var createMeshes = (function () {
 
@@ -1186,8 +1158,7 @@
         }, false);
         request.send(null);
     }
-})();
-
+}
     </pre>
 </div>
                     </div>

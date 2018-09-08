@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -505,7 +502,7 @@ torus.material.alphaCutoff = 0.2;
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
                         <li class="arg">
-                                <code class="optional">[scene]</code>
+                                <code class="optional">[owner]</code>
                         </li>
                         <li class="arg">
                                 <code class="optional">[cfg]</code>
@@ -540,14 +537,13 @@ torus.material.alphaCutoff = 0.2;
         
                     <ul class="params-list">
                         <li class="param">
-                                <code class="param-name optional">[scene]</code>
-                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                                <code class="param-name optional">[owner]</code>
+                                <span class="type"><a href="../classes/Component.html" class="crosslink">Component</a></span>
                                 <span class="flag optional" title="This parameter is optional.">optional</span>
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this PhongMaterial within the
-        default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
+                                <p>Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default Scene when omitted.</p>
         
                             </div>
         
@@ -570,7 +566,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent Scene, generated automatically when omitted.</p>
         
                                         </div>
         
@@ -691,7 +687,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A ambient map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will multiply by the diffuse property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A ambient map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will multiply by the diffuse property. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -702,7 +698,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A diffuse map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the diffuse property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A diffuse map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the diffuse property. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -713,7 +709,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A specular map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the specular property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A specular map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the specular property. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -724,7 +720,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An emissive map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the emissive property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>An emissive map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the emissive property. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -735,7 +731,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -746,7 +742,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An alpha map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the alpha property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>An alpha map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the alpha property. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -757,7 +753,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A reflectivity control map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the reflectivity property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A reflectivity control map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the reflectivity property. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -768,7 +764,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An occlusion map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>An occlusion map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -779,7 +775,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A diffuse <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A diffuse <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -790,7 +786,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A specular <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A specular <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -801,7 +797,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An emissive <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>An emissive <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -812,7 +808,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An alpha <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>An alpha <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -823,7 +819,7 @@ torus.material.alphaCutoff = 0.2;
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A reflectivity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A reflectivity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same Scene as this PhongMaterial.</p>
         
                                         </div>
         
@@ -1127,7 +1123,7 @@ torus.material.alphaCutoff = 0.2;
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l939"><code>src&#x2F;component.js:939</code></a>
+        <a href="../files/src_component.js.html#l919"><code>src&#x2F;component.js:919</code></a>
         </p>
 
 
@@ -1135,7 +1131,7 @@ torus.material.alphaCutoff = 0.2;
     </div>
 
     <div class="description">
-        <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+        <p>Convenience method for creating a Component within this Component&#39;s Scene.</p>
 <p>The method is given a component configuration, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create({
      type: "xeogl.PhongMaterial",
@@ -1191,7 +1187,7 @@ torus.material.alphaCutoff = 0.2;
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
+        <a href="../files/src_component.js.html#l1028"><code>src&#x2F;component.js:1028</code></a>
         </p>
 
 
@@ -1233,7 +1229,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l624"><code>src&#x2F;component.js:624</code></a>
+        <a href="../files/src_component.js.html#l606"><code>src&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -1243,8 +1239,8 @@ defaults that this component overrode on them.</p>
     <div class="description">
         <p>Logs an error for this component to the JavaScript console.</p>
 <p>The console message will have this format: <em><code>[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>Also fires the message as an Scene/error:event event on the
+parent Scene.</p>
 
     </div>
 
@@ -1297,7 +1293,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l448"><code>src&#x2F;component.js:448</code></a>
+        <a href="../files/src_component.js.html#l430"><code>src&#x2F;component.js:430</code></a>
         </p>
 
 
@@ -1380,7 +1376,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_hasSubs">Component</a>:
-        <a href="../files/src_component.js.html#l575"><code>src&#x2F;component.js:575</code></a>
+        <a href="../files/src_component.js.html#l557"><code>src&#x2F;component.js:557</code></a>
         </p>
 
 
@@ -1447,7 +1443,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l404"><code>src&#x2F;component.js:404</code></a>
+        <a href="../files/src_component.js.html#l394"><code>src&#x2F;component.js:394</code></a>
         </p>
 
 
@@ -1525,7 +1521,7 @@ myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (ev
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l586"><code>src&#x2F;component.js:586</code></a>
+        <a href="../files/src_component.js.html#l568"><code>src&#x2F;component.js:568</code></a>
         </p>
 
 
@@ -1535,8 +1531,8 @@ myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (ev
     <div class="description">
         <p>Logs a console debugging message for this component.</p>
 <p>The console message will have this format: <em><code>[LOG] [&lt;component type&gt; &lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>Also fires the message as a Scene/log:event event on the
+parent Scene.</p>
 
     </div>
 
@@ -1583,7 +1579,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l529"><code>src&#x2F;component.js:529</code></a>
+        <a href="../files/src_component.js.html#l511"><code>src&#x2F;component.js:511</code></a>
         </p>
 
 
@@ -1648,7 +1644,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l487"><code>src&#x2F;component.js:487</code></a>
+        <a href="../files/src_component.js.html#l469"><code>src&#x2F;component.js:469</code></a>
         </p>
 
 
@@ -1742,7 +1738,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l554"><code>src&#x2F;component.js:554</code></a>
+        <a href="../files/src_component.js.html#l536"><code>src&#x2F;component.js:536</code></a>
         </p>
 
 
@@ -1822,7 +1818,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l607"><code>src&#x2F;component.js:607</code></a>
+        <a href="../files/src_component.js.html#l589"><code>src&#x2F;component.js:589</code></a>
         </p>
 
 
@@ -1832,8 +1828,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="description">
         <p>Logs a warning for this component to the JavaScript console.</p>
 <p>The console message will have this format: <em><code>[WARN] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>Also fires the message as a Scene/warn:event event on the
+parent Scene.</p>
 
     </div>
 
@@ -1874,7 +1870,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l453"><code>src&#x2F;materials&#x2F;phongMaterial.js:453</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l463"><code>src&#x2F;materials&#x2F;phongMaterial.js:463</code></a>
                             </p>
                     
                     
@@ -1902,7 +1898,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l797"><code>src&#x2F;materials&#x2F;phongMaterial.js:797</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l773"><code>src&#x2F;materials&#x2F;phongMaterial.js:773</code></a>
                             </p>
                     
                     
@@ -1936,7 +1932,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l727"><code>src&#x2F;materials&#x2F;phongMaterial.js:727</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l711"><code>src&#x2F;materials&#x2F;phongMaterial.js:711</code></a>
                             </p>
                     
                     
@@ -1964,7 +1960,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l632"><code>src&#x2F;materials&#x2F;phongMaterial.js:632</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l628"><code>src&#x2F;materials&#x2F;phongMaterial.js:628</code></a>
                             </p>
                     
                     
@@ -1991,7 +1987,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l759"><code>src&#x2F;materials&#x2F;phongMaterial.js:759</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l739"><code>src&#x2F;materials&#x2F;phongMaterial.js:739</code></a>
                             </p>
                     
                     
@@ -2025,7 +2021,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l323"><code>src&#x2F;materials&#x2F;phongMaterial.js:323</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l337"><code>src&#x2F;materials&#x2F;phongMaterial.js:337</code></a>
                             </p>
                     
                     
@@ -2052,7 +2048,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l568"><code>src&#x2F;materials&#x2F;phongMaterial.js:568</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l571"><code>src&#x2F;materials&#x2F;phongMaterial.js:571</code></a>
                             </p>
                     
                     
@@ -2079,7 +2075,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l828"><code>src&#x2F;materials&#x2F;phongMaterial.js:828</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l803"><code>src&#x2F;materials&#x2F;phongMaterial.js:803</code></a>
                             </p>
                     
                     
@@ -2107,7 +2103,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l301"><code>src&#x2F;component.js:301</code></a>
+                            <a href="../files/src_component.js.html#l318"><code>src&#x2F;component.js:318</code></a>
                             </p>
                     
                     
@@ -2132,7 +2128,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l354"><code>src&#x2F;materials&#x2F;phongMaterial.js:354</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l367"><code>src&#x2F;materials&#x2F;phongMaterial.js:367</code></a>
                             </p>
                     
                     
@@ -2160,7 +2156,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l679"><code>src&#x2F;materials&#x2F;phongMaterial.js:679</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l669"><code>src&#x2F;materials&#x2F;phongMaterial.js:669</code></a>
                             </p>
                     
                     
@@ -2188,7 +2184,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l584"><code>src&#x2F;materials&#x2F;phongMaterial.js:584</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l585"><code>src&#x2F;materials&#x2F;phongMaterial.js:585</code></a>
                             </p>
                     
                     
@@ -2215,7 +2211,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l420"><code>src&#x2F;materials&#x2F;phongMaterial.js:420</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l431"><code>src&#x2F;materials&#x2F;phongMaterial.js:431</code></a>
                             </p>
                     
                     
@@ -2243,7 +2239,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l711"><code>src&#x2F;materials&#x2F;phongMaterial.js:711</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l697"><code>src&#x2F;materials&#x2F;phongMaterial.js:697</code></a>
                             </p>
                     
                     
@@ -2271,7 +2267,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l616"><code>src&#x2F;materials&#x2F;phongMaterial.js:616</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l614"><code>src&#x2F;materials&#x2F;phongMaterial.js:614</code></a>
                             </p>
                     
                     
@@ -2298,7 +2294,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l852"><code>src&#x2F;materials&#x2F;phongMaterial.js:852</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l826"><code>src&#x2F;materials&#x2F;phongMaterial.js:826</code></a>
                             </p>
                     
                     
@@ -2327,14 +2323,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l292"><code>src&#x2F;component.js:292</code></a>
+                            <a href="../files/src_component.js.html#l309"><code>src&#x2F;component.js:309</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                            <p>Unique ID for this Component within its parent Scene.</p>
                     
                         </div>
                     
@@ -2352,7 +2348,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l499"><code>src&#x2F;materials&#x2F;phongMaterial.js:499</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l507"><code>src&#x2F;materials&#x2F;phongMaterial.js:507</code></a>
                             </p>
                     
                     
@@ -2378,7 +2374,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l284"><code>src&#x2F;component.js:284</code></a>
+                            <a href="../files/src_component.js.html#l301"><code>src&#x2F;component.js:301</code></a>
                             </p>
                     
                     
@@ -2404,7 +2400,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_model">Component</a>:
-                            <a href="../files/src_component.js.html#l387"><code>src&#x2F;component.js:387</code></a>
+                            <a href="../files/src_component.js.html#l381"><code>src&#x2F;component.js:381</code></a>
                             </p>
                     
                     
@@ -2431,7 +2427,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l554"><code>src&#x2F;materials&#x2F;phongMaterial.js:554</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l559"><code>src&#x2F;materials&#x2F;phongMaterial.js:559</code></a>
                             </p>
                     
                     
@@ -2458,7 +2454,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l664"><code>src&#x2F;materials&#x2F;phongMaterial.js:664</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l656"><code>src&#x2F;materials&#x2F;phongMaterial.js:656</code></a>
                             </p>
                     
                     
@@ -2484,7 +2480,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l516"><code>src&#x2F;materials&#x2F;phongMaterial.js:516</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l523"><code>src&#x2F;materials&#x2F;phongMaterial.js:523</code></a>
                             </p>
                     
                     
@@ -2510,7 +2506,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l533"><code>src&#x2F;materials&#x2F;phongMaterial.js:533</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l539"><code>src&#x2F;materials&#x2F;phongMaterial.js:539</code></a>
                             </p>
                     
                     
@@ -2539,7 +2535,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l743"><code>src&#x2F;materials&#x2F;phongMaterial.js:743</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l725"><code>src&#x2F;materials&#x2F;phongMaterial.js:725</code></a>
                             </p>
                     
                     
@@ -2567,7 +2563,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l648"><code>src&#x2F;materials&#x2F;phongMaterial.js:648</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l642"><code>src&#x2F;materials&#x2F;phongMaterial.js:642</code></a>
                             </p>
                     
                     
@@ -2585,7 +2581,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
-                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                        <span class="type">Scene</span>
                     
                     
                     
@@ -2595,14 +2591,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l234"><code>src&#x2F;component.js:234</code></a>
+                            <a href="../files/src_component.js.html#l253"><code>src&#x2F;component.js:253</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                            <p>The parent Scene that contains this Component.</p>
                     
                         </div>
                     
@@ -2620,7 +2616,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l478"><code>src&#x2F;materials&#x2F;phongMaterial.js:478</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l487"><code>src&#x2F;materials&#x2F;phongMaterial.js:487</code></a>
                             </p>
                     
                     
@@ -2649,7 +2645,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l387"><code>src&#x2F;materials&#x2F;phongMaterial.js:387</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l399"><code>src&#x2F;materials&#x2F;phongMaterial.js:399</code></a>
                             </p>
                     
                     
@@ -2677,7 +2673,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l695"><code>src&#x2F;materials&#x2F;phongMaterial.js:695</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l683"><code>src&#x2F;materials&#x2F;phongMaterial.js:683</code></a>
                             </p>
                     
                     
@@ -2705,7 +2701,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l600"><code>src&#x2F;materials&#x2F;phongMaterial.js:600</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l599"><code>src&#x2F;materials&#x2F;phongMaterial.js:599</code></a>
                             </p>
                     
                     
@@ -2733,7 +2729,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l358"><code>src&#x2F;component.js:358</code></a>
+                            <a href="../files/src_component.js.html#l352"><code>src&#x2F;component.js:352</code></a>
                             </p>
                     
                     
@@ -2753,7 +2749,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item inherited">
+                    <div id="property_type" class="property item">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
@@ -2763,9 +2759,12 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_component.js.html#l347"><code>src&#x2F;component.js:347</code></a>
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_type">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_materials_phongMaterial.js.html#l171"><code>src&#x2F;materials&#x2F;phongMaterial.js:171</code></a>
                             </p>
                     
                     
@@ -2797,7 +2796,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1121"><code>src&#x2F;component.js:1121</code></a>
+                            <a href="../files/src_component.js.html#l1096"><code>src&#x2F;component.js:1096</code></a>
                             </p>
                     
                     

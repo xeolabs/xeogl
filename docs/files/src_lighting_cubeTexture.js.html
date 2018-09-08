@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -196,8 +193,7 @@
  @module xeogl
  @submodule lighting
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this CubeTexture in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID for this CubeTexture, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CubeTexture.
@@ -206,116 +202,162 @@
  @param [cfg.encoding=&quot;linear&quot;] {String} Encoding format.  See the {{#crossLink &quot;CubeTexture/encoding:property&quot;}}{{/crossLink}} property for more info.
  @extends Component
  */
-(function () {
+import {Component} from &#x27;../component.js&#x27;;
+import {State} from &#x27;../renderer/state.js&#x27;;
+import {Texture2D} from &#x27;../renderer/texture2d.js&#x27;;
+import {stats} from &#x27;./../stats.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const type = &quot;xeogl.CubeTexture&quot;;
 
-    xeogl.CubeTexture = xeogl.Component.extend({
+function ensureImageSizePowerOfTwo(image) {
+    if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
+        const canvas = document.createElement(&quot;canvas&quot;);
+        canvas.width = nextHighestPowerOfTwo(image.width);
+        canvas.height = nextHighestPowerOfTwo(image.height);
+        const ctx = canvas.getContext(&quot;2d&quot;);
+        ctx.drawImage(image,
+            0, 0, image.width, image.height,
+            0, 0, canvas.width, canvas.height);
+        image = canvas;
+    }
+    return image;
+}
 
-        type: &quot;xeogl.CubeTexture&quot;,
+function isPowerOfTwo(x) {
+    return (x &amp; (x - 1)) === 0;
+}
 
-        _init: function (cfg) {
+function nextHighestPowerOfTwo(x) {
+    --x;
+    for (let i = 1; i &lt; 32; i &lt;&lt;= 1) {
+        x = x | x &gt;&gt; i;
+    }
+    return x + 1;
+}
 
-            var gl = this.scene.canvas.gl;
+class CubeTexture extends Component{
 
-            this._state = new xeogl.renderer.State({
-                texture: new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP),
-                flipY: this._checkFlipY(cfg.minFilter),
-                encoding: this._checkEncoding(cfg.encoding),
-                minFilter: &quot;linearMipmapLinear&quot;,
-                magFilter: &quot;linear&quot;,
-                wrapS: &quot;clampToEdge&quot;,
-                wrapT: &quot;clampToEdge&quot;,
-                mipmaps: true
-            });
+    /**
+     JavaScript class name for this Component.
 
-            this._src = cfg.src;
-            this._images = [];
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-            this._loadSrc(cfg.src);
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            xeogl.stats.memory.textures++;
-        },
+    init(cfg) {
 
-        _checkFlipY: function (value) {
-            return !!value;
-        },
+        super.init(cfg);
 
-        _checkEncoding: function (value) {
-            value = value || &quot;linear&quot;;
-            if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;sRGB&quot; &amp;&amp; value !== &quot;gamma&quot;) {
-                this.error(&quot;Unsupported value for &#x27;encoding&#x27;: &#x27;&quot; + value + &quot;&#x27; - supported values are &#x27;linear&#x27;, &#x27;sRGB&#x27;, &#x27;gamma&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
-                value = &quot;linear&quot;;
-            }
-            return value;
-        },
+        const gl = this.scene.canvas.gl;
 
-        _webglContextRestored: function () {
-            var gl = this.scene.canvas.gl;
-            this._state.texture = null;
-            // if (this._images.length &gt; 0) {
-            //     this._state.texture = new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
-            //     this._state.texture.setImage(this._images, this._state);
-            //     this._state.texture.setProps(this._state);
-            // } else
-            if (this._src) {
-                this._loadSrc(this._src);
-            }
-        },
+        this._state = new State({
+            texture: new Texture2D(gl, gl.TEXTURE_CUBE_MAP),
+            flipY: this._checkFlipY(cfg.minFilter),
+            encoding: this._checkEncoding(cfg.encoding),
+            minFilter: &quot;linearMipmapLinear&quot;,
+            magFilter: &quot;linear&quot;,
+            wrapS: &quot;clampToEdge&quot;,
+            wrapT: &quot;clampToEdge&quot;,
+            mipmaps: true
+        });
 
-        _loadSrc: function (src) {
-            var self = this;
-            var gl = this.scene.canvas.gl;
-            this._images = [];
-            var loadFailed = false;
-            var numLoaded = 0;
-            for (var i = 0; i &lt; src.length; i++) {
-                var image = new Image();
-                image.onload = (function () {
-                    var _image = image;
-                    var index = i;
-                    return function () {
-                        if (loadFailed) {
-                            return;
-                        }
-                        _image = xeogl.renderer.ensureImageSizePowerOfTwo(_image);
-                        self._images[index] = _image;
-                        numLoaded++;
-                        if (numLoaded === 6) {
-                            var texture = self._state.texture;
-                            if (!texture) {
-                                texture = new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
-                                self._state.texture = texture;
-                            }
-                            texture.setImage(self._images, self._state);
-                            texture.setProps(self._state);
-                            /**
-                             * Fired whenever this CubeTexture has loaded the
-                             * image files that its {{#crossLink &quot;CubeTexture/src:property&quot;}}{{/crossLink}} property currently points to.
-                             * @event loaded
-                             * @param value {HTML Image} The value of the {{#crossLink &quot;CubeTexture/src:property&quot;}}{{/crossLink}} property
-                             */
-                            self.fire(&quot;loaded&quot;, self._src);
-                        }
-                    };
-                })();
-                image.onerror = function () {
-                    loadFailed = true;
-                };
-                image.src = src[i];
-            }
-        },
+        this._src = cfg.src;
+        this._images = [];
 
-        _destroy: function () {
-            if (this._state.texture) {
-                this._state.texture.destroy();
-            }
-            xeogl.stats.memory.textures--;
+        this._loadSrc(cfg.src);
+
+        stats.memory.textures++;
+    }
+
+    _checkFlipY(value) {
+        return !!value;
+    }
+
+    _checkEncoding (value) {
+        value = value || &quot;linear&quot;;
+        if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;sRGB&quot; &amp;&amp; value !== &quot;gamma&quot;) {
+            this.error(&quot;Unsupported value for &#x27;encoding&#x27;: &#x27;&quot; + value + &quot;&#x27; - supported values are &#x27;linear&#x27;, &#x27;sRGB&#x27;, &#x27;gamma&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
+            value = &quot;linear&quot;;
         }
-    });
+        return value;
+    }
 
-})();
+    _webglContextRestored () {
+        const gl = this.scene.canvas.gl;
+        this._state.texture = null;
+        // if (this._images.length &gt; 0) {
+        //     this._state.texture = new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
+        //     this._state.texture.setImage(this._images, this._state);
+        //     this._state.texture.setProps(this._state);
+        // } else
+        if (this._src) {
+            this._loadSrc(this._src);
+        }
+    }
 
+    _loadSrc (src) {
+        const self = this;
+        const gl = this.scene.canvas.gl;
+        this._images = [];
+        let loadFailed = false;
+        let numLoaded = 0;
+        for (let i = 0; i &lt; src.length; i++) {
+            const image = new Image();
+            image.onload = (function () {
+                let _image = image;
+                const index = i;
+                return function () {
+                    if (loadFailed) {
+                        return;
+                    }
+                    _image = ensureImageSizePowerOfTwo(_image);
+                    self._images[index] = _image;
+                    numLoaded++;
+                    if (numLoaded === 6) {
+                        let texture = self._state.texture;
+                        if (!texture) {
+                            texture = new Texture2D(gl, gl.TEXTURE_CUBE_MAP);
+                            self._state.texture = texture;
+                        }
+                        texture.setImage(self._images, self._state);
+                        texture.setProps(self._state);
+                        /**
+                         * Fired whenever this CubeTexture has loaded the
+                         * image files that its {{#crossLink &quot;CubeTexture/src:property&quot;}}{{/crossLink}} property currently points to.
+                         * @event loaded
+                         * @param value {HTML Image} The value of the {{#crossLink &quot;CubeTexture/src:property&quot;}}{{/crossLink}} property
+                         */
+                        self.fire(&quot;loaded&quot;, self._src);
+                    }
+                };
+            })();
+            image.onerror = function () {
+                loadFailed = true;
+            };
+            image.src = src[i];
+        }
+    }
+
+    destroy() {
+        super.destroy();
+        if (this._state.texture) {
+            this._state.texture.destroy();
+        }
+        stats.memory.textures--;
+        this._state.destroy();
+    }
+}
+
+componentClasses[type] = CubeTexture;
+
+export {CubeTexture};
     </pre>
 </div>
                     </div>

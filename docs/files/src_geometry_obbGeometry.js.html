@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -249,8 +246,7 @@
  @module xeogl
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this OBBGeometry in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
  generated automatically when omitted.
@@ -260,118 +256,118 @@
  containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
  @extends Component
  */
-(function () {
+import {utils} from &#x27;../utils.js&#x27;;
+import {tasks} from &#x27;../tasks.js&#x27;;
+import {Geometry} from &#x27;./geometry.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const type = &quot;xeogl.OBBGeometry&quot;;
 
-    xeogl.OBBGeometry = xeogl.Geometry.extend({
+class OBBGeometry extends Geometry {
 
-        type: &quot;xeogl.OBBGeometry&quot;,
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-            this._super(xeogl._apply(cfg, {
-                combined: true,
-                quantized: false, // Quantized geometry is immutable
-                primitive: cfg.primitive || &quot;lines&quot;,
-                positions: cfg.positions || [1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
-                    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0],
-                indices: [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]
-            }));
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            if (cfg.target) {
-                this.target = cfg.target;
+    init(cfg) {
+        super.init(utils.apply(cfg, {
+            combined: true,
+            quantized: false, // Quantized geometry is immutable
+            primitive: cfg.primitive || &quot;lines&quot;,
+            positions: cfg.positions || [1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
+                1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0],
+            indices: [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]
+        }));
+        if (cfg.target) {
+            this.target = cfg.target;
+        } else if (cfg.targetOBB) {
+            this.targetOBB = cfg.targetOBB;
+        }
+    }
 
-            } else if (cfg.targetOBB) {
-                this.targetOBB = cfg.targetOBB;
-            }
-        },
+    /**
+     A component whose OBB we&#x27;ll dynamically fit this AABBGeometry to.
 
-        _props: {
+     This property effectively replaces the {{#crossLink &quot;OBBGeometry/targetOBB:property&quot;}}{{/crossLink}} property.
 
-            /**
-             A component whose OBB we&#x27;ll dynamically fit this AABBGeometry to.
-
-             This property effectively replaces the {{#crossLink &quot;OBBGeometry/targetOBB:property&quot;}}{{/crossLink}} property.
-
-             @property target
-             @type Component
-             */
-            target: {
-
-                set: function (value) {
-
-                    var geometryDirty = false;
-                    var self = this;
-
-                    this._attach({
-                        name: &quot;target&quot;,
-                        type: &quot;xeogl.Component&quot;,
-                        component: value,
-                        sceneDefault: false,
-                        on: {
-                            boundary: function () {
-                                if (geometryDirty) {
-                                    return;
-                                }
-                                geometryDirty = true;
-                                xeogl.scheduleTask(function () {
-                                    self._setPositionsFromOBB(self._attached.target.obb);
-                                    geometryDirty = false;
-                                });
-                            }
-                        },
-                        onAttached: function () {
-                            self._setPositionsFromOBB(self._attached.target.obb);
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.target;
-                }
-            },
-
-            /**
-             Sets this OBBGeometry to an mesh-oriented bounding box (OBB), given as a 32-element Float32Array
-             containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
-
-             This property effectively replaces the {{#crossLink &quot;OBBGeometry/boundary:property&quot;}}{{/crossLink}} property, causing it to become null.
-
-             @property targetOBB
-             @type Float32Array
-             */
-            targetOBB: {
-
-                set: function (value) {
-
-                    if (!value) {
+     @property target
+     @type Component
+     */
+    set  target(value) {
+        let geometryDirty = false;
+        const self = this;
+        this._attach({
+            name: &quot;target&quot;,
+            type: &quot;xeogl.Component&quot;,
+            component: value,
+            sceneDefault: false,
+            on: {
+                boundary: function () {
+                    if (geometryDirty) {
                         return;
                     }
-
-                    if (this._attached.target) {
-                        this.target = null;
-                    }
-
-                    this._setPositionsFromOBB(value);
+                    geometryDirty = true;
+                    tasks.scheduleTask(function () {
+                        self._setPositionsFromOBB(self._attached.target.obb);
+                        geometryDirty = false;
+                    });
                 }
+            },
+            onAttached: function () {
+                self._setPositionsFromOBB(self._attached.target.obb);
             }
-        },
+        });
+    }
 
-        _setPositionsFromOBB: function (obb) {
-            this.positions = [
-                obb[0], obb[1], obb[2],
-                obb[4], obb[5], obb[6],
-                obb[8], obb[9], obb[10],
-                obb[12], obb[13], obb[14],
-                obb[16], obb[17], obb[18],
-                obb[20], obb[21], obb[22],
-                obb[24], obb[25], obb[26],
-                obb[28], obb[29], obb[30]
-            ];
+    get target() {
+        return this._attached.target;
+    }
+
+    /**
+     Sets this OBBGeometry to an mesh-oriented bounding box (OBB), given as a 32-element Float32Array
+     containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+
+     This property effectively replaces the {{#crossLink &quot;OBBGeometry/boundary:property&quot;}}{{/crossLink}} property, causing it to become null.
+
+     @property targetOBB
+     @type Float32Array
+     */
+    set targetOBB(value) {
+        if (!value) {
+            return;
         }
-    });
-})();
+        if (this._attached.target) {
+            this.target = null;
+        }
+        this._setPositionsFromOBB(value);
+    }
+
+    _setPositionsFromOBB(obb) {
+        this.positions = [
+            obb[0], obb[1], obb[2],
+            obb[4], obb[5], obb[6],
+            obb[8], obb[9], obb[10],
+            obb[12], obb[13], obb[14],
+            obb[16], obb[17], obb[18],
+            obb[20], obb[21], obb[22],
+            obb[24], obb[25], obb[26],
+            obb[28], obb[29], obb[30]
+        ];
+    }
+}
+
+componentClasses[type] = OBBGeometry;
+
+export{OBBGeometry};
 
     </pre>
 </div>

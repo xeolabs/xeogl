@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/math/mathGeometryBuild.js - xeogl</title>
+    <title>src/core.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -181,371 +178,171 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/math/mathGeometryBuild.js</h1>
+<h1 class="file-heading">File: src/core.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/**
- * Boundary math functions.
- */
-(function () {
+import {Map} from &#x27;./utils/map.js&#x27;;
+import {stats} from &#x27;./stats.js&#x27;;
+import {utils} from &#x27;./utils.js&#x27;;
+import {Scene} from &quot;./scene.js&quot;;
+import {componentClasses} from &quot;./componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const scenesRenderInfo = {}; // Used for throttling FPS for each Scene
+const sceneIDMap = new Map(); // Ensures unique scene IDs
+let defaultScene = null;// Default singleton Scene, lazy-initialized in getter
 
-    var math = xeogl.math;
+const core = {
 
     /**
-     * Builds normal vectors from positions and indices.
-     *
-     * @private
+     Semantic version number. The value for this is set by an expression that&#x27;s concatenated to
+     the end of the built binary by the xeogl build script.
+     @property version
+     @namespace xeogl
+     @type {String}
      */
-    math.buildNormals = (function () {
+    version: null,
 
-        var a = math.vec3();
-        var b = math.vec3();
-        var c = math.vec3();
-        var ab = math.vec3();
-        var ac = math.vec3();
-        var crossVec = math.vec3();
+    /**
+     Existing {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}s , mapped to their IDs
+     @property scenes
+     @namespace xeogl
+     @type {{String:xeogl.Scene}}
+     */
+    scenes: {},
 
-        return function (positions, indices, normals) {
+    _superTypes: {}, // For each component type, a list of its supertypes, ordered upwards in the hierarchy.
 
-            var i;
-            var len;
-            var nvecs = new Array(positions.length / 3);
-            var j0;
-            var j1;
-            var j2;
 
-            for (i = 0, len = indices.length; i &lt; len; i += 3) {
+    /**
+     The default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
 
-                j0 = indices[i];
-                j1 = indices[i + 1];
-                j2 = indices[i + 2];
+     Components created without an explicit parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} will be created within this
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} by default.
 
-                a[0] = positions[j0 * 3];
-                a[1] = positions[j0 * 3 + 1];
-                a[2] = positions[j0 * 3 + 2];
+     xeogl creates the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as soon as you either
+     reference this property for the first time, or create your first {{#crossLink &quot;Mesh&quot;}}Mesh{{/crossLink}} without
+     a specified {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
 
-                b[0] = positions[j1 * 3];
-                b[1] = positions[j1 * 3 + 1];
-                b[2] = positions[j1 * 3 + 2];
+     @property scene
+     @namespace xeogl
+     @type Scene
+     */
+    get scene() {
+        return this.getDefaultScene();
+    },
 
-                c[0] = positions[j2 * 3];
-                c[1] = positions[j2 * 3 + 1];
-                c[2] = positions[j2 * 3 + 2];
+    set scene(value) {
+        this.setDefaultScene(value);
+    },
 
-                math.subVec3(b, a, ab);
-                math.subVec3(c, a, ac);
+    getDefaultScene() {
+        if (!defaultScene) {
+            defaultScene = new Scene({id: &quot;default.scene&quot;});
+        }
+        return defaultScene;
+    },
 
-                var normVec = math.vec3();
+    setDefaultScene(scene) {
+        defaultScene = scene;
+    },
 
-                math.normalizeVec3(math.cross3Vec3(ab, ac, crossVec), normVec);
+    /**
+     Registers a scene on xeogl.
+     This is called within the xeogl.Scene constructor.
 
-                if (!nvecs[j0]) {
-                    nvecs[j0] = [];
-                }
-                if (!nvecs[j1]) {
-                    nvecs[j1] = [];
-                }
-                if (!nvecs[j2]) {
-                    nvecs[j2] = [];
-                }
-
-                nvecs[j0].push(normVec);
-                nvecs[j1].push(normVec);
-                nvecs[j2].push(normVec);
+     @method addScene
+     @param {Scene} scene The scene
+     @private
+     */
+    addScene(scene) {
+        if (scene.id) { // User-supplied ID
+            if (core.scenes[scene.id]) {
+                console.error(&#x60;[ERROR] Scene ${utils.inQuotes(scene.id)} already exists&#x60;);
+                return;
             }
-
-            normals = (normals &amp;&amp; normals.length === positions.length) ? normals : new Float32Array(positions.length);
-
-            var count;
-            var x;
-            var y;
-            var z;
-
-            for (i = 0, len = nvecs.length; i &lt; len; i++) {  // Now go through and average out everything
-
-                count = nvecs[i].length;
-
-                x = 0;
-                y = 0;
-                z = 0;
-
-                for (var j = 0; j &lt; count; j++) {
-                    x += nvecs[i][j][0];
-                    y += nvecs[i][j][1];
-                    z += nvecs[i][j][2];
-                }
-
-                normals[i * 3] = (x / count);
-                normals[i * 3 + 1] = (y / count);
-                normals[i * 3 + 2] = (z / count);
-            }
-
-            return normals;
+        } else { // Auto-generated ID
+            scene.id = sceneIDMap.addItem({});
+        }
+        core.scenes[scene.id] = scene;
+        const ticksPerRender = scene.ticksPerRender;
+        scenesRenderInfo[scene.id] = {
+            ticksPerRender,
+            renderCountdown: ticksPerRender
         };
-    })();
+        stats.components.scenes++;
+        scene.on(&quot;destroyed&quot;, () =&gt; { // Unregister destroyed scenes
+            sceneIDMap.removeItem(scene.id);
+            delete core.scenes[scene.id];
+            delete scenesRenderInfo[scene.id];
+            stats.components.scenes--;
+        });
+    },
 
     /**
-     * Builds vertex tangent vectors from positions, UVs and indices.
-     *
-     * @private
+     Destroys all user-created {{#crossLink &quot;Scene&quot;}}Scenes{{/crossLink}} and
+     clears the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+
+     @method clear
+     @demo foo
      */
-    math.buildTangents = (function () {
-
-        var tempVec3 = new Float32Array(3);
-        var tempVec3b = new Float32Array(3);
-        var tempVec3c = new Float32Array(3);
-        var tempVec3d = new Float32Array(3);
-        var tempVec3e = new Float32Array(3);
-        var tempVec3f = new Float32Array(3);
-        var tempVec3g = new Float32Array(3);
-
-        return function (positions, indices, uv) {
-
-            var tangents = new Float32Array(positions.length);
-
-            // The vertex arrays needs to be calculated
-            // before the calculation of the tangents
-
-            for (var location = 0; location &lt; indices.length; location += 3) {
-
-                // Recontructing each vertex and UV coordinate into the respective vectors
-
-                var index = indices[location];
-
-                var v0 = positions.subarray(index * 3, index * 3 + 3);
-                var uv0 = uv.subarray(index * 2, index * 2 + 2);
-
-                index = indices[location + 1];
-
-                var v1 = positions.subarray(index * 3, index * 3 + 3);
-                var uv1 = uv.subarray(index * 2, index * 2 + 2);
-
-                index = indices[location + 2];
-
-                var v2 = positions.subarray(index * 3, index * 3 + 3);
-                var uv2 = uv.subarray(index * 2, index * 2 + 2);
-
-                var deltaPos1 = math.subVec3(v1, v0, tempVec3);
-                var deltaPos2 = math.subVec3(v2, v0, tempVec3b);
-
-                var deltaUV1 = math.subVec2(uv1, uv0, tempVec3c);
-                var deltaUV2 = math.subVec2(uv2, uv0, tempVec3d);
-
-                var r = 1 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
-
-                var tangent = math.mulVec3Scalar(
-                    math.subVec3(
-                        math.mulVec3Scalar(deltaPos1, deltaUV2[1], tempVec3e),
-                        math.mulVec3Scalar(deltaPos2, deltaUV1[1], tempVec3f),
-                        tempVec3g
-                    ),
-                    r,
-                    tempVec3f
-                );
-
-                // Average the value of the vectors
-
-                var addTo;
-
-                for (var v = 0; v &lt; 3; v++) {
-                    addTo = indices[location + v] * 3;
-                    tangents[addTo] += tangent[0];
-                    tangents[addTo + 1] += tangent[1];
-                    tangents[addTo + 2] += tangent[2];
-                }
-            }
-
-            return tangents;
-        };
-    })();
-
-    /**
-     * Builds vertex and index arrays needed by color-indexed triangle picking.
-     *
-     * @private
-     */
-    math.buildPickTriangles = function (positions, indices, quantized) {
-
-        var numIndices = indices.length;
-        var pickPositions = quantized ? new Uint16Array(numIndices * 9) : new Float32Array(numIndices * 9);
-        var pickColors = new Uint8Array(numIndices  * 12);
-        var primIndex = 0;
-        var vi;// Positions array index
-        var pvi = 0;// Picking positions array index
-        var pci = 0; // Picking color array index
-
-        // Triangle indices
-        var i;
-        var r;
-        var g;
-        var b;
-        var a;
-
-        for (var location = 0; location &lt; numIndices; location += 3) {
-
-            // Primitive-indexed triangle pick color
-
-            a = (primIndex &gt;&gt; 24 &amp; 0xFF);
-            b = (primIndex &gt;&gt; 16 &amp; 0xFF);
-            g = (primIndex &gt;&gt; 8 &amp; 0xFF);
-            r = (primIndex &amp; 0xFF);
-
-            // A
-
-            i = indices[location];
-            vi = i * 3;
-
-            pickPositions[pvi++] = positions[vi];
-            pickPositions[pvi++] = positions[vi + 1];
-            pickPositions[pvi++] = positions[vi + 2];
-
-            pickColors[pci++] = r;
-            pickColors[pci++] = g;
-            pickColors[pci++] = b;
-            pickColors[pci++] = a;
-
-            // B
-
-            i = indices[location + 1];
-            vi = i * 3;
-
-            pickPositions[pvi++] = positions[vi];
-            pickPositions[pvi++] = positions[vi + 1];
-            pickPositions[pvi++] = positions[vi + 2];
-
-            pickColors[pci++] = r;
-            pickColors[pci++] = g;
-            pickColors[pci++] = b;
-            pickColors[pci++] = a;
-
-            // C
-
-            i = indices[location + 2];
-            vi = i * 3;
-
-            pickPositions[pvi++] = positions[vi];
-            pickPositions[pvi++] = positions[vi + 1];
-            pickPositions[pvi++] = positions[vi + 2];
-
-            pickColors[pci++] = r;
-            pickColors[pci++] = g;
-            pickColors[pci++] = b;
-            pickColors[pci++] = a;
-
-            primIndex++;
-        }
-
-        return {
-            positions: pickPositions,
-            colors: pickColors
-        };
-    };
-
-    /**
-     * Converts surface-perpendicular face normals to vertex normals. Assumes that the mesh contains disjoint triangles
-     * that don&#x27;t share vertex array elements. Works by finding groups of vertices that have the same location and
-     * averaging their normal vectors.
-     *
-     * @returns {{positions: Array, normals: *}}
-     */
-    math.faceToVertexNormals = function (positions, normals, options) {
-        options = options || {};
-        var smoothNormalsAngleThreshold = options.smoothNormalsAngleThreshold || 20;
-        var vertexMap = {};
-        var vertexNormals = [];
-        var vertexNormalAccum = {};
-        var acc;
-        var vx;
-        var vy;
-        var vz;
-        var key;
-        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-        var precision = Math.pow(10, precisionPoints);
-        var posi;
-        var i;
-        var j;
-        var len;
-        var a;
-        var b;
-        var c;
-
-        for (i = 0, len = positions.length; i &lt; len; i += 3) {
-
-            posi = i / 3;
-
-            vx = positions[i];
-            vy = positions[i + 1];
-            vz = positions[i + 2];
-
-            key = Math.round(vx * precision) + &#x27;_&#x27; + Math.round(vy * precision) + &#x27;_&#x27; + Math.round(vz * precision);
-
-            if (vertexMap[key] === undefined) {
-                vertexMap[key] = [posi];
-            } else {
-                vertexMap[key].push(posi);
-            }
-
-            var normal = math.normalizeVec3([normals[i], normals[i + 1], normals[i + 2]]);
-
-            vertexNormals[posi] = normal;
-
-            acc = math.vec4([normal[0], normal[1], normal[2], 1]);
-
-            vertexNormalAccum[posi] = acc;
-        }
-
-        for (key in vertexMap) {
-
-            if (vertexMap.hasOwnProperty(key)) {
-
-                var vertices = vertexMap[key];
-                var numVerts = vertices.length;
-
-                for (i = 0; i &lt; numVerts; i++) {
-
-                    var ii = vertices[i];
-
-                    acc = vertexNormalAccum[ii];
-
-                    for (j = 0; j &lt; numVerts; j++) {
-
-                        if (i === j) {
-                            continue;
-                        }
-
-                        var jj = vertices[j];
-
-                        a = vertexNormals[ii];
-                        b = vertexNormals[jj];
-
-                        var angle = Math.abs(math.angleVec3(a, b) / math.DEGTORAD);
-
-                        if (angle &lt; smoothNormalsAngleThreshold) {
-
-                            acc[0] += b[0];
-                            acc[1] += b[1];
-                            acc[2] += b[2];
-                            acc[3] += 1.0;
-                        }
-                    }
+    clear() {
+        let scene;
+        for (const id in core.scenes) {
+            if (core.scenes.hasOwnProperty(id)) {
+                scene = core.scenes[id];
+                // Only clear the default Scene
+                // but destroy all the others
+                if (id === &quot;default.scene&quot;) {
+                    scene.clear();
+                } else {
+                    scene.destroy();
                 }
             }
         }
+        core.scenes = {};
+    },
 
-        for (i = 0, len = normals.length; i &lt; len; i += 3) {
+    //////////////////////////////////////////////////////////////////////////
+    /////////// Fix me
+    //////////////////////////////////////////////////////////////////////////
 
-            acc = vertexNormalAccum[i / 3];
-
-            normals[i + 0] = acc[0] / acc[3];
-            normals[i + 1] = acc[1] / acc[3];
-            normals[i + 2] = acc[2] / acc[3];
-
+    /**
+     Tests if the given component type is a subtype of another component supertype.
+     @param {String} type
+     @param {String} [superType=&quot;xeogl.Component&quot;]
+     @returns {boolean}
+     @private
+     */
+    isComponentType: function (type, superType = &quot;xeogl.Component&quot;) {
+        if (type === superType) {
+            return true;
         }
-    };
-}());
+        var clas = componentClasses[type];
+        if (!clas) {
+            return false;
+        }
+        var superClas = componentClasses[superType];
+        if (!superClas) {
+            return false;
+        }
+        let result = subclasses(clas, superClas);
+        return result;
+    }
+};
+
+function subclasses(ChildClass, ParentClass) {
+    var c = ChildClass.prototype;
+    while (c !== null) {
+        if (c === ParentClass.prototype) {
+            return true;
+        }
+        c = c.__proto__;
+    }
+    return false;
+}
+
+export {core};
     </pre>
 </div>
                     </div>

@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -260,22 +257,16 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The BuildableModel&#x27;s local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
-(function () {
+{
 
-    &quot;use strict&quot;;
+    xeogl.BuildableModel = class xeoglBuildableModel extends xeogl.Model {
 
-    xeogl.BuildableModel = xeogl.Model.extend({
-
-        type: &quot;xeogl.BuildableModel&quot;,
-
-        _init: function (cfg) {
-
+        init(cfg) {
+            super.init(cfg);
             this._initState();
-            
-            this._super(cfg);
-        },
+        }
 
-        _initState: function () {
+        _initState() {
             this._state = {
                 material: null,
                 geometry: null,
@@ -287,7 +278,7 @@
                 assetCfgs: {},
                 assets: {}
             };
-        },
+        }
 
         /**
          * Adds an asset to this BuildableModel.
@@ -325,10 +316,10 @@
          * @param {String|Number} assetId A unique ID for the asset.
          * @param {*} cfg Configuration object for the asset.
          */
-        createAsset: function (assetId, cfg) {
+        createAsset(assetId, cfg) {
             this._state.assetCfgs[assetId] = cfg;
             delete this._state.assets[assetId];
-        },
+        }
 
         /**
          * Selects the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} asset that will be added to
@@ -341,9 +332,9 @@
          * @method geometry
          * @param {String|Number} assetId The asset ID.
          */
-        setGeometry: function (assetId) {
+        setGeometry(assetId) {
             this._state.geometry = assetId;
-        },
+        }
 
         /**
          * Selects the {{#crossLink &quot;Material&quot;}}{{/crossLink}} asset that will be added to
@@ -356,9 +347,9 @@
          * @method setMaterial
          * @param {String|Number} assetId The asset ID.
          */
-        setMaterial: function (assetId) {
+        setMaterial(assetId) {
             this._state.material = assetId;
-        },
+        }
 
         /**
          * Sets the 3D position of each {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} subsequently created with
@@ -369,11 +360,11 @@
          * @param {Number} y Position on Y-axis.
          * @param {Number} z Position on Z-axis.
          */
-        setPosition: function (x, y, z) {
+        setPosition(x, y, z) {
             this._state.pos[0] = x;
             this._state.pos[1] = y;
             this._state.pos[2] = z;
-        },
+        }
 
         /**
          * Sets the 3D scale of each {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} subsequently created with
@@ -384,11 +375,11 @@
          * @param {Number} y Scale on Y-axis.
          * @param {Number} z Scale on Z-axis.
          */
-        setScale: function (x, y, z) {
+        setScale(x, y, z) {
             this._state.scale[0] = x;
             this._state.scale[1] = y;
             this._state.scale[2] = z;
-        },
+        }
 
         /**
          * Sets the 3D Euler rotation angles for each {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} subsequently created
@@ -399,11 +390,11 @@
          * @param {Number} y Angle on Y-axis in degrees.
          * @param {Number} z Angle on Z-axis in degrees.
          */
-        setRotation: function (x, y, z) {
+        setRotation(x, y, z) {
             this._state.angles[0] = x;
             this._state.angles[1] = y;
             this._state.angles[2] = z;
-        },
+        }
 
         /**
          * Sets the order of 3D rotations for each {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} subsequently created
@@ -424,11 +415,11 @@
          * @param {Number} b Indicates the second rotation axis.
          * @param {Number} c Indicates the third rotation axis.
          */
-        setRotationAxis: function (a, b, c) {
+        setRotationAxis(a, b, c) {
             this._state.axis[0] = a;
             this._state.axis[1] = b;
             this._state.axis[2] = c;
-        },
+        }
 
         /**
          * Sets the RGBA colorize factors each {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} subsequently created
@@ -446,12 +437,12 @@
          * @param {Number} b Indicates the amount of blue.
          * @param {Number} z Indicates the alpha.
          */
-        setColorize: function (r, g, b, a) {
+        setColorize(r, g, b, a) {
             this._state.colorize[0] = r;
             this._state.colorize[1] = g;
             this._state.colorize[2] = b;
             this._state.colorize[3] = a;
-        },
+        }
 
         /**
          * Creates an {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} with whatever assets and states are currently
@@ -460,7 +451,7 @@
          * @method createMesh
          * @param {String|Number} [id] A unique ID for the new {{#crossLink &quot;Mesh&quot;}}{{/crossLink}}.
          */
-        createMesh: function (id) {
+        createMesh(id) {
             var mesh = new xeogl.Mesh({
                 id: id,
                 material: this._getAsset(this._state.material),
@@ -471,9 +462,9 @@
             });
             this._addComponent(mesh);
             this.addChild(mesh, false); // Don&#x27;t inherit state from this Model
-        },
+        }
 
-        _getAsset: function (assetId) {
+        _getAsset(assetId) {
             if (assetId === null) {
                 return;
             }
@@ -489,22 +480,22 @@
                 this._addComponent(asset);
             }
             return asset;
-        },
+        }
 
         /**
          * Removes all assets and {{#crossLink &quot;Mesh&quot;}}Meshes{{/crossLink}} from this BuildableModel.
          * @method clear
          */
-        clear: function () {
-            this._super();
+        clear() {
+            super.clear();
             this._initState();
-        },
+        }
 
         /**
          * Resets the state of this BuildableModel to defaults.
          * @method reset
          */
-        reset: function () {
+        reset() {
             this.setPosition(0, 0, 0);
             this.setScale(1, 1, 1);
             this.setRotation(0, 0, 0);
@@ -513,8 +504,8 @@
             this.setMaterial(null);
             this.setGeometry(null);
         }
-    });
-})();
+    };
+}
 
     </pre>
 </div>

@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -240,8 +237,7 @@
  @module xeogl
  @submodule rendering
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}, creates this Viewport within the
- default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Viewport configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
@@ -254,59 +250,119 @@
 
  @extends Component
  */
-(function () {
+import {Component} from &#x27;../component.js&#x27;;
+import {State} from &#x27;../renderer/state.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const type = &quot;xeogl.Viewport&quot;;
 
-    xeogl.Viewport = xeogl.Component.extend({
+class Viewport extends Component {
 
-        type: &quot;xeogl.Viewport&quot;,
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-            this._state = new xeogl.renderer.State({
-                boundary: [0, 0, 100, 100]
-            });
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            this.boundary = cfg.boundary;
-            this.autoBoundary = cfg.autoBoundary;
-        },
+    init(cfg) {
 
-        _props: {
+        super.init(cfg);
 
-            /**
-             The canvas-space boundary of this Viewport, indicated as [min, max, width, height].
+        this._state = new State({
+            boundary: [0, 0, 100, 100]
+        });
 
-             Defaults to the size of the parent
-             {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} {{#crossLink &quot;Canvas&quot;}}{{/crossLink}}.
+        this.boundary = cfg.boundary;
+        this.autoBoundary = cfg.autoBoundary;
+    }
 
-             Ignores attempts to set value when {{#crossLink &quot;Viewport/autoBoundary:property&quot;}}{{/crossLink}} is &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;.
 
-             Fires a {{#crossLink &quot;Viewport/boundary:event&quot;}}{{/crossLink}} event on change.
+    /**
+     The canvas-space boundary of this Viewport, indicated as [min, max, width, height].
 
-             @property boundary
-             @default [size of Scene Canvas]
-             @type {Array of Number}
-             */
-            boundary: {
+     Defaults to the size of the parent
+     {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} {{#crossLink &quot;Canvas&quot;}}{{/crossLink}}.
 
-                set: function (value) {
+     Ignores attempts to set value when {{#crossLink &quot;Viewport/autoBoundary:property&quot;}}{{/crossLink}} is &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;.
 
-                    if (this._autoBoundary) {
-                        return;
-                    }
+     Fires a {{#crossLink &quot;Viewport/boundary:event&quot;}}{{/crossLink}} event on change.
 
-                    if (!value) {
+     @property boundary
+     @default [size of Scene Canvas]
+     @type {Array of Number}
+     */
+    set boundary(value) {
 
-                        var canvasBoundary = this.scene.canvas.boundary;
+        if (this._autoBoundary) {
+            return;
+        }
 
-                        var width = canvasBoundary[2];
-                        var height = canvasBoundary[3];
+        if (!value) {
 
-                        value = [0, 0, width, height];
-                    }
+            const canvasBoundary = this.scene.canvas.boundary;
 
-                    this._state.boundary = value;
+            const width = canvasBoundary[2];
+            const height = canvasBoundary[3];
+
+            value = [0, 0, width, height];
+        }
+
+        this._state.boundary = value;
+
+        this._renderer.imageDirty();
+
+        /**
+         Fired whenever this Viewport&#x27;s {{#crossLink &quot;Viewport/boundary:property&quot;}}{{/crossLink}} property changes.
+
+         @event boundary
+         @param value {Boolean} The property&#x27;s new value
+         */
+        this.fire(&quot;boundary&quot;, this._state.boundary);
+    }
+
+    get boundary() {
+        return this._state.boundary;
+    }
+
+    /**
+     Indicates whether this Viewport&#x27;s {{#crossLink &quot;Viewport/boundary:property&quot;}}{{/crossLink}} automatically
+     synchronizes with the size of the parent {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} {{#crossLink &quot;Canvas&quot;}}{{/crossLink}}.
+
+     When set true, then this Viewport will fire a {{#crossLink &quot;Viewport/boundary/event&quot;}}{{/crossLink}} whenever
+     the {{#crossLink &quot;Canvas&quot;}}{{/crossLink}} resizes. Also fires that event as soon as this &#x60;&#x60;&#x60;&#x60;autoBoundary&#x60;&#x60;&#x60;&#x60;
+     property is changed.
+
+     Fires a {{#crossLink &quot;Viewport/autoBoundary:event&quot;}}{{/crossLink}} event on change.
+
+     @property autoBoundary
+     @default false
+     @type Boolean
+     */
+    set autoBoundary(value) {
+
+        value = !!value;
+
+        if (value === this._autoBoundary) {
+            return;
+        }
+
+        this._autoBoundary = value;
+
+        if (this._autoBoundary) {
+            this._onCanvasSize = this.scene.canvas.on(&quot;boundary&quot;,
+                function (boundary) {
+
+                    const width = boundary[2];
+                    const height = boundary[3];
+
+                    this._state.boundary = [0, 0, width, height];
 
                     this._renderer.imageDirty();
 
@@ -317,87 +373,40 @@
                      @param value {Boolean} The property&#x27;s new value
                      */
                     this.fire(&quot;boundary&quot;, this._state.boundary);
-                },
 
-                get: function () {
-                    return this._state.boundary;
-                }
-            },
+                }, this);
 
-            /**
-             Indicates whether this Viewport&#x27;s {{#crossLink &quot;Viewport/boundary:property&quot;}}{{/crossLink}} automatically
-             synchronizes with the size of the parent {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} {{#crossLink &quot;Canvas&quot;}}{{/crossLink}}.
-
-             When set true, then this Viewport will fire a {{#crossLink &quot;Viewport/boundary/event&quot;}}{{/crossLink}} whenever
-             the {{#crossLink &quot;Canvas&quot;}}{{/crossLink}} resizes. Also fires that event as soon as this &#x60;&#x60;&#x60;&#x60;autoBoundary&#x60;&#x60;&#x60;&#x60;
-             property is changed.
-
-             Fires a {{#crossLink &quot;Viewport/autoBoundary:event&quot;}}{{/crossLink}} event on change.
-
-             @property autoBoundary
-             @default false
-             @type Boolean
-             */
-            autoBoundary: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (value === this._autoBoundary) {
-                        return;
-                    }
-
-                    this._autoBoundary = value;
-
-                    if (this._autoBoundary) {
-                        this._onCanvasSize = this.scene.canvas.on(&quot;boundary&quot;,
-                            function (boundary) {
-
-                                var width = boundary[2];
-                                var height = boundary[3];
-
-                                this._state.boundary = [0, 0, width, height];
-
-                                this._renderer.imageDirty();
-
-                                /**
-                                 Fired whenever this Viewport&#x27;s {{#crossLink &quot;Viewport/boundary:property&quot;}}{{/crossLink}} property changes.
-
-                                 @event boundary
-                                 @param value {Boolean} The property&#x27;s new value
-                                 */
-                                this.fire(&quot;boundary&quot;, this._state.boundary);
-
-                            }, this);
-
-                    } else if (this._onCanvasSize) {
-                        this.scene.canvas.off(this._onCanvasSize);
-                        this._onCanvasSize = null;
-                    }
-
-                    /**
-                     Fired whenever this Viewport&#x27;s {{#crossLink &quot;autoBoundary/autoBoundary:property&quot;}}{{/crossLink}} property changes.
-
-                     @event autoBoundary
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;autoBoundary&quot;, this._autoBoundary);
-                },
-
-                get: function () {
-                    return this._autoBoundary;
-                }
-            }
-        },
-
-        _getState: function () {
-            return this._state;
+        } else if (this._onCanvasSize) {
+            this.scene.canvas.off(this._onCanvasSize);
+            this._onCanvasSize = null;
         }
-    });
 
-})();
+        /**
+         Fired whenever this Viewport&#x27;s {{#crossLink &quot;autoBoundary/autoBoundary:property&quot;}}{{/crossLink}} property changes.
 
+         @event autoBoundary
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;autoBoundary&quot;, this._autoBoundary);
+    }
+
+    get autoBoundary() {
+        return this._autoBoundary;
+    }
+
+    _getState() {
+        return this._state;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+componentClasses[type] = Viewport;
+
+export{Viewport};
     </pre>
 </div>
                     </div>

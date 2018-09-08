@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>OBBHelper - xeogl</title>
+    <title>src/utils/map.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -181,238 +178,56 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>OBBHelper</h1>
-<div class="box meta">
+<h1 class="file-heading">File: src/utils/map.js</h1>
 
+<div class="file">
+    <pre class="code prettyprint linenums">
+class Map {
 
-        <div class="foundat">
-            Defined in: <a href="../files/examples_js_helpers_obbHelper.js.html#l1"><code>examples&#x2F;js&#x2F;helpers&#x2F;obbHelper.js:1</code></a>
-        </div>
+    constructor(items, baseId) {
+        this.items = items || [];
+        this._lastUniqueId = (baseId || 0) + 1;
+    }
 
-            Module: <a href="../modules/xeogl.html">xeogl</a>
+    /**
+     * Usage:
+     *
+     * id = myMap.addItem(&quot;foo&quot;) // ID internally generated
+     * id = myMap.addItem(&quot;foo&quot;, &quot;bar&quot;) // ID is &quot;foo&quot;
+     */
+    addItem() {
+        let item;
+        if (arguments.length === 2) {
+            const id = arguments[0];
+            item = arguments[1];
+            if (this.items[id]) { // Won&#x27;t happen if given ID is string
+                throw &quot;ID clash: &#x27;&quot; + id + &quot;&#x27;&quot;;
+            }
+            this.items[id] = item;
+            return id;
 
-</div>
+        } else {
+            item = arguments[0] || {};
+            while (true) {
+                const findId = this._lastUniqueId++;
+                if (!this.items[findId]) {
+                    this.items[findId] = item;
+                    return findId;
+                }
+            }
+        }
+    }
 
+    removeItem(id) {
+        const item = this.items[id];
+        delete this.items[id];
+        return item;
+    }
+}
 
-<div class="box intro">
-    <p>Helper that visualizes the object-aligned boundary of a target <a href="../classes/Component.html" class="crosslink">Component</a> subtype with a World-space object-aligned boundary (OBB).</p>
+export {Map};
 
-</div>
-
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_OBBHelper" class="method item">
-            <h3 class="name"><code>OBBHelper</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>cfg</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/examples_js_helpers_obbHelper.js.html#l1"><code>examples&#x2F;js&#x2F;helpers&#x2F;obbHelper.js:1</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">cfg</code>
-                                <span class="type"></span>
-        
-        
-                            <div class="param-description">
-                                <p>Configuration</p>
-        
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[target]</code>
-                                            <span class="type">Number | String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Component.html" class="crosslink">Component</a> subtype with a World-space object-aligned boundary (OBB).</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[color=[0.4,0.4,0.4]]</code>
-                                            <span class="type">Float32Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Emmissive color</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[visible=true]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Indicates whether or not this helper is visible.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
-        </div>
-    </div>
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Index</h2>
-
-
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-
-                    <ul class="index-list properties">
-                            <li class="index-item property">
-                                <a href="#property_color">color</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_target">target</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_visible">visible</a>
-
-                            </li>
-                    </ul>
-                </div>
-
-
-        </div>
-
-
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
-
-                    <div id="property_color" class="property item">
-                        <h3 class="name"><code>color</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_helpers_obbHelper.js.html#l62"><code>examples&#x2F;js&#x2F;helpers&#x2F;obbHelper.js:62</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Emissive color of this OBBHelper.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0,1,0]</p>
-                    
-                    
-                    </div>
-                    <div id="property_target" class="property item">
-                        <h3 class="name"><code>target</code></h3>
-                        <span class="type"><a href="../classes/Component.html" class="crosslink">Component</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_helpers_obbHelper.js.html#l42"><code>examples&#x2F;js&#x2F;helpers&#x2F;obbHelper.js:42</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The target <a href="../classes/Component.html" class="crosslink">Component</a> subtype.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CameraFollowAnimation. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a> when set to a null or undefined value.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_visible" class="property item">
-                        <h3 class="name"><code>visible</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_helpers_obbHelper.js.html#l80"><code>examples&#x2F;js&#x2F;helpers&#x2F;obbHelper.js:80</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Indicates whether this OBBHelper is visible or not.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-            </div>
-
-
-    </div>
+    </pre>
 </div>
                     </div>
                 </div>

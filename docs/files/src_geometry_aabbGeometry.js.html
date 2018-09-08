@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -249,8 +246,7 @@
  @module xeogl
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this AABBGeometry in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
  generated automatically when omitted.
@@ -260,129 +256,136 @@
  containing the min/max extents of the axis-aligned volume, ie. &#x60;&#x60;&#x60;&#x60;(xmin,ymin,zmin,xmax,ymax,zmax)&#x60;&#x60;&#x60;&#x60;.
  @extends Component
  */
-(function () {
 
-    &quot;use strict&quot;;
+import {utils} from &#x27;../utils.js&#x27;;
+import {tasks} from &#x27;../tasks.js&#x27;;
+import {Geometry} from &#x27;./geometry.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    xeogl.AABBGeometry = xeogl.Geometry.extend({
+const type = &quot;xeogl.AABBGeometry&quot;;
 
-        type: &quot;xeogl.AABBGeometry&quot;,
+class AABBGeometry extends Geometry {
 
-        _init: function (cfg) {
+    /**
+     JavaScript class name for this Component.
 
-            this._super(xeogl._apply(cfg, {
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-                combined: true,
-                quantized: true, // Quantized geometry is immutable
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-                primitive: cfg.primitive || &quot;lines&quot;,
-                indices: [
-                    0, 1, 1, 2, 2, 3, 3, 0, 4,
-                    5, 5, 6, 6, 7, 7, 4, 0, 4,
-                    1, 5, 2, 6, 3, 7
-                ],
-                positions: cfg.positions || [
-                    1.0, 1.0, 1.0,
-                    1.0, -1.0, 1.0,
-                    -1.0, -1.0, 1.0,
-                    -1.0, 1.0, 1.0,
-                    1.0, 1.0, -1.0,
-                    1.0, -1.0, -1.0,
-                    -1.0, -1.0, -1.0,
-                    -1.0, 1.0, -1.0
-                ]
-            }));
+    init(cfg) {
 
-            if (cfg.target) {
-                this.target = cfg.target;
+        super.init(utils.apply(cfg, {
+            combined: true,
+            quantized: true, // Quantized geometry is immutable
+            primitive: cfg.primitive || &quot;lines&quot;,
+            indices: [
+                0, 1, 1, 2, 2, 3, 3, 0, 4,
+                5, 5, 6, 6, 7, 7, 4, 0, 4,
+                1, 5, 2, 6, 3, 7
+            ],
+            positions: cfg.positions || [
+                1.0, 1.0, 1.0,
+                1.0, -1.0, 1.0,
+                -1.0, -1.0, 1.0,
+                -1.0, 1.0, 1.0,
+                1.0, 1.0, -1.0,
+                1.0, -1.0, -1.0,
+                -1.0, -1.0, -1.0,
+                -1.0, 1.0, -1.0
+            ]
+        }));
 
-            } else if (cfg.targetAABB) {
-                this.targetAABB = cfg.targetAABB;
-            }
-        },
+        if (cfg.target) {
+            this.target = cfg.target;
 
-        _props: {
+        } else if (cfg.targetAABB) {
+            this.targetAABB = cfg.targetAABB;
+        }
+    }
 
-            /**
-             A component whose AABB we&#x27;ll dynamically fit this AABBGeometry to.
 
-             This property effectively replaces the {{#crossLink &quot;AABBGeometry/targetAABB:property&quot;}}{{/crossLink}} property.
+    /**
+     A component whose AABB we&#x27;ll dynamically fit this AABBGeometry to.
 
-             @property target
-             @type Component
-             */
-            target: {
+     This property effectively replaces the {{#crossLink &quot;AABBGeometry/targetAABB:property&quot;}}{{/crossLink}} property.
 
-                set: function (value) {
-
-                    var geometryDirty = false;
-                    var self = this;
-
-                    this._attach({
-                        name: &quot;target&quot;,
-                        type: &quot;xeogl.Component&quot;,
-                        component: value,
-                        sceneDefault: false,
-                        on: {
-                            boundary: function () {
-                                if (geometryDirty) {
-                                    return;
-                                }
-                                geometryDirty = true;
-                                xeogl.scheduleTask(function () {
-                                    self._setPositionsFromAABB(self._attached.target.aabb);
-                                    geometryDirty = false;
-                                });
-                            }
-                        },
-                        onAttached: function () {
-                            self._setPositionsFromAABB(self._attached.target.aabb);
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.target;
-                }
-            },
-
-            /**
-             Sets this AABBGeometry to an axis-aligned box (AABB), given as a six-element Float32Array
-             containing the min/max extents of the
-             axis-aligned volume, ie. &#x60;&#x60;&#x60;&#x60;[xmin,ymin,zmin,xmax,ymax,zmax]&#x60;&#x60;&#x60;&#x60;.
-
-             This property overrides the {{#crossLink &quot;AABBGeometry/target:property&quot;}}{{/crossLink}} property, causing it to become null.
-
-             @property targetAABB
-             @type Float32Array
-             */
-            targetAABB: {
-                set: function (value) {
-                    if (!value) {
+     @property target
+     @type Component
+     */
+    set target(target) {
+        let geometryDirty = false;
+        const self = this;
+        this._attach({
+            name: &quot;target&quot;,
+            type: &quot;xeogl.Component&quot;,
+            component: target,
+            sceneDefault: false,
+            on: {
+                boundary: function () {
+                    if (geometryDirty) {
                         return;
                     }
-                    if (this._attached.target) {
-                        this.target = null;
-                    }
-                    this._setPositionsFromAABB(value);
+                    geometryDirty = true;
+                    tasks.scheduleTask(function () {
+                        self._setPositionsFromAABB(self._attached.target.aabb);
+                        geometryDirty = false;
+                    });
                 }
+            },
+            onAttached: function () {
+                self._setPositionsFromAABB(self._attached.target.aabb);
             }
-        },
+        });
+    }
 
-        _setPositionsFromAABB: function (aabb) {
-            this.positions = [
-                aabb[3], aabb[4], aabb[5],
-                aabb[3], aabb[1], aabb[5],
-                aabb[0], aabb[1], aabb[5],
-                aabb[0], aabb[4], aabb[5],
-                aabb[3], aabb[4], aabb[2],
-                aabb[3], aabb[1], aabb[2],
-                aabb[0], aabb[1], aabb[2],
-                aabb[0], aabb[4], aabb[2]
-            ];
+    get target() {
+        return this._attached.target;
+    }
+
+    /**
+     Sets this AABBGeometry to an axis-aligned box (AABB), given as a six-element Float32Array
+     containing the min/max extents of the
+     axis-aligned volume, ie. &#x60;&#x60;&#x60;&#x60;[xmin,ymin,zmin,xmax,ymax,zmax]&#x60;&#x60;&#x60;&#x60;.
+
+     This property overrides the {{#crossLink &quot;AABBGeometry/target:property&quot;}}{{/crossLink}} property, causing it to become null.
+
+     @property targetAABB
+     @type Float32Array
+     */
+    set targetAABB(aabb) {
+        if (!aabb) {
+            return;
         }
-    });
-})();
+        if (this._attached.target) {
+            this.target = null;
+        }
+        this._setPositionsFromAABB(aabb);
+    }
+
+    _setPositionsFromAABB(aabb) {
+        this.positions = [
+            aabb[3], aabb[4], aabb[5],
+            aabb[3], aabb[1], aabb[5],
+            aabb[0], aabb[1], aabb[5],
+            aabb[0], aabb[4], aabb[5],
+            aabb[3], aabb[4], aabb[2],
+            aabb[3], aabb[1], aabb[2],
+            aabb[0], aabb[1], aabb[2],
+            aabb[0], aabb[4], aabb[2]
+        ];
+    }
+}
+
+componentClasses[type] = AABBGeometry;
+
+export{AABBGeometry};
 
     </pre>
 </div>

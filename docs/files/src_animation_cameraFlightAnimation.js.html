@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -261,7 +258,7 @@
  @module xeogl
  @submodule animation
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlightAnimation.
  @param [cfg.fit=true] {Boolean} When true, will ensure that when this CameraFlightAnimation has flown or jumped to a boundary
@@ -273,664 +270,544 @@
  @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink &quot;CameraFlightAnimation/flyTo:method&quot;}}CameraFlightAnimation#flyTo(){{/crossLink}}.
  @extends Component
  */
-(function () {
 
-    &quot;use strict&quot;;
+import {math} from &#x27;../math/math.js&#x27;;
+import {utils} from &#x27;../utils.js&#x27;;
+import {tasks} from &#x27;../tasks.js&#x27;;
+import {Component} from &#x27;../component.js&#x27;;
+import {Mesh} from &#x27;../objects/mesh.js&#x27;;
+import {AABBGeometry} from &#x27;../geometry/aabbGeometry.js&#x27;;
+import {PhongMaterial} from &#x27;../materials/phongMaterial.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
+
+const type = &quot;xeogl.CameraFlightAnimation&quot;;
+
+const tempVec3 = math.vec3();
+const newLook = math.vec3();
+const newEye = math.vec3();
+const newUp = math.vec3();
+const newLookEyeVec = math.vec3();
+const lookEyeVec = math.vec3();
+
+class CameraFlightAnimation extends Component {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
+
+        this._aabbHelper = new Mesh(this, { // Shows a wireframe box for target AABBs
+            geometry: new AABBGeometry(this),
+            material: new PhongMaterial(this, {
+                diffuse: [0, 0, 0],
+                ambient: [0, 0, 0],
+                specular: [0, 0, 0],
+                emissive: [0.5, 1.0, 0.5],
+                lineWidth: 2
+            }),
+            visible: false,
+            collidable: false
+        });
+
+        this._look1 = math.vec3();
+        this._eye1 = math.vec3();
+        this._up1 = math.vec3();
+        this._look2 = math.vec3();
+        this._eye2 = math.vec3();
+        this._up2 = math.vec3();
+        this._orthoScale1 = 1;
+        this._orthoScale2 = 1;
+        this._flying = false;
+        this._flyEyeLookUp = false;
+        this._flyingEye = false;
+        this._flyingLook = false;
+        this._callback = null;
+        this._callbackScope = null;
+        this._time1 = null;
+        this._time2 = null;
+        this.easing = cfg.easing !== false;
+
+        this.duration = cfg.duration;
+        this.fit = cfg.fit;
+        this.fitFOV = cfg.fitFOV;
+        this.trail = cfg.trail;
+    }
+
+    /**
+     * Begins flying the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to the given target.
+     *
+     *  * When the target is a boundary, the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} will fly towards the target
+     *    and stop when the target fills most of the canvas.
+     *  * When the target is an explicit {{#crossLink &quot;Camera&quot;}}{{/crossLink}} position, given as &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60;
+     *    vectors, then this CameraFlightAnimation will interpolate the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to that target and stop there.
+     * @method flyTo
+     * @param [params=scene]  {*|Component} Either a parameters object or a {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that has an AABB.
+     * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
+     * {{#crossLink &quot;Lookat/eye:property&quot;}}Camera&#x27;s eye{{/crossLink}} position will
+     * swing away from its {{#crossLink &quot;Lookat/eye:property&quot;}}look{{/crossLink}} position as it flies to the target.
+     * @param [params.component] {Number|String|Component} ID or instance of a component to fly to. Defaults to the entire {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+     * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
+     * @param [params.eye] {Float32Array} Position to fly the eye position to.
+     * @param [params.look] {Float32Array} Position to fly the look position to.
+     * @param [params.up] {Float32Array} Position to fly the up vector to.
+     * @param [params.fit=true] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink &quot;CameraFlightAnimation/fit:property&quot;}}{{/crossLink}}.
+     * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink &quot;Object&quot;}}{{/crossLink}} or its AABB should
+     * fill the canvas on arrival. Overrides {{#crossLink &quot;CameraFlightAnimation/fitFOV:property&quot;}}{{/crossLink}}.
+     * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink &quot;CameraFlightAnimation/duration:property&quot;}}{{/crossLink}}.
+     * @param [params.orthoScale] {Number} TODO: document this
+     * @param [callback] {Function} Callback fired on arrival
+     * @param [scope] {Object} Optional scope for callback
+     */
+    flyTo(params, callback, scope) {
 
-    var math = xeogl.math;
+        params = params || this.scene;
 
-    xeogl.CameraFlightAnimation = xeogl.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: &quot;xeogl.CameraFlightAnimation&quot;,
-
-        _init: function (cfg) {
-
-            // Shows a wireframe box for target AABBs
-            this._aabbHelper = this.create({
-                type: &quot;xeogl.Mesh&quot;,
-                geometry: this.create({
-                    type: &quot;xeogl.AABBGeometry&quot;
-                }),
-                material: this.create({
-                    type: &quot;xeogl.PhongMaterial&quot;,
-                    diffuse: [0, 0, 0],
-                    ambient: [0, 0, 0],
-                    specular: [0, 0, 0],
-                    emissive: [0.5, 1.0, 0.5],
-                    lineWidth: 2
-                }),
-                visible: false,
-                collidable: false
-            });
-
-            // Shows a wireframe box for target AABBs
-            this._obbHelper = this.create({
-                type: &quot;xeogl.Mesh&quot;,
-                geometry: this.create({
-                    type: &quot;xeogl.OBBGeometry&quot;,
-                    material: this.create({
-                        type: &quot;xeogl.PhongMaterial&quot;,
-                        diffuse: [0, 0, 0],
-                        ambient: [0, 0, 0],
-                        specular: [0, 0, 0],
-                        emissive: [0.5, 1.0, 0.5],
-                        lineWidth: 2
-                    })
-                }),
-                visible: false,
-                collidable: false // Effectively has no boundary
-            });
-
-            this._look1 = math.vec3();
-            this._eye1 = math.vec3();
-            this._up1 = math.vec3();
-
-            this._look2 = math.vec3();
-            this._eye2 = math.vec3();
-            this._up2 = math.vec3();
-
-            this._orthoScale1 = 1;
-            this._orthoScale2 = 1;
-
-            this._flying = false;
-            this._flyEyeLookUp = false;
-            this._flyingEye = false;
-            this._flyingLook = false;
-            this._flyingUp = false;
-
-            this._callback = null;
-            this._callbackScope = null;
-
-            this._onTick = null;
-
-            this._time1 = null;
-            this._time2 = null;
-
-            this.easing = cfg.easing !== false;
-
-            this.duration = cfg.duration;
-            this.fit = cfg.fit;
-            this.fitFOV = cfg.fitFOV;
-            this.trail = cfg.trail;
-        },
-
-        /**
-         * Begins flying the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to the given target.
-         *
-         *  * When the target is a boundary, the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} will fly towards the target
-         *    and stop when the target fills most of the canvas.
-         *  * When the target is an explicit {{#crossLink &quot;Camera&quot;}}{{/crossLink}} position, given as &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60;
-         *    vectors, then this CameraFlightAnimation will interpolate the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to that target and stop there.
-         * @method flyTo
-         * @param [params=scene]  {*|Component} Either a parameters object or a {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that has an AABB.
-         * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
-         * {{#crossLink &quot;Lookat/eye:property&quot;}}Camera&#x27;s eye{{/crossLink}} position will
-         * swing away from its {{#crossLink &quot;Lookat/eye:property&quot;}}look{{/crossLink}} position as it flies to the target.
-         * @param [params.component] {Number|String|Component} ID or instance of a component to fly to. Defaults to the entire {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
-         * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
-         * @param [params.eye] {Float32Array} Position to fly the eye position to.
-         * @param [params.look] {Float32Array} Position to fly the look position to.
-         * @param [params.up] {Float32Array} Position to fly the up vector to.
-         * @param [params.fit=true] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink &quot;CameraFlightAnimation/fit:property&quot;}}{{/crossLink}}.
-         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink &quot;Object&quot;}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival. Overrides {{#crossLink &quot;CameraFlightAnimation/fitFOV:property&quot;}}{{/crossLink}}.
-         * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink &quot;CameraFlightAnimation/duration:property&quot;}}{{/crossLink}}.
-         * @param [params.orthoScale] {Number} TODO: document this
-         * @param [callback] {Function} Callback fired on arrival
-         * @param [scope] {Object} Optional scope for callback
-         */
-        flyTo: (function () {
-
-            var tempVec3 = math.vec3();
-
-            return function (params, callback, scope) {
-
-                params = params || this.scene;
-
-                if (this._flying) {
-                    this.stop();
-                }
-
-                this._flying = false;
-
-                this._callback = callback;
-                this._callbackScope = scope;
-
-                var camera = this.scene.camera;
-
-                this._eye1[0] = camera.eye[0];
-                this._eye1[1] = camera.eye[1];
-                this._eye1[2] = camera.eye[2];
-
-                this._look1[0] = camera.look[0];
-                this._look1[1] = camera.look[1];
-                this._look1[2] = camera.look[2];
-
-                this._up1[0] = camera.up[0];
-                this._up1[1] = camera.up[1];
-                this._up1[2] = camera.up[2];
-
-                this._orthoScale1 = camera.ortho.scale;
-                this._orthoScale2 = params.orthoScale || this._orthoScale1;
-
-                var aabb;
-                var eye;
-                var look;
-                var up;
-                var componentId;
-
-                if (params.aabb) {
-                    aabb = params.aabb;
-
-                } else if (params.length === 6) {
-                    aabb = params;
-
-                } else if ((params.eye &amp;&amp; params.look) || params.up) {
-                    eye = params.eye;
-                    look = params.look;
-                    up = params.up;
-
-                } else if (params.eye) {
-                    eye = params.eye;
-
-                } else if (params.look) {
-                    look = params.look;
-
-                } else {
-
-                    // Argument must be an instance or ID of a Component (subtype)
-
-                    var component = params;
-
-                    if (xeogl._isNumeric(component) || xeogl._isString(component)) {
-
-                        componentId = component;
-
-                        component = this.scene.components[componentId];
-
-                        if (!component) {
-                            this.error(&quot;Component not found: &quot; + xeogl._inQuotes(componentId));
-                            if (callback) {
-                                if (scope) {
-                                    callback.call(scope);
-                                } else {
-                                    callback();
-                                }
-                            }
-                            return;
-                        }
-                    }
-
-                    aabb = component.aabb || this.scene.aabb;
-                }
-
-                var poi = params.poi;
-
-                if (aabb) {
-
-                    if (aabb[3] &lt; aabb[0] || aabb[4] &lt; aabb[1] || aabb[5] &lt; aabb[2]) {
-
-                        // Don&#x27;t fly to an inverted boundary
-                        return;
-                    }
-
-                    if (aabb[3] === aabb[0] &amp;&amp; aabb[4] === aabb[1] &amp;&amp; aabb[5] === aabb[2]) {
-
-                        // Don&#x27;t fly to an empty boundary
-                        return;
-                    }
-
-
-                    // Show boundary
-
-                    if (params.showAABB !== false) {
-                        this._aabbHelper.geometry.targetAABB = aabb;
-                        //this._aabbHelper.visible = true;
-                    }
-
-                    aabb = aabb.slice();
-
-                    var aabbCenter = math.getAABB3Center(aabb);
-                    this._look2 = poi ||  aabbCenter;
-
-                    var eyeLookVec = math.subVec3(this._eye1, this._look1, tempVec3);
-                    var eyeLookVecNorm = math.normalizeVec3(eyeLookVec);
-                    var diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
-                    var fitFOV = params.fitFOV || this._fitFOV;
-                    var sca = Math.abs(diag / Math.tan(fitFOV * xeogl.math.DEGTORAD));
-
-                    this._orthoScale2 = diag * 1.1;
-
-                    this._eye2[0] = this._look2[0] + (eyeLookVecNorm[0] * sca);
-                    this._eye2[1] = this._look2[1] + (eyeLookVecNorm[1] * sca);
-                    this._eye2[2] = this._look2[2] + (eyeLookVecNorm[2] * sca);
-
-                    this._up2[0] = this._up1[0];
-                    this._up2[1] = this._up1[1];
-                    this._up2[2] = this._up1[2];
-
-                    this._flyEyeLookUp = false;
-
-                } else if (eye || look || up) {
-
-                    this._flyEyeLookUp = !!eye &amp;&amp; !!look &amp;&amp; !!up;
-                    this._flyingEye = !!eye &amp;&amp; !look;
-                    this._flyingLook = !!look &amp;&amp; !eye;
-
-                    if (look) {
-                        this._look2[0] = look[0];
-                        this._look2[1] = look[1];
-                        this._look2[2] = look[2];
-                    }
-
-                    if (eye) {
-                        this._eye2[0] = eye[0];
-                        this._eye2[1] = eye[1];
-                        this._eye2[2] = eye[2];
-                    }
-
-                    if (up) {
-                        this._up2[0] = up[0];
-                        this._up2[1] = up[1];
-                        this._up2[2] = up[2];
-                    }
-                }
-
-                this.fire(&quot;started&quot;, params, true);
-
-                this._time1 = Date.now();
-                this._time2 = this._time1 + (params.duration ? params.duration * 1000 : this._duration);
-
-                this._flying = true; // False as soon as we stop
-
-                xeogl.scheduleTask(this._update, this);
-            };
-        })(),
-
-        /**
-         * Jumps the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to the given target.
-         *
-         *  * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
-         *  at where the target fills most of the canvas.
-         *  * When the target is an explicit {{#crossLink &quot;Camera&quot;}}{{/crossLink}} position, given as &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60;
-         *  vectors, then this CameraFlightAnimation will jump the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to that target.
-         *
-         * @method flyTo
-         * @param params  {*|Component} Either a parameters object or a {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that has a World-space AABB.
-         * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
-         * {{#crossLink &quot;Camera/eye:property&quot;}}Camera&#x27;s eye{{/crossLink}} position will
-         * swing away from its {{#crossLink &quot;Camera/eye:property&quot;}}look{{/crossLink}} position as it flies to the target.
-         * @param [params.component] {Number|String|Component} ID or instance of a component to fly to.
-         * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
-         * @param [params.eye] {Float32Array} Position to fly the eye position to.
-         * @param [params.look] {Float32Array} Position to fly the look position to.
-         * @param [params.up] {Float32Array} Position to fly the up vector to.
-         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink &quot;Object&quot;}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival. Overrides {{#crossLink &quot;CameraFlightAnimation/fitFOV:property&quot;}}{{/crossLink}}.
-         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink &quot;CameraFlightAnimation/fit:property&quot;}}{{/crossLink}}.
-         */
-        jumpTo: function (params) {
-            var self = this;
-            //           xeogl.scheduleTask(function () {  // Ensures that required asynch boundaries are built first
-            self._jumpTo(params);
-            //         });
-        },
-
-        _jumpTo: (function () {
-
-            var newEye = math.vec3();
-            var newLook = math.vec3();
-            var newUp = math.vec3();
-            var newLookEyeVec = math.vec3();
-            var tempVec3e = math.vec3();
-
-            return function (params) {
-
-                if (this._flying) {
-                    this.stop();
-                }
-
-                var camera = this.scene.camera;
-
-                var aabb;
-                var componentId;
-
-                if (params.aabb) { // Boundary3D
-
-                    aabb = params.aabb;
-
-                } else if (params.length === 6) { // AABB
-
-                    aabb = params;
-
-                } else if (params.eye || params.look || params.up) { // Camera pose
-
-                    newEye = params.eye;
-                    newLook = params.look;
-                    newUp = params.up;
-
-                } else {
-
-                    // Argument must be an instance or ID of a Component (subtype)
-
-                    var component = params;
-
-                    if (xeogl._isNumeric(component) || xeogl._isString(component)) {
-
-                        componentId = component;
-
-                        component = this.scene.components[componentId];
-
-                        if (!component) {
-                            this.error(&quot;Component not found: &quot; + xeogl._inQuotes(componentId));
-                            return;
-                        }
-                    }
-
-                    aabb = component.aabb || this.scene.aabb;
-                }
-
-                var poi = params.poi;
-
-                if (aabb) {
-
-                    var diag;
-
-                    if (aabb[3] &lt;= aabb[0] || aabb[4] &lt;= aabb[1] || aabb[5] &lt;= aabb[2]) {
-
-                        // Don&#x27;t fly to an empty boundary
-                        return;
-                    }
-
-                    var diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
-                    newLook = poi || math.getAABB3Center(aabb, newLook);
-
-                    if (this._trail) {
-                        math.subVec3(camera.look, newLook, newLookEyeVec);
-                    } else {
-                        math.subVec3(camera.eye, camera.look, newLookEyeVec);
-                    }
-
-                    math.normalizeVec3(newLookEyeVec);
-
-                    var dist;
-
-                    var fit = (params.fit !== undefined) ? params.fit : this._fit;
-                    if (fit) {
-                        dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * xeogl.math.DEGTORAD));
-
-                    } else {
-                        dist = math.lenVec3(math.subVec3(camera.eye, camera.look, tempVec3e));
-                    }
-
-                    math.mulVec3Scalar(newLookEyeVec, dist);
-
-                    camera.eye = math.addVec3(newLook, newLookEyeVec, newEye);
-                    camera.look = newLook;
-
-                } else if (newEye || newLook || newUp) {
-
-                    if (newEye) {
-                        camera.eye = newEye;
-                    }
-
-                    if (newLook) {
-                        camera.look = newLook;
-                    }
-
-                    if (newUp) {
-                        camera.up = newUp;
-                    }
-                }
-            };
-        })(),
-
-        _update: (function () {
-
-            var newLookEyeVec = math.vec3();
-            var newEye = math.vec3();
-            var newLook = math.vec3();
-            var newUp = math.vec3();
-            var lookEyeVec = math.vec3();
-
-            return function () {
-
-                if (!this._flying) {
-                    return;
-                }
-
-                var time = Date.now();
-
-                var t = (time - this._time1) / (this._time2 - this._time1);
-
-                var stopping = (t &gt;= 1);
-
-                if (t &gt; 1) {
-                    t = 1;
-                }
-
-                t = this.easing ? this._ease(t, 0, 1, 1) : t;
-
-                var camera = this.scene.camera;
-
-
-                if (this._flyingEye || this._flyingLook) {
-
-                    if (this._flyingEye) {
-                        math.subVec3(camera.eye, camera.look, newLookEyeVec);
-                        camera.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
-                        camera.look = math.subVec3(newEye, newLookEyeVec, newLook);
-
-                    } else if (this._flyingLook) {
-                        camera.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
-                    //    camera.eye = math.addVec3(newLook, newLookEyeVec, newEye);
-                        camera.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
-                    }
-
-                } else if (this._flyEyeLookUp) {
-
-                    camera.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
-                    camera.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
-                    camera.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
-                } else {
-
-                    math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
-
-                    var dist;
-
-                    if (this._trail) {
-                        math.subVec3(newLook, camera.look, newLookEyeVec);
-
-                    } else {
-                        math.subVec3(camera.eye, camera.look, newLookEyeVec);
-                    }
-
-                    math.normalizeVec3(newLookEyeVec);
-                    math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
-                    math.subVec3(newEye, newLook, lookEyeVec);
-                    dist = math.lenVec3(lookEyeVec);
-                    math.mulVec3Scalar(newLookEyeVec, dist);
-
-                    camera.eye = math.addVec3(newLook, newLookEyeVec, newEye);
-                    camera.look = newLook;
-                }
-
-                this.scene.camera.ortho.scale = this._orthoScale1 + (t * (this._orthoScale2 - this._orthoScale1));
-
-                if (stopping) {
-                    this.stop();
-                    return;
-                }
-
-                xeogl.scheduleTask(this._update, this); // Keep flying
-            };
-        })(),
-
-        // Quadratic easing out - decelerating to zero velocity
-        // http://gizma.com/easing
-
-        _ease: function (t, b, c, d) {
-            t /= d;
-            return -c * t * (t - 2) + b;
-        },
-
-        /**
-         * Stops an earlier flyTo, fires arrival callback.
-         * @method stop
-         */
-        stop: function () {
-
-            if (!this._flying) {
-                return;
-            }
-
-            this._aabbHelper.visible = false;
-
-            this._flying = false;
-
-            this._time1 = null;
-            this._time2 = null;
-
-            var callback = this._callback;
-
-            if (callback) {
-
-                this._callback = null;
-
-                if (this._callbackScope) {
-                    callback.call(this._callbackScope);
-                } else {
-                    callback();
-                }
-            }
-
-            this.fire(&quot;stopped&quot;, true, true);
-        },
-
-        /**
-         * Cancels an earlier flyTo without calling the arrival callback.
-         * @method cancel
-         */
-        cancel: function () {
-
-            if (!this._flying) {
-                return;
-            }
-
-            this._aabbHelper.visible = false;
-
-            this._flying = false;
-
-            this._time1 = null;
-            this._time2 = null;
-
-            if (this._callback) {
-                this._callback = null;
-            }
-
-            this.fire(&quot;canceled&quot;, true, true);
-        },
-
-        _props: {
-
-            /**
-             * Flight duration, in seconds, when calling {{#crossLink &quot;CameraFlightAnimation/flyTo:method&quot;}}CameraFlightAnimation#flyTo(){{/crossLink}}.
-             *
-             * Stops any flight currently in progress.
-             *
-             * @property duration
-             * @default 0.5
-             * @type Number
-             */
-            duration: {
-
-                set: function (value) {
-                    this._duration = value ? (value * 1000.0) : 500;
-
-                    this.stop();
-                },
-
-                get: function () {
-                    return this._duration / 1000.0;
-                }
-            },
-
-            /**
-             * When true, will ensure that this CameraFlightAnimation is flying to a boundary it will always adjust the distance between the
-             * {{#crossLink &quot;CameraFlightAnimation/camera:property&quot;}}camera{{/crossLink}}&#x27;s {{#crossLink &quot;Lookat/eye:property&quot;}}eye{{/crossLink}}
-             * and {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}}
-             * so as to ensure that the target boundary is always filling the view volume.
-             *
-             * When false, the eye will remain at its current distance from the look position.
-             *
-             * @property fit
-             * @type Boolean
-             * @default true
-             */
-            fit: {
-
-                set: function (value) {
-                    this._fit = value !== false;
-                },
-
-                get: function () {
-                    return this._fit;
-                }
-            },
-
-
-            /**
-             * How much of the perspective field-of-view, in degrees, that a target {{#crossLink &quot;Object&quot;}}{{/crossLink}} or its AABB should
-             * fill the canvas when calling {{#crossLink &quot;CameraFlightAnimation/flyTo:method&quot;}}CameraFlightAnimation#jumpTo(){{/crossLink}} or {{#crossLink &quot;CameraFlightAnimation/jumpTo:method&quot;}}{{/crossLink}}.
-             *
-             * @property fitFOV
-             * @default 45
-             * @type Number
-             */
-            fitFOV: {
-
-                set: function (value) {
-                    this._fitFOV = value || 45;
-                },
-
-                get: function () {
-                    return this._fitFOV;
-                }
-            },
-
-            /**
-             * When true, will cause this CameraFlightAnimation to point the {{#crossLink &quot;CameraFlightAnimation/camera:property&quot;}}{{/crossLink}}
-             * in the direction that it is travelling.
-             *
-             * @property trail
-             * @type Boolean
-             * @default false
-             */
-            trail: {
-
-                set: function (value) {
-                    this._trail = !!value;
-                },
-
-                get: function () {
-                    return this._trail;
-                }
-            }
-        },
-
-        _destroy: function () {
+        if (this._flying) {
             this.stop();
         }
-    });
 
-})();
+        this._flying = false;
+
+        this._callback = callback;
+        this._callbackScope = scope;
+
+        const camera = this.scene.camera;
+
+        this._eye1[0] = camera.eye[0];
+        this._eye1[1] = camera.eye[1];
+        this._eye1[2] = camera.eye[2];
+
+        this._look1[0] = camera.look[0];
+        this._look1[1] = camera.look[1];
+        this._look1[2] = camera.look[2];
+
+        this._up1[0] = camera.up[0];
+        this._up1[1] = camera.up[1];
+        this._up1[2] = camera.up[2];
+
+        this._orthoScale1 = camera.ortho.scale;
+        this._orthoScale2 = params.orthoScale || this._orthoScale1;
+
+        let aabb;
+        let eye;
+        let look;
+        let up;
+        let componentId;
+
+        if (params.aabb) {
+            aabb = params.aabb;
+
+        } else if (params.length === 6) {
+            aabb = params;
+
+        } else if ((params.eye &amp;&amp; params.look) || params.up) {
+            eye = params.eye;
+            look = params.look;
+            up = params.up;
+
+        } else if (params.eye) {
+            eye = params.eye;
+
+        } else if (params.look) {
+            look = params.look;
+
+        } else { // Argument must be an instance or ID of a Component (subtype)
+
+            let component = params;
+            if (utils.isNumeric(component) || utils.isString(component)) {
+                componentId = component;
+                component = this.scene.components[componentId];
+                if (!component) {
+                    this.error(&quot;Component not found: &quot; + utils.inQuotes(componentId));
+                    if (callback) {
+                        if (scope) {
+                            callback.call(scope);
+                        } else {
+                            callback();
+                        }
+                    }
+                    return;
+                }
+            }
+            aabb = component.aabb || this.scene.aabb;
+        }
+
+        const poi = params.poi;
+
+        if (aabb) {
+            if (aabb[3] &lt; aabb[0] || aabb[4] &lt; aabb[1] || aabb[5] &lt; aabb[2]) { // Don&#x27;t fly to an inverted boundary
+                return;
+            }
+            if (aabb[3] === aabb[0] &amp;&amp; aabb[4] === aabb[1] &amp;&amp; aabb[5] === aabb[2]) { // Don&#x27;t fly to an empty boundary
+                return;
+            }
+            if (params.showAABB !== false) { // Show boundary
+                this._aabbHelper.geometry.targetAABB = aabb;
+                //this._aabbHelper.visible = true;
+            }
+
+            aabb = aabb.slice();
+            const aabbCenter = math.getAABB3Center(aabb);
+
+            this._look2 = poi || aabbCenter;
+
+            const eyeLookVec = math.subVec3(this._eye1, this._look1, tempVec3);
+            const eyeLookVecNorm = math.normalizeVec3(eyeLookVec);
+            const diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
+            const fitFOV = params.fitFOV || this._fitFOV;
+            const sca = Math.abs(diag / Math.tan(fitFOV * math.DEGTORAD));
+
+            this._orthoScale2 = diag * 1.1;
+
+            this._eye2[0] = this._look2[0] + (eyeLookVecNorm[0] * sca);
+            this._eye2[1] = this._look2[1] + (eyeLookVecNorm[1] * sca);
+            this._eye2[2] = this._look2[2] + (eyeLookVecNorm[2] * sca);
+
+            this._up2[0] = this._up1[0];
+            this._up2[1] = this._up1[1];
+            this._up2[2] = this._up1[2];
+
+            this._flyEyeLookUp = false;
+
+        } else if (eye || look || up) {
+
+            this._flyEyeLookUp = !!eye &amp;&amp; !!look &amp;&amp; !!up;
+            this._flyingEye = !!eye &amp;&amp; !look;
+            this._flyingLook = !!look &amp;&amp; !eye;
+
+            if (look) {
+                this._look2[0] = look[0];
+                this._look2[1] = look[1];
+                this._look2[2] = look[2];
+            }
+
+            if (eye) {
+                this._eye2[0] = eye[0];
+                this._eye2[1] = eye[1];
+                this._eye2[2] = eye[2];
+            }
+
+            if (up) {
+                this._up2[0] = up[0];
+                this._up2[1] = up[1];
+                this._up2[2] = up[2];
+            }
+        }
+
+        this.fire(&quot;started&quot;, params, true);
+
+        this._time1 = Date.now();
+        this._time2 = this._time1 + (params.duration ? params.duration * 1000 : this._duration);
+
+        this._flying = true; // False as soon as we stop
+
+        tasks.scheduleTask(this._update, this);
+    }
+
+    /**
+     * Jumps the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to the given target.
+     *
+     *  * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
+     *  at where the target fills most of the canvas.
+     *  * When the target is an explicit {{#crossLink &quot;Camera&quot;}}{{/crossLink}} position, given as &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60;
+     *  vectors, then this CameraFlightAnimation will jump the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to that target.
+     *
+     * @method flyTo
+     * @param params  {*|Component} Either a parameters object or a {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that has a World-space AABB.
+     * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
+     * {{#crossLink &quot;Camera/eye:property&quot;}}Camera&#x27;s eye{{/crossLink}} position will
+     * swing away from its {{#crossLink &quot;Camera/eye:property&quot;}}look{{/crossLink}} position as it flies to the target.
+     * @param [params.component] {Number|String|Component} ID or instance of a component to fly to.
+     * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
+     * @param [params.eye] {Float32Array} Position to fly the eye position to.
+     * @param [params.look] {Float32Array} Position to fly the look position to.
+     * @param [params.up] {Float32Array} Position to fly the up vector to.
+     * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink &quot;Object&quot;}}{{/crossLink}} or its AABB should
+     * fill the canvas on arrival. Overrides {{#crossLink &quot;CameraFlightAnimation/fitFOV:property&quot;}}{{/crossLink}}.
+     * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink &quot;CameraFlightAnimation/fit:property&quot;}}{{/crossLink}}.
+     */
+    jumpTo(params) {
+        this._jumpTo(params);
+    }
+
+    _jumpTo(params) {
+
+        if (this._flying) {
+            this.stop();
+        }
+
+        const camera = this.scene.camera;
+
+        var aabb;
+        var componentId;
+        var newEye;
+        var newLook;
+        var newUp;
+
+        if (params.aabb) { // Boundary3D
+            aabb = params.aabb;
+
+        } else if (params.length === 6) { // AABB
+            aabb = params;
+
+        } else if (params.eye || params.look || params.up) { // Camera pose
+            newEye = params.eye;
+            newLook = params.look;
+            newUp = params.up;
+
+        } else { // Argument must be an instance or ID of a Component (subtype)
+
+            let component = params;
+
+            if (utils.isNumeric(component) || utils.isString(component)) {
+                componentId = component;
+                component = this.scene.components[componentId];
+                if (!component) {
+                    this.error(&quot;Component not found: &quot; + utils.inQuotes(componentId));
+                    return;
+                }
+            }
+            aabb = component.aabb || this.scene.aabb;
+        }
+
+        const poi = params.poi;
+
+        if (aabb) {
+
+            if (aabb[3] &lt;= aabb[0] || aabb[4] &lt;= aabb[1] || aabb[5] &lt;= aabb[2]) { // Don&#x27;t fly to an empty boundary
+                return;
+            }
+
+            var diag = poi ? math.getAABB3DiagPoint(aabb, poi) : math.getAABB3Diag(aabb);
+
+            newLook = poi || math.getAABB3Center(aabb, newLook);
+
+            if (this._trail) {
+                math.subVec3(camera.look, newLook, newLookEyeVec);
+            } else {
+                math.subVec3(camera.eye, camera.look, newLookEyeVec);
+            }
+
+            math.normalizeVec3(newLookEyeVec);
+            let dist;
+            const fit = (params.fit !== undefined) ? params.fit : this._fit;
+
+            if (fit) {
+                dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * math.DEGTORAD));
+
+            } else {
+                dist = math.lenVec3(math.subVec3(camera.eye, camera.look, tempVec3));
+            }
+
+            math.mulVec3Scalar(newLookEyeVec, dist);
+
+            camera.eye = math.addVec3(newLook, newLookEyeVec, tempVec3);
+            camera.look = newLook;
+
+        } else if (newEye || newLook || newUp) {
+
+            if (newEye) {
+                camera.eye = newEye;
+            }
+            if (newLook) {
+                camera.look = newLook;
+            }
+            if (newUp) {
+                camera.up = newUp;
+            }
+        }
+    }
+
+    _update() {
+        if (!this._flying) {
+            return;
+        }
+        const time = Date.now();
+        let t = (time - this._time1) / (this._time2 - this._time1);
+        const stopping = (t &gt;= 1);
+        if (t &gt; 1) {
+            t = 1;
+        }
+        t = this.easing ? this._ease(t, 0, 1, 1) : t;
+        const camera = this.scene.camera;
+        if (this._flyingEye || this._flyingLook) {
+            if (this._flyingEye) {
+                math.subVec3(camera.eye, camera.look, newLookEyeVec);
+                camera.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                camera.look = math.subVec3(newEye, newLookEyeVec, newLook);
+            } else if (this._flyingLook) {
+                camera.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+                //    camera.eye = math.addVec3(newLook, newLookEyeVec, newEye);
+                camera.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
+            }
+        } else if (this._flyEyeLookUp) {
+            camera.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+            camera.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+            camera.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
+        } else {
+            math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+            let dist;
+            if (this._trail) {
+                math.subVec3(newLook, camera.look, newLookEyeVec);
+            } else {
+                math.subVec3(camera.eye, camera.look, newLookEyeVec);
+            }
+            math.normalizeVec3(newLookEyeVec);
+            math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+            math.subVec3(newEye, newLook, lookEyeVec);
+            dist = math.lenVec3(lookEyeVec);
+            math.mulVec3Scalar(newLookEyeVec, dist);
+            camera.eye = math.addVec3(newLook, newLookEyeVec, newEye);
+            camera.look = newLook;
+        }
+        this.scene.camera.ortho.scale = this._orthoScale1 + (t * (this._orthoScale2 - this._orthoScale1));
+        if (stopping) {
+            this.stop();
+            return;
+        }
+        tasks.scheduleTask(this._update, this); // Keep flying
+    }
+
+    _ease(t, b, c, d) { // Quadratic easing out - decelerating to zero velocity http://gizma.com/easing
+        t /= d;
+        return -c * t * (t - 2) + b;
+    }
+
+    /**
+     * Stops an earlier flyTo, fires arrival callback.
+     * @method stop
+     */
+    stop() {
+        if (!this._flying) {
+            return;
+        }
+        this._aabbHelper.visible = false;
+        this._flying = false;
+        this._time1 = null;
+        this._time2 = null;
+        const callback = this._callback;
+        if (callback) {
+            this._callback = null;
+            if (this._callbackScope) {
+                callback.call(this._callbackScope);
+            } else {
+                callback();
+            }
+        }
+        this.fire(&quot;stopped&quot;, true, true);
+    }
+
+    /**
+     * Cancels an earlier flyTo without calling the arrival callback.
+     * @method cancel
+     */
+    cancel() {
+        if (!this._flying) {
+            return;
+        }
+        this._aabbHelper.visible = false;
+        this._flying = false;
+        this._time1 = null;
+        this._time2 = null;
+        if (this._callback) {
+            this._callback = null;
+        }
+        this.fire(&quot;canceled&quot;, true, true);
+    }
+
+    /**
+     * Flight duration, in seconds, when calling {{#crossLink &quot;CameraFlightAnimation/flyTo:method&quot;}}CameraFlightAnimation#flyTo(){{/crossLink}}.
+     *
+     * Stops any flight currently in progress.
+     *
+     * @property duration
+     * @default 0.5
+     * @type Number
+     */
+    set duration(value) {
+        this._duration = value ? (value * 1000.0) : 500;
+        this.stop();
+    }
+
+    get duration() {
+        return this._duration / 1000.0;
+    }
+
+    /**
+     * When true, will ensure that this CameraFlightAnimation is flying to a boundary it will always adjust the distance between the
+     * {{#crossLink &quot;CameraFlightAnimation/camera:property&quot;}}camera{{/crossLink}}&#x27;s {{#crossLink &quot;Lookat/eye:property&quot;}}eye{{/crossLink}}
+     * and {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}}
+     * so as to ensure that the target boundary is always filling the view volume.
+     *
+     * When false, the eye will remain at its current distance from the look position.
+     *
+     * @property fit
+     * @type Boolean
+     * @default true
+     */
+    set fit(value) {
+        this._fit = value !== false;
+    }
+
+    get fit() {
+        return this._fit;
+    }
+
+
+    /**
+     * How much of the perspective field-of-view, in degrees, that a target {{#crossLink &quot;Object&quot;}}{{/crossLink}} or its AABB should
+     * fill the canvas when calling {{#crossLink &quot;CameraFlightAnimation/flyTo:method&quot;}}CameraFlightAnimation#jumpTo(){{/crossLink}} or {{#crossLink &quot;CameraFlightAnimation/jumpTo:method&quot;}}{{/crossLink}}.
+     *
+     * @property fitFOV
+     * @default 45
+     * @type Number
+     */
+    set fitFOV(value) {
+        this._fitFOV = value || 45;
+    }
+
+    get fitFOV() {
+        return this._fitFOV;
+    }
+
+    /**
+     * When true, will cause this CameraFlightAnimation to point the {{#crossLink &quot;CameraFlightAnimation/camera:property&quot;}}{{/crossLink}}
+     * in the direction that it is travelling.
+     *
+     * @property trail
+     * @type Boolean
+     * @default false
+     */
+    set trail(value) {
+        this._trail = !!value;
+    }
+
+    get trail() {
+        return this._trail;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+        super.destroy();
+    }
+}
+
+componentClasses[type] = CameraFlightAnimation;
+
+export {CameraFlightAnimation};
 
     </pre>
 </div>

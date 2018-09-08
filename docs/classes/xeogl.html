@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -205,8 +202,6 @@
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-            <li class="api-class-tab events"><a href="#events">Events</a></li>
     </ul>
 
     <div>
@@ -217,14 +212,6 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
-                            <li class="index-item method private">
-                                <a href="#method__addScene">_addScene</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_clear">clear</a>
-
-                            </li>
                             <li class="index-item method">
                                 <a href="#method_scheduleTask">scheduleTask</a>
 
@@ -232,135 +219,13 @@
                     </ul>
                 </div>
 
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-
-                    <ul class="index-list properties">
-                            <li class="index-item property">
-                                <a href="#property_scene">scene</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_scenes">scenes</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_stats">stats</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_version">version</a>
-
-                            </li>
-                    </ul>
-                </div>
 
 
-                <div class="index-section events">
-                    <h3>Events</h3>
-
-                    <ul class="index-list events">
-                            <li class="index-item event">
-                                <a href="#event_tick">tick</a>
-
-                            </li>
-                    </ul>
-                </div>
         </div>
 
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method__addScene" class="method item private">
-    <h3 class="name"><code>_addScene</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>scene</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_xeogl.js.html#l394"><code>src&#x2F;xeogl.js:394</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Registers a scene on xeogl.
-This is called within the xeogl.Scene constructor.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">scene</code>
-                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
-
-
-                    <div class="param-description">
-                        <p>The scene</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_clear" class="method item">
-    <h3 class="name"><code>clear</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_xeogl.js.html#l497"><code>src&#x2F;xeogl.js:497</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Destroys all user-created <a href="../classes/Scene.html" class="crosslink">Scenes</a> and
-clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-
-    </div>
-
-
-
-
-</div>
 <div id="method_scheduleTask" class="method item">
     <h3 class="name"><code>scheduleTask</code></h3>
 
@@ -386,7 +251,7 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_xeogl.js.html#l448"><code>src&#x2F;xeogl.js:448</code></a>
+        <a href="../files/src_tasks.js.html#l7"><code>src&#x2F;tasks.js:7</code></a>
         </p>
 
 
@@ -436,211 +301,8 @@ get a chance to run during the task are left in the queue to be run next time.</
 </div>
             </div>
 
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
-
-                    <div id="property_scene" class="property item">
-                        <h3 class="name"><code>scene</code></h3>
-                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_xeogl.js.html#l365"><code>src&#x2F;xeogl.js:365</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The default <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-                    <p>Components created without an explicit parent <a href="../classes/Scene.html" class="crosslink">Scene</a> will be created within this
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a> by default.</p>
-                    <p>xeogl creates the default <a href="../classes/Scene.html" class="crosslink">Scene</a> as soon as you either
-                    reference this property for the first time, or create your first <a href="../classes/Mesh.html" class="crosslink">Mesh</a> without
-                    a specified <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_scenes" class="property item">
-                        <h3 class="name"><code>scenes</code></h3>
-                        <span class="type">{String:xeogl.Scene}</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_xeogl.js.html#l194"><code>src&#x2F;xeogl.js:194</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Existing <a href="../classes/Scene.html" class="crosslink">Scene</a>s , mapped to their IDs</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_stats" class="property item">
-                        <h3 class="name"><code>stats</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_xeogl.js.html#l130"><code>src&#x2F;xeogl.js:130</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Tracks statistics within xeogl, such as numbers of
-                    scenes, textures, geometries etc.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_version" class="property item">
-                        <h3 class="name"><code>version</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_xeogl.js.html#l65"><code>src&#x2F;xeogl.js:65</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Semantic version number. The value for this is set by an expression that&#39;s concatenated to
-                    the end of the built binary by the xeogl build script.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-            </div>
 
 
-            <div id="events" class="api-class-tabpanel">
-                <h2 class="off-left">Events</h2>
-
-                    <div id="event_tick" class="events item">
-                        <h3 class="name"><code>tick</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_xeogl.js.html#l309"><code>src&#x2F;xeogl.js:309</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired on each game loop iteration.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">sceneID</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The ID of this Scene.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">startTime</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The time in seconds since 1970 that this Scene was instantiated.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">time</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The time in seconds since 1970 of this &quot;tick&quot; event.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">prevTime</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The time of the previous &quot;tick&quot; event from this Scene.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">deltaTime</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The time in seconds since the previous &quot;tick&quot; event from this Scene.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-            </div>
     </div>
 </div>
                     </div>

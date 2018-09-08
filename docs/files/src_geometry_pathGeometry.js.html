@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -240,9 +237,15 @@
  @submodule geometry
  @extends Geometry
  */
-xeogl.PathGeometry = xeogl.Geometry.extend({
 
-    type: &quot;xeogl.PathGeometry&quot;,
+import {Geometry} from &#x27;./geometry.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
+
+const type = &quot;xeogl.PathGeometry&quot;;
+
+const PathGeometry = Geometry.extend({
+
+    type: type,
 
     // Constructor
 
@@ -262,19 +265,19 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
      */
     _update: function () {
 
-        var path = this._attached.path;
+        const path = this._attached.path;
 
         if (!path) {
             return;
         }
 
-        var i;
-        var len;
+        let i;
+        let len;
 
-        var points = path.getPoints(this._divisions);
+        const points = path.getPoints(this._divisions);
 
-        var positions = [];
-        var point;
+        const positions = [];
+        let point;
 
         for (i = 0, len = points.length; i &lt; len; i++) {
 
@@ -285,7 +288,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             positions.push(point[2]);
         }
 
-        var indices = [];
+        const indices = [];
 
         for (i = 0, len = points.length - 1; i &lt; len; i++) {
             indices.push(i);
@@ -354,6 +357,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         }
     }
 });
+
+componentClasses[type] = PathGeometry;
+
+export{PathGeometry};
     </pre>
 </div>
                     </div>

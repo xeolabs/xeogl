@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -237,8 +234,7 @@
  @module xeogl
  @submodule lighting
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this AmbientLight within the
- default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} AmbientLight configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this AmbientLight.
@@ -246,68 +242,81 @@
  @param [cfg.intensity=[1.0]] {Number} The intensity of this AmbientLight, as a factor in range &#x60;&#x60;&#x60;&#x60;[0..1]&#x60;&#x60;&#x60;&#x60;.
  @extends Component
  */
-(function () {
+import {core} from &#x27;../core.js&#x27;;
+import {math} from &#x27;../math/math.js&#x27;;
+import {Component} from &#x27;../component.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const type = &quot;xeogl.AmbientLight&quot;;
 
-    xeogl.AmbientLight = xeogl.Component.extend({
+class AmbientLight extends Component {
 
-        type: &quot;xeogl.AmbientLight&quot;,
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
-            this._state = {
-                type: &quot;ambient&quot;,
-                color: xeogl.math.vec3([0.7, 0.7, 0.7]),
-                intensity: 1.0
-            };
-            this.color = cfg.color;
-            this.intensity = cfg.intensity;
-            this.scene._lightCreated(this);
-        },
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-        _props: {
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            /**
-             The color of this AmbientLight.
+    init(cfg) {
+        super.init(cfg);
+        this._state = {
+            type: &quot;ambient&quot;,
+            color: math.vec3([0.7, 0.7, 0.7]),
+            intensity: 1.0
+        };
+        this.color = cfg.color;
+        this.intensity = cfg.intensity;
+        this.scene._lightCreated(this);
+    }
 
-             @property color
-             @default [0.7, 0.7, 0.8]
-             @type Float32Array
-             */
-            color: {
-                set: function (value) {
-                    this._state.color.set(value ||  [ 0.7, 0.7, 0.8 ]);
-                    this._renderer.setImageForceDirty();
-                },
-                get: function () {
-                    return this._state.color;
-                }
-            },
+    /**
+     The color of this AmbientLight.
 
-            /**
-             The intensity of this AmbientLight.
+     @property color
+     @default [0.7, 0.7, 0.8]
+     @type Float32Array
+     */
+    set color(value) {
+        this._state.color.set(value || [0.7, 0.7, 0.8]);
+        this._renderer.setImageForceDirty();
+    }
 
-             @property intensity
-             @default 1.0
-             @type Number
-             */
-            intensity: {
-                set: function (value) {
-                    this._state.intensity = value !== undefined ? value :  1.0;
-                    this._renderer.setImageForceDirty();
-                },
-                get: function () {
-                    return this._state.intensity;
-                }
-            }
-        },
+    get color() {
+        return this._state.color;
+    }
 
-        _destroy: function () {
-            this.scene._lightDestroyed(this);
-        }
-    });
+    /**
+     The intensity of this AmbientLight.
 
-})();
+     @property intensity
+     @default 1.0
+     @type Number
+     */
+    set intensity(value) {
+        this._state.intensity = value !== undefined ? value : 1.0;
+        this._renderer.setImageForceDirty();
+    }
+
+    get intensity() {
+        return this._state.intensity;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+componentClasses[type] = AmbientLight;
+
+export {AmbientLight};
 
     </pre>
 </div>

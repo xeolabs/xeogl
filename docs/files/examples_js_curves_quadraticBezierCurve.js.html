@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -191,13 +188,13 @@
  ## Overview
 
  &lt;ul&gt;
-    &lt;li&gt;As shown in the diagram below, a QuadraticBezierCurve is defined by three control points.&lt;/li&gt;
+ &lt;li&gt;As shown in the diagram below, a QuadraticBezierCurve is defined by three control points.&lt;/li&gt;
  &lt;li&gt;You can sample a {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}} and a {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}}
  vector on a QuadraticBezierCurve for any given value of {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}} in the range [0..1].&lt;/li&gt;
  &lt;li&gt;When you set {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}} on a QuadraticBezierCurve, its
  {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties
  will update accordingly.&lt;/li&gt;
-    &lt;li&gt;To build a complex path, you can combine an unlimited combination of QuadraticBezierCurves,
+ &lt;li&gt;To build a complex path, you can combine an unlimited combination of QuadraticBezierCurves,
  {{#crossLink &quot;CubicBezierCurve&quot;}}CubicBezierCurves{{/crossLink}} and {{#crossLink &quot;SplineCurve&quot;}}SplineCurves{{/crossLink}}
  into a {{#crossLink &quot;Path&quot;}}{{/crossLink}}.&lt;/li&gt;
  &lt;/ul&gt;
@@ -290,191 +287,161 @@
  @param [cfg.t=0] Current position on this QuadraticBezierCurve, in range between 0..1.
  @extends Curve
  */
-(function () {
+xeogl.QuadraticBezierCurve = class xeoglQuadraticBezierCurve extends xeogl.Curve {
 
-    &quot;use strict&quot;;
+    /**
+     JavaScript class name for this Component.
 
-    xeogl.QuadraticBezierCurve = xeogl.Curve.extend({
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-        /**
-         JavaScript class name for this Component.
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return &quot;xeogl.QuadraticBezierCurve&quot;;
+    }
 
-         @property type
-         @type String
-         @final
-         */
-        type: &quot;xeogl.QuadraticBezierCurve&quot;,
+    init(cfg) {
+        super.init(cfg);
+        this.v0 = cfg.v0;
+        this.v1 = cfg.v1;
+        this.v2 = cfg.v2;
+        this.t = cfg.t;
+    }
 
-        _init: function (cfg) {
+    /**
+     Starting point on this QuadraticBezierCurve.
 
-            this._super(cfg);
+     Fires a {{#crossLink &quot;QuadraticBezierCurve/v0:event&quot;}}{{/crossLink}} event on change.
 
-            this.v0 = cfg.v0;
-            this.v1 = cfg.v1;
-            this.v2 = cfg.v2;
-
-            this.t = cfg.t;
-        },
-
-        _props: {
-
-            /**
-             Starting point on this QuadraticBezierCurve.
-
-             Fires a {{#crossLink &quot;QuadraticBezierCurve/v0:event&quot;}}{{/crossLink}} event on change.
-
-             @property v0
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v0: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this QuadraticBezierCurve&#x27;s
-                     * {{#crossLink &quot;QuadraticBezierCurve/v0:property&quot;}}{{/crossLink}} property changes.
-                     * @event v0
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;v0&quot;, this._v0 = value || xeogl.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v0;
-                }
-            },
-
-            /**
-             Middle control point on this QuadraticBezierCurve.
-
-             Fires a {{#crossLink &quot;QuadraticBezierCurve/v1:event&quot;}}{{/crossLink}} event on change.
-
-             @property v1
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v1: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this QuadraticBezierCurve&#x27;s
-                     * {{#crossLink &quot;QuadraticBezierCurve/v1:property&quot;}}{{/crossLink}} property changes.
-                     * @event v1
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;v1&quot;, this._v1 = value || xeogl.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v1;
-                }
-            },
-
-            /**
-             End point on this QuadraticBezierCurve.
-
-             Fires a {{#crossLink &quot;QuadraticBezierCurve/v2:event&quot;}}{{/crossLink}} event on change.
-
-             @property v2
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v2: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this QuadraticBezierCurve&#x27;s
-                     * {{#crossLink &quot;QuadraticBezierCurve/v2:property&quot;}}{{/crossLink}} property changes.
-                     * @event v2
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;v2&quot;, this._v2 = value || xeogl.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v2;
-                }
-            },
-
-            /**
-             Progress along this QuadraticBezierCurve.
-
-             Automatically clamps to range [0..1].
-
-             Fires a {{#crossLink &quot;QuadraticBezierCurve/t:event&quot;}}{{/crossLink}} event on change.
-
-             @property t
-             @default 0
-             @type Number
-             */
-            t: {
-                set: function (value) {
-
-                    value = value || 0;
-
-                    this._t = value &lt; 0.0 ? 0.0 : (value &gt; 1.0 ? 1.0 : value);
-
-                    /**
-                     * Fired whenever this QuadraticBezierCurve&#x27;s
-                     * {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}} property changes.
-                     * @event t
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;t&quot;, this._t);
-                },
-
-                get: function () {
-                    return this._t;
-                }
-            },
-
-
-            /**
-             Point on this QuadraticBezierCurve at position {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}}.
-
-             @property point
-             @type {{Array of Number}}
-             */
-            point: {
-
-                get: function () {
-                    return this.getPoint(this._t);
-                }
-            }
-        },
+     @property v0
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set v0(value) {
 
         /**
-         * Returns point on this QuadraticBezierCurve at the given position.
-         * @method getPoint
-         * @param {Number} t Position to get point at.
-         * @returns {{Array of Number}}
+         * Fired whenever this QuadraticBezierCurve&#x27;s
+         * {{#crossLink &quot;QuadraticBezierCurve/v0:property&quot;}}{{/crossLink}} property changes.
+         * @event v0
+         * @param value The property&#x27;s new value
          */
-        getPoint: function (t) {
+        this.fire(&quot;v0&quot;, this._v0 = value || xeogl.math.vec3([0, 0, 0]));
+    }
 
-            var math = xeogl.math;
-            var vector = math.vec3();
+    get v0() {
+        return this._v0;
+    }
 
-            vector[0] = math.b2(t, this._v0[0], this._v1[0], this._v2[0]);
-            vector[1] = math.b2(t, this._v0[1], this._v1[1], this._v2[1]);
-            vector[2] = math.b2(t, this._v0[2], this._v1[2], this._v2[2]);
+    /**
+     Middle control point on this QuadraticBezierCurve.
 
-            return vector;
-        },
+     Fires a {{#crossLink &quot;QuadraticBezierCurve/v1:event&quot;}}{{/crossLink}} event on change.
 
-        _getJSON: function () {
-            return {
-                v0: this._v0,
-                v1: this._v1,
-                v2: this._v2,
-                t: this._t
-            };
-        }
-    });
+     @property v1
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set v1(value) {
 
-})();
+        /**
+         * Fired whenever this QuadraticBezierCurve&#x27;s
+         * {{#crossLink &quot;QuadraticBezierCurve/v1:property&quot;}}{{/crossLink}} property changes.
+         * @event v1
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;v1&quot;, this._v1 = value || xeogl.math.vec3([0, 0, 0]));
+    }
+
+    get v1() {
+        return this._v1;
+    }
+
+    /**
+     End point on this QuadraticBezierCurve.
+
+     Fires a {{#crossLink &quot;QuadraticBezierCurve/v2:event&quot;}}{{/crossLink}} event on change.
+
+     @property v2
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set v2(value) {
+        /**
+         * Fired whenever this QuadraticBezierCurve&#x27;s
+         * {{#crossLink &quot;QuadraticBezierCurve/v2:property&quot;}}{{/crossLink}} property changes.
+         * @event v2
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;v2&quot;, this._v2 = value || xeogl.math.vec3([0, 0, 0]));
+    }
+
+    get v2() {
+        return this._v2;
+    }
+
+    /**
+     Progress along this QuadraticBezierCurve.
+
+     Automatically clamps to range [0..1].
+
+     Fires a {{#crossLink &quot;QuadraticBezierCurve/t:event&quot;}}{{/crossLink}} event on change.
+
+     @property t
+     @default 0
+     @type Number
+     */
+    set t(value) {
+        value = value || 0;
+        this._t = value &lt; 0.0 ? 0.0 : (value &gt; 1.0 ? 1.0 : value);
+        /**
+         * Fired whenever this QuadraticBezierCurve&#x27;s
+         * {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}} property changes.
+         * @event t
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;t&quot;, this._t);
+    }
+
+    get t() {
+        return this._t;
+    }
+
+    /**
+     Point on this QuadraticBezierCurve at position {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}}.
+
+     @property point
+     @type {{Array of Number}}
+     */
+    get point() {
+        return this.getPoint(this._t);
+    }
+
+    /**
+     * Returns point on this QuadraticBezierCurve at the given position.
+     * @method getPoint
+     * @param {Number} t Position to get point at.
+     * @returns {{Array of Number}}
+     */
+    getPoint(t) {
+        var math = xeogl.math;
+        var vector = math.vec3();
+        vector[0] = math.b2(t, this._v0[0], this._v1[0], this._v2[0]);
+        vector[1] = math.b2(t, this._v0[1], this._v1[1], this._v2[1]);
+        vector[2] = math.b2(t, this._v0[2], this._v1[2], this._v2[2]);
+        return vector;
+    }
+
+    getJSON() {
+        return {
+            v0: this._v0,
+            v1: this._v1,
+            v2: this._v2,
+            t: this._t
+        };
+    }
+};
 
     </pre>
 </div>

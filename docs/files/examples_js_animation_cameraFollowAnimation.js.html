@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -279,170 +276,158 @@
  @param [cfg.trail] {Boolean} When true, will cause this CameraFollowAnimation to point the camera in the direction that it is travelling.
  @extends Component
  */
-(function () {
+xeogl.CameraFollowAnimation = class xeoglCameraFollowAnimation extends xeogl.Component {
 
-    &quot;use strict&quot;;
+    /**
+     JavaScript class name for this Component.
 
-    xeogl.CameraFollowAnimation = xeogl.Component.extend({
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-        type: &quot;xeogl.CameraFollowAnimation&quot;,
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return &quot;xeogl.CameraFollowAnimation&quot;;
+    }
 
-        _init: function (cfg) {
+    init(cfg) {
 
-            this._cameraFlight = new xeogl.CameraFlightAnimation(this);
+        super.init(cfg);
 
-            this.target = cfg.target;
-            this.fly = cfg.fly;
-            this.fit = cfg.fit;
-            this.fitFOV = cfg.fitFOV;
-            this.trail = cfg.trail;
-        },
+        this._cameraFlight = new xeogl.CameraFlightAnimation(this);
 
-        _update: function () {
-            var target = this._attached.target;
-            if (target &amp;&amp; this._cameraFlight) { // This component might have been destroyed
-                if (this._fly) {
-                    this._cameraFlight.flyTo({
-                        aabb: target.aabb
-                    });
-                } else {
-                    this._cameraFlight.jumpTo({
-                        aabb: target.aabb
-                    });
-                }
-            }
-        },
+        this.target = cfg.target;
+        this.fly = cfg.fly;
+        this.fit = cfg.fit;
+        this.fitFOV = cfg.fitFOV;
+        this.trail = cfg.trail;
+    }
 
-        _props: {
-
-            /**
-             * The World-space {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} followed by this CameraFollowAnimation.
-             *
-             * Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent
-             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when set to a null or undefined value.
-             *
-             * @property target
-             * @type Component
-             */
-            target: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CameraFollowAnimation&#x27;s {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}} property changes.
-                     *
-                     * @event target
-                     * @param value The property&#x27;s new value
-                     */
-                    this._attach({
-                        name: &quot;target&quot;,
-                        type: &quot;xeogl.Component&quot;,
-                        component: value,
-                        sceneDefault: false,
-                        on: {
-                            boundary: {
-                                callback: this._needUpdate,
-                                scope: this
-                            }
-                        }
-                    });
-
-                    this._needUpdate();
-                },
-
-                get: function () {
-                    return this._attached.target;
-                }
-            },
-
-            /**
-             * Indicates whether this CameraFollowAnimation will either fly or jump to each updated position of the
-             * {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}}.
-             *
-             * Leave this false if the target updates continuously, otherwise leave it true
-             * if you want the camera to fly smoothly to each updated target extents
-             * for a less disorientating experience.
-             *
-             * @property fly
-             * @type Boolean
-             * @default false
-             */
-            fly: {
-
-                set: function (value) {
-                    this._fly = !!value;
-                },
-
-                get: function () {
-                    return this._fly;
-                }
-            },
-
-            /**
-             * When true, will ensure that this CameraFollowAnimation always adjusts the distance between the {{#crossLink &quot;Camera&quot;}}
-             * camera{{/crossLink}}&#x27;s {{#crossLink &quot;Lookat/eye:property&quot;}}eye{{/crossLink}} and {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}}
-             * positions so as to ensure that the {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}} is always filling the view volume.
-             *
-             * When false, the eye will remain at its current distance from the look position.
-             *
-             * @property fit
-             * @type Boolean
-             * @default true
-             */
-            fit: {
-
-                set: function (value) {
-                    this._cameraFlight.fit = value !== false;
-                    this._needUpdate();
-                },
-
-                get: function () {
-                    return this._cameraFlight.fit;
-                }
-            },
-
-            /**
-             * When {{#crossLink &quot;CameraFollowAnimation/fit:property&quot;}}{{/crossLink}} is set, to fit the target
-             * {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}} in view, this property indicates how much
-             * of the total field-of-view, in degrees, that the {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}} should fill.
-             *
-             * @property fitFOV
-             * @default 45
-             * @type Number
-             */
-            fitFOV: {
-
-                set: function (value) {
-                    this._cameraFlight.fitFOV = value;
-                    this._needUpdate();
-                },
-
-                get: function () {
-                    return this._cameraFlight.fitFOV;
-                }
-            },
-
-            /**
-             * When true, will cause this CameraFollowAnimation to point the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
-             * in the direction that it is travelling.
-             *
-             * @property trail
-             * @type Boolean
-             * @default false
-             */
-            trail: {
-
-                set: function (value) {
-                    this._cameraFlight.trail = value;
-                },
-
-                get: function () {
-                    return this._cameraFlight.trail;
-                }
+    _update() {
+        const target = this._attached.target;
+        if (target &amp;&amp; this._cameraFlight) { // This component might have been destroyed
+            if (this._fly) {
+                this._cameraFlight.flyTo({
+                    aabb: target.aabb
+                });
+            } else {
+                this._cameraFlight.jumpTo({
+                    aabb: target.aabb
+                });
             }
         }
-    });
-})();
+    }
+
+    /**
+     * The World-space {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} followed by this CameraFollowAnimation.
+     *
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when set to a null or undefined value.
+     *
+     * @property target
+     * @type Component
+     */
+    set target(value) {
+        /**
+         * Fired whenever this CameraFollowAnimation&#x27;s {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}} property changes.
+         *
+         * @event target
+         * @param value The property&#x27;s new value
+         */
+        this._attach({
+            name: &quot;target&quot;,
+            type: &quot;xeogl.Component&quot;,
+            component: value,
+            sceneDefault: false,
+            on: {
+                boundary: {
+                    callback: this._needUpdate,
+                    scope: this
+                }
+            }
+        });
+        this._needUpdate();
+    }
+
+    get target() {
+        return this._attached.target;
+    }
+
+    /**
+     * Indicates whether this CameraFollowAnimation will either fly or jump to each updated position of the
+     * {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}}.
+     *
+     * Leave this false if the target updates continuously, otherwise leave it true
+     * if you want the camera to fly smoothly to each updated target extents
+     * for a less disorientating experience.
+     *
+     * @property fly
+     * @type Boolean
+     * @default false
+     */
+    set fly(value) {
+        this._fly = !!value;
+    }
+
+    get fly() {
+        return this._fly;
+    }
+
+    /**
+     * When true, will ensure that this CameraFollowAnimation always adjusts the distance between the {{#crossLink &quot;Camera&quot;}}
+     * camera{{/crossLink}}&#x27;s {{#crossLink &quot;Lookat/eye:property&quot;}}eye{{/crossLink}} and {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}}
+     * positions so as to ensure that the {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}} is always filling the view volume.
+     *
+     * When false, the eye will remain at its current distance from the look position.
+     *
+     * @property fit
+     * @type Boolean
+     * @default true
+     */
+    set fit(value) {
+        this._cameraFlight.fit = value !== false;
+        this._needUpdate();
+    }
+
+    get fit() {
+        return this._cameraFlight.fit;
+    }
+
+    /**
+     * When {{#crossLink &quot;CameraFollowAnimation/fit:property&quot;}}{{/crossLink}} is set, to fit the target
+     * {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}} in view, this property indicates how much
+     * of the total field-of-view, in degrees, that the {{#crossLink &quot;CameraFollowAnimation/target:property&quot;}}{{/crossLink}} should fill.
+     *
+     * @property fitFOV
+     * @default 45
+     * @type Number
+     */
+    set fitFOV(value) {
+        this._cameraFlight.fitFOV = value;
+        this._needUpdate();
+    }
+
+    get fitFOV() {
+        return this._cameraFlight.fitFOV;
+    }
+
+    /**
+     * When true, will cause this CameraFollowAnimation to point the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
+     * in the direction that it is travelling.
+     *
+     * @property trail
+     * @type Boolean
+     * @default false
+     */
+    set trail(value) {
+        this._cameraFlight.trail = value;
+    }
+
+    get trail() {
+        return this._cameraFlight.trail;
+    }
+};
 
     </pre>
 </div>

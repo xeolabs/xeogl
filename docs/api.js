@@ -36,7 +36,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Geometry",
         "GeometryBuilder",
         "Group",
-        "HeightmapGeometry",
         "Input",
         "LabelHelper",
         "LambertMaterial",
@@ -46,7 +45,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "MetallicMaterial",
         "Model",
         "OBBGeometry",
-        "OBBHelper",
         "OBJModel",
         "Object",
         "Ortho",
@@ -62,7 +60,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "QuadraticBezierCurve",
         "ReflectionMap",
         "STLModel",
-        "Scene",
         "SceneJSModel",
         "Shadow",
         "Skybox",
@@ -82,7 +79,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Viewport",
         "XML3DModel",
         "xeogl",
-        "xeogl.math.math"
+        "xeogl.Scene"
     ],
     "modules": [
         "animation",

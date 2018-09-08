@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -192,130 +189,85 @@
  @module meshes
  @extends Component
  */
-xeogl.SplineCurveHelper = xeogl.Component.extend({
+xeogl.SplineCurveHelper = class xeoglSplineCurveHelper extends xeogl.Component {
 
-    type: &quot;xeogl.SplineCurveHelper&quot;,
+    /**
+     JavaScript class name for this Component.
 
-    _init: function (cfg) {
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-        this._super(cfg);
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return &quot;xeogl.SplineCurveHelper&quot;;
+    }
 
+    init(cfg) {
+        super.init(cfg);
         this._divisions = 100;
-
-        this._line = new xeogl.Mesh(this.scene, {
-            geometry: new xeogl.Geometry(this.scene, {
+        this._line = new xeogl.Mesh(this, {
+            geometry: new xeogl.Geometry(this, {
                 primitive: &quot;lines&quot;,
                 positions: [0, 0, 0],
                 indices: [0, 1]
             }),
-            material: new xeogl.PhongMaterial(this.scene, {
+            material: new xeogl.PhongMaterial(this, {
                 diffuse: [1, 0, 0]
             })
         });
+        this._splineCurve = cfg.splineCurve;
+        if (this._splineCurve) {
+            const self = this;
+            this._onPathCurves = this._splineCurve.on(&quot;curves&quot;, () =&gt; {
+                self._needUpdate();
+            });
+        }
+    }
 
-        this.splineCurve = cfg.splineCurve;
-    },
-
-    _update: function () {
-
-        var splineCurve = this._children.splineCurve;
-
+    _update() {
+        const splineCurve = this._splineCurve;
         if (!splineCurve) {
             return;
         }
-
-        var points = splineCurve.getPoints(this._divisions);
-
-        var positions = [];
-        var point;
-
+        const points = splineCurve.getPoints(this._divisions);
+        const positions = [];
+        let point;
         for (var i = 0, len = points.length; i &lt; len; i++) {
-
             point = points[i];
-
             positions.push(point[0]);
             positions.push(point[1]);
             positions.push(point[2]);
         }
-
-        var indices = [];
-
+        const indices = [];
         for (var i = 0, len = points.length - 1; i &lt; len; i++) {
             indices.push(i);
             indices.push(i + 1);
         }
-
         this._line.geometry.positions = positions;
         this._line.geometry.indices = indices;
-    },
-
-    _props: {
-
-        /**
-         * The SplineCurve for this SplineCurveHelper.
-         *
-         * Fires a {{#crossLink &quot;SplineCurveHelper/splineCurve:event&quot;}}{{/crossLink}} event on change.
-         *
-         * @property splinecurve
-         * @type {Splinecurve}
-         */
-        splineCurve: {
-
-            set: function (value) {
-
-                // Unsubscribe from old Curves&#x27;s events
-
-                var oldSplineCurve = this._children.splineCurve;
-
-                if (oldSplineCurve &amp;&amp; (!value || (value.id !== undefined ? value.id : value) !== oldSplinecurve.id)) {
-                    oldSplineCurve.off(this._onSplinecurveCurves);
-                }
-
-                /**
-                 * Fired whenever this CameraPaths&#x27;s {{#crossLink &quot;CameraPath/path:property&quot;}}{{/crossLink}} property changes.
-                 * @event path
-                 * @param value The property&#x27;s new value
-                 */
-                this._setChild(&quot;path&quot;, value);
-
-                var newPath = this._children.path;
-
-                if (newPath) {
-
-                    // Subscribe to new Path&#x27;s curves
-
-                    var self = this;
-
-                    this._onPathCurves = newPath.on(&quot;curves&quot;,
-                        function () {
-                            self._needUpdate();
-                        });
-                }
-            },
-
-            get: function () {
-                return this._children.path;
-            }
-        }
-    },
-
-    _getJSON: function () {
-
-        var json = {
-            divisions: this._divisions
-        };
-
-        if (this._children.path) {
-            json.path = this._children.path.id;
-        }
-
-        return json;
-    },
-
-    _destroy: function () {
-        this._line.destroy();
     }
-});
+
+    /**
+     The SplineCurve for this SplineCurveHelper.
+
+     @property splinecurve
+     @type {SplineCurve}
+     @final
+     */
+
+    get splineCurve() {
+        return this._splineCurve;
+    }
+
+    destroy() {
+        if (this._splineCurve) {
+            this._splineCurve.off(this._onPathCurves);
+        }
+        super.destroy();
+    }
+};
     </pre>
 </div>
                     </div>

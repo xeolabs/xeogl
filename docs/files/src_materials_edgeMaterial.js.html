@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -360,8 +357,7 @@
  @submodule materials
  @constructor
  @extends Material
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this EdgeMaterial within the
- default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} The EdgeMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this EdgeMaterial.
@@ -372,157 +368,38 @@
 
  @param [cfg.preset] {String} Selects a preset EdgeMaterial configuration - see {{#crossLink &quot;EdgeMaterial/preset:method&quot;}}EdgeMaterial#preset(){{/crossLink}}.
  */
-(function () {
 
-    &quot;use strict&quot;;
+import {Material} from &#x27;./material.js&#x27;;
+import {State} from &#x27;../renderer/state.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    xeogl.EdgeMaterial = xeogl.Material.extend({
+const PRESETS = {
+    &quot;default&quot;: {
+        edgeColor: [0.0, 0.0, 0.0],
+        edgeAlpha: 1.0,
+        edgeWidth: 1
+    },
+    &quot;defaultWhiteBG&quot;: {
+        edgeColor: [0.2, 0.2, 0.2],
+        edgeAlpha: 1.0,
+        edgeWidth: 1
+    },
+    &quot;defaultLightBG&quot;: {
+        edgeColor: [0.2, 0.2, 0.2],
+        edgeAlpha: 1.0,
+        edgeWidth: 1
+    },
+    &quot;defaultDarkBG&quot;: {
+        edgeColor: [0.5, 0.5, 0.5],
+        edgeAlpha: 1.0,
+        edgeWidth: 1
+    }
+};
 
-        type: &quot;xeogl.EdgeMaterial&quot;,
 
-        _init: function (cfg) {
+const type = &quot;xeogl.EdgeMaterial&quot;;
 
-            this._super(cfg);
-
-            this._state = new xeogl.renderer.State({
-                type: &quot;EdgeMaterial&quot;,
-                edgeColor: null,
-                edgeAlpha: null,
-                edgeWidth: null
-            });
-
-            this._preset = &quot;default&quot;;
-
-            if (cfg.preset) {
-                this.preset = cfg.preset;
-                if (cfg.edgeColor)  this.edgeColor = cfg.edgeColor;
-                if (cfg.edgeAlpha !== undefined) this.edgeAlpha = cfg.edgeAlpha;
-                if (cfg.edgeWidth !== undefined) this.edgeWidth = cfg.edgeWidth;
-            } else {
-                this.edgeColor = cfg.edgeColor;
-                this.edgeAlpha = cfg.edgeAlpha;
-                this.edgeWidth = cfg.edgeWidth;
-            }
-        },
-
-        _props: {
-
-            /**
-             RGB color of ghost edges.
-
-             @property edgeColor
-             @default [0.2, 0.2, 0.2]
-             @type Float32Array
-             */
-            edgeColor: {
-                set: function (value) {
-                    var edgeColor = this._state.edgeColor;
-                    if (!edgeColor) {
-                        edgeColor = this._state.edgeColor = new Float32Array(3);
-                    } else if (value &amp;&amp; edgeColor[0] === value[0] &amp;&amp; edgeColor[1] === value[1] &amp;&amp; edgeColor[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        edgeColor[0] = value[0];
-                        edgeColor[1] = value[1];
-                        edgeColor[2] = value[2];
-                    } else {
-                        edgeColor[0] = 0.2;
-                        edgeColor[1] = 0.2;
-                        edgeColor[2] = 0.2;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edgeColor;
-                }
-            },
-
-            /**
-             Transparency of ghost edges.
-
-             A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
-             @property edgeAlpha
-             @default 1.0
-             @type Number
-             */
-            edgeAlpha: {
-                set: function (value) {
-                    value = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
-                    if (this._state.edgeAlpha === value) {
-                        return;
-                    }
-                    this._state.edgeAlpha = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edgeAlpha;
-                }
-            },
-
-            /**
-             Width of ghost edges, in pixels.
-
-             @property edgeWidth
-             @default 1.0
-             @type Number
-             */
-            edgeWidth: {
-                set: function (value) {
-                    this._state.edgeWidth = value || 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edgeWidth;
-                }
-            },
-
-            /**
-             Selects a preset EdgeMaterial configuration.
-
-             Available presets are:
-
-             * &quot;default&quot; - grey wireframe with translucent fill, for light backgrounds.
-             * &quot;defaultLightBG&quot; - grey wireframe with grey translucent fill, for light backgrounds.
-             * &quot;defaultDarkBG&quot; - grey wireframe with grey translucent fill, for dark backgrounds.
-             * &quot;vectorscope&quot; - green wireframe with glowing vertices and black translucent fill.
-             * &quot;battlezone&quot; - green wireframe with black opaque fill, giving a solid hidden-lines-removed effect.
-             * &quot;sepia&quot; - light red-grey wireframe with light sepia translucent fill - easy on the eyes.
-             * &quot;gamegrid&quot; - light blue wireframe with dark blue translucent fill - reminiscent of Tron.
-             * &quot;yellowHighlight&quot; - light yellow translucent fill - highlights while allowing underlying detail to show through.
-
-             @property preset
-             @default &quot;default&quot;
-             @type String
-             */
-            preset: {
-                set: function (value) {
-                    value = value || &quot;default&quot;;
-                    if (this._preset === value) {
-                        return;
-                    }
-                    var preset = xeogl.EdgeMaterial.presets[value];
-                    if (!preset) {
-                        this.error(&quot;unsupported preset: &#x27;&quot; + value + &quot;&#x27; - supported values are &quot; + Object.keys(xeogl.EdgeMaterial.presets).join(&quot;, &quot;));
-                        return;
-                    }
-                    this.edgeColor = preset.edgeColor;
-                    this.edgeAlpha = preset.edgeAlpha;
-                    this.edgeWidth = preset.edgeWidth;
-                    this._preset = value;
-                },
-                get: function () {
-                    return this._preset;
-                }
-            }
-        },
-
-        _destroy: function () {
-            this._super();
-            this._state.destroy();
-        }
-    });
+class EdgeMaterial extends Material {
 
     /**
      Available EdgeMaterial presets.
@@ -531,34 +408,170 @@
      @type {Object}
      @static
      */
-    xeogl.EdgeMaterial.presets = {
-
-        &quot;default&quot;: {
-            edgeColor: [0.0, 0.0, 0.0],
-            edgeAlpha: 1.0,
-            edgeWidth: 1
-        },
-
-        &quot;defaultWhiteBG&quot;: {
-            edgeColor: [0.2, 0.2, 0.2],
-            edgeAlpha: 1.0,
-            edgeWidth: 1
-        },
-
-        &quot;defaultLightBG&quot;: {
-            edgeColor: [0.2, 0.2, 0.2],
-            edgeAlpha: 1.0,
-            edgeWidth: 1
-        },
-
-        &quot;defaultDarkBG&quot;: {
-            edgeColor: [0.5, 0.5, 0.5],
-            edgeAlpha: 1.0,
-            edgeWidth: 1
-        }
+    static get presets() {
+        return PRESETS;
     };
 
-})();
+    /**
+     JavaScript class name for this Component.
+
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
+
+        this._state = new State({
+            type: &quot;EdgeMaterial&quot;,
+            edgeColor: null,
+            edgeAlpha: null,
+            edgeWidth: null
+        });
+
+        this._preset = &quot;default&quot;;
+
+        if (cfg.preset) { // Apply preset then override with configs where provided
+            this.preset = cfg.preset;
+            if (cfg.edgeColor) {
+                this.edgeColor = cfg.edgeColor;
+            }
+            if (cfg.edgeAlpha !== undefined) {
+                this.edgeAlpha = cfg.edgeAlpha;
+            }
+            if (cfg.edgeWidth !== undefined) {
+                this.edgeWidth = cfg.edgeWidth;
+            }
+        } else {
+            this.edgeColor = cfg.edgeColor;
+            this.edgeAlpha = cfg.edgeAlpha;
+            this.edgeWidth = cfg.edgeWidth;
+        }
+    }
+
+
+    /**
+     RGB color of ghost edges.
+
+     @property edgeColor
+     @default [0.2, 0.2, 0.2]
+     @type Float32Array
+     */
+    set edgeColor(value) {
+        let edgeColor = this._state.edgeColor;
+        if (!edgeColor) {
+            edgeColor = this._state.edgeColor = new Float32Array(3);
+        } else if (value &amp;&amp; edgeColor[0] === value[0] &amp;&amp; edgeColor[1] === value[1] &amp;&amp; edgeColor[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            edgeColor[0] = value[0];
+            edgeColor[1] = value[1];
+            edgeColor[2] = value[2];
+        } else {
+            edgeColor[0] = 0.2;
+            edgeColor[1] = 0.2;
+            edgeColor[2] = 0.2;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get edgeColor() {
+        return this._state.edgeColor;
+    }
+
+    /**
+     Transparency of ghost edges.
+
+     A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+
+     @property edgeAlpha
+     @default 1.0
+     @type Number
+     */
+    set edgeAlpha(value) {
+        value = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
+        if (this._state.edgeAlpha === value) {
+            return;
+        }
+        this._state.edgeAlpha = value;
+        this._renderer.imageDirty();
+    }
+
+    get edgeAlpha() {
+        return this._state.edgeAlpha;
+    }
+
+    /**
+     Width of ghost edges, in pixels.
+
+     @property edgeWidth
+     @default 1.0
+     @type Number
+     */
+    set edgeWidth(value) {
+        this._state.edgeWidth = value || 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get edgeWidth() {
+        return this._state.edgeWidth;
+    }
+
+    /**
+     Selects a preset EdgeMaterial configuration.
+
+     Available presets are:
+
+     * &quot;default&quot; - grey wireframe with translucent fill, for light backgrounds.
+     * &quot;defaultLightBG&quot; - grey wireframe with grey translucent fill, for light backgrounds.
+     * &quot;defaultDarkBG&quot; - grey wireframe with grey translucent fill, for dark backgrounds.
+     * &quot;vectorscope&quot; - green wireframe with glowing vertices and black translucent fill.
+     * &quot;battlezone&quot; - green wireframe with black opaque fill, giving a solid hidden-lines-removed effect.
+     * &quot;sepia&quot; - light red-grey wireframe with light sepia translucent fill - easy on the eyes.
+     * &quot;gamegrid&quot; - light blue wireframe with dark blue translucent fill - reminiscent of Tron.
+     * &quot;yellowHighlight&quot; - light yellow translucent fill - highlights while allowing underlying detail to show through.
+
+     @property preset
+     @default &quot;default&quot;
+     @type String
+     */
+    set preset(value) {
+        value = value || &quot;default&quot;;
+        if (this._preset === value) {
+            return;
+        }
+        const preset = PRESETS[value];
+        if (!preset) {
+            this.error(&quot;unsupported preset: &#x27;&quot; + value + &quot;&#x27; - supported values are &quot; + Object.keys(PRESETS).join(&quot;, &quot;));
+            return;
+        }
+        this.edgeColor = preset.edgeColor;
+        this.edgeAlpha = preset.edgeAlpha;
+        this.edgeWidth = preset.edgeWidth;
+        this._preset = value;
+    }
+
+    get preset() {
+        return this._preset;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+componentClasses[type] = EdgeMaterial;
+
+export {EdgeMaterial};
     </pre>
 </div>
                     </div>

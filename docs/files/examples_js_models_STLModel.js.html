@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -330,7 +327,8 @@
  Our STLModel will now be registered by ID on its Scene, so we can now find it like this:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- model = xeogl.scene.models[&quot;myModel&quot;];
+ var scene = xeogl.getDefaultScene();
+ model = scene.models[&quot;myModel&quot;];
  &#x60;&#x60;&#x60;&#x60;
 
  That&#x27;s assuming that we&#x27;ve created the STLModel in the default xeogl Scene, which we&#x27;re doing in these examples.
@@ -338,7 +336,8 @@
  We can also get all the STLModels in a Scene, using the Scene&#x27;s {{#crossLink &quot;Scene/types:property&quot;}}{{/crossLink}} map:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var stlModels = xeogl.scene.types[&quot;xeogl.STLModel&quot;];
+ var scene = xeogl.getDefaultScene();
+ var stlModels = scene.types[&quot;xeogl.STLModel&quot;];
 
  model = stlModels[&quot;myModel&quot;];
  &#x60;&#x60;&#x60;&#x60;
@@ -451,16 +450,11 @@
  @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The STLModel&#x27;s local transform matrix. Overrides the position, scale and rotation parameters.
  @extends Model
  */
-(function () {
+{
+    xeogl.STLModel = class xeoglSTLModel extends xeogl.Model {
 
-    &quot;use strict&quot;;
-
-    xeogl.STLModel = xeogl.Model.extend({
-
-        type: &quot;xeogl.STLModel&quot;,
-
-        _init: function (cfg) {
-            this._super(cfg);
+        init(cfg) {
+            super.init(cfg);
             this._src = null;
             this._options = {
                 combineGeometry: cfg.combineGeometry !== false,
@@ -468,122 +462,120 @@
                 edgeThreshold: cfg.edgeThreshold,
                 splitMeshes: cfg.splitMeshes,
                 smoothNormals: cfg.smoothNormals,
-                smoothNormalsAngleThreshold:cfg.smoothNormalsAngleThreshold
+                smoothNormalsAngleThreshold: cfg.smoothNormalsAngleThreshold
             };
             this.src = cfg.src;
-        },
-
-        _props: {
-
-            /**
-             Path to an STL file.
-
-             You can set this to a new file path at any time (except while loading), which will cause the STLModel to load components from
-             the new file (after first destroying any components loaded from a previous file path).
-
-             Fires a {{#crossLink &quot;STLModel/loaded:event&quot;}}{{/crossLink}} event when the STL has loaded.
-
-             @property src
-             @type String
-             */
-            src: {
-                set: function (value) {
-                    if (!value) {
-                        return;
-                    }
-                    if (!xeogl._isString(value)) {
-                        this.error(&quot;Value for &#x27;src&#x27; should be a string&quot;);
-                        return;
-                    }
-                    if (value === this._src) { // Already loaded this STLModel
-
-                        /**
-                         Fired whenever this STLModel has finished loading components from the STL file
-                         specified by {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}}.
-                         @event loaded
-                         */
-                        this.fire(&quot;loaded&quot;, true, true);
-                        return;
-                    }
-                    this.clear();
-                    this._src = value;
-                    xeogl.STLModel.load(this, this._src, this._options);
-                },
-
-                get: function () {
-                    return this._src;
-                }
-            }
-        },
-
-        _destroy: function () {
-            this.destroyAll();
         }
-    });
 
-    /**
-     * Loads STL from a URL into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
-     *
-     * @method load
-     * @static
-     * @param {Model} model Model to load into.
-     * @param {String} src Path to STL file.
-     * @param {Object} options Loading options.
-     * @param {Function} [ok] Completion callback.
-     * @param {Function} [error] Error callback.
-     */
-    xeogl.STLModel.load = function (model, src, options, ok, error) {
-        var spinner = model.scene.canvas.spinner;
-        spinner.processes++;
-        load(model, src, options, function () {
-                spinner.processes--;
-                xeogl.scheduleTask(function () {
-                    model.fire(&quot;loaded&quot;, true, true);
-                });
-                if (ok) {
-                    ok();
-                }
-            },
-            function (msg) {
-                spinner.processes--;
-                model.error(msg);
-                if (error) {
-                    error(msg);
-                }
+        /**
+         Path to an STL file.
+
+         You can set this to a new file path at any time (except while loading), which will cause the STLModel to load components from
+         the new file (after first destroying any components loaded from a previous file path).
+
+         Fires a {{#crossLink &quot;STLModel/loaded:event&quot;}}{{/crossLink}} event when the STL has loaded.
+
+         @property src
+         @type String
+         */
+        set src(value) {
+            if (!value) {
+                return;
+            }
+            if (!xeogl._isString(value)) {
+                this.error(&quot;Value for &#x27;src&#x27; should be a string&quot;);
+                return;
+            }
+            if (value === this._src) { // Already loaded this STLModel
+
                 /**
-                 Fired whenever this STLModel fails to load the STL file
+                 Fired whenever this STLModel has finished loading components from the STL file
                  specified by {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}}.
-                 @event error
-                 @param msg {String} Description of the error
+                 @event loaded
                  */
-                model.fire(&quot;error&quot;, msg);
-            });
-    };
+                this.fire(&quot;loaded&quot;, true, true);
+                return;
+            }
+            this.clear();
+            this._src = value;
+            xeogl.STLModel.load(this, this._src, this._options);
+        }
 
-    /**
-     * Parses STL into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
-     *
-     * @method parse
-     * @static
-     * @param {Model} model Model to parse into.
-     * @param {ArrayBuffer} data The STL data.
-     * @param {Object} [options] Parsing options
-     * @param {String} [options.basePath] Base path path to find external resources on, if any.
-     * @param {String} [options.loadBuffer] Callback to load buffer files.
-     */
-    xeogl.STLModel.parse = function (model, data, options) {
-        options = options || {};
-        var spinner = model.scene.canvas.spinner;
-        spinner.processes++;
-        parse(data, &quot;&quot;, options, model, function () {
-                spinner.processes--;
-                model.fire(&quot;loaded&quot;, true, true);
-            },
-            function (msg) {
-                spinner.processes--;
-                model.error(msg);
-                model.fire(&quot;error&quot;, msg);
-            });
+        get source() {
+            return this._src;
+        }
+
+
+        destroy() {
+            this.destroyAll();
+            super.destroy();
+        }
+
+
+        /**
+         * Loads STL from a URL into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
+         *
+         * @method load
+         * @static
+         * @param {Model} model Model to load into.
+         * @param {String} src Path to STL file.
+         * @param {Object} options Loading options.
+         * @param {Function} [ok] Completion callback.
+         * @param {Function} [error] Error callback.
+         */
+        static load(model, src, options, ok, error) {
+            var spinner = model.scene.canvas.spinner;
+            spinner.processes++;
+            load(model, src, options, function () {
+                    spinner.processes--;
+                    xeogl.scheduleTask(function () {
+                        model.fire(&quot;loaded&quot;, true, true);
+                    });
+                    if (ok) {
+                        ok();
+                    }
+                },
+                function (msg) {
+                    spinner.processes--;
+                    model.error(msg);
+                    if (error) {
+                        error(msg);
+                    }
+                    /**
+                     Fired whenever this STLModel fails to load the STL file
+                     specified by {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}}.
+                     @event error
+                     @param msg {String} Description of the error
+                     */
+                    model.fire(&quot;error&quot;, msg);
+                });
+        }
+
+        /**
+         * Parses STL into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
+         *
+         * @method parse
+         * @static
+         * @param {Model} model Model to parse into.
+         * @param {ArrayBuffer} data The STL data.
+         * @param {Object} [options] Parsing options
+         * @param {String} [options.basePath] Base path path to find external resources on, if any.
+         * @param {String} [options.loadBuffer] Callback to load buffer files.
+         */
+        static parse(model, data, options) {
+            options = options || {};
+            var spinner = model.scene.canvas.spinner;
+            spinner.processes++;
+            parse(data, &quot;&quot;, options, model, function () {
+                    spinner.processes--;
+                    model.fire(&quot;loaded&quot;, true, true);
+                },
+                function (msg) {
+                    spinner.processes--;
+                    model.error(msg);
+                    model.fire(&quot;error&quot;, msg);
+                });
+        }
     };
 
     var load = (function () {
@@ -795,7 +787,7 @@
                 primitive: &quot;triangles&quot;,
                 positions: positions,
                 normals: normals,
-               // autoVertexNormals: !normals,
+                // autoVertexNormals: !normals,
                 colors: colors,
                 indices: indices
             });
@@ -845,7 +837,7 @@
         return isBinary(binData) ? parseBinary(binData, model, options) : parseASCII(ensureString(data), model, options);
 
     }
-})();
+}
 
     </pre>
 </div>

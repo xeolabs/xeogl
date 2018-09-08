@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -379,13 +376,24 @@
  @param [cfg.labelShown=true] {Boolean} Specifies whether the Annotation&#x27;s label is shown.
  @extends Pin
  */
-xeogl.Annotation = xeogl.Pin.extend({
+xeogl.Annotation = class xeoglAnnotation extends xeogl.Pin {
 
-    type: &quot;xeogl.Annotation&quot;,
+    /**
+     JavaScript class name for this Component.
 
-    _init: function (cfg) {
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-        this._super(cfg);
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return &quot;xeogl.Annotation&quot;;
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
 
         this._link = document.createElement(&quot;a&quot;);
         this._link.href = &quot;javascript:xeogl.scenes[\&quot;&quot; + this.scene.id + &quot;\&quot;].components[\&quot;&quot; + this.id + &quot;\&quot;]._pinClicked()&quot;;
@@ -429,9 +437,9 @@ xeogl.Annotation = xeogl.Pin.extend({
         this.on(&quot;visible&quot;, this._updateVisibility, this);
 
         //  this._updateVisibility();
-    },
+    }
 
-    _pinClicked: function () {
+    _pinClicked() {
 
         /**
          Fired whenever the mouse is clicked on this Annotation&#x27;s {{#crossLink &quot;Annotation/pin:property&quot;}}{{/crossLink}}.
@@ -439,312 +447,302 @@ xeogl.Annotation = xeogl.Pin.extend({
          @event pinClicked
          */
         this.fire(&quot;pinClicked&quot;, this)
-    },
+    }
 
-    _props: {
+    /**
+     Short piece of text to show inside the pin for the Annotation.
 
-        /**
-         Short piece of text to show inside the pin for the Annotation.
+     Usually this would be a single number or letter.
 
-         Usually this would be a single number or letter.
+     Automatically truncated to 2 characters.
 
-         Automatically truncated to 2 characters.
+     Fires a {{#crossLink &quot;Annotation/glyph:event&quot;}}{{/crossLink}} event on change.
 
-         Fires a {{#crossLink &quot;Annotation/glyph:event&quot;}}{{/crossLink}} event on change.
+     @property glyph
+     @default &quot;&quot;
+     @type {String}
+     */
+    set glyph(glyph) {
 
-         @property glyph
-         @default &quot;&quot;
-         @type {String}
-         */
-        glyph: {
-            set: function (glyph) {
-
-                if (this._glyph === glyph) {
-                    return;
-                }
-
-                this._glyph = glyph || &quot;&quot;; // TODO: Limit to 2 chars
-                this._spot.innerText = this._glyph;
-
-                /**
-                 Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/glyph:property&quot;}}{{/crossLink}} property changes.
-
-                 @event glyph
-                 @param value {Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;glyph&quot;, this._glyph);
-            },
-            get: function () {
-                return this._glyph;
-            }
-        },
-
-        /**
-         Title text for the Annotation&#x27;s label.
-
-         Automatically truncated to 64 characters.
-
-         Fires a {{#crossLink &quot;Annotation/title:event&quot;}}{{/crossLink}} event on change.
-
-         @property title
-         @default &quot;&quot;
-         @type {String}
-         */
-        title: {
-            set: function (title) {
-
-                if (this._title === title) {
-                    return;
-                }
-
-                this._title = title || &quot;&quot;; // TODO: Limit to 64 chars
-                this._titleElement.innerHTML = this._title;
-
-                /**
-                 Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/title:property&quot;}}{{/crossLink}} property changes.
-
-                 @event title
-                 @param value {Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;title&quot;, this._title);
-            },
-            get: function () {
-                return this._title;
-            }
-        },
-
-        /**
-         Description text for the Annotation&#x27;s label.
-
-         Automatically truncated to 1025 characters.
-
-         Fires a {{#crossLink &quot;Annotation/desc:event&quot;}}{{/crossLink}} event on change.
-
-         @property desc
-         @default &quot;&quot;
-         @type {String}
-         */
-        desc: {
-            set: function (desc) {
-
-                if (this._desc === desc) {
-                    return;
-                }
-
-                this._desc = desc || &quot;&quot;; // TODO: Limit to 1025 chars
-                this._descElement.innerHTML = this._desc;
-
-                /**
-                 Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/desc:property&quot;}}{{/crossLink}} property changes.
-
-                 @event desc
-                 @param value {Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;desc&quot;, this._desc);
-            },
-            get: function () {
-                return this._desc;
-            }
-        },
-
-        /**
-         Position of the eye when looking at the Annotation.
-
-         Fires a {{#crossLink &quot;Annotation/eye:event&quot;}}{{/crossLink}} event on change.
-
-         @property eye
-         @default [0,0,10]
-         @type {Float32Array}
-         */
-        eye: {
-            set: function (value) {
-
-                value = value || [0, 0, 10];
-
-                if (this._eye &amp;&amp; this._eye[0] === value[0] &amp;&amp; this._eye[1] === value[1] &amp;&amp; this._eye[2] === value[2]) {
-                    return;
-                }
-
-                (this._eye = this._eye || new xeogl.math.vec3()).set(value);
-
-                /**
-                 Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/eye:property&quot;}}{{/crossLink}} property changes.
-
-                 @event eye
-                 @param value {Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;eye&quot;, this._eye);
-            },
-            get: function () {
-                return this._eye;
-            }
-        },
-
-        /**
-         Point-of-interest when looking at the Annotation.
-
-         Fires a {{#crossLink &quot;Annotation/look:event&quot;}}{{/crossLink}} event on change.
-
-         @property look
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-        look: {
-            set: function (value) {
-
-                value = value || [0, 0, 0];
-
-                if (this._look &amp;&amp; this._look[0] === value[0] &amp;&amp; this._look[1] === value[1] &amp;&amp; this._look[2] === value[2]) {
-                    return;
-                }
-
-                (this._look = this._look || new xeogl.math.vec3()).set(value);
-
-                /**
-                 Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/look:property&quot;}}{{/crossLink}} property changes.
-
-                 @event look
-                 @param value {Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;look&quot;, this._look);
-            },
-            get: function () {
-                return this._look;
-            }
-        },
-
-        /**
-         &quot;Up&quot; vector when looking at the Annotation.
-
-         Fires a {{#crossLink &quot;Annotation/up:event&quot;}}{{/crossLink}} event on change.
-
-         @property up
-         @default [0,1,0]
-         @type {Float32Array}
-         */
-        up: {
-            set: function (value) {
-
-                value = value || [0, 1, 0];
-
-                if (this._up &amp;&amp; this._up[0] === value[0] &amp;&amp; this._up[1] === value[1] &amp;&amp; this._up[2] === value[2]) {
-                    return;
-                }
-
-                (this._up = this._up || new xeogl.math.vec3()).set(value);
-
-                /**
-                 Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/up:property&quot;}}{{/crossLink}} property changes.
-
-                 @event up
-                 @param value {Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;up&quot;, this._up);
-            },
-            get: function () {
-                return this._up;
-            }
-        },
-
-        /**
-         Specifies whether a UI element is shown at the Annotation&#x27;s pin position (typically a circle).
-
-         Fires a {{#crossLink &quot;Annotation/pinShown:event&quot;}}{{/crossLink}} event on change.
-
-         @property pinShown
-         @default true
-         @type {Boolean}
-         */
-        pinShown: {
-            set: function (shown) {
-
-                shown = shown !== false;
-
-                if (this._pinShown === shown) {
-                    return;
-                }
-
-                this._pinShown = shown;
-                this._spot.style.visibility = this._pinShown ? &quot;visible&quot; : &quot;hidden&quot;;
-                this._spotClickable.style.visibility = this._pinShown ? &quot;visible&quot; : &quot;hidden&quot;;
-
-                /**
-                 Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/pinShown:property&quot;}}{{/crossLink}} property changes.
-
-                 @event pinShown
-                 @param value {Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;pinShown&quot;, this._pinShown);
-            },
-            get: function () {
-                return this._pinShown;
-            }
-        },
-
-        /**
-         Specifies whether the label is shown for the Annotation.
-
-         Fires a {{#crossLink &quot;Annotation/labelShown:event&quot;}}{{/crossLink}} event on change.
-
-         @property labelShown
-         @default true
-         @type {Boolean}
-         */
-        labelShown: {
-            set: function (shown) {
-
-                shown = shown !== false;
-
-                if (this._labelShown === shown) {
-                    return;
-                }
-
-                this._labelShown = shown;
-                this._label.style.visibility = this._labelShown &amp;&amp; this.visible ? &quot;visible&quot; : &quot;hidden&quot;;
-
-                /**
-                 Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/labelShown:property&quot;}}{{/crossLink}} property changes.
-
-                 @event labelShown
-                 @param value {Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;labelShown&quot;, this._labelShown);
-            },
-            get: function () {
-                return this._labelShown;
-            }
+        if (this._glyph === glyph) {
+            return;
         }
-    },
 
-    _updateVisibility: function () {
-        var visible = this.visible;
+        this._glyph = glyph || &quot;&quot;; // TODO: Limit to 2 chars
+        this._spot.innerText = this._glyph;
+
+        /**
+         Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/glyph:property&quot;}}{{/crossLink}} property changes.
+
+         @event glyph
+         @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;glyph&quot;, this._glyph);
+    }
+
+    get glyph() {
+        return this._glyph;
+    }
+
+
+    /**
+     Title text for the Annotation&#x27;s label.
+
+     Automatically truncated to 64 characters.
+
+     Fires a {{#crossLink &quot;Annotation/title:event&quot;}}{{/crossLink}} event on change.
+
+     @property title
+     @default &quot;&quot;
+     @type {String}
+     */
+    set title(title) {
+
+        if (this._title === title) {
+            return;
+        }
+
+        this._title = title || &quot;&quot;; // TODO: Limit to 64 chars
+        this._titleElement.innerHTML = this._title;
+
+        /**
+         Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/title:property&quot;}}{{/crossLink}} property changes.
+
+         @event title
+         @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;title&quot;, this._title);
+    }
+
+    get title() {
+        return this._title;
+    }
+
+    /**
+     Description text for the Annotation&#x27;s label.
+
+     Automatically truncated to 1025 characters.
+
+     Fires a {{#crossLink &quot;Annotation/desc:event&quot;}}{{/crossLink}} event on change.
+
+     @property desc
+     @default &quot;&quot;
+     @type {String}
+     */
+    set desc(desc) {
+
+        if (this._desc === desc) {
+            return;
+        }
+
+        this._desc = desc || &quot;&quot;; // TODO: Limit to 1025 chars
+        this._descElement.innerHTML = this._desc;
+
+        /**
+         Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/desc:property&quot;}}{{/crossLink}} property changes.
+
+         @event desc
+         @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;desc&quot;, this._desc);
+    }
+
+    get desc() {
+        return this._desc;
+    }
+
+    /**
+     Position of the eye when looking at the Annotation.
+
+     Fires a {{#crossLink &quot;Annotation/eye:event&quot;}}{{/crossLink}} event on change.
+
+     @property eye
+     @default [0,0,10]
+     @type {Float32Array}
+     */
+    set eye(value) {
+
+        value = value || [0, 0, 10];
+
+        if (this._eye &amp;&amp; this._eye[0] === value[0] &amp;&amp; this._eye[1] === value[1] &amp;&amp; this._eye[2] === value[2]) {
+            return;
+        }
+
+        (this._eye = this._eye || xeogl.math.vec3()).set(value);
+
+        /**
+         Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/eye:property&quot;}}{{/crossLink}} property changes.
+
+         @event eye
+         @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;eye&quot;, this._eye);
+    }
+
+    get eye() {
+        return this._eye;
+    }
+
+    /**
+     Point-of-interest when looking at the Annotation.
+
+     Fires a {{#crossLink &quot;Annotation/look:event&quot;}}{{/crossLink}} event on change.
+
+     @property look
+     @default [0,0,0]
+     @type {Float32Array}
+     */
+    set look(value) {
+
+        value = value || [0, 0, 0];
+
+        if (this._look &amp;&amp; this._look[0] === value[0] &amp;&amp; this._look[1] === value[1] &amp;&amp; this._look[2] === value[2]) {
+            return;
+        }
+
+        (this._look = this._look || xeogl.math.vec3()).set(value);
+
+        /**
+         Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/look:property&quot;}}{{/crossLink}} property changes.
+
+         @event look
+         @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;look&quot;, this._look);
+    }
+
+    get look() {
+        return this._look;
+    }
+
+    /**
+     &quot;Up&quot; vector when looking at the Annotation.
+
+     Fires a {{#crossLink &quot;Annotation/up:event&quot;}}{{/crossLink}} event on change.
+
+     @property up
+     @default [0,1,0]
+     @type {Float32Array}
+     */
+    set up(value) {
+
+        value = value || [0, 1, 0];
+
+        if (this._up &amp;&amp; this._up[0] === value[0] &amp;&amp; this._up[1] === value[1] &amp;&amp; this._up[2] === value[2]) {
+            return;
+        }
+
+        (this._up = this._up || xeogl.math.vec3()).set(value);
+
+        /**
+         Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/up:property&quot;}}{{/crossLink}} property changes.
+
+         @event up
+         @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;up&quot;, this._up);
+    }
+
+    get up() {
+        return this._up;
+    }
+
+    /**
+     Specifies whether a UI element is shown at the Annotation&#x27;s pin position (typically a circle).
+
+     Fires a {{#crossLink &quot;Annotation/pinShown:event&quot;}}{{/crossLink}} event on change.
+
+     @property pinShown
+     @default true
+     @type {Boolean}
+     */
+    set pinShown(shown) {
+
+        shown = shown !== false;
+
+        if (this._pinShown === shown) {
+            return;
+        }
+
+        this._pinShown = shown;
+        this._spot.style.visibility = this._pinShown ? &quot;visible&quot; : &quot;hidden&quot;;
+        this._spotClickable.style.visibility = this._pinShown ? &quot;visible&quot; : &quot;hidden&quot;;
+
+        /**
+         Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/pinShown:property&quot;}}{{/crossLink}} property changes.
+
+         @event pinShown
+         @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;pinShown&quot;, this._pinShown);
+    }
+
+    get pinShown() {
+        return this._pinShown;
+    }
+
+    /**
+     Specifies whether the label is shown for the Annotation.
+
+     Fires a {{#crossLink &quot;Annotation/labelShown:event&quot;}}{{/crossLink}} event on change.
+
+     @property labelShown
+     @default true
+     @type {Boolean}
+     */
+    set labelShown(shown) {
+
+        shown = shown !== false;
+
+        if (this._labelShown === shown) {
+            return;
+        }
+
+        this._labelShown = shown;
+        this._label.style.visibility = this._labelShown &amp;&amp; this.visible ? &quot;visible&quot; : &quot;hidden&quot;;
+
+        /**
+         Fired whenever this Annotation&#x27;s {{#crossLink &quot;Annotation/labelShown:property&quot;}}{{/crossLink}} property changes.
+
+         @event labelShown
+         @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;labelShown&quot;, this._labelShown);
+    }
+
+    get labelShown() {
+        return this._labelShown;
+    }
+
+    _updateVisibility() {
+        const visible = this.visible;
         this._spotClickable.style.visibility = visible &amp;&amp; this._pinShown ? &quot;visible&quot; : &quot;hidden&quot;;
         this._spot.style.visibility = visible &amp;&amp; this._pinShown ? &quot;visible&quot; : &quot;hidden&quot;;
         this._label.style.visibility = visible &amp;&amp; this._labelShown ? &quot;visible&quot; : &quot;hidden&quot;;
-    },
+    }
 
-    _updateLayout: function () {
-        var visible = this.visible;
+    _updateLayout() {
+        const visible = this.visible;
         if (visible) {
-            var canvas = this.scene.canvas.canvas;
-            var left = canvas.offsetLeft;
-            var top = canvas.offsetTop;
-            var canvasPos = this.canvasPos;
+            const canvas = this.scene.canvas.canvas;
+            const left = canvas.offsetLeft;
+            const top = canvas.offsetTop;
+            const canvasPos = this.canvasPos;
             this._spot.style.left = (Math.floor(left + canvasPos[0]) - 12) + &quot;px&quot;;
             this._spot.style.top = (Math.floor(top + canvasPos[1]) - 12) + &quot;px&quot;;
             this._spotClickable.style.left = (Math.floor(left + canvasPos[0]) - 25 + 1) + &quot;px&quot;;
             this._spotClickable.style.top = (Math.floor(top + canvasPos[1]) - 25 + 1) + &quot;px&quot;;
-            var offsetX = 20;
-            var offsetY = -17;
+            const offsetX = 20;
+            const offsetY = -17;
             this._label.style.left = 20 + (canvasPos[0] + offsetX) + &quot;px&quot;;
             this._label.style.top = (canvasPos[1] + offsetY) + &quot;px&quot;;
             this._spot.style[&quot;z-index&quot;] = 90005 + Math.floor(this.viewPos[2] * 10) + 1;
         }
-    },
+    }
 
-    getJSON: function () {
-        var math = xeogl.math;
-        var json = {
+    getJSON() {
+        const math = xeogl.math;
+        const json = {
             primIndex: this.primIndex,
             bary: math.vecToArray(this.bary),
             offset: this.offset,
@@ -762,16 +760,16 @@ xeogl.Annotation = xeogl.Pin.extend({
             json.mesh = this._attached.mesh.id;
         }
         return json;
-    },
+    }
 
-    _destroy: function () {
-        this._super();
+    destroy() {
+        super.destroy();
         this.scene.off(this._tick);
         this._link.parentNode.removeChild(this._link);
         this._spot.parentNode.removeChild(this._spot);
         this._label.parentNode.removeChild(this._label);
     }
-});
+};
     </pre>
 </div>
                     </div>

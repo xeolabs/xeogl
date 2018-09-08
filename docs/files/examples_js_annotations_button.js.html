@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -248,7 +245,7 @@ xeogl.Button = xeogl.Pin.extend({
         this._spot.style[&quot;box-shadow&quot;] = &quot;5px 5px 15px 1px #000000&quot;;
         this._spot.style[&quot;z-index&quot;] = 0;
 
-        var zIndex = cfg.zIndex || 0;
+        const zIndex = cfg.zIndex || 0;
         this._spot.style[&quot;z-index&quot;] = zIndex;
         this._spot.style[&quot;zIndex&quot;] = zIndex;
         this._spotClickable.style[&quot;z-index&quot;] = zIndex;
@@ -351,18 +348,18 @@ xeogl.Button = xeogl.Pin.extend({
     },
 
     _updateVisibility: function () {
-        var visible = this.visible;
+        const visible = this.visible;
         this._spotClickable.style.visibility = visible &amp;&amp; this._pinShown ? &quot;visible&quot; : &quot;hidden&quot;;
         this._spot.style.visibility = visible &amp;&amp; this._pinShown ? &quot;visible&quot; : &quot;hidden&quot;;
     },
 
     _updateLayout: function () {
-        var visible = this.visible;
+        const visible = this.visible;
         if (visible) {
-            var canvas = this.scene.canvas.canvas;
-            var left = canvas.offsetLeft;
-            var top = canvas.offsetTop;
-            var canvasPos = this.canvasPos;
+            const canvas = this.scene.canvas.canvas;
+            const left = canvas.offsetLeft;
+            const top = canvas.offsetTop;
+            const canvasPos = this.canvasPos;
             this._spot.style.left = (Math.floor(left + canvasPos[0]) - 12) + &quot;px&quot;;
             this._spot.style.top = (Math.floor(top + canvasPos[1]) - 12) + &quot;px&quot;;
             this._spotClickable.style.left = (Math.floor(left + canvasPos[0]) - 25 + 1) + &quot;px&quot;;
@@ -372,8 +369,8 @@ xeogl.Button = xeogl.Pin.extend({
     },
 
     getJSON: function () {
-        var math = xeogl.math;
-        var json = {
+        const math = xeogl.math;
+        const json = {
             primIndex: this.primIndex,
             bary: math.vecToArray(this.bary),
             offset: this.offset,

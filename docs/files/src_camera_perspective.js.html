@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -204,8 +201,7 @@
  @module xeogl
  @submodule camera
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this Perspective within the
- default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
@@ -218,191 +214,203 @@
  @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
-(function () {
 
-    &quot;use strict&quot;;
+import {math} from &#x27;../math/math.js&#x27;;
+import {Component} from &#x27;../component.js&#x27;;
+import {State} from &#x27;../renderer/state.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    xeogl.Perspective = xeogl.Component.extend({
+const type = &quot;xeogl.Perspective&quot;;
 
-        type: &quot;xeogl.Perspective&quot;,
+class Perspective extends Component {
 
-        _init: function (cfg) {
+    /**
+     JavaScript class name for this Component.
 
-            this._state = new xeogl.renderer.State({
-                matrix: xeogl.math.mat4()
-            });
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-            this._dirty = false;
-            this._fov = 60.0;
-            this._near = 0.1;
-            this._far = 10000.0;
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            // Recompute aspect from change in canvas size
-            this._canvasResized = this.scene.canvas.on(&quot;boundary&quot;, this._needUpdate, this);
+    init(cfg) {
 
-            this.fov = cfg.fov;
-            this.fovAxis = cfg.fovAxis;
-            this.near = cfg.near;
-            this.far = cfg.far;
-        },
+        super.init(cfg);
 
-        _update: function () {
-            const WIDTH_INDEX = 2;
-            const HEIGHT_INDEX = 3;
-            var boundary = this.scene.viewport.boundary;
-            var aspect = boundary[WIDTH_INDEX] / boundary[HEIGHT_INDEX];
-            var fov = this._fov;
-            var fovAxis = this._fovAxis;
-            if (fovAxis == &quot;x&quot; || (fovAxis == &quot;min&quot; &amp;&amp; aspect &lt; 1) || (fovAxis == &quot;max&quot; &amp;&amp; aspect &gt; 1)) {
-                fov = fov / aspect;
-            }
-            fov = Math.min(fov, 120);
-            xeogl.math.perspectiveMat4(fov * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
-            this._renderer.imageDirty();
-            this.fire(&quot;matrix&quot;, this._state.matrix);
-        },
+        this._state = new State({
+            matrix: math.mat4()
+        });
 
-        _props: {
+        this._dirty = false;
+        this._fov = 60.0;
+        this._near = 0.1;
+        this._far = 10000.0;
 
-            /**
-             The field-of-view angle (FOV).
+        // Recompute aspect from change in canvas size
+        this._canvasResized = this.scene.canvas.on(&quot;boundary&quot;, this._needUpdate, this);
 
-             Fires a {{#crossLink &quot;Perspective/fov:event&quot;}}{{/crossLink}} event on change.
+        this.fov = cfg.fov;
+        this.fovAxis = cfg.fovAxis;
+        this.near = cfg.near;
+        this.far = cfg.far;
+    }
 
-             @property fov
-             @default 60.0
-             @type Number
-             */
-            fov: {
-                set: function (value) {
-                    this._fov = (value !== undefined &amp;&amp; value !== null) ? value : 60.0;
-                    this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
-                    /**
-                     Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fov:property&quot;}}{{/crossLink}} property changes.
-
-                     @event fov
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;fov&quot;, this._fov);
-                },
-                get: function () {
-                    return this._fov;
-                }
-            },
-
-            /**
-             The FOV axis.
-
-             Options are &quot;x&quot;, &quot;y&quot; or &quot;min&quot;, to use the minimum axis.
-
-             Fires a {{#crossLink &quot;Perspective/fov:event&quot;}}{{/crossLink}} event on change.
-
-             @property fov
-             @default &quot;min&quot;
-             @type String
-             */
-            fovAxis: {
-                set: function (value) {
-                    value = value || &quot;min&quot;;
-                    if (this._fovAxis === value) {
-                        return;
-                    }
-                    if (value !== &quot;x&quot; &amp;&amp; value !== &quot;y&quot; &amp;&amp; value !== &quot;min&quot;) {
-                        this.error(&quot;Unsupported value for &#x27;fovAxis&#x27;: &quot; + value + &quot; - defaulting to &#x27;min&#x27;&quot;);
-                        value = &quot;min&quot;;
-                    }
-                    this._fovAxis = value;
-                    this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
-                    /**
-                     Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fovAxis:property&quot;}}{{/crossLink}} property changes.
-
-                     @event fovAxis
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;fovAxis&quot;, this._fovAxis);
-                },
-                get: function () {
-                    return this._fovAxis;
-                }
-            },
-
-            /**
-             Position of this Perspective&#x27;s near plane on the positive View-space Z-axis.
-
-             Fires a {{#crossLink &quot;Perspective/near:event&quot;}}{{/crossLink}} event on change.
-
-             @property near
-             @default 0.1
-             @type Number
-             */
-            near: {
-                set: function (value) {
-                    this._near = (value !== undefined &amp;&amp; value !== null) ? value : 0.1;
-                    this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
-                    /**
-                     Fired whenever this Perspective&#x27;s   {{#crossLink &quot;Perspective/near:property&quot;}}{{/crossLink}} property changes.
-                     @event near
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;near&quot;, this._near);
-                },
-                get: function () {
-                    return this._near;
-                }
-            },
-
-            /**
-             Position of this Perspective&#x27;s far plane on the positive View-space Z-axis.
-
-             Fires a {{#crossLink &quot;Perspective/far:event&quot;}}{{/crossLink}} event on change.
-
-             @property far
-             @default 10000.0
-             @type Number
-             */
-            far: {
-                set: function (value) {
-                    this._far = (value !== undefined &amp;&amp; value !== null) ? value : 10000;
-                    this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
-                    /**
-                     Fired whenever this Perspective&#x27;s  {{#crossLink &quot;Perspective/far:property&quot;}}{{/crossLink}} property changes.
-
-                     @event far
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;far&quot;, this._far);
-                },
-                get: function () {
-                    return this._far;
-                }
-            },
-
-            /**
-             The Perspective&#x27;s projection transform matrix.
-
-             Fires a {{#crossLink &quot;Perspective/matrix:event&quot;}}{{/crossLink}} event on change.
-
-             @property matrix
-             @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             @type {Float32Array}
-             */
-            matrix: {
-                get: function () {
-                    if (this._updateScheduled) {
-                        this._doUpdate();
-                    }
-                    return this._state.matrix;
-                }
-            }
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-            this.scene.canvas.off(this._canvasResized);
+    _update() {
+        const WIDTH_INDEX = 2;
+        const HEIGHT_INDEX = 3;
+        const boundary = this.scene.viewport.boundary;
+        const aspect = boundary[WIDTH_INDEX] / boundary[HEIGHT_INDEX];
+        let fov = this._fov;
+        const fovAxis = this._fovAxis;
+        if (fovAxis == &quot;x&quot; || (fovAxis == &quot;min&quot; &amp;&amp; aspect &lt; 1) || (fovAxis == &quot;max&quot; &amp;&amp; aspect &gt; 1)) {
+            fov = fov / aspect;
         }
-    });
+        fov = Math.min(fov, 120);
+        math.perspectiveMat4(fov * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
+        this._renderer.imageDirty();
+        this.fire(&quot;matrix&quot;, this._state.matrix);
+    }
 
-})();
+    /**
+     The field-of-view angle (FOV).
+
+     Fires a {{#crossLink &quot;Perspective/fov:event&quot;}}{{/crossLink}} event on change.
+
+     @property fov
+     @default 60.0
+     @type Number
+     */
+    set fov(value) {
+        this._fov = (value !== undefined &amp;&amp; value !== null) ? value : 60.0;
+        this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+        /**
+         Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fov:property&quot;}}{{/crossLink}} property changes.
+
+         @event fov
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;fov&quot;, this._fov);
+    }
+
+    get fov() {
+        return this._fov;
+    }
+
+    /**
+     The FOV axis.
+
+     Options are &quot;x&quot;, &quot;y&quot; or &quot;min&quot;, to use the minimum axis.
+
+     Fires a {{#crossLink &quot;Perspective/fov:event&quot;}}{{/crossLink}} event on change.
+
+     @property fovAxis
+     @default &quot;min&quot;
+     @type String
+     */
+    set fovAxis(value) {
+        value = value || &quot;min&quot;;
+        if (this._fovAxis === value) {
+            return;
+        }
+        if (value !== &quot;x&quot; &amp;&amp; value !== &quot;y&quot; &amp;&amp; value !== &quot;min&quot;) {
+            this.error(&quot;Unsupported value for &#x27;fovAxis&#x27;: &quot; + value + &quot; - defaulting to &#x27;min&#x27;&quot;);
+            value = &quot;min&quot;;
+        }
+        this._fovAxis = value;
+        this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+        /**
+         Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fovAxis:property&quot;}}{{/crossLink}} property changes.
+
+         @event fovAxis
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;fovAxis&quot;, this._fovAxis);
+    }
+
+    get fovAxis() {
+        return this._fovAxis;
+    }
+
+    /**
+     Position of this Perspective&#x27;s near plane on the positive View-space Z-axis.
+
+     Fires a {{#crossLink &quot;Perspective/near:event&quot;}}{{/crossLink}} event on change.
+
+     @property near
+     @default 0.1
+     @type Number
+     */
+    set near(value) {
+        this._near = (value !== undefined &amp;&amp; value !== null) ? value : 0.1;
+        this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+        /**
+         Fired whenever this Perspective&#x27;s   {{#crossLink &quot;Perspective/near:property&quot;}}{{/crossLink}} property changes.
+         @event near
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;near&quot;, this._near);
+    }
+
+    get near() {
+        return this._near;
+    }
+
+    /**
+     Position of this Perspective&#x27;s far plane on the positive View-space Z-axis.
+
+     Fires a {{#crossLink &quot;Perspective/far:event&quot;}}{{/crossLink}} event on change.
+
+     @property far
+     @default 10000.0
+     @type Number
+     */
+    set far(value) {
+        this._far = (value !== undefined &amp;&amp; value !== null) ? value : 10000;
+        this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+        /**
+         Fired whenever this Perspective&#x27;s  {{#crossLink &quot;Perspective/far:property&quot;}}{{/crossLink}} property changes.
+
+         @event far
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;far&quot;, this._far);
+    }
+
+    get far() {
+        return this._far;
+    }
+
+    /**
+     The Perspective&#x27;s projection transform matrix.
+
+     Fires a {{#crossLink &quot;Perspective/matrix:event&quot;}}{{/crossLink}} event on change.
+
+     @property matrix
+     @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+     @type {Float32Array}
+     */
+    get matrix() {
+        if (this._updateScheduled) {
+            this._doUpdate();
+        }
+        return this._state.matrix;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+        super.destroy();
+        this.scene.canvas.off(this._canvasResized);
+    }
+}
+
+componentClasses[type] = Perspective;
+
+export{Perspective};
     </pre>
 </div>
                     </div>

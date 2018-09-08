@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/_utils/inheritance.js - xeogl</title>
+    <title>src/tasks.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -181,202 +178,57 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/_utils/inheritance.js</h1>
+<h1 class="file-heading">File: src/tasks.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/*
- Based on Simple JavaScript Inheritance
- By John Resig http://ejohn.org/
- MIT Licensed.
- */
-// Inspired by base2 and Prototype
-(function () {
+import {Queue} from &#x27;./utils/queue.js&#x27;;
 
-    var initializing = false;
+const taskQueue = new Queue(); // Task queue, which is pumped on each frame; tasks are pushed to it with calls to xeogl.schedule
 
-    var fnTest = /xyz/.test(function () {
-        xyz;
-    }) ? /\b_super\b/ : /.*/;
-
-    // The base Class implementation (does nothing)
-    this.Class = function () {
-    };
-
-    // Create a new Class that inherits from this class
-    Class.extend = function (prop) {
-
-        var _super = this.prototype;
-
-        // Instantiate a base class (but only create the instance,
-        // don&#x27;t run the init constructor)
-        initializing = true;
-        var prototype = new this();
-        initializing = false;
-
-        // Copy the properties over onto the new prototype
-        for (var name in prop) {
-
-            //
-            if (name === &quot;_props&quot;) {
-                var props = prop[name];
-                var descriptor;
-                for (var key in props) {
-                    descriptor = props[key];
-                    if (key.indexOf(&quot;,&quot;) &gt;= 0) { // Aliased property name of form &quot;foo, bar, baz&quot;: { .. }
-                        var aliases = key.split(&quot;,&quot;);
-                        for (var i = 0, len = aliases.length; i &lt; len; i++) {
-                            var alias = aliases[i].trim();
-                            if (!descriptor.set) {
-                                (function () {
-                                    var name3 = alias;
-                                    descriptor.set = function () {
-                                        this.warn(&quot;Property &#x27;&quot; + name3 + &quot;&#x27; is read-only, ignoring assignment&quot;);
-                                    };
-                                })();
-                            }
-                            descriptor.enumerable = true; // Want property to show up in inspectors
-                            Object.defineProperty(prototype, alias, descriptor);
-                        }
-                    } else {
-
-                        // If no setter is provided, then the property
-                        // is strictly read-only. Insert a dummy setter
-                        // to log a warning.
-
-                        if (!descriptor.set) {
-                            (function () {
-                                var name = key;
-                                descriptor.set = function () {
-                                    this.warn(&quot;Property &#x27;&quot; + name + &quot;&#x27; is read-only, ignoring assignment&quot;);
-                                };
-                            })();
-                        }
-                        descriptor.enumerable = true; // Want property to show up in inspectors
-                        Object.defineProperty(prototype, key, descriptor);
-                    }
-                }
-                continue;
-            }
-
-            // Check if we&#x27;re overwriting an existing function
-
-            var existsOnSuper = !!_super[name];
-            var isFunc = typeof prop[name] === &quot;function&quot;;
-            var superIsFunc = typeof _super[name] === &quot;function&quot;;
-            var passFnTest = fnTest.test(prop[name]);
-
-            if (existsOnSuper) {
-                if (isFunc &amp;&amp; !superIsFunc) {
-                    throw &quot;Can&#x27;t override super class property with function: &#x27;&quot; + name + &quot;&#x27;&quot;;
-                }
-                if (!isFunc &amp;&amp; superIsFunc) {
-                    throw &quot;Can&#x27;t override super class function with property: &#x27;&quot; + name + &quot;&#x27;&quot;;
-                }
-            }
-
-            if (isFunc) {
-
-                if (existsOnSuper) {
-
-                    // Exists on super, so overriding.
-                    // Allow possibility for sub-class function to call super function from within itself.
-
-                    prototype[name] = (function (name, fn) {
-                        return function () {
-                            var tmp = this._super;
-
-                            // Add a new ._super() method that is the same method
-                            // but on the super-class
-                            this._super = _super[name];
-
-                            // The method only need to be bound temporarily, so we
-                            // remove it when we&#x27;re done executing
-                            var ret = fn.apply(this, arguments);
-                            this._super = tmp;
-
-                            return ret;
-                        };
-                    })(name, prop[name])
-
-                } else {
-
-                    // Does not exist on super; just define on subclass.
-
-                    prototype[name] = prop[name];
-                }
-            } else {
-
-                // Not a function; just define on subclass.
-
-                prototype[name] = prop[name];
-            }
-        }
-
-        // Create array of type names to indicate inheritance chain,
-        // to support &quot;isType&quot; queries on components
-        prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
-
-        if (!prop.type) {
-            prop.type = _super.type + &quot;_&quot; + createUUID();
-        } else {
-            xeogl._superTypes[prop.type] = prototype.superTypes;
-        }
-
-        // The dummy class constructor
-        function Class() {
-
-            // All construction is actually done in the init method
-            if (!initializing &amp;&amp; this.__init)
-                this.__init.apply(this, arguments);
-        }
-
-        // Populate our constructed prototype object
-        Class.prototype = prototype;
-
-        // Enforce the constructor to be what we expect
-        Class.prototype.constructor = Class;
-
-        // And make this class extendable
-        Class.extend = arguments.callee;
-
-        window[prop.type] = Class;
-
-        return Class;
-    };
+const tasks = {
 
     /**
-     * Returns a new UUID.
-     * @method createUUID
-     * @static
-     * @return string The new UUID
+     Schedule a task for xeogl to run at the next frame.
+
+     Internally, this pushes the task to a FIFO queue. Within each frame interval, xeogl processes the queue
+     for a certain period of time, popping tasks and running them. After each frame interval, tasks that did not
+     get a chance to run during the task are left in the queue to be run next time.
+
+     @method scheduleTask
+     @param {Function} callback Callback that runs the task.
+     @param {Object} [scope] Scope for the callback.
      */
-    var createUUID = (function () {
-        // http://www.broofa.com/Tools/Math.uuid.htm
-        var chars = &#x27;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&#x27;.split(&#x27;&#x27;);
-        var uuid = new Array(36);
-        var rnd = 0, r;
-        return function () {
-            for (var i = 0; i &lt; 36; i++) {
-                if (i === 8 || i === 13 || i === 18 || i === 23) {
-                    uuid[i] = &#x27;-&#x27;;
-                } else if (i === 14) {
-                    uuid[i] = &#x27;4&#x27;;
-                } else {
-                    if (rnd &lt;= 0x02) {
-                        rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
-                    }
-                    r = rnd &amp; 0xf;
-                    rnd = rnd &gt;&gt; 4;
-                    uuid[i] = chars[( i === 19 ) ? ( r &amp; 0x3 ) | 0x8 : r];
-                }
+    scheduleTask(callback, scope) {
+        taskQueue.push(callback);
+        taskQueue.push(scope);
+    },
+
+    runTasks(until) { // Pops and processes tasks in the queue, until the given number of milliseconds has elapsed.
+        let time = (new Date()).getTime();
+        let callback;
+        let scope;
+        let tasksRun = 0;
+        while (taskQueue.length &gt; 0 &amp;&amp; time &lt; until) {
+            callback = taskQueue.shift();
+            scope = taskQueue.shift();
+            if (scope) {
+                callback.call(scope);
+            } else {
+                callback();
             }
-            return uuid.join(&#x27;&#x27;);
-        };
-    })();
-})();
+            time = (new Date()).getTime();
+            tasksRun++;
+        }
+        return tasksRun;
+    },
 
+    getNumTasks() {
+        return taskQueue.length;
+    }
+};
 
+export {tasks};
     </pre>
 </div>
                     </div>

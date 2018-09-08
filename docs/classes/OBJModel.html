@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -327,13 +324,13 @@ tableTop.position = [0, 150, 0];
                     <ul class="params-list">
                         <li class="param">
                                 <code class="param-name optional">[scene]</code>
-                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                                <span class="type">Scene</span>
                                 <span class="flag optional" title="This parameter is optional.">optional</span>
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this OBJModel in the default
-        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+                                <p>Parent Scene - creates this OBJModel in the default
+        Scene when omitted.</p>
         
                             </div>
         
@@ -356,7 +353,7 @@ tableTop.position = [0, 150, 0];
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+                                            <p>Optional ID, unique among all components in the parent Scene,
         generated automatically when omitted.</p>
         
                                         </div>
@@ -469,7 +466,7 @@ tableTop.position = [0, 150, 0];
         
                                         <div class="param-description">
                                             <p>A Local-to-World-space (modelling) Transform to attach to this OBJModel.
-        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this STLModel. Internally, the given
+        Must be within the same Scene as this STLModel. Internally, the given
         Transform will be inserted above each top-most Transform
         that the STLModel attaches to its <a href="../classes/Mesh.html" class="crosslink">Meshes</a>.</p>
         
@@ -559,6 +556,10 @@ tableTop.position = [0, 150, 0];
 
                     <ul class="index-list methods extends">
                             <li class="index-item method inherited">
+                                <a href="#method_angleVec3">angleVec3</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_clear">clear</a>
 
                             </li>
@@ -593,6 +594,10 @@ tableTop.position = [0, 150, 0];
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_log">log</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_lookAtMat4v">lookAtMat4v</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -634,6 +639,10 @@ tableTop.position = [0, 150, 0];
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_rotateZ">rotateZ</a>
+
+                            </li>
+                            <li class="index-item method inherited inherited">
+                                <a href="#method_scaleMat4c">scaleMat4c</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -701,6 +710,10 @@ tableTop.position = [0, 150, 0];
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_culled">culled</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_DEGTORAD">DEGTORAD</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -804,6 +817,10 @@ tableTop.position = [0, 150, 0];
 
                             </li>
                             <li class="index-item property inherited">
+                                <a href="#property_RADTODEG">RADTODEG</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_receiveShadow">receiveShadow</a>
 
                             </li>
@@ -878,6 +895,83 @@ tableTop.position = [0, 150, 0];
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_angleVec3" class="method item inherited">
+    <h3 class="name"><code>angleVec3</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>v</code>
+                </li>
+                <li class="arg">
+                        <code>w</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Model.html#method_angleVec3">Model</a>:
+        <a href="../files/src_math_math.js.html#l793"><code>src&#x2F;math&#x2F;math.js:793</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Gets the angle between two vectors</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">v</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">w</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Number</span>:
+            </div>
+        </div>
+
+
+</div>
 <div id="method_clear" class="method item inherited">
     <h3 class="name"><code>clear</code></h3>
 
@@ -894,7 +988,7 @@ tableTop.position = [0, 150, 0];
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_clear">Model</a>:
-        <a href="../files/src_models_model.js.html#l250"><code>src&#x2F;models&#x2F;model.js:250</code></a>
+        <a href="../files/src_models_model.js.html#l256"><code>src&#x2F;models&#x2F;model.js:256</code></a>
         </p>
 
 
@@ -935,7 +1029,7 @@ tableTop.position = [0, 150, 0];
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l939"><code>src&#x2F;component.js:939</code></a>
+        <a href="../files/src_component.js.html#l919"><code>src&#x2F;component.js:919</code></a>
         </p>
 
 
@@ -943,7 +1037,7 @@ tableTop.position = [0, 150, 0];
     </div>
 
     <div class="description">
-        <p><p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p></p>
+        <p><p>Convenience method for creating a Component within this Component&#39;s Scene.</p></p>
 <p><p>The method is given a component configuration, like so:</p></p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create({
      type: "xeogl.PhongMaterial",
@@ -999,7 +1093,7 @@ tableTop.position = [0, 150, 0];
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
+        <a href="../files/src_component.js.html#l1028"><code>src&#x2F;component.js:1028</code></a>
         </p>
 
 
@@ -1041,7 +1135,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l624"><code>src&#x2F;component.js:624</code></a>
+        <a href="../files/src_component.js.html#l606"><code>src&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -1051,8 +1145,8 @@ defaults that this component overrode on them.</p>
     <div class="description">
         <p>Logs an error for this component to the JavaScript console.</p>
 <p>The console message will have this format: <em><code>[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>Also fires the message as an Scene/error:event event on the
+parent Scene.</p>
 
     </div>
 
@@ -1105,7 +1199,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l448"><code>src&#x2F;component.js:448</code></a>
+        <a href="../files/src_component.js.html#l430"><code>src&#x2F;component.js:430</code></a>
         </p>
 
 
@@ -1188,7 +1282,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_hasSubs">Component</a>:
-        <a href="../files/src_component.js.html#l575"><code>src&#x2F;component.js:575</code></a>
+        <a href="../files/src_component.js.html#l557"><code>src&#x2F;component.js:557</code></a>
         </p>
 
 
@@ -1255,7 +1349,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l404"><code>src&#x2F;component.js:404</code></a>
+        <a href="../files/src_component.js.html#l394"><code>src&#x2F;component.js:394</code></a>
         </p>
 
 
@@ -1340,7 +1434,7 @@ myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (ev
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_OBJModel.js.html#l237"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:237</code></a>
+        <a href="../files/examples_js_models_OBJModel.js.html#l211"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:211</code></a>
         </p>
 
 
@@ -1418,7 +1512,7 @@ myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (ev
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l586"><code>src&#x2F;component.js:586</code></a>
+        <a href="../files/src_component.js.html#l568"><code>src&#x2F;component.js:568</code></a>
         </p>
 
 
@@ -1428,8 +1522,8 @@ myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (ev
     <div class="description">
         <p>Logs a console debugging message for this component.</p>
 <p>The console message will have this format: <em><code>[LOG] [&lt;component type&gt; &lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>Also fires the message as a Scene/log:event event on the
+parent Scene.</p>
 
     </div>
 
@@ -1451,6 +1545,115 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             </ul>
         </div>
 
+
+
+</div>
+<div id="method_lookAtMat4v" class="method item inherited">
+    <h3 class="name"><code>lookAtMat4v</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>pos</code>
+                </li>
+                <li class="arg">
+                        <code>target</code>
+                </li>
+                <li class="arg">
+                        <code>up</code>
+                </li>
+                <li class="arg">
+                        <code>dest</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Mat4</span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Model.html#method_lookAtMat4v">Model</a>:
+        <a href="../files/src_math_math.js.html#l2035"><code>src&#x2F;math&#x2F;math.js:2035</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Returns a 4x4 &#39;lookat&#39; viewing transform matrix.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">pos</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                        <p>vec3 position of the viewer</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                        <p>vec3 point the viewer is looking at</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">up</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                        <p>vec3 pointing &quot;up&quot;</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">dest</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                        <p>mat4 Optional, mat4 matrix will be written into</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Mat4</span>:
+                    <p>dest if specified, a new mat4 otherwise</p>
+
+            </div>
+        </div>
 
 
 </div>
@@ -1476,7 +1679,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l529"><code>src&#x2F;component.js:529</code></a>
+        <a href="../files/src_component.js.html#l511"><code>src&#x2F;component.js:511</code></a>
         </p>
 
 
@@ -1541,7 +1744,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l487"><code>src&#x2F;component.js:487</code></a>
+        <a href="../files/src_component.js.html#l469"><code>src&#x2F;component.js:469</code></a>
         </p>
 
 
@@ -1635,7 +1838,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l554"><code>src&#x2F;component.js:554</code></a>
+        <a href="../files/src_component.js.html#l536"><code>src&#x2F;component.js:536</code></a>
         </p>
 
 
@@ -1725,7 +1928,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_OBJModel.js.html#l269"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:269</code></a>
+        <a href="../files/examples_js_models_OBJModel.js.html#l243"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:243</code></a>
         </p>
 
 
@@ -1815,7 +2018,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Object.html#method_removeChild">Object</a>:
-        <a href="../files/src_objects_object.js.html#l862"><code>src&#x2F;objects&#x2F;object.js:862</code></a>
+        <a href="../files/src_objects_object.js.html#l886"><code>src&#x2F;objects&#x2F;object.js:886</code></a>
         </p>
 
 
@@ -1864,7 +2067,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Object.html#method_removeChildren">Object</a>:
-        <a href="../files/src_objects_object.js.html#l884"><code>src&#x2F;objects&#x2F;object.js:884</code></a>
+        <a href="../files/src_objects_object.js.html#l908"><code>src&#x2F;objects&#x2F;object.js:908</code></a>
         </p>
 
 
@@ -1905,7 +2108,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 Object
             </a>
             but overwritten in
-        <a href="../files/src_objects_object.js.html#l904"><code>src&#x2F;objects&#x2F;object.js:904</code></a>
+        <a href="../files/src_objects_object.js.html#l928"><code>src&#x2F;objects&#x2F;object.js:928</code></a>
         </p>
 
 
@@ -1960,7 +2163,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Object.html#method_rotateX">Object</a>:
-        <a href="../files/src_objects_object.js.html#l952"><code>src&#x2F;objects&#x2F;object.js:952</code></a>
+        <a href="../files/src_objects_object.js.html#l967"><code>src&#x2F;objects&#x2F;object.js:967</code></a>
         </p>
 
 
@@ -2015,7 +2218,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Object.html#method_rotateY">Object</a>:
-        <a href="../files/src_objects_object.js.html#l965"><code>src&#x2F;objects&#x2F;object.js:965</code></a>
+        <a href="../files/src_objects_object.js.html#l977"><code>src&#x2F;objects&#x2F;object.js:977</code></a>
         </p>
 
 
@@ -2070,7 +2273,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Object.html#method_rotateZ">Object</a>:
-        <a href="../files/src_objects_object.js.html#l978"><code>src&#x2F;objects&#x2F;object.js:978</code></a>
+        <a href="../files/src_objects_object.js.html#l987"><code>src&#x2F;objects&#x2F;object.js:987</code></a>
         </p>
 
 
@@ -2094,6 +2297,102 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <div class="param-description">
                         <p>Angle increment in degrees.</p>
 
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_scaleMat4c" class="method item inherited">
+    <h3 class="name"><code>scaleMat4c</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>x</code>
+                </li>
+                <li class="arg">
+                        <code>y</code>
+                </li>
+                <li class="arg">
+                        <code>z</code>
+                </li>
+                <li class="arg">
+                        <code>m</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+            <p>Inherited from
+            <a href="../classes/Model.html#method_scaleMat4c">
+                Model
+            </a>
+            but overwritten in
+        <a href="../files/src_math_math.js.html#l1747"><code>src&#x2F;math&#x2F;math.js:1747</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Efficiently post-concatenates a scaling to the given matrix.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">x</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">y</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">z</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">m</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+
+
+                    <div class="param-description">
+                         
                     </div>
 
                 </li>
@@ -2128,7 +2427,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Object.html#method_translate">Object</a>:
-        <a href="../files/src_objects_object.js.html#l991"><code>src&#x2F;objects&#x2F;object.js:991</code></a>
+        <a href="../files/src_objects_object.js.html#l997"><code>src&#x2F;objects&#x2F;object.js:997</code></a>
         </p>
 
 
@@ -2197,7 +2496,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 Object
             </a>
             but overwritten in
-        <a href="../files/src_objects_object.js.html#l1012"><code>src&#x2F;objects&#x2F;object.js:1012</code></a>
+        <a href="../files/src_objects_object.js.html#l1014"><code>src&#x2F;objects&#x2F;object.js:1014</code></a>
         </p>
 
 
@@ -2252,7 +2551,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l607"><code>src&#x2F;component.js:607</code></a>
+        <a href="../files/src_component.js.html#l589"><code>src&#x2F;component.js:589</code></a>
         </p>
 
 
@@ -2262,8 +2561,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="description">
         <p>Logs a warning for this component to the JavaScript console.</p>
 <p>The console message will have this format: <em><code>[WARN] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>Also fires the message as a Scene/warn:event event on the
+parent Scene.</p>
 
     </div>
 
@@ -2305,7 +2604,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_aabb">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1385"><code>src&#x2F;objects&#x2F;object.js:1385</code></a>
+                            <a href="../files/src_objects_object.js.html#l1352"><code>src&#x2F;objects&#x2F;object.js:1352</code></a>
                             </p>
                     
                     
@@ -2332,7 +2631,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_aabbVisible">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1758"><code>src&#x2F;objects&#x2F;object.js:1758</code></a>
+                            <a href="../files/src_objects_object.js.html#l1707"><code>src&#x2F;objects&#x2F;object.js:1707</code></a>
                             </p>
                     
                     
@@ -2358,7 +2657,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_castShadow">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1718"><code>src&#x2F;objects&#x2F;object.js:1718</code></a>
+                            <a href="../files/src_objects_object.js.html#l1669"><code>src&#x2F;objects&#x2F;object.js:1669</code></a>
                             </p>
                     
                     
@@ -2385,7 +2684,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_center">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1404"><code>src&#x2F;objects&#x2F;object.js:1404</code></a>
+                            <a href="../files/src_objects_object.js.html#l1369"><code>src&#x2F;objects&#x2F;object.js:1369</code></a>
                             </p>
                     
                     
@@ -2411,7 +2710,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_childIDs">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1129"><code>src&#x2F;objects&#x2F;object.js:1129</code></a>
+                            <a href="../files/src_objects_object.js.html#l1110"><code>src&#x2F;objects&#x2F;object.js:1110</code></a>
                             </p>
                     
                     
@@ -2437,7 +2736,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_childMap">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1116"><code>src&#x2F;objects&#x2F;object.js:1116</code></a>
+                            <a href="../files/src_objects_object.js.html#l1099"><code>src&#x2F;objects&#x2F;object.js:1099</code></a>
                             </p>
                     
                     
@@ -2463,7 +2762,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_children">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1103"><code>src&#x2F;objects&#x2F;object.js:1103</code></a>
+                            <a href="../files/src_objects_object.js.html#l1088"><code>src&#x2F;objects&#x2F;object.js:1088</code></a>
                             </p>
                     
                     
@@ -2488,7 +2787,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_clippable">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1574"><code>src&#x2F;objects&#x2F;object.js:1574</code></a>
+                            <a href="../files/src_objects_object.js.html#l1531"><code>src&#x2F;objects&#x2F;object.js:1531</code></a>
                             </p>
                     
                     
@@ -2496,7 +2795,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Indicates if clippable.</p>
-                    <p>Clipping is done by the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s Clips component.</p>
+                    <p>Clipping is done by the Scene&#39;s Clips component.</p>
                     
                         </div>
                     
@@ -2515,7 +2814,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_collidable">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1596"><code>src&#x2F;objects&#x2F;object.js:1596</code></a>
+                            <a href="../files/src_objects_object.js.html#l1552"><code>src&#x2F;objects&#x2F;object.js:1552</code></a>
                             </p>
                     
                     
@@ -2541,7 +2840,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_colorize">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1638"><code>src&#x2F;objects&#x2F;object.js:1638</code></a>
+                            <a href="../files/src_objects_object.js.html#l1592"><code>src&#x2F;objects&#x2F;object.js:1592</code></a>
                             </p>
                     
                     
@@ -2567,7 +2866,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_components">Model</a>:
-                            <a href="../files/src_models_model.js.html#l64"><code>src&#x2F;models&#x2F;model.js:64</code></a>
+                            <a href="../files/src_models_model.js.html#l70"><code>src&#x2F;models&#x2F;model.js:70</code></a>
                             </p>
                     
                     
@@ -2592,7 +2891,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_culled">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1551"><code>src&#x2F;objects&#x2F;object.js:1551</code></a>
+                            <a href="../files/src_objects_object.js.html#l1509"><code>src&#x2F;objects&#x2F;object.js:1509</code></a>
                             </p>
                     
                     
@@ -2609,6 +2908,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_DEGTORAD" class="property item inherited">
+                        <h3 class="name"><code>DEGTORAD</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_DEGTORAD">Model</a>:
+                            <a href="../files/src_math_math.js.html#l16"><code>src&#x2F;math&#x2F;math.js:16</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The number of radiians in a degree (0.0174532925).</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -2620,7 +2944,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l301"><code>src&#x2F;component.js:301</code></a>
+                            <a href="../files/src_component.js.html#l318"><code>src&#x2F;component.js:318</code></a>
                             </p>
                     
                     
@@ -2645,7 +2969,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_edges">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1531"><code>src&#x2F;objects&#x2F;object.js:1531</code></a>
+                            <a href="../files/src_objects_object.js.html#l1490"><code>src&#x2F;objects&#x2F;object.js:1490</code></a>
                             </p>
                     
                     
@@ -2672,7 +2996,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_entities">Model</a>:
-                            <a href="../files/src_models_model.js.html#l132"><code>src&#x2F;models&#x2F;model.js:132</code></a>
+                            <a href="../files/src_models_model.js.html#l138"><code>src&#x2F;models&#x2F;model.js:138</code></a>
                             </p>
                     
                     
@@ -2726,7 +3050,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_entityType">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1070"><code>src&#x2F;objects&#x2F;object.js:1070</code></a>
+                            <a href="../files/src_objects_object.js.html#l1059"><code>src&#x2F;objects&#x2F;object.js:1059</code></a>
                             </p>
                     
                     
@@ -2757,7 +3081,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Model
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_models_model.js.html#l277"><code>src&#x2F;models&#x2F;model.js:277</code></a>
+                            <a href="../files/src_models_model.js.html#l281"><code>src&#x2F;models&#x2F;model.js:281</code></a>
                             </p>
                     
                     
@@ -2783,7 +3107,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_entityTypes">Model</a>:
-                            <a href="../files/src_models_model.js.html#l144"><code>src&#x2F;models&#x2F;model.js:144</code></a>
+                            <a href="../files/src_models_model.js.html#l150"><code>src&#x2F;models&#x2F;model.js:150</code></a>
                             </p>
                     
                     
@@ -2810,7 +3134,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_ghosted">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1477"><code>src&#x2F;objects&#x2F;object.js:1477</code></a>
+                            <a href="../files/src_objects_object.js.html#l1438"><code>src&#x2F;objects&#x2F;object.js:1438</code></a>
                             </p>
                     
                     
@@ -2818,8 +3142,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Indicates if ghosted.</p>
-                    <p>Each ghosted Object is registered in its <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
-                    <a href="../classes/Scene.html#property_ghostedEntities" class="crosslink">ghostedEntities</a> map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
+                    <p>Each ghosted Object is registered in its Scene&#39;s
+                    Scene/ghostedEntities:property map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
                     is set to a value.</p>
                     
                         </div>
@@ -2840,7 +3164,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_guid">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1053"><code>src&#x2F;objects&#x2F;object.js:1053</code></a>
+                            <a href="../files/src_objects_object.js.html#l1044"><code>src&#x2F;objects&#x2F;object.js:1044</code></a>
                             </p>
                     
                     
@@ -2848,7 +3172,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Globally unique identifier.</p>
-                    <p>This is unique not only within the <a href="../classes/Scene.html" class="crosslink">Scene</a>, but throughout the entire universe.</p>
+                    <p>This is unique not only within the Scene, but throughout the entire universe.</p>
                     <p>Only defined when given to the constructor.</p>
                     
                         </div>
@@ -2868,7 +3192,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_guidObjects">Model</a>:
-                            <a href="../files/src_models_model.js.html#l111"><code>src&#x2F;models&#x2F;model.js:111</code></a>
+                            <a href="../files/src_models_model.js.html#l117"><code>src&#x2F;models&#x2F;model.js:117</code></a>
                             </p>
                     
                     
@@ -2895,7 +3219,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_highlighted">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1450"><code>src&#x2F;objects&#x2F;object.js:1450</code></a>
+                            <a href="../files/src_objects_object.js.html#l1412"><code>src&#x2F;objects&#x2F;object.js:1412</code></a>
                             </p>
                     
                     
@@ -2903,8 +3227,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Indicates if highlighted.</p>
-                    <p>Each highlighted Object is registered in its <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
-                    <a href="../classes/Scene.html#property_highlightedEntities" class="crosslink">highlightedEntities</a> map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
+                    <p>Each highlighted Object is registered in its Scene&#39;s
+                    Scene/highlightedEntities:property map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
                     is set to a value.</p>
                     
                         </div>
@@ -2925,14 +3249,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l292"><code>src&#x2F;component.js:292</code></a>
+                            <a href="../files/src_component.js.html#l309"><code>src&#x2F;component.js:309</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                            <p>Unique ID for this Component within its parent Scene.</p>
                     
                         </div>
                     
@@ -2950,7 +3274,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_matrix">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1261"><code>src&#x2F;objects&#x2F;object.js:1261</code></a>
+                            <a href="../files/src_objects_object.js.html#l1235"><code>src&#x2F;objects&#x2F;object.js:1235</code></a>
                             </p>
                     
                     
@@ -2977,7 +3301,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_meshes">Model</a>:
-                            <a href="../files/src_models_model.js.html#l123"><code>src&#x2F;models&#x2F;model.js:123</code></a>
+                            <a href="../files/src_models_model.js.html#l129"><code>src&#x2F;models&#x2F;model.js:129</code></a>
                             </p>
                     
                     
@@ -3002,7 +3326,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l284"><code>src&#x2F;component.js:284</code></a>
+                            <a href="../files/src_component.js.html#l301"><code>src&#x2F;component.js:301</code></a>
                             </p>
                     
                     
@@ -3028,7 +3352,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_model">Component</a>:
-                            <a href="../files/src_component.js.html#l387"><code>src&#x2F;component.js:387</code></a>
+                            <a href="../files/src_component.js.html#l381"><code>src&#x2F;component.js:381</code></a>
                             </p>
                     
                     
@@ -3055,7 +3379,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_numChildren">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1090"><code>src&#x2F;objects&#x2F;object.js:1090</code></a>
+                            <a href="../files/src_objects_object.js.html#l1077"><code>src&#x2F;objects&#x2F;object.js:1077</code></a>
                             </p>
                     
                     
@@ -3080,7 +3404,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_numComponents">Model</a>:
-                            <a href="../files/src_models_model.js.html#l72"><code>src&#x2F;models&#x2F;model.js:72</code></a>
+                            <a href="../files/src_models_model.js.html#l78"><code>src&#x2F;models&#x2F;model.js:78</code></a>
                             </p>
                     
                     
@@ -3106,7 +3430,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_objects">Model</a>:
-                            <a href="../files/src_models_model.js.html#l102"><code>src&#x2F;models&#x2F;model.js:102</code></a>
+                            <a href="../files/src_models_model.js.html#l108"><code>src&#x2F;models&#x2F;model.js:108</code></a>
                             </p>
                     
                     
@@ -3131,7 +3455,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_opacity">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1670"><code>src&#x2F;objects&#x2F;object.js:1670</code></a>
+                            <a href="../files/src_objects_object.js.html#l1623"><code>src&#x2F;objects&#x2F;object.js:1623</code></a>
                             </p>
                     
                     
@@ -3158,7 +3482,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_outlined">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1698"><code>src&#x2F;objects&#x2F;object.js:1698</code></a>
+                            <a href="../files/src_objects_object.js.html#l1650"><code>src&#x2F;objects&#x2F;object.js:1650</code></a>
                             </p>
                     
                     
@@ -3184,7 +3508,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_parent">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1145"><code>src&#x2F;objects&#x2F;object.js:1145</code></a>
+                            <a href="../files/src_objects_object.js.html#l1124"><code>src&#x2F;objects&#x2F;object.js:1124</code></a>
                             </p>
                     
                     
@@ -3211,7 +3535,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_pickable">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1616"><code>src&#x2F;objects&#x2F;object.js:1616</code></a>
+                            <a href="../files/src_objects_object.js.html#l1571"><code>src&#x2F;objects&#x2F;object.js:1571</code></a>
                             </p>
                     
                     
@@ -3219,7 +3543,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Whether or not to allow picking.</p>
-                    <p>Picking is done via calls to <a href="../classes/Scene.html#method_pick" class="crosslink">Scene#pick()</a>.</p>
+                    <p>Picking is done via calls to Scene/pick:method.</p>
                     
                         </div>
                     
@@ -3238,7 +3562,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_position">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1183"><code>src&#x2F;objects&#x2F;object.js:1183</code></a>
+                            <a href="../files/src_objects_object.js.html#l1161"><code>src&#x2F;objects&#x2F;object.js:1161</code></a>
                             </p>
                     
                     
@@ -3264,7 +3588,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_quaternion">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1222"><code>src&#x2F;objects&#x2F;object.js:1222</code></a>
+                            <a href="../files/src_objects_object.js.html#l1198"><code>src&#x2F;objects&#x2F;object.js:1198</code></a>
                             </p>
                     
                     
@@ -3279,6 +3603,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_RADTODEG" class="property item inherited">
+                        <h3 class="name"><code>RADTODEG</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_RADTODEG">Model</a>:
+                            <a href="../files/src_math_math.js.html#l23"><code>src&#x2F;math&#x2F;math.js:23</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The number of degrees in a radian.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_receiveShadow" class="property item inherited">
                         <h3 class="name"><code>receiveShadow</code></h3>
                         <span class="type">Boolean</span>
@@ -3290,7 +3639,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_receiveShadow">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1738"><code>src&#x2F;objects&#x2F;object.js:1738</code></a>
+                            <a href="../files/src_objects_object.js.html#l1688"><code>src&#x2F;objects&#x2F;object.js:1688</code></a>
                             </p>
                     
                     
@@ -3316,7 +3665,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_rotation">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1202"><code>src&#x2F;objects&#x2F;object.js:1202</code></a>
+                            <a href="../files/src_objects_object.js.html#l1179"><code>src&#x2F;objects&#x2F;object.js:1179</code></a>
                             </p>
                     
                     
@@ -3342,7 +3691,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_scale">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1242"><code>src&#x2F;objects&#x2F;object.js:1242</code></a>
+                            <a href="../files/src_objects_object.js.html#l1217"><code>src&#x2F;objects&#x2F;object.js:1217</code></a>
                             </p>
                     
                     
@@ -3359,7 +3708,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
-                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                        <span class="type">Scene</span>
                     
                     
                     
@@ -3369,14 +3718,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l234"><code>src&#x2F;component.js:234</code></a>
+                            <a href="../files/src_component.js.html#l253"><code>src&#x2F;component.js:253</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                            <p>The parent Scene that contains this Component.</p>
                     
                         </div>
                     
@@ -3394,7 +3743,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_selected">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1504"><code>src&#x2F;objects&#x2F;object.js:1504</code></a>
+                            <a href="../files/src_objects_object.js.html#l1464"><code>src&#x2F;objects&#x2F;object.js:1464</code></a>
                             </p>
                     
                     
@@ -3402,8 +3751,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Indicates if selected.</p>
-                    <p>Each selected Object is registered in its <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
-                    <a href="../classes/Scene.html#property_selectedEntities" class="crosslink">selectedEntities</a> map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
+                    <p>Each selected Object is registered in its Scene&#39;s
+                    Scene/selectedEntities:property map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
                     is set to a value.</p>
                     
                         </div>
@@ -3423,7 +3772,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_OBJModel.js.html#l163"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:163</code></a>
+                            <a href="../files/examples_js_models_OBJModel.js.html#l156"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:156</code></a>
                             </p>
                     
                     
@@ -3453,7 +3802,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l358"><code>src&#x2F;component.js:358</code></a>
+                            <a href="../files/src_component.js.html#l352"><code>src&#x2F;component.js:352</code></a>
                             </p>
                     
                     
@@ -3488,7 +3837,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_models_model.js.html#l53"><code>src&#x2F;models&#x2F;model.js:53</code></a>
+                            <a href="../files/src_models_model.js.html#l55"><code>src&#x2F;models&#x2F;model.js:55</code></a>
                             </p>
                     
                     
@@ -3496,6 +3845,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
+                    <p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
                     
                         </div>
                     
@@ -3513,7 +3863,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_types">Model</a>:
-                            <a href="../files/src_models_model.js.html#l80"><code>src&#x2F;models&#x2F;model.js:80</code></a>
+                            <a href="../files/src_models_model.js.html#l86"><code>src&#x2F;models&#x2F;model.js:86</code></a>
                             </p>
                     
                     
@@ -3523,14 +3873,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p><p>A map of maps; for each contained <a href="../classes/Component.html" class="crosslink">Component</a> type,
                     a map to IDs to <a href="../classes/Component.html" class="crosslink">Component</a> instances, eg.</p></p>
                     <pre class="code prettyprint"><code>"xeogl.Geometry": {
-                       "alpha": &lt;xeogl.Geometry&gt;,
-                       "beta": &lt;xeogl.Geometry&gt;
-                     },
+                           "alpha": &lt;xeogl.Geometry&gt;,
+                           "beta": &lt;xeogl.Geometry&gt;
+                         },
                     "xeogl.Rotate": {
-                       "charlie": &lt;xeogl.Rotate&gt;,
-                       "delta": &lt;xeogl.Rotate&gt;,
-                       "echo": &lt;xeogl.Rotate&gt;,
-                     },
+                           "charlie": &lt;xeogl.Rotate&gt;,
+                           "delta": &lt;xeogl.Rotate&gt;,
+                           "echo": &lt;xeogl.Rotate&gt;,
+                         },
                     //...
                     </code></pre>
                         </div>
@@ -3549,7 +3899,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_visible">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1420"><code>src&#x2F;objects&#x2F;object.js:1420</code></a>
+                            <a href="../files/src_objects_object.js.html#l1383"><code>src&#x2F;objects&#x2F;object.js:1383</code></a>
                             </p>
                     
                     
@@ -3559,8 +3909,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>Indicates if visible.</p>
                     <p>Only rendered when <a href="../classes/Object.html#property_visible" class="crosslink">visible</a> is true and
                     <a href="../classes/Object.html#property_culled" class="crosslink">culled</a> is false.</p>
-                    <p>Each visible Object is registered in its <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
-                    <a href="../classes/Scene.html#property_visibleEntities" class="crosslink">visibleEntities</a> map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
+                    <p>Each visible Object is registered in its Scene&#39;s
+                    Scene/visibleEntities:property map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
                     is set to a value.</p>
                     
                         </div>
@@ -3580,7 +3930,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_worldMatrix">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1295"><code>src&#x2F;objects&#x2F;object.js:1295</code></a>
+                            <a href="../files/src_objects_object.js.html#l1266"><code>src&#x2F;objects&#x2F;object.js:1266</code></a>
                             </p>
                     
                     
@@ -3605,7 +3955,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Object.html#property_worldNormalMatrix">Object</a>:
-                            <a href="../files/src_objects_object.js.html#l1310"><code>src&#x2F;objects&#x2F;object.js:1310</code></a>
+                            <a href="../files/src_objects_object.js.html#l1279"><code>src&#x2F;objects&#x2F;object.js:1279</code></a>
                             </p>
                     
                     
@@ -3637,7 +3987,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1121"><code>src&#x2F;component.js:1121</code></a>
+                            <a href="../files/src_component.js.html#l1096"><code>src&#x2F;component.js:1096</code></a>
                             </p>
                     
                     
@@ -3662,7 +4012,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_OBJModel.js.html#l191"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:191</code></a>
+                            <a href="../files/examples_js_models_OBJModel.js.html#l182"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:182</code></a>
                             </p>
                     
                     
@@ -3688,7 +4038,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_OBJModel.js.html#l207"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:207</code></a>
+                            <a href="../files/examples_js_models_OBJModel.js.html#l198"><code>examples&#x2F;js&#x2F;models&#x2F;OBJModel.js:198</code></a>
                             </p>
                     
                     

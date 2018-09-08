@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -185,112 +182,110 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function () {
+/**
 
-    &quot;use strict&quot;;
+ Helper widget that shows a label.
+
+ @class LabelHelper
+ @constructor
+ @param cfg {*} Configuration
+ */
+xeogl.LabelHelper = class xeoglLabelHelper extends xeogl.Component {
 
     /**
+     JavaScript class name for this Component.
 
-     Helper widget that shows a label.
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-     @class LabelHelper
-     @constructor
-     @param cfg {*} Configuration
+     @property type
+     @type String
+     @final
      */
-    xeogl.LabelHelper = xeogl.Component.extend({
+    get type() {
+        return &quot;xeogl.LabelHelper&quot;;
+    }
 
-        type: &quot;xeogl.LabelHelper&quot;,
+    init(cfg) {
 
-        _init: function (cfg) {
+        super.init(cfg);
 
-            var material = new xeogl.PhongMaterial(this, {
-                emissive: [0.5, 1.0, 0.5],
-                diffuse: [0, 0, 0]
-            });
+        var material = new xeogl.PhongMaterial(this, {
+            emissive: [0.5, 1.0, 0.5],
+            diffuse: [0, 0, 0]
+        });
 
-            this._label = new xeogl.Mesh(this, {
-                geometry: new xeogl.VectorTextGeometry(this, {
-                    text: &quot;&quot;,
-                    origin: [0, 0],
-                    size: .1
-                }),
-                transform: new xeogl.Translate(this, {
-                    parent: new xeogl.Translate(this)
-                }),
-                material: material,
-                billboard: &quot;spherical&quot;
+        this._label = new xeogl.Mesh(this, {
+            geometry: new xeogl.VectorTextGeometry(this, {
+                text: &quot;&quot;,
+                origin: [0, 0],
+                size: .1
+            }),
+            transform: new xeogl.Translate(this, {
+                parent: new xeogl.Translate(this)
+            }),
+            material: material,
+            billboard: &quot;spherical&quot;
 
-            });
+        });
 
-            this._wire = new xeogl.Mesh(this, {
-                geometry: new xeogl.Geometry(this, {
-                    primitive: &quot;lines&quot;,
-                    positions: [0.0, 0.0, 0.0, 0.0, -1.3, 0.0],
-                    indices: [0, 1]
-                }),
-                material: material,
-                transform: new xeogl.Translate(this),
-                billboard: &quot;spherical&quot;
-            });
+        this._wire = new xeogl.Mesh(this, {
+            geometry: new xeogl.Geometry(this, {
+                primitive: &quot;lines&quot;,
+                positions: [0.0, 0.0, 0.0, 0.0, -1.3, 0.0],
+                indices: [0, 1]
+            }),
+            material: material,
+            transform: new xeogl.Translate(this),
+            billboard: &quot;spherical&quot;
+        });
 
-            this.text = cfg.text;
-            this.textSize = cfg.textSize;
-            this.pos = cfg.pos;
-            this.offset = cfg.offset;
-        },
+        this.text = cfg.text;
+        this.textSize = cfg.textSize;
+        this.pos = cfg.pos;
+        this.offset = cfg.offset;
+    }
 
-        _props: {
+    set text(value) {
+        this._label.geometry.text = value;
+    }
 
-            text: {
-                set: function (value) {
-                    this._label.geometry.text = value;
-                },
-                get: function () {
-                    return this._label.geometry.text;
-                }
-            },
+    get text() {
+        return this._label.geometry.text;
+    }
 
-            textSize: {
-                set: function (value) {
-                    this._label.geometry.size = value;
-                },
-                get: function () {
-                    return this._label.geometry.size;
-                }
-            },
+    set textSize(value) {
+        this._label.geometry.size = value;
+    }
 
-            pos: {
-                set: function (value) {
-                    (this._pos = this._pos || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-                    this._needUpdate();
-                },
-                get: function () {
-                    return this._pos;
-                }
-            },
+    get textSize() {
+        return this._label.geometry.size;
+    }
 
-            offset: {
-                set: function (value) {
-                    (this._offset = this._offset || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-                    this._needUpdate();
-                },
-                get: function () {
-                    return this._offset;
-                }
-            }
-        },
+    set pos(value) {
+        (this._pos = this._pos || xeogl.math.vec3()).set(value || [0, 0, 0]);
+        this._needUpdate();
+    }
 
-        _update: (function () {
-            var offset = new Float32Array(3);
-            return function () {
-                this._wire.geometry.positions = [0, 0, 0, this._offset[0], this._offset[1], this._offset[2]];
-                this._wire.transform.xyz = this._pos;
-                this._label.transform.parent.xyz = this._pos;
-                this._label.transform.xyz = [this._offset[0], this._offset[1], this._offset[2]];
-            };
-        })()
-    });
-})();
+    get pos() {
+        return this._pos;
+    }
+
+    set offset(value) {
+        (this._offset = this._offset || xeogl.math.vec3()).set(value || [0, 0, 0]);
+        this._needUpdate();
+    }
+
+    get offset() {
+        return this._offset;
+    }
+
+    _update() {
+        this._wire.geometry.positions = [0, 0, 0, this._offset[0], this._offset[1], this._offset[2]];
+        this._wire.transform.xyz = this._pos;
+        this._label.transform.parent.xyz = this._pos;
+        this._label.transform.xyz = [this._offset[0], this._offset[1], this._offset[2]];
+    }
+};
 
     </pre>
 </div>

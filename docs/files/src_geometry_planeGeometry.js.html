@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -197,7 +194,7 @@
  {{#crossLink &quot;PlaneGeometry/zSegments:property&quot;}}{{/crossLink}} properties.
  * Dynamically switch its primitive type between &#x60;&#x60;&#x60;&#x60;&quot;points&quot;&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;&quot;lines&quot;&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;&quot;triangles&quot;&#x60;&#x60;&#x60;&#x60; at any time by
  updating its {{#crossLink &quot;Geometry/primitive:property&quot;}}{{/crossLink}} property.
- 
+
  ## Examples
 
  * [Textured PlaneGeometry](../../examples/#geometry_primitives_plane)
@@ -231,8 +228,7 @@
  @module xeogl
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this PlaneGeometry in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
  generated automatically when omitted.
@@ -245,135 +241,150 @@
  @param [cfg.zSegments=1] {Number} Number of segments on the Z-axis.
  @extends Geometry
  */
-(function () {
+import {utils} from &#x27;../utils.js&#x27;;
+import {Geometry} from &#x27;./geometry.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const type = &quot;xeogl.PlaneGeometry&quot;;
 
-    xeogl.PlaneGeometry = xeogl.Geometry.extend({
+class PlaneGeometry extends Geometry {
 
-        type: &quot;xeogl.PlaneGeometry&quot;,
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-            var xSize = cfg.xSize || 1;
-            if (xSize &lt; 0) {
-                this.error(&quot;negative xSize not allowed - will invert&quot;);
-                xSize *= -1;
-            }
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            var zSize = cfg.zSize || 1;
-            if (zSize &lt; 0) {
-                this.error(&quot;negative zSize not allowed - will invert&quot;);
-                zSize *= -1;
-            }
+    init(cfg) {
 
-            var xSegments = cfg.xSegments || 1;
-            if (xSegments &lt; 0) {
-                this.error(&quot;negative xSegments not allowed - will invert&quot;);
-                xSegments *= -1;
-            }
-            if (xSegments &lt; 1) {
-                xSegments = 1;
-            }
-
-            var zSegments = cfg.xSegments || 1;
-            if (zSegments &lt; 0) {
-                this.error(&quot;negative zSegments not allowed - will invert&quot;);
-                zSegments *= -1;
-            }
-            if (zSegments &lt; 1) {
-                zSegments = 1;
-            }
-
-            var center = cfg.center;
-            var centerX = center ? center[0] : 0;
-            var centerY = center ? center[1] : 0;
-            var centerZ = center ? center[2] : 0;
-
-            var halfWidth = xSize / 2;
-            var halfHeight = zSize / 2;
-
-            var planeX = Math.floor(xSegments) || 1;
-            var planeZ = Math.floor(zSegments) || 1;
-
-            var planeX1 = planeX + 1;
-            var planeZ1 = planeZ + 1;
-
-            var segmentWidth = xSize / planeX;
-            var segmentHeight = zSize / planeZ;
-
-            var positions = new Float32Array(planeX1 * planeZ1 * 3);
-            var normals = new Float32Array(planeX1 * planeZ1 * 3);
-            var uvs = new Float32Array(planeX1 * planeZ1 * 2);
-
-            var offset = 0;
-            var offset2 = 0;
-
-            var iz;
-            var ix;
-            var x;
-            var a;
-            var b;
-            var c;
-            var d;
-
-            for (iz = 0; iz &lt; planeZ1; iz++) {
-
-                var z = iz * segmentHeight - halfHeight;
-
-                for (ix = 0; ix &lt; planeX1; ix++) {
-
-                    x = ix * segmentWidth - halfWidth;
-
-                    positions[offset] = x + centerX;
-                    positions[offset + 1] = centerY;
-                    positions[offset + 2] = -z + centerZ;
-
-                    normals[offset + 2] = -1;
-
-                    uvs[offset2] = (planeX - ix) / planeX;
-                    uvs[offset2 + 1] = ( (planeZ - iz) / planeZ );
-
-                    offset += 3;
-                    offset2 += 2;
-                }
-            }
-
-            offset = 0;
-
-            var indices = new ( ( positions.length / 3 ) &gt; 65535 ? Uint32Array : Uint16Array )(planeX * planeZ * 6);
-
-            for (iz = 0; iz &lt; planeZ; iz++) {
-
-                for (ix = 0; ix &lt; planeX; ix++) {
-
-                    a = ix + planeX1 * iz;
-                    b = ix + planeX1 * ( iz + 1 );
-                    c = ( ix + 1 ) + planeX1 * ( iz + 1 );
-                    d = ( ix + 1 ) + planeX1 * iz;
-
-                    indices[offset] = d;
-                    indices[offset + 1] = b;
-                    indices[offset + 2] = a;
-
-                    indices[offset + 3] = d;
-                    indices[offset + 4] = c;
-                    indices[offset + 5] = b;
-
-                    offset += 6;
-                }
-            }
-
-            this._super(xeogl._apply(cfg, {
-                positions: positions,
-                normals: normals,
-                uv: uvs,
-                indices: indices
-            }));
+        let xSize = cfg.xSize || 1;
+        if (xSize &lt; 0) {
+            this.error(&quot;negative xSize not allowed - will invert&quot;);
+            xSize *= -1;
         }
-    });
 
-})();
+        let zSize = cfg.zSize || 1;
+        if (zSize &lt; 0) {
+            this.error(&quot;negative zSize not allowed - will invert&quot;);
+            zSize *= -1;
+        }
+
+        let xSegments = cfg.xSegments || 1;
+        if (xSegments &lt; 0) {
+            this.error(&quot;negative xSegments not allowed - will invert&quot;);
+            xSegments *= -1;
+        }
+        if (xSegments &lt; 1) {
+            xSegments = 1;
+        }
+
+        let zSegments = cfg.xSegments || 1;
+        if (zSegments &lt; 0) {
+            this.error(&quot;negative zSegments not allowed - will invert&quot;);
+            zSegments *= -1;
+        }
+        if (zSegments &lt; 1) {
+            zSegments = 1;
+        }
+
+        const center = cfg.center;
+        const centerX = center ? center[0] : 0;
+        const centerY = center ? center[1] : 0;
+        const centerZ = center ? center[2] : 0;
+
+        const halfWidth = xSize / 2;
+        const halfHeight = zSize / 2;
+
+        const planeX = Math.floor(xSegments) || 1;
+        const planeZ = Math.floor(zSegments) || 1;
+
+        const planeX1 = planeX + 1;
+        const planeZ1 = planeZ + 1;
+
+        const segmentWidth = xSize / planeX;
+        const segmentHeight = zSize / planeZ;
+
+        const positions = new Float32Array(planeX1 * planeZ1 * 3);
+        const normals = new Float32Array(planeX1 * planeZ1 * 3);
+        const uvs = new Float32Array(planeX1 * planeZ1 * 2);
+
+        let offset = 0;
+        let offset2 = 0;
+
+        let iz;
+        let ix;
+        let x;
+        let a;
+        let b;
+        let c;
+        let d;
+
+        for (iz = 0; iz &lt; planeZ1; iz++) {
+
+            const z = iz * segmentHeight - halfHeight;
+
+            for (ix = 0; ix &lt; planeX1; ix++) {
+
+                x = ix * segmentWidth - halfWidth;
+
+                positions[offset] = x + centerX;
+                positions[offset + 1] = centerY;
+                positions[offset + 2] = -z + centerZ;
+
+                normals[offset + 2] = -1;
+
+                uvs[offset2] = (planeX - ix) / planeX;
+                uvs[offset2 + 1] = ( (planeZ - iz) / planeZ );
+
+                offset += 3;
+                offset2 += 2;
+            }
+        }
+
+        offset = 0;
+
+        const indices = new ( ( positions.length / 3 ) &gt; 65535 ? Uint32Array : Uint16Array )(planeX * planeZ * 6);
+
+        for (iz = 0; iz &lt; planeZ; iz++) {
+
+            for (ix = 0; ix &lt; planeX; ix++) {
+
+                a = ix + planeX1 * iz;
+                b = ix + planeX1 * ( iz + 1 );
+                c = ( ix + 1 ) + planeX1 * ( iz + 1 );
+                d = ( ix + 1 ) + planeX1 * iz;
+
+                indices[offset] = d;
+                indices[offset + 1] = b;
+                indices[offset + 2] = a;
+
+                indices[offset + 3] = d;
+                indices[offset + 4] = c;
+                indices[offset + 5] = b;
+
+                offset += 6;
+            }
+        }
+
+        super.init(utils.apply(cfg, {
+            positions: positions,
+            normals: normals,
+            uv: uvs,
+            indices: indices
+        }));
+    }
+}
+
+componentClasses[type] = PlaneGeometry;
+
+export {PlaneGeometry};
 
     </pre>
 </div>

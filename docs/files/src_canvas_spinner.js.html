@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -224,7 +221,7 @@
  // Decrement the count; count now zero,
  // so spinner becomes invisible
  spinner.process--;
-&#x60;&#x60;&#x60;&#x60;
+ &#x60;&#x60;&#x60;&#x60;
 
  By default, a Spinner shows while resources are loading for components like
  {{#crossLink &quot;Texture&quot;}}{{/crossLink}}. We can disable that like this:
@@ -239,168 +236,14 @@
  @submodule canvas
  @extends Component
  */
-(function () {
 
-    &quot;use strict&quot;;
+import {Component} from &#x27;../component.js&#x27;;
 
-    // Ensures lazy-injected CSS only injected once  
-    var spinnerCSSInjected = false;
+const type = &quot;xeogl.Spinner&quot;;
 
-    xeogl.Spinner = xeogl.Component.extend({
+let spinnerCSSInjected = false; // Ensures lazy-injected CSS only injected once
 
-        type: &quot;xeogl.Spinner&quot;,
-
-        serializable: false,
-
-        _init: function (cfg) {
-
-            this._canvas = cfg.canvas;
-
-            this._injectSpinnerCSS();
-
-            // Create spinner elements
-
-            var div = document.createElement(&#x27;div&#x27;);
-            var style = div.style;
-
-            style[&quot;z-index&quot;] = &quot;9000&quot;;
-            style.position = &quot;absolute&quot;;
-
-            div.innerHTML = &#x27;&lt;div class=&quot;sk-fading-circle&quot;&gt;\
-                &lt;div class=&quot;sk-circle1 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle2 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle3 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle4 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle5 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle6 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle7 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle8 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle9 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle10 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle11 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;div class=&quot;sk-circle12 sk-circle&quot;&gt;&lt;/div&gt;\
-                &lt;/div&gt;&#x27;;
-
-            this._canvas.parentElement.appendChild(div);
-            this._element = div;
-
-            this._adjustPosition();
-
-            this.processes = 0;
-
-            this.textures = cfg.textures;
-        },
-
-        _props: {
-
-            /**
-             * Whether Spinner shows while images are loading for components like {{#crossLink &quot;Texture&quot;}}{{/crossLink}}.
-             *
-             * @property textures
-             * @default true
-             * @type Boolean
-             */
-            textures: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    this._textures = value;
-                },
-
-                get: function () {
-                    return this._textures;
-                }
-            },
-
-            /**
-             The number of processes this Spinner represents.
-
-             The Spinner is visible while this property is greater than zero.
-
-             Increment this property whenever you commence some process during which you want
-             the Spinner to be visible, then decrement it again when the process is complete.
-
-             Clamps to zero if you attempt to set to to a negative value.
-
-             Fires a {{#crossLink &quot;Spinner/processes:event&quot;}}{{/crossLink}} event on change.
-
-             @property processes
-             @default 0
-             @type Number
-             */
-            processes: {
-
-                set: function (value) {
-
-                    value = value || 0;
-
-                    if (this._processes === value) {
-                        return;
-                    }
-
-                    if (value &lt; 0) {
-                        return;
-                    }
-
-                    var prevValue = this._processes;
-
-                    this._processes = value;
-
-                    this._element.style[&quot;visibility&quot;] = (this._processes &gt; 0) ? &quot;visible&quot; : &quot;hidden&quot;;
-
-                    /**
-                     Fired whenever this Spinner&#x27;s {{#crossLink &quot;Spinner/visible:property&quot;}}{{/crossLink}} property changes.
-
-                     @event processes
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;processes&quot;, this._processes);
-
-                    if (this._processes === 0 &amp;&amp; this._processes !== prevValue) {
-
-                        /**
-                         Fired whenever this Spinner&#x27;s {{#crossLink &quot;Spinner/visible:property&quot;}}{{/crossLink}} property becomes zero.
-
-                         @event zeroProcesses
-                         */
-                        this.fire(&quot;zeroProcesses&quot;, this._processes);
-                    }
-                },
-
-                get: function () {
-                    return this._processes;
-                }
-            }
-        },
-
-        // (Re)positions spinner DIV over the center of the canvas
-        _adjustPosition: function () {
-
-            if (!this._canvas || !this._element) {
-                return;
-            }
-
-            var canvas = this._canvas;
-            var spinner = this._element;
-            var spinnerStyle = spinner.style;
-
-            spinnerStyle[&quot;left&quot;] = (canvas.offsetLeft + (canvas.clientWidth * 0.5) - (spinner.clientWidth * 0.5)) + &quot;px&quot;;
-            spinnerStyle[&quot;top&quot;] = (canvas.offsetTop + (canvas.clientHeight * 0.5) - (spinner.clientHeight * 0.5)) + &quot;px&quot;;
-        },
-
-        _injectSpinnerCSS: function () {
-            if (spinnerCSSInjected) {
-                return;
-            }
-            var node = document.createElement(&#x27;style&#x27;);
-            node.innerHTML = this._spinnerCSS;
-            document.body.appendChild(node);
-            spinnerCSSInjected = true;
-        },
-
-        _spinnerCSS: &quot;.sk-fading-circle {\
+const spinnerCSS = &quot;.sk-fading-circle {\
         background: transparent;\
         margin: 20px auto;\
         width: 50px;\
@@ -531,9 +374,122 @@
     @keyframes sk-circleFadeDelay {\
         0%, 39%, 100% { opacity: 0; }\
         40% { opacity: 1; }\
-    }&quot;
-    });
-})();
+    }&quot;;
+
+class Spinner extends Component {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+        super.init(cfg);
+        this._canvas = cfg.canvas;
+        this._injectSpinnerCSS();
+        const div = document.createElement(&#x27;div&#x27;);
+        const style = div.style;
+        style[&quot;z-index&quot;] = &quot;9000&quot;;
+        style.position = &quot;absolute&quot;;
+        div.innerHTML = &#x27;&lt;div class=&quot;sk-fading-circle&quot;&gt;\
+                &lt;div class=&quot;sk-circle1 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle2 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle3 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle4 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle5 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle6 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle7 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle8 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle9 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle10 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle11 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle12 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;/div&gt;&#x27;;
+        this._canvas.parentElement.appendChild(div);
+        this._element = div;
+        this._adjustPosition();
+        this.processes = 0;
+    }
+
+    /**
+     The number of processes this Spinner represents.
+
+     The Spinner is visible while this property is greater than zero.
+
+     Increment this property whenever you commence some process during which you want
+     the Spinner to be visible, then decrement it again when the process is complete.
+
+     Clamps to zero if you attempt to set to to a negative value.
+
+     Fires a {{#crossLink &quot;Spinner/processes:event&quot;}}{{/crossLink}} event on change.
+
+     @property processes
+     @default 0
+     @type Number
+     */
+    set processes(value) {
+        value = value || 0;
+        if (this._processes === value) {
+            return;
+        }
+        if (value &lt; 0) {
+            return;
+        }
+        const prevValue = this._processes;
+        this._processes = value;
+        this._element.style[&quot;visibility&quot;] = (this._processes &gt; 0) ? &quot;visible&quot; : &quot;hidden&quot;;
+        /**
+         Fired whenever this Spinner&#x27;s {{#crossLink &quot;Spinner/visible:property&quot;}}{{/crossLink}} property changes.
+
+         @event processes
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;processes&quot;, this._processes);
+        if (this._processes === 0 &amp;&amp; this._processes !== prevValue) {
+            /**
+             Fired whenever this Spinner&#x27;s {{#crossLink &quot;Spinner/visible:property&quot;}}{{/crossLink}} property becomes zero.
+
+             @event zeroProcesses
+             */
+            this.fire(&quot;zeroProcesses&quot;, this._processes);
+        }
+    }
+
+    get processes() {
+        return this._processes;
+    }
+
+    _adjustPosition() { // (Re)positions spinner DIV over the center of the canvas
+        if (!this._canvas || !this._element) {
+            return;
+        }
+        const canvas = this._canvas;
+        const spinner = this._element;
+        const spinnerStyle = spinner.style;
+        spinnerStyle[&quot;left&quot;] = (canvas.offsetLeft + (canvas.clientWidth * 0.5) - (spinner.clientWidth * 0.5)) + &quot;px&quot;;
+        spinnerStyle[&quot;top&quot;] = (canvas.offsetTop + (canvas.clientHeight * 0.5) - (spinner.clientHeight * 0.5)) + &quot;px&quot;;
+    }
+
+    _injectSpinnerCSS() {
+        if (spinnerCSSInjected) {
+            return;
+        }
+        const node = document.createElement(&#x27;style&#x27;);
+        node.innerHTML = spinnerCSS;
+        document.body.appendChild(node);
+        spinnerCSSInjected = true;
+    }
+}
+
+export{Spinner};
 
     </pre>
 </div>

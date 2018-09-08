@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -197,116 +194,93 @@
  @param [cfg.visible=true] {Boolean} Indicates whether or not this helper is visible.
 
  */
-(function () {
+xeogl.AABBHelper = class xeoglAABBHelper extends xeogl.Component{
 
-    &quot;use strict&quot;;
+    /**
+     JavaScript class name for this Component.
 
-    xeogl.AABBHelper = xeogl.Component.extend({
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-        type: &quot;xeogl.AABBHelper&quot;,
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return &quot;xeogl.AABBHelper&quot;;
+    }
 
-        _init: function (cfg) {
+    init(cfg) {
 
-            this._box = new xeogl.Mesh(this, {
-                geometry: new xeogl.AABBGeometry(this),
-                material: new xeogl.PhongMaterial(this, {
-                    emissive: [1, 0, 0],
-                    diffuse: [0, 0, 0],
-                    lineWidth: 4
-                }),
-                pickable: false,
-                collidable: false,
-                clippable: false
-            });
+        super.init(cfg);
 
-            this.target = cfg.target;
-            this.color = cfg.color;
-            this.visible = cfg.visible;
-        },
+        this._box = new xeogl.Mesh(this, {
+            geometry: new xeogl.AABBGeometry(this),
+            material: new xeogl.PhongMaterial(this, {
+                emissive: [1, 0, 0],
+                diffuse: [0, 0, 0],
+                lineWidth: 4
+            }),
+            pickable: false,
+            collidable: false,
+            clippable: false
+        });
 
-        _props: {
+        this.target = cfg.target;
+        this.color = cfg.color;
+        this.visible = cfg.visible;
+    }
 
-            /**
-             * The target {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype.
-             *
-             * Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent
-             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when set to a null or undefined value.
-             *
-             * @property target
-             * @type Component
-             */
-            target: {
+    /**
+     * The target {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype.
+     *
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when set to a null or undefined value.
+     *
+     * @property target
+     * @type Component
+     */
+    set target(target) {
+        this._box.geometry.target = target;
+    }
 
-                set: function (target) {
-                  this._box.geometry.target = target;
-                },
+    get target() {
+        return this._box.geometry.target;
+    }
 
-                get: function () {
-                    return this._box.geometry.target;
-                }
-            },
+    /**
+     * Emissive color of this AABBHelper.
+     *
+     * @property color
+     * @default [0,1,0]
+     * @type {Float32Array}
+     */
+    set color(value) {
+        this._box.material.emissive = value || [0, 1, 0];
+    }
 
-            /**
-             * Emissive color of this AABBHelper.
-             *
-             * Fires an {{#crossLink &quot;AABBHelper/color:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property color
-             * @default [0,1,0]
-             * @type {Float32Array}
-             */
-            color: {
+    get color() {
+        return this._box.emissive;
+    }
 
-                set: function (value) {
+    /**
+     Indicates whether this AABBHelper is visible or not.
 
-                    this._box.material.emissive = value || [0, 1, 0];
+     Fires a {{#crossLink &quot;AABBHelper/visible:event&quot;}}{{/crossLink}} event on change.
 
-                    /**
-                     Fired whenever this AABBHelper&#x27;s {{#crossLink &quot;AABBHelper/color:property&quot;}}{{/crossLink}} property changes.
-                     @event color
-                     @param value {Float32Array} The property&#x27;s new value
-                     */
-                    this.fire(&quot;color&quot;, this._color);
-                },
+     @property visible
+     @default true
+     @type Boolean
+     */
+    set visible(value) {
+        value = value !== false;
+        this._box.visible = value;
+    }
 
-                get: function () {
-                    return this._box.emissive;
-                }
-            },
+    get visible() {
+        return this._box.visible;
+    }
+};
 
-            /**
-             Indicates whether this AABBHelper is visible or not.
-
-             Fires a {{#crossLink &quot;AABBHelper/visible:event&quot;}}{{/crossLink}} event on change.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    this._box.visible = value;
-
-                    /**
-                     Fired whenever this helper&#x27;s {{#crossLink &quot;AABBHelper/visible:property&quot;}}{{/crossLink}} property changes.
-
-                     @event visible
-                     @param value {Boolean} The property&#x27;s new value
-                     */
-                    this.fire(&quot;visible&quot;, this._box.visible);
-                },
-
-                get: function () {
-                    return this._box.visible;
-                }
-            }
-        }
-    });
-})();
     </pre>
 </div>
                     </div>

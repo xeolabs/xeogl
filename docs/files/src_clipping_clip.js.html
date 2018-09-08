@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -250,8 +247,7 @@
  @module xeogl
  @submodule clipping
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Clip in the
- default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Clip configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  You only need to supply an ID if you need to be able to find the Clip by ID within the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
@@ -261,112 +257,126 @@
  @param [cfg.dir=[0,0 -1]] {Array of Number} Vector perpendicular to the plane surface, indicating its orientation.
  @extends Component
  */
-(function () {
+import {Component} from &#x27;../component.js&#x27;;
+import {State} from &#x27;../renderer/state.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const type = &quot;xeogl.Clip&quot;;
 
-    xeogl.Clip = xeogl.Component.extend({
+class Clip extends Component {
 
-        type: &quot;xeogl.Clip&quot;,
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-            this._state = new xeogl.renderer.State({
-                active: true,
-                pos: new Float32Array(3),
-                dir: new Float32Array(3)
-            });
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            this.active = cfg.active;
-            this.pos = cfg.pos;
-            this.dir = cfg.dir;
+    init(cfg) {
 
-            this.scene._clipCreated(this);
-        },
+        super.init(cfg);
 
-        _props: {
+        this._state = new State({
+            active: true,
+            pos: new Float32Array(3),
+            dir: new Float32Array(3)
+        });
 
-            /**
-             Indicates whether this Clip is active or not.
+        this.active = cfg.active;
+        this.pos = cfg.pos;
+        this.dir = cfg.dir;
 
-             @property active
-             @default true
-             @type Boolean
-             */
-            active: {
-                set: function (value) {
-                    this._state.active = value !== false;
-                    this._renderer.imageDirty();
-                    /**
-                     Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/active:property&quot;}}{{/crossLink}} property changes.
+        this.scene._clipCreated(this);
+    }
 
-                     @event active
-                     @param value {Boolean} The property&#x27;s new value
-                     */
-                    this.fire(&quot;active&quot;, this._state.active);
-                },
-                get: function () {
-                    return this._state.active;
-                }
-            },
+    /**
+     Indicates whether this Clip is active or not.
 
-            /**
-             The World-space position of this Clip&#x27;s plane.
+     @property active
+     @default true
+     @type Boolean
+     */
+    set active(value) {
+        this._state.active = value !== false;
+        this._renderer.imageDirty();
+        /**
+         Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/active:property&quot;}}{{/crossLink}} property changes.
 
-             @property pos
-             @default [0, 0, 0]
-             @type Float32Array
-             */
-            pos: {
-                set: function (value) {
-                    this._state.pos.set(value || [0, 0, 0]);
-                    this._renderer.imageDirty();
-                    /**
-                     Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}} property changes.
+         @event active
+         @param value {Boolean} The property&#x27;s new value
+         */
+        this.fire(&quot;active&quot;, this._state.active);
+    }
 
-                     @event pos
-                     @param value Float32Array The property&#x27;s new value
-                     */
-                    this.fire(&quot;pos&quot;, this._state.pos);
-                },
-                get: function () {
-                    return this._state.pos;
-                }
-            },
+    get active() {
+        return this._state.active;
+    }
 
-            /**
-             Vector indicating the orientation of this Clip plane.
+    /**
+     The World-space position of this Clip&#x27;s plane.
 
-             The vector originates at {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}}. Elements on the
-             same side of the vector are clipped.
+     @property pos
+     @default [0, 0, 0]
+     @type Float32Array
+     */
+    set pos(value) {
+        this._state.pos.set(value || [0, 0, 0]);
+        this._renderer.imageDirty();
+        /**
+         Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}} property changes.
 
-             @property dir
-             @default [0, 0, -1]
-             @type Float32Array
-             */
-            dir: {
-                set: function (value) {
-                    this._state.dir.set(value || [0, 0, -1]);
-                    this._renderer.imageDirty();
-                    /**
-                     Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} property changes.
+         @event pos
+         @param value Float32Array The property&#x27;s new value
+         */
+        this.fire(&quot;pos&quot;, this._state.pos);
+    }
 
-                     @event dir
-                     @param value {Float32Array} The property&#x27;s new value
-                     */
-                    this.fire(&quot;dir&quot;, this._state.dir);
-                },
-                get: function () {
-                    return this._state.dir;
-                }
-            }
-        },
+    get pos() {
+        return this._state.pos;
+    }
 
-        _destroy: function () {
-            this.scene._clipDestroyed(this);
-        }
-    });
-})();
+    /**
+     Vector indicating the orientation of this Clip plane.
+
+     The vector originates at {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}}. Elements on the
+     same side of the vector are clipped.
+
+     @property dir
+     @default [0, 0, -1]
+     @type Float32Array
+     */
+    set dir(value) {
+        this._state.dir.set(value || [0, 0, -1]);
+        this._renderer.imageDirty();
+        /**
+         Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} property changes.
+
+         @event dir
+         @param value {Float32Array} The property&#x27;s new value
+         */
+        this.fire(&quot;dir&quot;, this._state.dir);
+    }
+
+    get dir() {
+        return this._state.dir;
+    }
+
+    destroy() {
+        this._state.destroy();
+        this.scene._clipDestroyed(this);
+        super.destroy();
+    }
+}
+
+componentClasses[type] = Clip;
+
+export{Clip};
 
     </pre>
 </div>

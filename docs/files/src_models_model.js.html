@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -201,8 +198,7 @@
  @module xeogl
  @submodule models
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ModelModel in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata.
@@ -231,297 +227,297 @@
 
  @extends Group
  */
-(function () {
+import {core} from &quot;../core.js&quot;;
+import {utils} from &#x27;../utils.js&#x27;;
+import {Group} from &quot;../objects/group.js&quot;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
 
-    &quot;use strict&quot;;
+const type = &quot;xeogl.Model&quot;;
 
-    xeogl.Model = xeogl.Group.extend({
+class Model extends Group {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
 
         /**
-         JavaScript class name for this Component.
+         All contained {{#crossLink &quot;Components&quot;}}{{/crossLink}}, mapped to their IDs.
 
-         @property type
-         @type String
-         @final
+         @property components
+         @type {{String:Component}}
          */
-        type: &quot;xeogl.Model&quot;,
+        this.components = {};
 
-        _init: function (cfg) {
+        /**
+         Number of contained {{#crossLink &quot;Components&quot;}}{{/crossLink}}.
 
-            /**
-             All contained {{#crossLink &quot;Components&quot;}}{{/crossLink}}, mapped to their IDs.
+         @property numComponents
+         @type Number
+         */
+        this.numComponents = 0;
 
-             @property components
-             @type {{String:Component}}
-             */
-            this.components = {};
+        /**
+         A map of maps; for each contained {{#crossLink &quot;Component&quot;}}{{/crossLink}} type,
+         a map to IDs to {{#crossLink &quot;Component&quot;}}{{/crossLink}} instances, eg.
 
-            /**
-             Number of contained {{#crossLink &quot;Components&quot;}}{{/crossLink}}.
-
-             @property numComponents
-             @type Number
-             */
-            this.numComponents = 0;
-
-            /**
-             A map of maps; for each contained {{#crossLink &quot;Component&quot;}}{{/crossLink}} type,
-             a map to IDs to {{#crossLink &quot;Component&quot;}}{{/crossLink}} instances, eg.
-
-             &#x60;&#x60;&#x60;&#x60;
-             &quot;xeogl.Geometry&quot;: {
+         &#x60;&#x60;&#x60;&#x60;
+         &quot;xeogl.Geometry&quot;: {
                 &quot;alpha&quot;: &lt;xeogl.Geometry&gt;,
                 &quot;beta&quot;: &lt;xeogl.Geometry&gt;
               },
-             &quot;xeogl.Rotate&quot;: {
+         &quot;xeogl.Rotate&quot;: {
                 &quot;charlie&quot;: &lt;xeogl.Rotate&gt;,
                 &quot;delta&quot;: &lt;xeogl.Rotate&gt;,
                 &quot;echo&quot;: &lt;xeogl.Rotate&gt;,
               },
-             //...
-             &#x60;&#x60;&#x60;&#x60;
+         //...
+         &#x60;&#x60;&#x60;&#x60;
 
-             @property types
-             @type {String:{String:xeogl.Component}}
-             */
-            this.types = {};
+         @property types
+         @type {String:{String:xeogl.Component}}
+         */
+        this.types = {};
 
-            /**
-             All contained {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}}, mapped to their IDs.
+        /**
+         All contained {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}}, mapped to their IDs.
 
-             @property objects
-             @final
-             @type {{String:Object}}
-             */
-            this.objects = {};
+         @property objects
+         @final
+         @type {{String:Object}}
+         */
+        this.objects = {};
 
-            /**
-             {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} in this Model that have GUIDs, mapped to their GUIDs.
+        /**
+         {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} in this Model that have GUIDs, mapped to their GUIDs.
 
-             Each Object is registered in this map when its {{#crossLink &quot;Object/guid:property&quot;}}{{/crossLink}} is
-             assigned a value.
+         Each Object is registered in this map when its {{#crossLink &quot;Object/guid:property&quot;}}{{/crossLink}} is
+         assigned a value.
 
-             @property guidObjects
-             @final
-             @type {{String:Object}}
-             */
-            this.guidObjects = {};
+         @property guidObjects
+         @final
+         @type {{String:Object}}
+         */
+        this.guidObjects = {};
 
-            /**
-             All contained {{#crossLink &quot;Mesh&quot;}}Meshes{{/crossLink}}, mapped to their IDs.
+        /**
+         All contained {{#crossLink &quot;Mesh&quot;}}Meshes{{/crossLink}}, mapped to their IDs.
 
-             @property meshes
-             @final
-             @type {String:xeogl.Mesh}
-             */
-            this.meshes = {};
+         @property meshes
+         @final
+         @type {String:xeogl.Mesh}
+         */
+        this.meshes = {};
 
-            /**
-             {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} in this Model that have entity types, mapped to their IDs.
+        /**
+         {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} in this Model that have entity types, mapped to their IDs.
 
-             Each Object is registered in this map when its {{#crossLink &quot;Object/entityType:property&quot;}}{{/crossLink}} is
-             set to value.
+         Each Object is registered in this map when its {{#crossLink &quot;Object/entityType:property&quot;}}{{/crossLink}} is
+         set to value.
 
-             @property entities
-             @final
-             @type {{String:Object}}
-             */
-            this.entities = {};
+         @property entities
+         @final
+         @type {{String:Object}}
+         */
+        this.entities = {};
 
-            /**
-             For each entity type, a map of IDs to {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} of that entity type.
+        /**
+         For each entity type, a map of IDs to {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} of that entity type.
 
-             Each Object is registered in this map when its {{#crossLink &quot;Object/entityType:property&quot;}}{{/crossLink}} is
-             assigned a value.
+         Each Object is registered in this map when its {{#crossLink &quot;Object/entityType:property&quot;}}{{/crossLink}} is
+         assigned a value.
 
-             @property entityTypes
-             @final
-             @type {String:{String:xeogl.Component}}
-             */
-            this.entityTypes = {};
+         @property entityTypes
+         @final
+         @type {String:{String:xeogl.Component}}
+         */
+        this.entityTypes = {};
 
-            /**
-             Lazy-regenerated ID lists.
-             */
-            this._objectGUIDs = null;
-            this._entityIds = null;
+        /**
+         Lazy-regenerated ID lists.
+         */
+        this._objectGUIDs = null;
+        this._entityIds = null;
 
-            // xeogl.Model overrides xeogl.Group / xeogl.Object state properties, (eg. visible, ghosted etc)
-            // and those redefined properties are being set here through the super constructor.
+        // xeogl.Model overrides xeogl.Group / xeogl.Object state properties, (eg. visible, ghosted etc)
+        // and those redefined properties are being set here through the super constructor.
 
-            this._super(cfg); // Call xeogl.Group._init()
+        super.init(cfg); // Call xeogl.Group._init()
 
-            this.scene._modelCreated(this);
-        },
+        this.scene._modelCreated(this);
+    }
 
-        _addComponent: function (component) {
-            var componentId;
-            var types;
-            if (xeogl._isNumeric(component) || xeogl._isString(component)) { // Component ID
-                component = this.scene.components[component];
-                if (!component) {
-                    this.warn(&quot;Component not found: &quot; + xeogl._inQuotes(component));
-                    return;
-                }
-            } else if (xeogl._isObject(component)) { // Component config
-                var type = component.type || &quot;xeogl.Component&quot;;
-                if (!xeogl._isComponentType(type)) {
-                    this.error(&quot;Not a xeogl component type: &quot; + type);
-                    return;
-                }
-                component = new window[type](this.scene, component);
-            }
-            if (component.scene !== this.scene) { // Component in wrong Scene
-                this.error(&quot;Attempted to add component from different xeogl.Scene: &quot; + xeogl._inQuotes(component.id));
+    _addComponent(component) {
+        let componentId;
+        let types;
+        if (utils.isNumeric(component) || utils.isString(component)) { // Component ID
+            component = this.scene.components[component];
+            if (!component) {
+                this.warn(&quot;Component not found: &quot; + utils.inQuotes(component));
                 return;
             }
-            if (this.components[component.id]) { // Component already in this Model
+        } else if (utils.isObject(component)) { // Component config
+            const type = component.type || &quot;xeogl.Component&quot;;
+            if (!core.isComponentType(type)) {
+                this.error(&quot;Not a xeogl component type: &quot; + type);
                 return;
             }
-            if (component.model &amp;&amp; component.model.id !== this.id) { // Component in other Model
-                component.model._removeComponent(component); // Transferring to this Model
-            }
-            this.components[component.id] = component;
-            types = this.types[component.type];
-            if (!types) {
-                types = this.types[component.type] = {};
-            }
-            types[component.id] = component;
-            if (component.isType(&quot;xeogl.Object&quot;)) {
-                var object = component;
-                this.objects[object.id] = object;
-                if (object.entityType) {
-                    this.entities[object.id] = object;
-                    var objectsOfType = this.entityTypes[object.entityType];
-                    if (!objectsOfType) {
-                        objectsOfType = {};
-                        this.entityTypes[object.entityType] = objectsOfType;
-                    }
-                    objectsOfType[object.id] = object;
-                    this._entityIds = null; // Lazy regenerate
-                    this._entityTypeIds = null; // Lazy regenerate
+            component = new window[type](this.scene, component);
+        }
+        if (component.scene !== this.scene) { // Component in wrong Scene
+            this.error(&quot;Attempted to add component from different xeogl.Scene: &quot; + utils.inQuotes(component.id));
+            return;
+        }
+        if (this.components[component.id]) { // Component already in this Model
+            return;
+        }
+        if (component.model &amp;&amp; component.model.id !== this.id) { // Component in other Model
+            component.model._removeComponent(component); // Transferring to this Model
+        }
+        this.components[component.id] = component;
+        types = this.types[component.type];
+        if (!types) {
+            types = this.types[component.type] = {};
+        }
+        types[component.id] = component;
+        if (component.isType(&quot;xeogl.Object&quot;)) {
+            const object = component;
+            this.objects[object.id] = object;
+            if (object.entityType) {
+                this.entities[object.id] = object;
+                let objectsOfType = this.entityTypes[object.entityType];
+                if (!objectsOfType) {
+                    objectsOfType = {};
+                    this.entityTypes[object.entityType] = objectsOfType;
                 }
-                if (object.guid) {
-                    this.guidObjects[object.id] = object;
-                    this._objectGUIDs = null; // To lazy-rebuild
-                }
-                if (component.isType(&quot;xeogl.Mesh&quot;)) {
-                    this.meshes[component.id] = component;
-                }
-            }
-            this.numComponents++;
-            component._addedToModel(this);
-            return component;
-        },
-
-        _removeComponent: function(component) {
-            var id = component.id;
-            delete this.components[id];
-            delete this.meshes[id];
-            delete this.objects[id];
-            if (component.entityType) {
-                delete this.entities[id];
-                var objectsOfType = this.entityTypes[component.entityType];
-                if (objectsOfType) {
-                    delete objectsOfType[id];
-                }
+                objectsOfType[object.id] = object;
                 this._entityIds = null; // Lazy regenerate
                 this._entityTypeIds = null; // Lazy regenerate
             }
-            if (component.guid) {
-                delete this.guidObjects[component.guid];
+            if (object.guid) {
+                this.guidObjects[object.id] = object;
                 this._objectGUIDs = null; // To lazy-rebuild
             }
-        },
-
-        /**
-         Destroys all {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} in this Model.
-         @method clear
-         */
-        clear: function () {
-            // For efficiency, destroy Meshes first to avoid
-            // xeogl&#x27;s automatic default component substitutions
-            for (var id in this.meshes) {
-                if (this.meshes.hasOwnProperty(id)) {
-                    this.meshes[id].destroy();
-                }
+            if (component.isType(&quot;xeogl.Mesh&quot;)) {
+                this.meshes[component.id] = component;
             }
-            for (var id in this.components) {
-                if (this.components.hasOwnProperty(id)) {
-                    this.components[id].destroy(); // Groups in this Model will remove themselves when they&#x27;re destroyed
-                }
-            }
-            this.components = {};
-            this.numComponents = 0;
-            this.types = {};
-            this.objects = {};
-            this.meshes = {};
-            this.entities = {};
-        },
-
-        _props: {
-
-            /**
-             Convenience array of entity type IDs in {{#crossLink &quot;Model/entityTypes:property&quot;}}{{/crossLink}}.
-             @property entityTypeIds
-             @final
-             @type {Array of String}
-             */
-            objectGUIDs: {
-                get: function () {
-                    if (!this._objectGUIDs) {
-                        this._objectGUIDs = Object.keys(this.guidObjects);
-                    }
-                    return this._objectGUIDs;
-                }
-            },
-
-            /**
-             Convenience array of entity type IDs in {{#crossLink &quot;Model/entityTypes:property&quot;}}{{/crossLink}}.
-             @property entityTypeIds
-             @final
-             @type {Array of String}
-             */
-            entityTypeIds: {
-                get: function () {
-                    if (!this._entityTypeIds) {
-                        this._entityTypeIds = Object.keys(this.entityTypes);
-                    }
-                    return this._entityTypeIds;
-                }
-            },
-
-            /**
-             Convenience array of IDs in {{#crossLink &quot;Model/entities:property&quot;}}{{/crossLink}}.
-             @property entityIds
-             @final
-             @type {Array of String}
-             */
-            entityIds: {
-                get: function () {
-                    if (!this._entityIds) {
-                        this._entityIds = Object.keys(this.entities);
-                    }
-                    return this._entityIds;
-                }
-            }
-        },
-
-        /**
-         * @deprecated
-         */
-        destroyAll: function () {
-            this.clear();
-        },
-
-        _destroy: function () {
-            this._super();
-            this.clear();
-            this.scene._modelDestroyed(this);
         }
-    });
+        this.numComponents++;
+        component._addedToModel(this);
+        return component;
+    }
 
-})();
+    _removeComponent(component) {
+        const id = component.id;
+        delete this.components[id];
+        delete this.meshes[id];
+        delete this.objects[id];
+        if (component.entityType) {
+            delete this.entities[id];
+            const objectsOfType = this.entityTypes[component.entityType];
+            if (objectsOfType) {
+                delete objectsOfType[id];
+            }
+            this._entityIds = null; // Lazy regenerate
+            this._entityTypeIds = null; // Lazy regenerate
+        }
+        if (component.guid) {
+            delete this.guidObjects[component.guid];
+            this._objectGUIDs = null; // To lazy-rebuild
+        }
+    }
+
+    /**
+     Destroys all {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} in this Model.
+     @method clear
+     */
+    clear() {
+        // For efficiency, destroy Meshes first to avoid
+        // xeogl&#x27;s automatic default component substitutions
+        for (var id in this.meshes) {
+            if (this.meshes.hasOwnProperty(id)) {
+                this.meshes[id].destroy();
+            }
+        }
+        for (var id in this.components) {
+            if (this.components.hasOwnProperty(id)) {
+                this.components[id].destroy(); // Groups in this Model will remove themselves when they&#x27;re destroyed
+            }
+        }
+        this.components = {};
+        this.numComponents = 0;
+        this.types = {};
+        this.objects = {};
+        this.meshes = {};
+        this.entities = {};
+    }
+
+    /**
+     Convenience array of entity type IDs in {{#crossLink &quot;Model/entityTypes:property&quot;}}{{/crossLink}}.
+     @property entityTypeIds
+     @final
+     @type {Array of String}
+     */
+    get objectGUIDs() {
+        if (!this._objectGUIDs) {
+            this._objectGUIDs = Object.keys(this.guidObjects);
+        }
+        return this._objectGUIDs;
+    }
+
+    /**
+     Convenience array of entity type IDs in {{#crossLink &quot;Model/entityTypes:property&quot;}}{{/crossLink}}.
+     @property entityTypeIds
+     @final
+     @type {Array of String}
+     */
+    get entityTypeIds() {
+        if (!this._entityTypeIds) {
+            this._entityTypeIds = Object.keys(this.entityTypes);
+        }
+        return this._entityTypeIds;
+    }
+
+    /**
+     Convenience array of IDs in {{#crossLink &quot;Model/entities:property&quot;}}{{/crossLink}}.
+     @property entityIds
+     @final
+     @type {Array of String}
+     */
+    get entityIds() {
+        if (!this._entityIds) {
+            this._entityIds = Object.keys(this.entities);
+        }
+        return this._entityIds;
+    }
+
+    /**
+     * @deprecated
+     */
+    destroyAll() {
+        this.clear();
+    }
+
+    destroy() {
+        super.destroy();
+        this.clear();
+        this.scene._modelDestroyed(this);
+    }
+}
+
+componentClasses[type] = Model;
+
+export{Model};
     </pre>
 </div>
                     </div>

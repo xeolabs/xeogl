@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -185,84 +182,41 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function () {
+/**
+ An **AnnotationStory** is a  {{#crossLink &quot;Story&quot;}}{{/crossLink}} that contains a list
+ of {{#crossLink &quot;Annotation&quot;}}Annotations{{/crossLink}} accompanied by a panel of text containing links that activate them.
 
-    &quot;use strict&quot;;
+ &lt;a href=&quot;../../examples/#annotations_stories_tronTank&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/tronTankStory.jpg&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
-    var speak = (function () {
-        if (undefined === SpeechSynthesisUtterance) {
-            return;
-        }
-        var msg = new SpeechSynthesisUtterance();
-        var voices = window.speechSynthesis.getVoices();
-        msg.voice = voices[10]; // Note: some voices don&#x27;t support altering params
-        msg.voiceURI = &#x27;native&#x27;;
-        msg.volume = 1.0; // 0 to 1
-        msg.rate = 1.0; // 0.1 to 10
-        msg.pitch = 1.0; //0 to 2
-        msg.text = &#x27;Hello World&#x27;;
-        msg.lang = &#x27;en-US&#x27;;
-        return function (text) {
-            msg.text = text;
-            speechSynthesis.speak(msg);
-        };
-    })();
+ * AnnotationStory text is provided as markdown.
+ * Words in the text can be linked to xeogl storytelling functions, to fly the camera to Annotation vantage points, show labels etc.
 
-    var getDummyText = (function () {
-        const dummyText = [
-            &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egone non intellego, quid sit don Graece, Latine voluptas?.&quot;,
-            &quot;An est aliquid per se ipsum flagitiosum, etiamsi nulla comitetur infamia?&quot;,
-            &quot;Cur igitur easdem res, inquam, Peripateticis dicentibus verbum nullum est, quod non intellegatur?&quot;,
-            &quot;Nec enim, omnes avaritias si aeque avaritias esse dixerimus, sequetur ut etiam aequas esse dicamus. Quid enim de amicitia statueris utilitatis causa expetenda vides.&quot;,
-            &quot;Quis animo aequo videt eum, quem inpure ac flagitiose putet vivere?&quot;,
-            &quot;Quod cum accidisset ut alter alterum necopinato videremus, surrexit statim. Quis non odit sordidos, vanos, leves, futtiles?&quot;,
-            &quot;Cupit enim dícere nihil posse ad beatam vitam deesse sapienti.&quot;
-        ];
-        var i = 0;
-        return function () {
-            var text = dummyText[i];
-            if (++i &gt;= dummyText.length) {
-                i = 0;
-            }
-            return text;
-        };
-    })();
+ ## Authoring Mode
 
-    /**
-     An **AnnotationStory** is a  {{#crossLink &quot;Story&quot;}}{{/crossLink}} that contains a list
-     of {{#crossLink &quot;Annotation&quot;}}Annotations{{/crossLink}} accompanied by a panel of text containing links that activate them.
+ * SHIFT-click to place an Annotation
+ * ESC to clear
+ * ENTER to dump
 
-     &lt;a href=&quot;../../examples/#annotations_stories_tronTank&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/tronTankStory.jpg&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+ ## Examples
 
-     * AnnotationStory text is provided as markdown.
-     * Words in the text can be linked to xeogl storytelling functions, to fly the camera to Annotation vantage points, show labels etc.
+ * [Tron Tank Program AnnotationStory](../../examples/#annotations_stories_tronTank)
 
-     ## Authoring Mode
+ ## Usage
 
-     * SHIFT-click to place an Annotation
-     * ESC to clear
-     * ENTER to dump
+ &#x60;&#x60;&#x60;&#x60;javascript
+ // Load a Tron Tank model from SceneJS format. Give the model an ID - this
+ // gets prefixed to the IDs of it&#x27;s Meshes.
 
-     ## Examples
-
-     * [Tron Tank Program AnnotationStory](../../examples/#annotations_stories_tronTank)
-
-     ## Usage
-
-     &#x60;&#x60;&#x60;&#x60;javascript
-     // Load a Tron Tank model from SceneJS format. Give the model an ID - this
-     // gets prefixed to the IDs of it&#x27;s Meshes.
-
-     var model = new xeogl.SceneJSModel({
+ var model = new xeogl.SceneJSModel({
             id: &quot;tank&quot;,
             src: &quot;models/scenejs/tronTank/tronTank.json&quot;
         });
 
-     model.scene.camera.eye = [15, 20, -25];
+ model.scene.camera.eye = [15, 20, -25];
 
-     // When the model has loaded, create a story with annotations
+ // When the model has loaded, create a story with annotations
 
-     model.on(&quot;loaded&quot;, function () {
+ model.on(&quot;loaded&quot;, function () {
 
         new xeogl.AnnotationStory({
             speaking: false, // Set true to have a voice announce each annotation
@@ -337,28 +291,88 @@
             ]
         });
      });
-     &#x60;&#x60;&#x60;&#x60;
+ &#x60;&#x60;&#x60;&#x60;
 
-     @class AnnotationStory
-     @module xeogl
-     @submodule stories
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this AnnotationStory in the default
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this AnnotationStory.
+ @class AnnotationStory
+ @module xeogl
+ @submodule stories
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this AnnotationStory in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this AnnotationStory.
 
-     @extends Story
-     */
-    xeogl.AnnotationStory = xeogl.Story.extend({
+ @extends Story
+ */
+{
 
-        type: &quot;xeogl.AnnotationStory&quot;,
+    var speak = (function () {
+        if (undefined === SpeechSynthesisUtterance) {
+            return;
+        }
+        var msg = new SpeechSynthesisUtterance();
+        var voices = window.speechSynthesis.getVoices();
+        msg.voice = voices[10]; // Note: some voices don&#x27;t support altering params
+        msg.voiceURI = &#x27;native&#x27;;
+        msg.volume = 1.0; // 0 to 1
+        msg.rate = 1.0; // 0.1 to 10
+        msg.pitch = 1.0; //0 to 2
+        msg.text = &#x27;Hello World&#x27;;
+        msg.lang = &#x27;en-US&#x27;;
+        return function (text) {
+            msg.text = text;
+            speechSynthesis.speak(msg);
+        };
+    })();
 
-        _init: function (cfg) {
+    var getDummyText = (function () {
+        const dummyText = [
+            &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egone non intellego, quid sit don Graece, Latine voluptas?.&quot;,
+            &quot;An est aliquid per se ipsum flagitiosum, etiamsi nulla comitetur infamia?&quot;,
+            &quot;Cur igitur easdem res, inquam, Peripateticis dicentibus verbum nullum est, quod non intellegatur?&quot;,
+            &quot;Nec enim, omnes avaritias si aeque avaritias esse dixerimus, sequetur ut etiam aequas esse dicamus. Quid enim de amicitia statueris utilitatis causa expetenda vides.&quot;,
+            &quot;Quis animo aequo videt eum, quem inpure ac flagitiose putet vivere?&quot;,
+            &quot;Quod cum accidisset ut alter alterum necopinato videremus, surrexit statim. Quis non odit sordidos, vanos, leves, futtiles?&quot;,
+            &quot;Cupit enim dícere nihil posse ad beatam vitam deesse sapienti.&quot;
+        ];
+        var i = 0;
+        return function () {
+            var text = dummyText[i];
+            if (++i &gt;= dummyText.length) {
+                i = 0;
+            }
+            return text;
+        };
+    })();
 
-            this._super(cfg);
+    xeogl.AnnotationStory = class xeoglAnnotationsStory extends xeogl.Story {
+
+        init(cfg) {
+
+            super.init(xeogl._apply({
+                actions: {
+                    focusAnnotation: function (i) {
+                        var annotation = this._annotations[i];
+                        if (!annotation) {
+                            return;
+                        }
+                        if (this._lastAnnotation) {
+                            this._lastAnnotation.labelShown = false;
+                        }
+                        annotation.labelShown = true;
+                        var self = this;
+                        this._cameraFlight.flyTo(annotation, function () {
+                            if (self._speaking) {
+                                speak(annotation.title);
+                                speak(annotation.desc);
+                            }
+                        });
+                        this._lastAnnotation = annotation;
+                    }
+                }
+            }, cfg));
 
             var self = this;
 
@@ -474,44 +488,22 @@
                     }
                 });
             }
-        },
+        }
 
-        _actions: {
-
-            focusAnnotation: function (i) {
-                var annotation = this._annotations[i];
-                if (!annotation) {
-                    return;
-                }
-                if (this._lastAnnotation) {
-                    this._lastAnnotation.labelShown = false;
-                }
-                annotation.labelShown = true;
-                var self = this;
-                this._cameraFlight.flyTo(annotation, function () {
-                    if (self._speaking) {
-                        speak(annotation.title);
-                        speak(annotation.desc);
-                    }
-                });
-                this._lastAnnotation = annotation;
-            }
-        },
-
-        _clear: function () {
+        _clear() {
             for (var i = 0, len = this._annotations.length; i &lt; len; i++) {
                 this._annotations[i].destroy();
             }
             this._annotations = [];
             this.text = [];
-        },
+        }
 
-        _dump: function () {
+        _dump() {
             var w = window.open(&quot;&quot;);
             w.document.write(&quot;&lt;pre&gt;&quot; + this.js + &quot;&lt;/pre&gt;&quot;);
-        },
+        }
 
-        _getJSON: function () {
+        getJSON() {
             var annotationJSON;
             var annotations = [];
             for (var i = 0, len = this._annotations.length; i &lt; len; i++) {
@@ -525,15 +517,14 @@
                 authoring: this._authoring,
                 speaking: this._speaking
             };
-        },
+        }
 
-        _destroy: function () {
+        destroy() {
+            super.destroy();
             this.scene.input.off(this._onMouseClicked);
         }
-    });
-
-
-})();
+    };
+}
 
     </pre>
 </div>

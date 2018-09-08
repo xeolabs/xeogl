@@ -76,7 +76,6 @@
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
@@ -86,7 +85,6 @@
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
-                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -101,7 +99,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
@@ -121,7 +118,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
-                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/xeogl.Scene.html">xeogl.Scene</a></li>
                                 <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
                             </ul>
                 
@@ -290,219 +287,195 @@
  @param [cfg.t=0] Current position on this CubicBezierCurve, in range between 0..1.
  @extends Curve
  */
-(function () {
+xeogl.CubicBezierCurve = class xeoglCubicBezierCurve extends xeogl.Curve {
 
-    &quot;use strict&quot;;
+    /**
+     JavaScript class name for this Component.
 
-    xeogl.CubicBezierCurve = xeogl.Curve.extend({
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
-        /**
-         JavaScript class name for this Component.
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return &quot;xeogl.CubicBezierCurve&quot;;
+    }
 
-         @property type
-         @type String
-         @final
-         */
-        type: &quot;xeogl.CubicBezierCurve&quot;,
+    init(cfg) {
+        super.init(cfg);
+        this.v0 = cfg.v0;
+        this.v1 = cfg.v1;
+        this.v2 = cfg.v2;
+        this.v3 = cfg.v3;
+        this.t = cfg.t;
+    }
 
-        _init: function (cfg) {
+    /**
+     Starting point on this CubicBezierCurve.
 
-            this._super(cfg);
+     Fires a {{#crossLink &quot;CubicBezierCurve/v0:event&quot;}}{{/crossLink}} event on change.
 
-            this.v0 = cfg.v0;
-            this.v1 = cfg.v1;
-            this.v2 = cfg.v2;
-            this.v3 = cfg.v3;
-
-            this.t = cfg.t;
-        },
-
-        _props: {
-
-            /**
-             Starting point on this CubicBezierCurve.
-
-             Fires a {{#crossLink &quot;CubicBezierCurve/v0:event&quot;}}{{/crossLink}} event on change.
-
-             @property v0
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v0: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CubicBezierCurve&#x27;s
-                     * {{#crossLink &quot;CubicBezierCurve/v0:property&quot;}}{{/crossLink}} property changes.
-                     * @event v0
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;v0&quot;, this._v0 = value || xeogl.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v0;
-                }
-            },
-
-            /**
-             First control point on this CubicBezierCurve.
-
-             Fires a {{#crossLink &quot;CubicBezierCurve/v1:event&quot;}}{{/crossLink}} event on change.
-
-             @property v1
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v1: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CubicBezierCurve&#x27;s
-                     * {{#crossLink &quot;CubicBezierCurve/v1:property&quot;}}{{/crossLink}} property changes.
-                     * @event v1
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;v1&quot;, this._v1 = value || xeogl.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v1;
-                }
-            },
-
-            /**
-             Second control point on this CubicBezierCurve.
-
-             Fires a {{#crossLink &quot;CubicBezierCurve/v2:event&quot;}}{{/crossLink}} event on change.
-
-             @property v2
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v2: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CubicBezierCurve&#x27;s
-                     * {{#crossLink &quot;CubicBezierCurve/v2:property&quot;}}{{/crossLink}} property changes.
-                     * @event v2
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;v2&quot;, this._v2 = value || xeogl.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v2;
-                }
-            },
-
-            /**
-             End point on this CubicBezierCurve.
-
-             Fires a {{#crossLink &quot;CubicBezierCurve/v3:event&quot;}}{{/crossLink}} event on change.
-
-             @property v3
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v3: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CubicBezierCurve&#x27;s
-                     * {{#crossLink &quot;CubicBezierCurve/v3:property&quot;}}{{/crossLink}} property changes.
-                     * @event v3
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;v3&quot;, this._v3 = value || xeogl.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v3;
-                }
-            },
-
-            /**
-             Current position of progress along this CubicBezierCurve.
-
-             Automatically clamps to range [0..1].
-
-             Fires a {{#crossLink &quot;CubicBezierCurve/t:event&quot;}}{{/crossLink}} event on change.
-
-             @property t
-             @default 0
-             @type Number
-             */
-            t: {
-                set: function (value) {
-
-                    value = value || 0;
-
-                    this._t = value &lt; 0.0 ? 0.0 : (value &gt; 1.0 ? 1.0 : value);
-
-                    /**
-                     * Fired whenever this CubicBezierCurve&#x27;s
-                     * {{#crossLink &quot;CubicBezierCurve/t:property&quot;}}{{/crossLink}} property changes.
-                     * @event t
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;t&quot;, this._t);
-                },
-
-                get: function () {
-                    return this._t;
-                }
-            },
-
-            /**
-             Point on this CubicBezierCurve at position {{#crossLink &quot;CubicBezierCurve/t:property&quot;}}{{/crossLink}}.
-
-             @property point
-             @type {{Array of Number}}
-             */
-            point: {
-
-                get: function () {
-                    return this.getPoint(this._t);
-                }
-            }
-        },
+     @property v0
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set v0(value) {
 
         /**
-         * Returns point on this CubicBezierCurve at the given position.
-         * @method getPoint
-         * @param {Number} t Position to get point at.
-         * @returns {{Array of Number}}
+         * Fired whenever this CubicBezierCurve&#x27;s
+         * {{#crossLink &quot;CubicBezierCurve/v0:property&quot;}}{{/crossLink}} property changes.
+         * @event v0
+         * @param value The property&#x27;s new value
          */
-        getPoint: function (t) {
+        this.fire(&quot;v0&quot;, this._v0 = value || xeogl.math.vec3([0, 0, 0]));
+    }
 
-            var math = xeogl.math;
-            var vector = math.vec3();
+    get v0() {
+        return this._v0;
+    }
 
-            vector[0] = math.b3(t, this._v0[0], this._v1[0], this._v2[0], this._v3[0]);
-            vector[1] = math.b3(t, this._v0[1], this._v1[1], this._v2[1], this._v3[1]);
-            vector[2] = math.b3(t, this._v0[2], this._v1[2], this._v2[2], this._v3[2]);
+    /**
+     First control point on this CubicBezierCurve.
 
-            return vector;
-        },
+     Fires a {{#crossLink &quot;CubicBezierCurve/v1:event&quot;}}{{/crossLink}} event on change.
 
-        _getJSON: function () {
-            return {
-                v0: this._v0,
-                v1: this._v1,
-                v2: this._v2,
-                v3: this._v3,
-                t: this._t
-            };
-        }
-    });
+     @property v1
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set v1(value) {
 
-})();
+        /**
+         * Fired whenever this CubicBezierCurve&#x27;s
+         * {{#crossLink &quot;CubicBezierCurve/v1:property&quot;}}{{/crossLink}} property changes.
+         * @event v1
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;v1&quot;, this._v1 = value || xeogl.math.vec3([0, 0, 0]));
+    }
+
+    get v1() {
+        return this._v1;
+    }
+
+    /**
+     Second control point on this CubicBezierCurve.
+
+     Fires a {{#crossLink &quot;CubicBezierCurve/v2:event&quot;}}{{/crossLink}} event on change.
+
+     @property v2
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set v2(value) {
+
+        /**
+         * Fired whenever this CubicBezierCurve&#x27;s
+         * {{#crossLink &quot;CubicBezierCurve/v2:property&quot;}}{{/crossLink}} property changes.
+         * @event v2
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;v2&quot;, this._v2 = value || xeogl.math.vec3([0, 0, 0]));
+    }
+
+    get v2() {
+        return this._v2;
+    }
+
+    /**
+     End point on this CubicBezierCurve.
+
+     Fires a {{#crossLink &quot;CubicBezierCurve/v3:event&quot;}}{{/crossLink}} event on change.
+
+     @property v3
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set v3(value) {
+
+        /**
+         * Fired whenever this CubicBezierCurve&#x27;s
+         * {{#crossLink &quot;CubicBezierCurve/v3:property&quot;}}{{/crossLink}} property changes.
+         * @event v3
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;v3&quot;, this._v3 = value || xeogl.math.vec3([0, 0, 0]));
+    }
+
+    get v3() {
+        return this._v3;
+    }
+
+    /**
+     Current position of progress along this CubicBezierCurve.
+
+     Automatically clamps to range [0..1].
+
+     Fires a {{#crossLink &quot;CubicBezierCurve/t:event&quot;}}{{/crossLink}} event on change.
+
+     @property t
+     @default 0
+     @type Number
+     */
+
+    set t(value) {
+
+        value = value || 0;
+
+        this._t = value &lt; 0.0 ? 0.0 : (value &gt; 1.0 ? 1.0 : value);
+
+        /**
+         * Fired whenever this CubicBezierCurve&#x27;s
+         * {{#crossLink &quot;CubicBezierCurve/t:property&quot;}}{{/crossLink}} property changes.
+         * @event t
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;t&quot;, this._t);
+    }
+
+    get t() {
+        return this._t;
+    }
+
+    /**
+     Point on this CubicBezierCurve at position {{#crossLink &quot;CubicBezierCurve/t:property&quot;}}{{/crossLink}}.
+
+     @property point
+     @type {{Array of Number}}
+     */
+    get point() {
+        return this.getPoint(this._t);
+    }
+
+    /**
+     * Returns point on this CubicBezierCurve at the given position.
+     * @method getPoint
+     * @param {Number} t Position to get point at.
+     * @returns {{Array of Number}}
+     */
+    getPoint(t) {
+
+        var math = xeogl.math;
+        var vector = math.vec3();
+
+        vector[0] = math.b3(t, this._v0[0], this._v1[0], this._v2[0], this._v3[0]);
+        vector[1] = math.b3(t, this._v0[1], this._v1[1], this._v2[1], this._v3[1]);
+        vector[2] = math.b3(t, this._v0[2], this._v1[2], this._v2[2], this._v3[2]);
+
+        return vector;
+    }
+
+    getJSON() {
+        return {
+            v0: this._v0,
+            v1: this._v1,
+            v2: this._v2,
+            v3: this._v3,
+            t: this._t
+        };
+    }
+};
 
     </pre>
 </div>
