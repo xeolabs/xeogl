@@ -34,7 +34,8 @@
         rotation: [90, 0, 0]
     });
 
-    var camera = xeogl.scene.camera;
+    var scene = xeogl.getDefaultScene();
+    var camera = scene.camera;
 
     camera.eye = [-110.8940200805664, -44.85665512084961, 276.6570739746094];
     camera.look = [-110.8940200805664, -44.85665512084961, -0.46092796325683594];

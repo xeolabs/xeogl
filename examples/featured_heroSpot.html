@@ -20,7 +20,10 @@
     // Override xeogl's default lights with some View-space directional lights,
     // including one that shines from behind our torus Mesh
 
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
+
     new xeogl.DirLight({
         dir: [0.0, 0.0, -1.0],
         color: [1.0, 1.0, 0.9],
@@ -146,7 +149,7 @@
         visible: true
     });
 
-    var camera = xeogl.scene.camera;
+    var camera = scene.camera;
 
     camera.zoom(-6);
     camera.orbitYaw(40);
@@ -154,7 +157,7 @@
 
     var lastCoords;
 
-    xeogl.scene.on("tick", function (e) {
+    scene.on("tick", function (e) {
 
 
         camera.orbitYaw(0.1);

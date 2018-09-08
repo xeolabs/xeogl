@@ -35,7 +35,8 @@
     // Camera
     //-----------------------------------------------------------------------------------------------------
 
-    var camera = xeogl.scene.camera;
+    var scene = model.scene;
+    var camera = scene.camera;
 
     camera.eye = [-83.0765380859375, 666.36376953125, 36.35943603515625];
     camera.look = [735.3658447265625, 649.3729858398438, -715.8663940429688];
@@ -48,7 +49,7 @@
     var spinning = true;
 
     model.on("loaded", function () {
-        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+        scene.on("tick", function () { // Slowly orbit the camera
             if (spinning) {
                 camera.orbitYaw(0.1);
             }
@@ -61,7 +62,7 @@
     // Customize lighting
     //-----------------------------------------------------------------------------------------------------
 
-    xeogl.scene.clearLights();
+    scene.clearLights();
 
     new xeogl.DirLight({
         dir: [-3116.85791015625, -4015.44873046875, -1726.414306640625],
@@ -88,7 +89,7 @@
         space: "world"
     });
 
-    lights.reflectionMap = new xeogl.CubeTexture({
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",

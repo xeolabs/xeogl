@@ -64,89 +64,88 @@
     // Scene 1
     //-----------------------------
 
-    xeogl.scene = new xeogl.Scene({
+    var scene1 = new xeogl.Scene({
         canvas: "myCanvas1",
         //backgroundColor: [0.3, 0.6, 0.9]
         transparent: true
     });
 
-    new xeogl.Mesh({
-        geometry: new xeogl.TorusGeometry({
+    new xeogl.Mesh(scene1, {
+        geometry: new xeogl.TorusGeometry(scene1, {
             radius: 1.0,
             tube: 0.3,
             radialSegments: 120,
             tubeSegments: 60
         }),
-        material: new xeogl.MetallicMaterial({
-            baseColorMap: new xeogl.Texture({
+        material: new xeogl.MetallicMaterial(scene1, {
+            baseColorMap: new xeogl.Texture(scene1, {
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
-            roughnessMap: new xeogl.Texture({
+            roughnessMap: new xeogl.Texture(scene1, {
                 src: "textures/roughness/goldRoughness.jpg"
             })
         })
     });
 
-    xeogl.scene.camera.eye = [0, 0, -4];
+    scene1.camera.eye = [0, 0, -4];
 
-    xeogl.scene.on("tick", function () {
+    scene1.on("tick", function () {
         this.camera.orbitYaw(0.5);
         this.camera.orbitPitch(0.3);
     });
 
-    new xeogl.CameraControl();
+    new xeogl.CameraControl(scene1);
 
     //-----------------------------
     // Scene 2
     //-----------------------------
 
-    xeogl.scene = new xeogl.Scene({
+    var scene2 = new xeogl.Scene({
         canvas: "myCanvas2"
     });
 
-    new xeogl.Mesh({
-        geometry: new xeogl.BoxGeometry(),
-        material: new xeogl.PhongMaterial({
-            diffuseMap: new xeogl.Texture({
+    new xeogl.Mesh(scene2, {
+        geometry: new xeogl.BoxGeometry(scene2),
+        material: new xeogl.PhongMaterial(scene2, {
+            diffuseMap: new xeogl.Texture(scene2, {
                 src: "textures/diffuse/uvgrid.jpg"
             })
         })
     });
 
-    xeogl.scene.camera.eye = [0, 0, -5];
+    scene2.camera.eye = [0, 0, -5];
 
-    xeogl.scene.on("tick", function () {
+    scene2.on("tick", function () {
         this.camera.orbitYaw(0.2);
         this.camera.orbitPitch(-0.1);
     });
 
-    new xeogl.CameraControl();
+    new xeogl.CameraControl(scene2);
 
     //-----------------------------
     // Scene 3
     //-----------------------------
 
-    xeogl.scene = new xeogl.Scene({
+    var scene3 = new xeogl.Scene({
         canvas: "myCanvas3"
     });
 
-    var camera = xeogl.scene.camera;
+    var camera = scene3.camera;
 
     camera.eye = [184.21, 10.54, -7.03];
     camera.look = [159.20, 17.02, 3.21];
     camera.up = [-0.15, 0.97, 0.13];
 
-    var gearbox = new xeogl.GLTFModel({
+    var gearbox = new xeogl.GLTFModel(scene3, {
         src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
 
-    xeogl.scene.on("tick", function () {
+    scene3.on("tick", function () {
         this.camera.orbitYaw(-0.2);
         this.camera.orbitPitch(0.1);
     });
 
-    new xeogl.CameraControl();
-
+    new xeogl.CameraControl(scene3);
 
 </script>
 </body>

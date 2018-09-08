@@ -32,29 +32,32 @@
 
 <script>
 
-    var scene = xeogl.scene;
-    var lights = scene.lights;
+    var scene = xeogl.getDefaultScene();
     var camera = scene.camera;
 
     // Customize lights for default scene
 
-    xeogl.scene.clearLights();
+    scene.clearLights();
+
     new xeogl.AmbientLight({
         color: [.7, .9, 1.0],
         intensity: 0.8
     });
+
     new xeogl.DirLight({
         dir: [0.8, -0.6, -0.8],
         color: [1.0, 1.0, 1.0],
         intensity: 1.0,
         space: "view"
     });
+
     new xeogl.DirLight({
         dir: [-0.8, -0.4, -0.4],
         color: [1.0, 1.0, 1.0],
         intensity: 1.0,
         space: "view"
     });
+
     new xeogl.DirLight({
         dir: [0.2, -0.8, 0.8],
         color: [0.6, 0.6, 0.6],
@@ -62,12 +65,24 @@
         space: "view"
     });
 
+//    new xeogl.ReflectionMap({
+//        src: [
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+//        ],
+//        encoding: "sRGB"
+//    });
+
     // Load glTF model
 
     var model = new xeogl.GLTFModel({
         id: "gearbox",
         src: "models/gltf/gearbox_conical/scene.gltf",
-        lambertMaterials: true,
+        //lambertMaterials: true,
         edgeThreshold: 10,
         scale: [100, 100, 100],
         handleNode: (function() {
@@ -91,7 +106,7 @@
     camera.zoom(-10);
 
     scene.on("tick", function () {
-        camera.orbitYaw(-0.2);
+        camera.orbitYaw(-0.4);
     });
 
     scene.highlightMaterial.fillAlpha = 0.7
@@ -132,7 +147,7 @@
             var highlightMaterial = scene.highlightMaterial;
 
             this["ghosted"] = true;
-            this["ghostMaterial.preset"] = "gamegrid";
+            this["ghostMaterial.preset"] = "defaultWhiteBG";
             this["ghostMaterial.edges"] = ghostMaterial.edges;
             this["ghostMaterial.fill"] = ghostMaterial.fill;
             this["ghostMaterial.vertices"] = ghostMaterial.vertices;

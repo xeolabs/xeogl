@@ -20,12 +20,14 @@
 
 <script>
 
+    var scene = xeogl.getDefaultScene();
+
     var model = new xeogl.GLTFModel({
         src: "models/gltf/vianney_house_2/scene.gltf",
         rotation: [-90, 0, 0]
     });
 
-    var camera = xeogl.scene.camera;
+    var camera = scene.camera;
 
     camera.eye = [-58.023033142089844, 34.3411750793457, -25.53963851928711];
     camera.look = [27.641752243041992, 20.933584213256836, -19.75855827331543];
@@ -34,7 +36,7 @@
     var spinning = true;
 
     model.on("loaded", function () {
-        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+        scene.on("tick", function () { // Slowly orbit the camera
             if (spinning) {
                 camera.orbitYaw(0.25);
             }
@@ -47,7 +49,7 @@
         spinning = false;
     });
 
-    xeogl.scene.clearLights();
+    scene.clearLights();
 
     new xeogl.AmbientLight({
         color: [0.5, 0.5, 0.5],

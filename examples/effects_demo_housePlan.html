@@ -36,30 +36,33 @@
 
 <script>
 
-    var scene = xeogl.scene;
+    var scene = xeogl.getDefaultScene();
     var input = scene.input;
-    var lights = scene.lights;
     var camera = scene.camera;
 
     // Customize lights for default scene
 
-    xeogl.scene.clearLights();
+    scene.clearLights();
+
     new xeogl.AmbientLight({
         color: [1, 1, 1],
         intensity: 0.99
     });
+
     new xeogl.DirLight({
         dir: [-0.8, -0.6, 0.4],
         color: [1.0, 1.0, 1.0],
         intensity: 1.0,
         space: "world"
     });
+
     new xeogl.DirLight({
         dir: [0.8, -0.4, 0.4],
         color: [1.0, 1.0, 1.0],
         intensity: 1.0,
         space: "world"
     });
+
     new xeogl.DirLight({
         dir: [-0.2, -0.8, -0.8],
         color: [0.6, 0.6, 0.6],

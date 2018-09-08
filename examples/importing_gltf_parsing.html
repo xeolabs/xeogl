@@ -21,8 +21,9 @@
     const src = "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf";
 
     var model = new xeogl.Model();
+var scene = model.scene;
 
-    model.scene.canvas.spinner.processes++;
+    scene.canvas.spinner.processes++;
 
     loadJSON(src, function (response) {
 
@@ -44,7 +45,7 @@
 
                 xeogl.GLTFModel.parse(model, json, options);
 
-                model.scene.canvas.spinner.processes--;
+                scene.canvas.spinner.processes--;
             },
             function (err) {
                 model.error(err);
@@ -86,7 +87,7 @@
         return (i !== 0) ? src.substring(0, i + 1) : "";
     }
 
-    var camera = xeogl.scene.camera;
+    var camera = scene.camera;
     camera.eye = [10.15, 28.75, -60.93];
     camera.look = [21.66, 10.49, -6.8];
     camera.up = [0.07, 0.95, 0.31];
@@ -99,8 +100,8 @@
     });
 
     // Start orbiting thecamera
-    model.scene.on("tick", function () {
-        model.scene.camera.orbitYaw(-0.2);
+    scene.on("tick", function () {
+        scene.camera.orbitYaw(-0.2);
     });
 
 </script>

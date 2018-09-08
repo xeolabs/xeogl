@@ -21,7 +21,9 @@
 
 <script>
 
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
 
     // Lights for our normal-mapped objects, containing the PointLight
     var pointLight = new xeogl.PointLight({
@@ -68,7 +70,6 @@
         }
     }
 
-    var scene = xeogl.scene;
     var camera = scene.camera;
 
     camera.orbitPitch(20);
@@ -115,19 +116,11 @@
         })
     });
 
-    // Update position of indicator sphere in synch with PointLight's position
-    pointLight.on("pos", function (pos) {
-        pointLightIndicator.position = pos;
-    });
-
-    // Update color of indicator sphere in synch with PointLight's color
-    pointLight.on("color", function (color) {
-        pointLightIndicator.material.emissive = color;
-    });
-
-    // Update position of PointLight in synch with animation progress along SplineCurve
+    // Update position of PointLight and helper in synch with animation progress along SplineCurve
     splineCurve.on("t", function () {
-        pointLight.pos = splineCurve.point;
+        var point = splineCurve.point;
+        pointLight.pos = point;
+        pointLightIndicator.position = point;
     });
 
     // Animate progress along SplineCurve

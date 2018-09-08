@@ -53,7 +53,9 @@
     // Careful not to make the geometry too big if we're running WebGL1
     // without gl.UNSIGNED_INT support for WebGLRenderingContext.drawElements()
 
-    var size = (xeogl.scene.canvas.webgl2 || xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) ? 70 : 20;
+    var scene = xeogl.getDefaultScene();
+
+    var size = (scene.canvas.webgl2 || xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) ? 70 : 20;
 
     for (x = -size; x <= size; x += 2) {
         for (z = -size; z <= size; z += 2) {
@@ -107,7 +109,7 @@
     // Set the Camera position
     //-------------------------------------------------------------------------------
 
-    var camera = mesh.scene.camera;
+    var camera = scene.camera;
 
     camera.eye = [-250, 70, -0];
 
@@ -121,7 +123,7 @@
     // Start orbiting
     //-------------------------------------------------------------------------------
 
-    mesh.scene.on("tick", function () {
+    scene.on("tick", function () {
         camera.orbitYaw(0.1);
     });
 

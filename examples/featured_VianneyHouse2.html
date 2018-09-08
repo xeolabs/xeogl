@@ -13,10 +13,10 @@
 
 <body>
 
-<div id="info-bottom">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF</h1>
-    <pre id="log">model: <a href="https://sketchfab.com/bimcc" target="_parent">https://sketchfab.com/bimcc</a></pre>
-</div>
+<!--<div id="info-bottom">-->
+    <!--<h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF</h1>-->
+    <!--<pre id="log">model: <a href="https://sketchfab.com/bimcc" target="_parent">https://sketchfab.com/bimcc</a></pre>-->
+<!--</div>-->
 
 <script>
 
@@ -25,7 +25,9 @@
         rotation: [-90, 0, 0]
     });
 
-    var camera = xeogl.scene.camera;
+    var scene = xeogl.getDefaultScene();
+    scene.gammaOutput = false;
+    var camera = scene.camera;
 
     camera.eye = [-58.023033142089844, 34.3411750793457, -25.53963851928711];
     camera.look = [27.641752243041992, 20.933584213256836, -19.75855827331543];
@@ -34,7 +36,7 @@
     var spinning = true;
 
     model.on("loaded", function () {
-        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+        scene.on("tick", function () { // Slowly orbit the camera
             if (spinning) {
                 camera.orbitYaw(0.25);
             }
@@ -51,7 +53,7 @@
     // Customize lighting
     //-----------------------------------------------------------------------------------------------------
 
-    xeogl.scene.clearLights();
+    scene.clearLights();
 
     new xeogl.DirLight({
         dir: [-1116.85791015625, -4015.44873046875, -1726.414306640625],
@@ -78,7 +80,7 @@
         space: "world"
     });
 
-    lights.reflectionMap = new xeogl.CubeTexture({
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
@@ -88,17 +90,6 @@
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
         ]
     });
-
-    //    lights.lightMap = new xeogl.CubeTexture({
-    //        src: [
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-    //        ]
-    //    });
 
 </script>
 </body>

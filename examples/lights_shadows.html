@@ -28,7 +28,9 @@
     //        canvas: canvas
     //    });
 
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
 
     new xeogl.DirLight({
         dir: [-0.6, -0.9, -0.4],
@@ -153,10 +155,10 @@
 
     // Orbit camera
 
-    xeogl.scene.camera.orbitPitch(20);
+    scene.camera.orbitPitch(20);
 
-    xeogl.scene.on("tick", function () {
-        xeogl.scene.camera.orbitYaw(0.3);
+    scene.on("tick", function () {
+        scene.camera.orbitYaw(0.3);
         //  entity2.transform.angle += 0.2;
     });
 

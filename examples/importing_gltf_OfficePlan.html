@@ -36,9 +36,11 @@
 
 <script>
 
-    xeogl.scene = new xeogl.Scene({
+    var scene = new xeogl.Scene({
         transparent: true
     });
+
+    xeogl.setDefaultScene(scene);
 
     //---------------------------------------------------
     // Load the model
@@ -50,9 +52,6 @@
         scale: [.01, .01, .01],
         edgeThreshold: 20
     });
-
-    var scene = model.scene;
-    var input = scene.input;
 
     //-----------------------------------------------------------------------------------------------------
     // Camera
@@ -87,7 +86,7 @@
 //    });
 
     cameraControl.on("picked", function (hit) {
-        if (input.keyDown[input.KEY_SHIFT]) {
+        if (scene.input.keyDown[input.KEY_SHIFT]) {
             hit.mesh.selected = !hit.mesh.selected;
         } else {
             cameraFlight.flyTo(hit.mesh);

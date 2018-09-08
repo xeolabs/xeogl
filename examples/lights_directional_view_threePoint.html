@@ -21,7 +21,9 @@
 
     // Modify lights on default xeogl.Scene
 
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
 
     new xeogl.DirLight({
         id: "keyLight",
@@ -85,8 +87,8 @@
 
     // Orbit camera
 
-    xeogl.scene.on("tick", function () {
-        xeogl.scene.camera.orbitYaw(0.3);
+    scene.on("tick", function () {
+        scene.camera.orbitYaw(0.3);
     });
 
 </script>

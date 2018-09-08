@@ -87,7 +87,9 @@
         encoding: "sRGB"
     });
 
-    var lights = xeogl.scene.lights;
+    var scene = xeogl.getDefaultScene();
+    var camera = scene.camera;
+    var lights = scene.lights;
 
     lights.lights = dirLights;
     lights.reflectionMap = reflectionMap;
@@ -142,8 +144,8 @@
             scale: [40, 40, 40]
         });
 
-        xeogl.scene.camera.orbitPitch(20); // Orbit camera a bit
-        xeogl.scene.camera.orbitYaw(300); // Orbit camera a bit
+        camera.orbitPitch(20); // Orbit camera a bit
+        camera.orbitYaw(300); // Orbit camera a bit
 
         var spinning = true;
 
@@ -193,8 +195,8 @@
             this["skybox"] = !!skybox.active;
             this["spinning"] = true;
 
-            this["scene.gammaOutput"] = hydrant.scene.gammaOutput;
-            this["scene.gammaFactor"] = hydrant.scene.gammaFactor;
+            this["scene.gammaOutput"] = scene.gammaOutput;
+            this["scene.gammaFactor"] = scene.gammaFactor;
 
             var self = this;
 
@@ -277,8 +279,8 @@
                     spinning = self["spinning"];
                 }
 
-                hydrant.scene.gammaOutput = self["scene.gammaOutput"];
-                hydrant.scene.gammaFactor = self["scene.gammaFactor"];
+                scene.gammaOutput = self["scene.gammaOutput"];
+                scene.gammaFactor = self["scene.gammaFactor"];
 
                 requestAnimationFrame(update);
             };

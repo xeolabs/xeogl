@@ -21,7 +21,9 @@
 
 <script>
 
-    xeogl.load3DSGeometry(xeogl.scene, "models/3ds/lexus.3ds", function (lexusGeometry) {
+    var scene = xeogl.getDefaultScene();
+
+    xeogl.load3DSGeometry(scene, "models/3ds/lexus.3ds", function (lexusGeometry) {
 
         var mesh = new xeogl.Mesh({
 

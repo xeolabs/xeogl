@@ -25,11 +25,17 @@
 
     // Define the ColoredTorus component class
 
-    xeogl.ColoredTorus = xeogl.Component.extend({
+    class ColoredTorus extends xeogl.Component {
 
-        type: "xeogl.ColoredTorus",
+        // Optional
 
-        _init: function (cfg) {
+        get type() {
+            return "xeogl.ColoredTorus";
+        }
+
+        init(cfg) {
+
+            super.init(cfg);
 
             this._torus = new xeogl.Mesh({
                 geometry: new xeogl.TorusGeometry({radius: 2, tube: .6}),
@@ -41,37 +47,32 @@
             });
 
             this.color = cfg.color;
-        },
+        }
 
-        _props: {
+        // The color of this ColoredTorus.
 
-            // The color of this ColoredTorus.
+        set color(color) {
+            this._torus.material.baseColor = color || [0.5, 0.5, 0.5];
 
-            color: {
+            // Fire change events for the color property
+            this.fire("color", this._torus.material.baseColor);
+        }
 
-                set: function (color) {
-                    this._torus.material.baseColor = color || [0.5, 0.5, 0.5];
+        get color() {
+            return this._torus.material.baseColor;
+        }
 
-                    // Fire change events for the color property
-                    this.fire("color", this._torus.material.baseColor);
-                },
-
-                get: function () {
-                    return this._torus.material.baseColor;
-                }
-            }
-        },
-
-        _destroy: function () {
+        destroy() {
+            super.destroy();
             this._torus.geometry.destroy();
             this._torus.material.destroy();
             this._torus.destroy();
         }
-    });
+    }
 
     // Instantiate a ColoredTorus (in the default xeogl.Scene)
 
-    var coloredTorus = new xeogl.ColoredTorus({
+    var coloredTorus = new ColoredTorus({
         color: [0.3, 1.0, 0.3]
     });
 
