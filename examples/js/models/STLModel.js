@@ -143,7 +143,8 @@
  Our STLModel will now be registered by ID on its Scene, so we can now find it like this:
 
  ````javascript
- model = xeogl.scene.models["myModel"];
+ var scene = xeogl.getDefaultScene();
+ model = scene.models["myModel"];
  ````
 
  That's assuming that we've created the STLModel in the default xeogl Scene, which we're doing in these examples.
@@ -151,7 +152,8 @@
  We can also get all the STLModels in a Scene, using the Scene's {{#crossLink "Scene/types:property"}}{{/crossLink}} map:
 
  ````javascript
- var stlModels = xeogl.scene.types["xeogl.STLModel"];
+ var scene = xeogl.getDefaultScene();
+ var stlModels = scene.types["xeogl.STLModel"];
 
  model = stlModels["myModel"];
  ````

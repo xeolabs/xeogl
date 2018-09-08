@@ -17,6 +17,7 @@ export {WEBGL_INFO} from "./webglInfo.js";
 export {stats}  from "./stats.js";
 export {math} from "./math/math.js";
 
+export const scenes = core.scenes;
 export const getDefaultScene = core.getDefaultScene;
 export const setDefaultScene = core.setDefaultScene;
 export const scheduleTask = tasks.scheduleTask;

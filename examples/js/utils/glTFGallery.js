@@ -60,7 +60,8 @@ function glTFGallery(models) {
         ]
     });
 
-    var lights = xeogl.scene.lights;
+    var scene = xeogl.getDefaultScene();
+    var lights = scene.lights;
 
     lights.lights = dirLights;
     lights.lightMap = lightMap;
@@ -72,9 +73,9 @@ function glTFGallery(models) {
 
     var spinning = true;
 
-    var camera = xeogl.scene.camera;
+    var camera = scene.camera;
 
-    xeogl.scene.on("tick", function () { // Slowly orbit the camera
+    scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
             camera.orbitYaw(-0.1);
         }

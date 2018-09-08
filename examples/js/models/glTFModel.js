@@ -89,7 +89,8 @@
  Our GLTFModel will now be registered by ID on its  {{#crossLink "Scene"}}{{/crossLink}}, so we can now find it like this:
 
  ````javascript
- model = xeogl.scene.models["gearbox"];
+ var scene = xeogl.getDefaultScene();
+ model = scene.models["gearbox"];
  ````
 
  That's assuming that we've created the GLTFModel in the default Scene, which we're doing in these examples.
@@ -97,7 +98,7 @@
  We can also get all the GLTFModels in a Scene, using the Scene's {{#crossLink "Scene/types:property"}}{{/crossLink}} map:
 
  ````javascript
- var gltfModels = xeogl.scene.types["xeogl.GLTFModel"];
+ var gltfModels = scene.types["xeogl.GLTFModel"];
 
  model = gltfModels["myModel"];
  ````
