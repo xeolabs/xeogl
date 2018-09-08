@@ -212,6 +212,7 @@ const tempVec3d = math.vec3();
 const tempVec3e = math.vec3();
 const tempVec3f = math.vec3();
 const tempMat = math.mat4();
+const tempMatb = math.mat4();
 const eyeLookVec = math.vec3();
 const eyeLookVecNorm = math.vec3();
 const eyeLookOffset = math.vec3();
@@ -308,8 +309,8 @@ class Camera extends Component {
             eye = this._eye;
         }
         if (state.hasDeviceMatrix) {
-            math.lookAtMat4v(eye, this._look, this._up, tempMat);
-            math.mulMat4(state.deviceMatrix, tempMat, state.matrix);
+            math.lookAtMat4v(eye, this._look, this._up, tempMatb);
+            math.mulMat4(state.deviceMatrix, tempMatb, state.matrix);
             //state.matrix.set(state.deviceMatrix);
         } else {
             math.lookAtMat4v(eye, this._look, this._up, state.matrix);
