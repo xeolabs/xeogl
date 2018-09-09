@@ -83,18 +83,18 @@
         space: "world"
     });
 
-    var lightMap = new xeogl.CubeTexture({
-        src: [
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-        ]
-    });
+//    new xeogl.LightMap({
+//        src: [
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+//        ]
+//    });
 
-    var reflectionMap = new xeogl.CubeTexture({
+    new xeogl.ReflectionMap({
         src: [
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
@@ -105,10 +105,6 @@
         ]
     });
 
-    var lights = scene.lights;
-    lights.lights = dirLights;
-    lights.lightMap = lightMap;
-    lights.reflectionMap = reflectionMap;
 
 </script>
 </body>
