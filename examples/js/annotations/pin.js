@@ -145,7 +145,7 @@
             let i;
             const boundary = canvas.boundary;
             const canvasWidth = boundary[2];
-            const canvasHeight = boundary[2];
+            const canvasHeight = boundary[3];
             let testListLen = 0;
 
             // Hide pins that fall outside canvas
