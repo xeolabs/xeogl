@@ -900,7 +900,7 @@ class Scene extends Component {
 
         // Register Scene on xeogl
         // Do this BEFORE we add components below
-        core.addScene(this);
+        core._addScene(this);
 
         // Add components specified as JSON
 

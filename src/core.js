@@ -52,6 +52,18 @@ const core = {
         this.setDefaultScene(value);
     },
 
+    /**
+     Returns the current default {{#crossLink "Scene"}}{{/crossLink}}.
+
+     If no Scenes exist yet, or no Scene has been made default yet with a previous call to
+     {{#crossLink "xeogl/setDefaultScene:function"}}{{/crossLink}}, then this method will create the default
+     Scene on-the-fly.
+
+     Components created without specifying their Scene will be created within this Scene.
+
+     @method getDefaultScene
+     @returns {Scene} The current default scene
+     */
     getDefaultScene() {
         if (!defaultScene) {
             defaultScene = new Scene({id: "default.scene"});
@@ -59,6 +71,16 @@ const core = {
         return defaultScene;
     },
 
+    /**
+     Sets the current default {{#crossLink "Scene"}}{{/crossLink}}.
+
+     A subsequent call to {{#crossLink "xeogl/getDefaultScene:function"}}{{/crossLink}} will return this Scene.
+
+     Components created without specifying their Scene will be created within this Scene.
+
+     @method setDefaultScene
+     @param {Scene} scene The new current default scene
+     */
     setDefaultScene(scene) {
         defaultScene = scene;
     },
@@ -67,11 +89,11 @@ const core = {
      Registers a scene on xeogl.
      This is called within the xeogl.Scene constructor.
 
-     @method addScene
+     @method _addScene
      @param {Scene} scene The scene
      @private
      */
-    addScene(scene) {
+    _addScene(scene) {
         if (scene.id) { // User-supplied ID
             if (core.scenes[scene.id]) {
                 console.error(`[ERROR] Scene ${utils.inQuotes(scene.id)} already exists`);
