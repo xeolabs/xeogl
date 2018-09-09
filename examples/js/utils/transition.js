@@ -5,7 +5,9 @@ var Transition = function () {
     var t = 0;
     var ok;
 
-    xeogl.scene.on("tick", function () {
+    const scene = xeogl.getDefaultScene();
+
+    scene.on("tick", function () {
         if (dir === 0) {
             return;
         }
