@@ -84,4 +84,8 @@ gulp.task('bundle-es', () => {
     });
 });
 
-gulp.task('default', ['docs', 'bundle-umd', 'bundle-es']);
+gulp.task('website', () => {
+    gulp.src(['website/**/*']).pipe(gulp.dest('.'));
+});
+
+gulp.task('default', ['bundle-umd', 'bundle-es', 'docs']);
