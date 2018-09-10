@@ -24,12 +24,12 @@
   "scripts": {
     "build": "gulp"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-yuidoc": "^0.1.2",
     "rollup": "^0.55.5",
+    "rollup-plugin-license": "^0.7.0",
     "rollup-plugin-uglify": "^5.0.2",
     "rollup-watch": "^4.0.0"
   },

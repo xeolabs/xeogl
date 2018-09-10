@@ -1,6 +1,8 @@
 var gulp = require('gulp');
 var yuidoc = require("gulp-yuidoc"); // https://www.npmjs.com/package/gulp-yuidoc
 const rollup = require('rollup');
+const path = require('path');
+const license = require('rollup-plugin-license');
 
 gulp.task('docs', function (done) {
     gulp.src([
@@ -43,7 +45,14 @@ gulp.task('docs', function (done) {
 gulp.task('bundle-umd', () => {
     return rollup.rollup({
         input: './src/xeogl.js',
-        plugins: []
+        plugins: [
+            license({
+                banner: {
+                    file: path.join(__dirname, 'BANNER'),
+                    encoding: 'utf-8' // Default is utf-8
+                }
+            })
+        ]
     }).then(bundle => {
         return bundle.write({
             file: './build/xeogl.js',
@@ -57,7 +66,14 @@ gulp.task('bundle-umd', () => {
 gulp.task('bundle-es', () => {
     return rollup.rollup({
         input: './src/xeogl.js',
-        plugins: []
+        plugins: [
+            license({
+                banner: {
+                    file: path.join(__dirname, 'BANNER'),
+                    encoding: 'utf-8' // Default is utf-8
+                }
+            })
+        ]
     }).then(bundle => {
         return bundle.write({
             file: './build/xeogl.module.js',
