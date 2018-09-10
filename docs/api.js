@@ -60,6 +60,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "QuadraticBezierCurve",
         "ReflectionMap",
         "STLModel",
+        "Scene",
         "SceneJSModel",
         "Shadow",
         "Skybox",
@@ -78,8 +79,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "VectorTextGeometry",
         "Viewport",
         "XML3DModel",
-        "xeogl",
-        "xeogl.Scene"
+        "xeogl.xeogl"
     ],
     "modules": [
         "animation",
@@ -101,6 +101,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "models",
         "objects",
         "rendering",
+        "scene",
         "skyboxes",
         "stories",
         "xeogl"
@@ -200,6 +201,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "rendering",
             "name": "rendering",
             "description": "Components that influence the way meshes are rendered with WebGL."
+        },
+        {
+            "displayName": "scene",
+            "name": "scene",
+            "description": "Components that represent a xeogl scene."
         },
         {
             "displayName": "skyboxes",
