@@ -93,10 +93,22 @@
     // Mesh to show the SplineCurve
     new xeogl.Mesh({
         geometry: new xeogl.Geometry({
-            positions: xeogl.math.flatten(splineCurve.getPoints(100))
+            primitive: "lines",
+            positions: xeogl.math.flatten(splineCurve.getPoints(100)),
+            indices: (function () {
+                var indices = [];
+                for (var i = 0; i < 100; i++) {
+                    indices.push(i);
+                    if (i < 99) {
+                        indices.push(i + 1);
+                    }
+                }
+                return indices;
+            })()
         }),
         material: new xeogl.PhongMaterial({
-            diffuse: [0.5, 0.5, 0],
+            diffuse: [0, 0, 0],
+            emissive: [0.5, 0.0, 0],
             lineWidth: 7,
             alpha: 0.3,
             alphaMode: "blend"
