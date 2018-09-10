@@ -1,9 +1,17 @@
 {
   "name": "xeogl",
   "title": "xeogl",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "A WebGL-based 3D visualization engine from xeoLabs",
   "homepage": "http://xeogl.org/",
+  "keywords": [
+    "xeogl",
+    "bim",
+    "cad",
+    "archviz",
+    "3d",
+    "webgl"
+  ],
   "author": {
     "name": "Lindsay Kay",
     "email": "lindsay.kay@xeolabs.com"
@@ -14,20 +22,16 @@
     "url": "http://github.com/xeolabs/xeogl.git"
   },
   "scripts": {
-    "build": "grunt"
+    "build": "gulp"
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-concat": "^0.5.1",
-    "grunt-contrib-copy": "^0.8.2",
-    "grunt-contrib-jasmine": "~0.8.2",
-    "grunt-contrib-jshint": "^0.11.3",
-    "grunt-contrib-qunit": "~0.5.2",
-    "grunt-contrib-uglify-es": "^3.3.0",
-    "grunt-contrib-yuidoc": "^0.7.0",
-    "ifc2json-cli": "^2.0.0"
+    "gulp": "^3.9.1",
+    "gulp-yuidoc": "^0.1.2",
+    "rollup": "^0.55.5",
+    "rollup-plugin-uglify": "^5.0.2",
+    "rollup-watch": "^4.0.0"
   },
   "engines": {
     "node": ">=0.10.17",
