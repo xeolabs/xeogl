@@ -84,7 +84,7 @@ class Clip extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
