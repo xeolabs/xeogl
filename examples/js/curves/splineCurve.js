@@ -104,19 +104,6 @@
  */
 xeogl.SplineCurve = class xeoglSplineCurve extends xeogl.Curve {
 
-    /**
-     JavaScript class name for this Component.
-
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
-
-     @property type
-     @type String
-     @final
-     */
-    get type() {
-        return "xeogl.SplineCurve";
-    }
-
     init(cfg) {
         super.init(cfg);
         this.points = cfg.points;

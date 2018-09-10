@@ -45,19 +45,6 @@
 
 xeogl.StereoEffect = class xeoglStereoEffect extends xeogl.Component {
 
-    /**
-     JavaScript class name for this Component.
-
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
-
-     @property type
-     @type String
-     @final
-     */
-    get type() {
-        return "xeogl.StereoEffect";
-    }
-
     init(cfg) {
         super.init(cfg);
         this.fov = cfg.fov;

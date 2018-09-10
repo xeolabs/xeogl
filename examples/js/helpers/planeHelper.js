@@ -23,19 +23,6 @@
 
     xeogl.PlaneHelper = class xeoglPlaneHelper extends xeogl.Component {
 
-        /**
-         JavaScript class name for this Component.
-
-         For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
-
-         @property type
-         @type String
-         @final
-         */
-        get type() {
-            return "xeogl.PlaneHelper";
-        }
-
         init(cfg) {
 
             super.init(cfg);

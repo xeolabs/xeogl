@@ -116,19 +116,6 @@
 
 xeogl.Path = class xeoglPath extends xeogl.Curve {
 
-    /**
-     JavaScript class name for this Component.
-
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
-
-     @property type
-     @type String
-     @final
-     */
-    get type() {
-        return "xeogl.Path";
-    }
-
     init(cfg) {
         super.init(cfg);
         this._cachedLengths = [];

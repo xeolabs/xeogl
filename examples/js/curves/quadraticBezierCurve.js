@@ -105,19 +105,6 @@
  */
 xeogl.QuadraticBezierCurve = class xeoglQuadraticBezierCurve extends xeogl.Curve {
 
-    /**
-     JavaScript class name for this Component.
-
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
-
-     @property type
-     @type String
-     @final
-     */
-    get type() {
-        return "xeogl.QuadraticBezierCurve";
-    }
-
     init(cfg) {
         super.init(cfg);
         this.v0 = cfg.v0;
