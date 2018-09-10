@@ -1,3 +1,16 @@
+/**
+ * xeogl V0.9.0
+ *
+ * A WebGL-based 3D visualization engine from xeoLabs
+ * http://xeogl.org/
+ *
+ * Built on 2018-09-10
+ *
+ * MIT License
+ * Copyright 2018, Lindsay Kay
+ * http://xeolabs.com/
+ */
+
 class Map {
 
     constructor(items, baseId) {
@@ -4724,7 +4737,6 @@ const math = {
         let len;
         let a;
         let b;
-
         for (i = 0, len = positions.length; i < len; i += 3) {
 
             posi = i / 3;
@@ -6255,7 +6267,7 @@ componentClasses[type] = Component;
 
 const Canvas2Image = (function () {
     // check if we have canvas support
-    const oCanvas = document.createElement("canvas"), sc = String.fromCharCode;
+    const oCanvas = document.createElement("canvas"), sc = String.fromCharCode, strDownloadMime = "image/octet-stream", bReplaceDownloadMime = false;
 
     // no canvas, bail out.
     if (!oCanvas.getContext) {
@@ -6415,7 +6427,7 @@ const Canvas2Image = (function () {
             if (bReturnImg) {
                 return makeImageObject(strData);
             } else {
-                saveFile(strData);
+                saveFile(bReplaceDownloadMime ? strData.replace(strMime, strDownloadMime) : strData);
             }
             return true;
         },
@@ -6431,7 +6443,7 @@ const Canvas2Image = (function () {
             if (bReturnImg) {
                 return makeImageObject(strData);
             } else {
-                saveFile(strData);
+                saveFile(bReplaceDownloadMime ? strData.replace(strMime, strDownloadMime) : strData);
             }
             return true;
         },
@@ -6897,7 +6909,6 @@ if (canvas) {
  @param {Scene} scene Parent scene
  @extends Component
  */
-
 const type$2 = "xeogl.Canvas";
 
 const WEBGL_CONTEXT_NAMES = [
@@ -7243,6 +7254,8 @@ class Canvas extends Component {
      * @private
      */
     _initWebGL(cfg) {
+
+        // Default context attribute values
 
         if (!this.gl) {
             for (let i = 0; !this.gl && i < WEBGL_CONTEXT_NAMES.length; i++) {
@@ -8424,7 +8437,9 @@ class Geometry extends Component {
             memoryStats$1.indices += state.indicesBuf.numItems;
         }
         if (state.combined) {
-            if (state.indices) ;
+            if (state.indices) {
+                // indicesBufCombined is created when VertexBufs are built for this Geometry
+            }
         } else {
             if (state.positions) {
                 state.positionsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, state.positions, state.positions.length, 3, gl.STATIC_DRAW);
@@ -9449,7 +9464,6 @@ componentClasses[type$4] = AABBGeometry;
  @constructor
  @extends Component
  */
-
 const type$5 = "xeogl.Material";
 
 class Material extends Component{
@@ -9638,7 +9652,6 @@ componentClasses[type$5] = Material;
  @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  */
-
 const type$6 = "xeogl.PhongMaterial";
 const alphaModes = {"opaque": 0, "mask": 1, "blend": 2};
 const alphaModeNames = ["opaque", "mask", "blend"];
@@ -10996,7 +11009,8 @@ class xeoglObject extends Component {
         } else {
             this.scale = cfg.scale;
             this.position = cfg.position;
-            if (cfg.quaternion) ; else {
+            if (cfg.quaternion) {
+            } else {
                 this.rotation = cfg.rotation;
             }
         }
@@ -11158,7 +11172,6 @@ class xeoglObject extends Component {
             }
         } else if (utils.isObject(object)) {
             throw "addChild( * ) not implemented";
-            // object = new xeogl.Group(this.scene, cfg);
             if (!object) {
                 return;
             }
@@ -12348,6 +12361,7 @@ function buildFragmentLambert(mesh) {
     let i;
     let len;
     const clipping = clipsState.clips.length > 0;
+    const solid = false && materialState.backfaces;
     const gammaOutput = scene.gammaOutput; // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
     const src = [];
     src.push("// Lambertian drawing fragment shader");
@@ -12378,6 +12392,12 @@ function buildFragmentLambert(mesh) {
             src.push("}");
         }
         src.push("  if (dist > 0.0) { discard; }");
+        if (solid) {
+            src.push("  if (gl_FrontFacing == false) {");
+            src.push("     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);");
+            src.push("     return;");
+            src.push("  }");
+        }
         src.push("}");
     }
     if (geometryState.primitiveName === "points") {
@@ -12619,6 +12639,7 @@ function buildFragmentDraw(mesh) {
     const clipping = clipsState.clips.length > 0;
     const normals = hasNormals(mesh);
     const uvs = geometryState.uv;
+    const solid = false && materialState.backfaces;
     const phongMaterial = (materialState.type === "PhongMaterial");
     const metallicMaterial = (materialState.type === "MetallicMaterial");
     const specularMaterial = (materialState.type === "SpecularMaterial");
@@ -13167,6 +13188,12 @@ function buildFragmentDraw(mesh) {
             src.push("}");
         }
         src.push("  if (dist > 0.0) { discard; }");
+        if (solid) {
+            src.push("  if (gl_FrontFacing == false) {");
+            src.push("     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);");
+            src.push("     return;");
+            src.push("  }");
+        }
         src.push("}");
     }
 
@@ -13488,6 +13515,8 @@ function buildFragmentDraw(mesh) {
         src.push("vec3 shadowCoord;");
         src.push('vec4 rgbaDepth;');
         src.push("float depth;");
+        // }
+
         for (i = 0, len = lightsState.lights.length; i < len; i++) {
 
             light = lightsState.lights[i];
@@ -13562,10 +13591,6 @@ function buildFragmentDraw(mesh) {
                 src.push("computePBRLighting(light, geometry, material, reflectedLight);");
             }
         }
-
-        //src.push("reflectedLight.diffuse *= shadow;");
-
-        // COMBINE TERMS
 
         if (phongMaterial) {
 
@@ -14436,7 +14461,10 @@ DrawRenderer.prototype.drawMesh = function (frame, mesh) {
                 frame.bindArray++;
                 // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 // frame.drawElements++;
-            } else if (geometryState.positions) ;
+            } else if (geometryState.positions) {
+                // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
+                //  frame.drawArrays++;
+            }
         }
         this._lastGeometryId = geometryState.id;
     }
@@ -14447,6 +14475,8 @@ DrawRenderer.prototype.drawMesh = function (frame, mesh) {
         if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
             gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
             frame.drawElements++;
+        } else {
+            // TODO: drawArrays() with VertexBufs positions
         }
     } else {
         if (geometryState.indicesBuf) {
@@ -15202,7 +15232,10 @@ EmphasisFillRenderer.prototype.drawMesh = function (frame, mesh, mode) {
                 frame.bindArray++;
                 // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 // frame.drawElements++;
-            } else if (geometryState.positions) ;
+            } else if (geometryState.positions) {
+                // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
+                //  frame.drawArrays++;
+            }
         }
         this._lastGeometryId = geometryState.id;
     }
@@ -15211,6 +15244,8 @@ EmphasisFillRenderer.prototype.drawMesh = function (frame, mesh, mode) {
         if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
             gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
             frame.drawElements++;
+        } else {
+            // TODO: drawArrays() with VertexBufs positions
         }
     } else {
         if (geometryState.indicesBuf) {
@@ -15943,7 +15978,10 @@ EmphasisVerticesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
                 frame.bindArray++;
                 // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 // frame.drawElements++;
-            } else if (geometryState.positions) ;
+            } else if (geometryState.positions) {
+                // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
+                //  frame.drawArrays++;
+            }
         }
         this._lastGeometryId = geometryState.id;
     }
@@ -15952,6 +15990,8 @@ EmphasisVerticesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
         if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
             gl.drawElements(gl.POINTS, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
             frame.drawElements++;
+        } else {
+            // TODO: drawArrays() with VertexBufs positions
         }
     } else {
         if (geometryState.indicesBuf) {
@@ -16052,6 +16092,7 @@ class ShadowShaderSource {
 }
 
 function buildVertex$3(mesh) {
+
     const lights = scene.lights.lights;
     const billboard = mesh._state.billboard;
 
@@ -16398,6 +16439,8 @@ ShadowRenderer.prototype.drawMesh = function (frame, mesh, light) {
         if (geometryState.indicesBufCombined) {
             gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
             frame.drawElements++;
+        } else {
+            // TODO: drawArrays() with VertexBufs positions
         }
     } else {
         if (geometryState.indicesBuf) {
@@ -16732,7 +16775,10 @@ OutlineRenderer.prototype.drawMesh = function (frame, mesh) {
                 frame.bindArray++;
                 // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
                 // frame.drawElements++;
-            } else if (geometryState.positions) ;
+            } else if (geometryState.positions) {
+                // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
+                //  frame.drawArrays++;
+            }
         }
         this._lastGeometryId = geometryState.id;
     }
@@ -16741,6 +16787,8 @@ OutlineRenderer.prototype.drawMesh = function (frame, mesh) {
         if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
             gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
             frame.drawElements++;
+        } else {
+            // TODO: drawArrays() with VertexBufs positions
         }
     } else {
         if (geometryState.indicesBuf) {
@@ -16999,6 +17047,8 @@ PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
         if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
             gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
             frame.drawElements++;
+        } else {
+            // TODO: drawArrays() with VertexBufs positions
         }
     } else {
         if (geometryState.indicesBuf) {
@@ -18098,6 +18148,12 @@ PickTriangleRenderer.prototype._allocate = function (mesh) {
  @extends Object
  */
 
+/**
+ Fired when this Mesh is picked via a call to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+ The event parameters will be the hit result returned by the {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} method.
+ @event picked
+ */
 const obb = math.OBB3();
 
 const type$8 = "xeogl.Mesh";
@@ -18414,7 +18470,7 @@ class Mesh extends xeoglObject {
     }
 
     set worldPositions(value) {
-        if (value = value === null) {
+        if (value = undefined || value === null) {
             this._worldPositions = null; // Release memory
             this._worldPositionsDirty = true;
         }
@@ -18917,17 +18973,18 @@ const Renderer = function ( scene, options) {
     let meshListLen = 0;
     const meshPickList = [];
     let meshPickListLen = 0;
-
     let meshListDirty = true;
     let stateSortDirty = true;
     let imageDirty = true;
-
     this.imageForceDirty = true;
 
     let blendOneMinusSrcAlpha = true;
 
     let pickBuf = null;
     let readPixelBuf = null;
+
+    const bindOutputFrameBuffer = null;
+    const unbindOutputFrameBuffer = null;
 
     this.meshListDirty = function () {
         meshListDirty = true;
@@ -18939,6 +18996,7 @@ const Renderer = function ( scene, options) {
     };
 
     this.shadowsDirty = function () {
+        
     };
 
     this.imageDirty = function () {
@@ -18980,7 +19038,13 @@ const Renderer = function ( scene, options) {
             const color = params.ambientColor || this.lights.getAmbientColor();
             gl.clearColor(color[0], color[1], color[2], 1.0);
         }
+        if (bindOutputFrameBuffer) {
+            bindOutputFrameBuffer(params.pass);
+        }
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+        if (unbindOutputFrameBuffer) {
+            unbindOutputFrameBuffer(params.pass);
+        }
     };
 
     /**
@@ -19096,6 +19160,10 @@ const Renderer = function ( scene, options) {
             let transparent;
 
             const startTime = Date.now();
+
+            if (bindOutputFrameBuffer) {
+                bindOutputFrameBuffer(params.pass);
+            }
 
             if (params.clear !== false) {
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -19312,6 +19380,8 @@ const Renderer = function ( scene, options) {
                 }
             }
 
+            const transparentDepthMask = true;
+
             if (numTransparentGhostFillMeshes > 0 || numTransparentGhostEdgesMeshes > 0 || numTransparentGhostVerticesMeshes > 0 || numTransparentMeshes > 0) {
 
                 // Draw transparent meshes
@@ -19335,6 +19405,10 @@ const Renderer = function ( scene, options) {
                 }
 
                 frame.backfaces = false;
+
+                if (!transparentDepthMask) {
+                    gl.depthMask(false);
+                }
 
                 // Render transparent ghosted meshes
 
@@ -19513,6 +19587,16 @@ const Renderer = function ( scene, options) {
             }
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
             gl.bindTexture(gl.TEXTURE_2D, null);
+
+            // Set the backbuffer's alpha to 1.0
+            // gl.clearColor(1, 1, 1, 1);
+            // gl.colorMask(false, false, false, true);
+            // gl.clear(gl.COLOR_BUFFER_BIT);
+            // gl.colorMask(true, true, true, true);
+
+            if (unbindOutputFrameBuffer) {
+                unbindOutputFrameBuffer(params.pass);
+            }
         };
     })();
 
@@ -19802,7 +19886,6 @@ const Renderer = function ( scene, options) {
  @submodule input
  @extends Component
  */
-
 const type$9 = "xeogl.Input";
 
 class Input extends Component {
@@ -22011,8 +22094,7 @@ class Input extends Component {
 
  @extends Component
  */
-
-const type$a = "xeogl.Viewport";
+const type$10 = "xeogl.Viewport";
 
 class Viewport extends Component {
 
@@ -22026,7 +22108,7 @@ class Viewport extends Component {
      @final
      */
     get type() {
-        return type$a;
+        return type$10;
     }
 
     init(cfg) {
@@ -22162,7 +22244,7 @@ class Viewport extends Component {
     }
 }
 
-componentClasses[type$a] = Viewport;
+componentClasses[type$10] = Viewport;
 
 /**
  A **Perspective** defines a perspective projection transform for a {{#crossLink "Camera"}}Camera{{/crossLink}}.
@@ -22197,7 +22279,7 @@ componentClasses[type$a] = Viewport;
  @extends Component
  */
 
-const type$b = "xeogl.Perspective";
+const type$11 = "xeogl.Perspective";
 
 class Perspective extends Component {
 
@@ -22211,7 +22293,7 @@ class Perspective extends Component {
      @final
      */
     get type() {
-        return type$b;
+        return type$11;
     }
 
     init(cfg) {
@@ -22385,7 +22467,7 @@ class Perspective extends Component {
     }
 }
 
-componentClasses[type$b] = Perspective;
+componentClasses[type$11] = Perspective;
 
 /**
  An **Ortho** defines an orthographic projection transform for a {{#crossLink "Camera"}}Camera{{/crossLink}}.
@@ -22424,8 +22506,7 @@ componentClasses[type$b] = Perspective;
  @author Artur-Sampaio / https://github.com/Artur-Sampaio
  @extends Component
  */
-
-const type$c = "xeogl.Ortho";
+const type$12 = "xeogl.Ortho";
 
 class Ortho extends Component {
 
@@ -22439,7 +22520,7 @@ class Ortho extends Component {
      @final
      */
     get type() {
-        return type$c;
+        return type$12;
     }
 
     init(cfg) {
@@ -22604,7 +22685,7 @@ class Ortho extends Component {
     }
 }
 
-componentClasses[type$c] = Ortho;
+componentClasses[type$12] = Ortho;
 
 /**
  A **Frustum** defines a perspective projection as a frustum-shaped view volume for a {{#crossLink "Camera"}}Camera{{/crossLink}}.
@@ -22642,8 +22723,7 @@ componentClasses[type$c] = Ortho;
  @param [cfg.far=1000] {Number} Position of the Frustum's far plane on the positive View-space Z-axis.
  @extends Component
  */
-
-const type$d = "xeogl.Frustum";
+const type$13 = "xeogl.Frustum";
 
 class Frustum extends Component {
 
@@ -22657,7 +22737,7 @@ class Frustum extends Component {
      @final
      */
     get type() {
-        return type$d;
+        return type$13;
     }
 
     init(cfg) {
@@ -22865,7 +22945,7 @@ class Frustum extends Component {
     }
 }
 
-componentClasses[type$d] = Frustum;
+componentClasses[type$13] = Frustum;
 
 /**
  A **CustomProjection** defines a projection for a {{#crossLink "Camera"}}Camera{{/crossLink}} as a custom 4x4 matrix..
@@ -22894,8 +22974,7 @@ componentClasses[type$d] = Frustum;
  @param [cfg.matrix=] {Float32Array} 4x4 transform matrix.
  @extends Component
  */
-
-const type$e = "xeogl.CustomProjection";
+const type$14 = "xeogl.CustomProjection";
 
 class CustomProjection extends Component {
 
@@ -22909,7 +22988,7 @@ class CustomProjection extends Component {
      @final
      */
     get type() {
-        return type$e;
+        return type$14;
     }
 
     init(cfg) {
@@ -22953,7 +23032,7 @@ class CustomProjection extends Component {
     }
 }
 
-componentClasses[type$e] = CustomProjection;
+componentClasses[type$14] = CustomProjection;
 
 /**
  A **Camera** defines viewing and projection transforms for its {{#crossLink "Scene"}}{{/crossLink}}.
@@ -23153,7 +23232,6 @@ componentClasses[type$e] = CustomProjection;
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
  @extends Component
  */
-
 const tempVec3 = math.vec3();
 const tempVec3b = math.vec3();
 const tempVec3c = math.vec3();
@@ -23167,7 +23245,7 @@ const eyeLookVecNorm = math.vec3();
 const eyeLookOffset = math.vec3();
 const offsetEye = math.vec3();
 
-const type$f = "xeogl.Camera";
+const type$15 = "xeogl.Camera";
 
 class Camera extends Component {
 
@@ -23181,7 +23259,7 @@ class Camera extends Component {
      @final
      */
     get type() {
-        return type$f;
+        return type$15;
     }
 
     init(cfg) {
@@ -23824,7 +23902,7 @@ class Camera extends Component {
     }
 }
 
-componentClasses[type$f] = Camera;
+componentClasses[type$15] = Camera;
 
 /**
  A **DirLight** is a directional light source that illuminates all {{#crossLink "Mesh"}}Meshes{{/crossLink}} equally
@@ -23901,8 +23979,7 @@ componentClasses[type$f] = Camera;
  @param [cfg.shadow=false] {Boolean} Flag which indicates if this DirLight casts a shadow.
  @extends Component
  */
-
-const type$g = "xeogl.DirLight";
+const type$16 = "xeogl.DirLight";
 
 class DirLight extends Component {
 
@@ -23916,7 +23993,7 @@ class DirLight extends Component {
      @final
      */
     get type() {
-        return type$g;
+        return type$16;
     }
 
     init(cfg) {
@@ -24065,7 +24142,7 @@ class DirLight extends Component {
     }
 }
 
-componentClasses[type$g] = DirLight;
+componentClasses[type$16] = DirLight;
 
 /**
  A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
@@ -24122,7 +24199,7 @@ componentClasses[type$g] = DirLight;
  @extends Geometry
  */
 
-const type$h = "xeogl.BoxGeometry";
+const type$17 = "xeogl.BoxGeometry";
 
 class BoxGeometry extends Geometry {
 
@@ -24136,7 +24213,7 @@ class BoxGeometry extends Geometry {
      @final
      */
     get type() {
-        return type$h;
+        return type$17;
     }
 
     init(cfg) {
@@ -24338,7 +24415,7 @@ class BoxGeometry extends Geometry {
     }
 }
 
-componentClasses[type$h] = BoxGeometry;
+componentClasses[type$17] = BoxGeometry;
 
 /**
  An **EmphasisMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of attached
@@ -24728,7 +24805,7 @@ const PRESETS = {
     }
 };
 
-const type$i = "xeogl.EmphasisMaterial";
+const type$18 = "xeogl.EmphasisMaterial";
 
 class EmphasisMaterial extends Material {
 
@@ -24753,7 +24830,7 @@ class EmphasisMaterial extends Material {
      @final
      */
     get type() {
-        return type$i;
+        return type$18;
     }
 
     init(cfg) {
@@ -25156,7 +25233,7 @@ class EmphasisMaterial extends Material {
     }
 }
 
-componentClasses[type$i] = EmphasisMaterial;
+componentClasses[type$18] = EmphasisMaterial;
 
 /**
  An **EdgeMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of attached
@@ -25369,7 +25446,7 @@ const PRESETS$1 = {
 };
 
 
-const type$j = "xeogl.EdgeMaterial";
+const type$19 = "xeogl.EdgeMaterial";
 
 class EdgeMaterial extends Material {
 
@@ -25394,7 +25471,7 @@ class EdgeMaterial extends Material {
      @final
      */
     get type() {
-        return type$j;
+        return type$19;
     }
 
     init(cfg) {
@@ -25541,7 +25618,7 @@ class EdgeMaterial extends Material {
     }
 }
 
-componentClasses[type$j] = EdgeMaterial;
+componentClasses[type$19] = EdgeMaterial;
 
 /**
  An **OutlineMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that's applied to {{#crossLink "Mesh"}}Meshes{{/crossLink}}
@@ -25562,8 +25639,7 @@ componentClasses[type$j] = EdgeMaterial;
  @param [cfg.alpha=1.0] {Number} Outline opacity. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
  @param [cfg.width=4] {Number}  Outline width, in pixels.
  */
-
-const type$k = "xeogl.OutlineMaterial";
+const type$20 = "xeogl.OutlineMaterial";
 
 class OutlineMaterial extends Material {
 
@@ -25577,7 +25653,7 @@ class OutlineMaterial extends Material {
      @final
      */
     get type() {
-        return type$k;
+        return type$20;
     }
 
     init(cfg) {
@@ -25669,7 +25745,7 @@ class OutlineMaterial extends Material {
     }
 }
 
-componentClasses[type$k] = OutlineMaterial;
+componentClasses[type$20] = OutlineMaterial;
 
 /**
  The container for all 3D graphical objects and state in a xeogl scene.
@@ -26022,6 +26098,7 @@ componentClasses[type$k] = OutlineMaterial;
 
  @class Scene
  @module xeogl
+ @submodule scene
  @constructor
  @param [cfg] Scene parameters
  @param [cfg.id] {String} Optional ID, unique among all Scenes in xeogl, generated automatically when omitted.
@@ -26043,7 +26120,7 @@ componentClasses[type$k] = OutlineMaterial;
  @extends Component
  */
 
-const type$l = "xeogl.Scene";
+const type$21 = "xeogl.Scene";
 
 // Cached vars to avoid garbage collection
 
@@ -26123,7 +26200,7 @@ class Scene extends Component {
      @final
      */
     get type() {
-        return type$l;
+        return type$21;
     }
 
     init(cfg) {
@@ -26539,7 +26616,7 @@ class Scene extends Component {
 
         // Register Scene on xeogl
         // Do this BEFORE we add components below
-        core.addScene(this);
+        core._addScene(this);
 
         // Add components specified as JSON
 
@@ -28162,7 +28239,7 @@ class Scene extends Component {
     }
 }
 
-componentClasses[type$l] = Scene;
+componentClasses[type$21] = Scene;
 
 const scenesRenderInfo = {}; // Used for throttling FPS for each Scene
 const sceneIDMap = new Map(); // Ensures unique scene IDs
@@ -28212,6 +28289,18 @@ const core = {
         this.setDefaultScene(value);
     },
 
+    /**
+     Returns the current default {{#crossLink "Scene"}}{{/crossLink}}.
+
+     If no Scenes exist yet, or no Scene has been made default yet with a previous call to
+     {{#crossLink "xeogl/setDefaultScene:function"}}{{/crossLink}}, then this method will create the default
+     Scene on-the-fly.
+
+     Components created without specifying their Scene will be created within this Scene.
+
+     @method getDefaultScene
+     @returns {Scene} The current default scene
+     */
     getDefaultScene() {
         if (!defaultScene) {
             defaultScene = new Scene({id: "default.scene"});
@@ -28219,6 +28308,16 @@ const core = {
         return defaultScene;
     },
 
+    /**
+     Sets the current default {{#crossLink "Scene"}}{{/crossLink}}.
+
+     A subsequent call to {{#crossLink "xeogl/getDefaultScene:function"}}{{/crossLink}} will return this Scene.
+
+     Components created without specifying their Scene will be created within this Scene.
+
+     @method setDefaultScene
+     @param {Scene} scene The new current default scene
+     */
     setDefaultScene(scene) {
         defaultScene = scene;
     },
@@ -28227,11 +28326,11 @@ const core = {
      Registers a scene on xeogl.
      This is called within the xeogl.Scene constructor.
 
-     @method addScene
+     @method _addScene
      @param {Scene} scene The scene
      @private
      */
-    addScene(scene) {
+    _addScene(scene) {
         if (scene.id) { // User-supplied ID
             if (core.scenes[scene.id]) {
                 console.error(`[ERROR] Scene ${utils.inQuotes(scene.id)} already exists`);
@@ -28505,7 +28604,7 @@ window.requestAnimationFrame(frame);
  @extends Component
  */
 
-const type$m = "xeogl.CameraFlightAnimation";
+const type$22 = "xeogl.CameraFlightAnimation";
 
 const tempVec3$2 = math.vec3();
 const newLook = math.vec3();
@@ -28526,7 +28625,7 @@ class CameraFlightAnimation extends Component {
      @final
      */
     get type() {
-        return type$m;
+        return type$22;
     }
 
     init(cfg) {
@@ -29030,7 +29129,7 @@ class CameraFlightAnimation extends Component {
     }
 }
 
-componentClasses[type$m] = CameraFlightAnimation;
+componentClasses[type$22] = CameraFlightAnimation;
 
 /**
  A **Clip** is an arbitrarily-aligned World-space clipping plane.
@@ -29107,8 +29206,7 @@ componentClasses[type$m] = CameraFlightAnimation;
  @param [cfg.dir=[0,0 -1]] {Array of Number} Vector perpendicular to the plane surface, indicating its orientation.
  @extends Component
  */
-
-const type$n = "xeogl.Clip";
+const type$23 = "xeogl.Clip";
 
 class Clip extends Component {
 
@@ -29122,7 +29220,7 @@ class Clip extends Component {
      @final
      */
     get type() {
-        return type$n;
+        return type$23;
     }
 
     init(cfg) {
@@ -29221,7 +29319,7 @@ class Clip extends Component {
     }
 }
 
-componentClasses[type$n] = Clip;
+componentClasses[type$23] = Clip;
 
 /**
  Rotates, pans and zooms the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} with keyboard, mouse and touch input.
@@ -29295,7 +29393,7 @@ componentClasses[type$n] = Clip;
  @extends Component
  */
 
-const type$o = "xeogl.CameraControl";
+const type$24 = "xeogl.CameraControl";
 
 class CameraControl extends Component {
 
@@ -29309,7 +29407,7 @@ class CameraControl extends Component {
      @final
      */
     get type() {
-        return type$o;
+        return type$24;
     }
 
     init(cfg) {
@@ -29892,6 +29990,8 @@ class CameraControl extends Component {
                 };
 
                 return function (mousePos, factor) {
+
+                    const lastHoverDistance = 0;
                     const inverseProjMat = getInverseProjectMat();
                     const inverseViewMat = getInverseViewMat();
 
@@ -29899,7 +29999,7 @@ class CameraControl extends Component {
                     const transposedProjectMat = getTransposedProjectMat();
                     const Pt3 = transposedProjectMat.subarray(8, 12);
                     const Pt4 = transposedProjectMat.subarray(12);
-                    const D = [0, 0, -(getSceneDiagSize()), 1];
+                    const D = [0, 0, -(lastHoverDistance || getSceneDiagSize()), 1];
                     const Z = math.dotVec4(D, Pt3) / math.dotVec4(D, Pt4);
 
                     unproject(inverseProjMat, inverseViewMat, mousePos, Z, viewPos, worldPos);
@@ -30096,6 +30196,7 @@ class CameraControl extends Component {
                 let xDelta = 0;
                 let yDelta = 0;
                 let down = false;
+
                 let mouseDownRight;
 
                 canvas.addEventListener("mousedown", function (e) {
@@ -30105,6 +30206,7 @@ class CameraControl extends Component {
                     over = true;
                     switch (e.which) {
                         case 1: // Left button
+                            
                             down = true;
                             xDelta = 0;
                             yDelta = 0;
@@ -30113,6 +30215,7 @@ class CameraControl extends Component {
                             lastY = mousePos[1];
                             break;
                         case 2: // Middle/both buttons
+                            
                             break;
                         case 3: // Right button
                             mouseDownRight = true;
@@ -30135,8 +30238,10 @@ class CameraControl extends Component {
                     }
                     switch (e.which) {
                         case 1: // Left button
+                            
                             break;
                         case 2: // Middle/both buttons
+                            
                             break;
                         case 3: // Right button
                             mouseDownRight = false;
@@ -30155,8 +30260,10 @@ class CameraControl extends Component {
                     }
                     switch (e.which) {
                         case 1: // Left button
+                            
                             break;
                         case 2: // Middle/both buttons
+                            
                             break;
                         case 3: // Right button
                             mouseDownRight = false;
@@ -30333,8 +30440,8 @@ class CameraControl extends Component {
             // Touch camera rotate, pan and zoom
 
             (function () {
-                const tapStartPos = new Float32Array(2);
 
+                const tapStartPos = new Float32Array(2);
                 const lastTouches = [];
                 let numTouches = 0;
 
@@ -30373,6 +30480,8 @@ class CameraControl extends Component {
                     if (touches.length === 1 && changedTouches.length === 1) {
                         tapStartPos[0] = touches[0].pageX;
                         tapStartPos[1] = touches[0].pageY;
+                    } else {
+                        
                     }
 
                     while (lastTouches.length < touches.length) {
@@ -30993,7 +31102,7 @@ class CameraControl extends Component {
     }
 }
 
-componentClasses[type$o] = CameraControl;
+componentClasses[type$24] = CameraControl;
 
 /**
  A **TorusGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a torus-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
@@ -31057,8 +31166,7 @@ componentClasses[type$o] = CameraControl;
  @param [cfg.arc=Math.PI / 2.0] {Number} The length of the TorusGeometry's arc in radians, where Math.PI*2 is a closed torus.
  @extends Geometry
  */
-
-const type$p = "xeogl.TorusGeometry";
+const type$25 = "xeogl.TorusGeometry";
 
 class TorusGeometry extends Geometry {
 
@@ -31072,7 +31180,7 @@ class TorusGeometry extends Geometry {
      @final
      */
     get type() {
-        return type$p;
+        return type$25;
     }
 
     init(cfg) {
@@ -31197,7 +31305,7 @@ class TorusGeometry extends Geometry {
     }
 }
 
-componentClasses[type$p] = TorusGeometry;
+componentClasses[type$25] = TorusGeometry;
 
 /**
  A **SphereGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a sphere-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
@@ -31248,8 +31356,7 @@ componentClasses[type$p] = TorusGeometry;
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
-
-const type$q = "xeogl.SphereGeometry";
+const type$26 = "xeogl.SphereGeometry";
 
 class SphereGeometry extends Geometry {
 
@@ -31263,7 +31370,7 @@ class SphereGeometry extends Geometry {
      @final
      */
     get type() {
-        return type$q;
+        return type$26;
     }
 
     init(cfg) {
@@ -31381,7 +31488,7 @@ class SphereGeometry extends Geometry {
     }
 }
 
-componentClasses[type$q] = SphereGeometry;
+componentClasses[type$26] = SphereGeometry;
 
 /**
  An **OBBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of an oriented bounding box (OBB).
@@ -31457,8 +31564,7 @@ componentClasses[type$q] = SphereGeometry;
  containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
  @extends Component
  */
-
-const type$r = "xeogl.OBBGeometry";
+const type$27 = "xeogl.OBBGeometry";
 
 class OBBGeometry extends Geometry {
 
@@ -31472,7 +31578,7 @@ class OBBGeometry extends Geometry {
      @final
      */
     get type() {
-        return type$r;
+        return type$27;
     }
 
     init(cfg) {
@@ -31562,7 +31668,7 @@ class OBBGeometry extends Geometry {
     }
 }
 
-componentClasses[type$r] = OBBGeometry;
+componentClasses[type$27] = OBBGeometry;
 
 /**
  A **CylinderGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a cylinder-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
@@ -31619,8 +31725,7 @@ componentClasses[type$r] = OBBGeometry;
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
-
-const type$s = "xeogl.CylinderGeometry";
+const type$28 = "xeogl.CylinderGeometry";
 
 class CylinderGeometry extends Geometry {
 
@@ -31634,7 +31739,7 @@ class CylinderGeometry extends Geometry {
      @final
      */
     get type() {
-        return type$s;
+        return type$28;
     }
 
     init(cfg) {
@@ -31854,7 +31959,7 @@ class CylinderGeometry extends Geometry {
     }
 }
 
-componentClasses[type$s] = CylinderGeometry;
+componentClasses[type$28] = CylinderGeometry;
 
 /**
  A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
@@ -31915,8 +32020,7 @@ componentClasses[type$s] = CylinderGeometry;
  @param [cfg.zSegments=1] {Number} Number of segments on the Z-axis.
  @extends Geometry
  */
-
-const type$t = "xeogl.PlaneGeometry";
+const type$29 = "xeogl.PlaneGeometry";
 
 class PlaneGeometry extends Geometry {
 
@@ -31930,7 +32034,7 @@ class PlaneGeometry extends Geometry {
      @final
      */
     get type() {
-        return type$t;
+        return type$29;
     }
 
     init(cfg) {
@@ -32053,7 +32157,7 @@ class PlaneGeometry extends Geometry {
     }
 }
 
-componentClasses[type$t] = PlaneGeometry;
+componentClasses[type$29] = PlaneGeometry;
 
 /**
  An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all {{#crossLink "Mesh"}}Meshes{{/crossLink}}
@@ -32115,8 +32219,7 @@ componentClasses[type$t] = PlaneGeometry;
  @param [cfg.intensity=[1.0]] {Number} The intensity of this AmbientLight, as a factor in range ````[0..1]````.
  @extends Component
  */
-
-const type$u = "xeogl.AmbientLight";
+const type$30 = "xeogl.AmbientLight";
 
 class AmbientLight extends Component {
 
@@ -32130,7 +32233,7 @@ class AmbientLight extends Component {
      @final
      */
     get type() {
-        return type$u;
+        return type$30;
     }
 
     init(cfg) {
@@ -32183,7 +32286,7 @@ class AmbientLight extends Component {
     }
 }
 
-componentClasses[type$u] = AmbientLight;
+componentClasses[type$30] = AmbientLight;
 
 /**
  A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions,
@@ -32270,8 +32373,7 @@ componentClasses[type$u] = AmbientLight;
  @param [cfg.space="view"] {String} The coordinate system this PointLight is defined in - "view" or "world".
  @param [cfg.shadow=false] {Boolean} Flag which indicates if this PointLight casts a shadow.
  */
-
-const type$v = "xeogl.PointLight";
+const type$31 = "xeogl.PointLight";
 
 class PointLight extends Component {
 
@@ -32285,7 +32387,7 @@ class PointLight extends Component {
      @final
      */
     get type() {
-        return type$v;
+        return type$31;
     }
 
     init(cfg) {
@@ -32487,7 +32589,7 @@ class PointLight extends Component {
     }
 }
 
-componentClasses[type$v] = PointLight;
+componentClasses[type$31] = PointLight;
 
 /**
  A **SpotLight** defines a positional light source that originates from a single point and eminates in a given direction,
@@ -32573,7 +32675,7 @@ componentClasses[type$v] = PointLight;
  @param [cfg.shadow=false] {Boolean} Flag which indicates if this SpotLight casts a shadow.
  */
 
-const type$w = "xeogl.SpotLight";
+const type$32 = "xeogl.SpotLight";
 
 class SpotLight extends Component {
 
@@ -32587,7 +32689,7 @@ class SpotLight extends Component {
      @final
      */
     get type() {
-        return type$w;
+        return type$32;
     }
 
     init(cfg) {
@@ -32812,7 +32914,7 @@ class SpotLight extends Component {
     }
 }
 
-componentClasses[type$w] = SpotLight;
+componentClasses[type$32] = SpotLight;
 
 /**
  * @author xeolabs / https://github.com/xeolabs
@@ -33060,8 +33162,7 @@ class Texture2D {
  @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "CubeTexture/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
-
-const type$x = "xeogl.CubeTexture";
+const type$33 = "xeogl.CubeTexture";
 
 function ensureImageSizePowerOfTwo$1(image) {
     if (!isPowerOfTwo$1(image.width) || !isPowerOfTwo$1(image.height)) {
@@ -33101,7 +33202,7 @@ class CubeTexture extends Component{
      @final
      */
     get type() {
-        return type$x;
+        return type$33;
     }
 
     init(cfg) {
@@ -33208,7 +33309,7 @@ class CubeTexture extends Component{
     }
 }
 
-componentClasses[type$x] = CubeTexture;
+componentClasses[type$33] = CubeTexture;
 
 /**
  A **LightMap** specifies a cube texture light map.
@@ -33242,7 +33343,7 @@ componentClasses[type$x] = CubeTexture;
  @extends Component
  */
 
-const type$y = "xeogl.LightMap";
+const type$34 = "xeogl.LightMap";
 
 class LightMap extends CubeTexture{
 
@@ -33256,7 +33357,7 @@ class LightMap extends CubeTexture{
      @final
      */
     get type() {
-        return type$y;
+        return type$34;
     }
 
     init(cfg) {
@@ -33270,7 +33371,7 @@ class LightMap extends CubeTexture{
     }
 }
 
-componentClasses[type$y] = LightMap;
+componentClasses[type$34] = LightMap;
 
 /**
  A **ReflectionMap** specifies a cube texture reflection map.
@@ -33303,8 +33404,7 @@ componentClasses[type$y] = LightMap;
  @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "ReflectionMap/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
-
-const type$z = "xeogl.ReflectionMap";
+const type$35 = "xeogl.ReflectionMap";
 
 class ReflectionMap extends CubeTexture {
 
@@ -33318,7 +33418,7 @@ class ReflectionMap extends CubeTexture {
      @final
      */
     get type() {
-        return type$z;
+        return type$35;
     }
 
     init(cfg) {
@@ -33333,7 +33433,7 @@ class ReflectionMap extends CubeTexture {
     }
 }
 
-componentClasses[type$z] = ReflectionMap;
+componentClasses[type$35] = ReflectionMap;
 
 /**
  A **Shadow** defines a shadow cast by a {{#crossLink "DirLight"}}{{/crossLink}} or a {{#crossLink "SpotLight"}}{{/crossLink}}.
@@ -33397,8 +33497,7 @@ componentClasses[type$z] = ReflectionMap;
  @param [cfg.resolution=[1000,1000]] {Uint16Array} Resolution of the texture map for this Shadow.
  @param [cfg.intensity=1.0] {Number} Intensity of this Shadow.
  */
-
-const type$A = "xeogl.Shadow";
+const type$36 = "xeogl.Shadow";
 
 class Shadow extends Component {
 
@@ -33412,7 +33511,7 @@ class Shadow extends Component {
      @final
      */
     get type() {
-        return type$A;
+        return type$36;
     }
 
     init(cfg) {
@@ -33489,7 +33588,7 @@ class Shadow extends Component {
     }
 }
 
-componentClasses[type$A] = Shadow;
+componentClasses[type$36] = Shadow;
 
 /**
  A **Group** is an {{#crossLink "Object"}}{{/crossLink}} that groups other Objects.
@@ -33535,8 +33634,7 @@ componentClasses[type$A] = Shadow;
  {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
  @extends Object
  */
-
-const type$B = "xeogl.Group";
+const type$37 = "xeogl.Group";
 
  class Group extends xeoglObject{
 
@@ -33550,7 +33648,7 @@ const type$B = "xeogl.Group";
      @final
      */
     get type() {
-        return type$B;
+        return type$37;
     }
 
     init(cfg) {
@@ -33558,7 +33656,7 @@ const type$B = "xeogl.Group";
     }
 }
 
-componentClasses[type$B] = Group;
+componentClasses[type$37] = Group;
 
 /**
  A **Model** is a {{#crossLink "Group"}}{{/crossLink}} of {{#crossLink "Component"}}Components{{/crossLink}}.
@@ -33605,8 +33703,7 @@ componentClasses[type$B] = Group;
 
  @extends Group
  */
-
-const type$C = "xeogl.Model";
+const type$38 = "xeogl.Model";
 
 class Model extends Group {
 
@@ -33620,7 +33717,7 @@ class Model extends Group {
      @final
      */
     get type() {
-        return type$C;
+        return type$38;
     }
 
     init(cfg) {
@@ -33888,7 +33985,7 @@ class Model extends Group {
     }
 }
 
-componentClasses[type$C] = Model;
+componentClasses[type$38] = Model;
 
 /**
  A **LambertMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
@@ -33956,7 +34053,7 @@ componentClasses[type$C] = Model;
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  */
 
-const type$D = "xeogl.LambertMaterial";
+const type$39 = "xeogl.LambertMaterial";
 
 class LambertMaterial extends Material {
 
@@ -33970,7 +34067,7 @@ class LambertMaterial extends Material {
      @final
      */
     get type() {
-        return type$D;
+        return type$39;
     }
 
     init(cfg) {
@@ -34206,7 +34303,7 @@ class LambertMaterial extends Material {
     }
 }
 
-componentClasses[type$D] = LambertMaterial;
+componentClasses[type$39] = LambertMaterial;
 
 /**
  A **SpecularMaterial** is a physically-based {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
@@ -34499,8 +34596,7 @@ componentClasses[type$D] = LambertMaterial;
  @param [cfg.pointSize=1] {Number} Scalar that controls the size of points for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "points".
 
  */
-
-const type$E = "xeogl.SpecularMaterial";
+const type$40 = "xeogl.SpecularMaterial";
 const alphaModes$1 = {"opaque": 0, "mask": 1, "blend": 2};
 const alphaModeNames$1 = ["opaque", "mask", "blend"];
 
@@ -34516,7 +34612,7 @@ class SpecularMaterial extends Material {
      @final
      */
     get type() {
-        return type$E;
+        return type$40;
     }
 
     init(cfg) {
@@ -35067,7 +35163,7 @@ class SpecularMaterial extends Material {
     }
 }
 
-componentClasses[type$E] = SpecularMaterial;
+componentClasses[type$40] = SpecularMaterial;
 
 /**
  A **MetallicMaterial** is a physically-based {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
@@ -35370,7 +35466,7 @@ componentClasses[type$E] = SpecularMaterial;
 
 const modes = {"opaque": 0, "mask": 1, "blend": 2};
 const modeNames = ["opaque", "mask", "blend"];
-const type$F = "xeogl.MetallicMaterial";
+const type$41 = "xeogl.MetallicMaterial";
 
  class MetallicMaterial extends Material {
 
@@ -35384,7 +35480,7 @@ const type$F = "xeogl.MetallicMaterial";
      @final
      */
     get type() {
-        return type$F;
+        return type$41;
     }
 
     init(cfg) {
@@ -35934,7 +36030,7 @@ const type$F = "xeogl.MetallicMaterial";
     }
 }
 
-componentClasses[type$F] = MetallicMaterial;
+componentClasses[type$41] = MetallicMaterial;
 
 /**
  A **Texture** specifies a texture map.
@@ -36009,8 +36105,7 @@ componentClasses[type$F] = MetallicMaterial;
  @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "Texture/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
-
-const type$G = "xeogl.Texture";
+const type$42 = "xeogl.Texture";
 
 function ensureImageSizePowerOfTwo$2(image) {
     if (!isPowerOfTwo$2(image.width) || !isPowerOfTwo$2(image.height)) {
@@ -36050,7 +36145,7 @@ class Texture extends Component {
      @final
      */
     get type() {
-        return type$G;
+        return type$42;
     }
 
     init(cfg) {
@@ -36444,7 +36539,7 @@ class Texture extends Component {
     }
 }
 
-componentClasses[type$G] = Texture;
+componentClasses[type$42] = Texture;
 
 /**
  A **Fresnel** specifies a Fresnel effect for attached {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}.
@@ -36504,7 +36599,7 @@ componentClasses[type$G] = Texture;
  @extends Component
  */
 
-const type$H = "xeogl.Fresnel";
+const type$43 = "xeogl.Fresnel";
 
 class Fresnel extends Component {
 
@@ -36518,7 +36613,7 @@ class Fresnel extends Component {
      @final
      */
     get type() {
-        return type$H;
+        return type$43;
     }
 
     init(cfg) {
@@ -36626,7 +36721,7 @@ class Fresnel extends Component {
     }
 }
 
-componentClasses[type$H] = Fresnel;
+componentClasses[type$43] = Fresnel;
 
 /**
  The xeogl namespace.
@@ -36636,7 +36731,6 @@ componentClasses[type$H] = Fresnel;
  @static
  @author xeolabs / http://xeolabs.com/
  */
-
 const scenes = core.scenes;
 const getDefaultScene = core.getDefaultScene;
 const setDefaultScene = core.setDefaultScene;
