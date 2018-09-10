@@ -1,7 +1,7 @@
 import {Map} from './utils/map.js';
 import {stats} from './stats.js';
 import {utils} from './utils.js';
-import {Scene} from "./scene.js";
+import {Scene} from "./scene/scene.js";
 import {componentClasses} from "./componentClasses.js";
 
 const scenesRenderInfo = {}; // Used for throttling FPS for each Scene

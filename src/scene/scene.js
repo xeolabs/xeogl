@@ -349,6 +349,7 @@
 
  @class Scene
  @module xeogl
+ @submodule scene
  @constructor
  @param [cfg] Scene parameters
  @param [cfg.id] {String} Optional ID, unique among all Scenes in xeogl, generated automatically when omitted.
@@ -370,23 +371,23 @@
  @extends Component
  */
 
-import {core} from './core.js';
-import {utils} from './utils.js';
-import {math} from './math/math.js';
-import {stats} from './stats.js';
-import {Component} from './component.js';
-import {Canvas} from './canvas/canvas.js';
-import {Renderer} from './renderer/renderer.js';
-import {Input} from './input/input.js';
-import {Viewport} from './viewport/viewport.js';
-import {Camera} from './camera/camera.js';
-import {DirLight} from './lighting/dirLight.js';
-import {BoxGeometry} from './geometry/boxGeometry.js';
-import {PhongMaterial} from './materials/phongMaterial.js';
-import {EmphasisMaterial} from './materials/emphasisMaterial.js';
-import {EdgeMaterial} from './materials/edgeMaterial.js';
-import {OutlineMaterial} from './materials/outlineMaterial.js';
-import {componentClasses} from "./componentClasses.js";
+import {core} from '../core.js';
+import {utils} from '../utils.js';
+import {math} from '../math/math.js';
+import {stats} from '../stats.js';
+import {Component} from '../component.js';
+import {Canvas} from '../canvas/canvas.js';
+import {Renderer} from '../renderer/renderer.js';
+import {Input} from '../input/input.js';
+import {Viewport} from '../viewport/viewport.js';
+import {Camera} from '../camera/camera.js';
+import {DirLight} from '../lighting/dirLight.js';
+import {BoxGeometry} from '../geometry/boxGeometry.js';
+import {PhongMaterial} from '../materials/phongMaterial.js';
+import {EmphasisMaterial} from '../materials/emphasisMaterial.js';
+import {EdgeMaterial} from '../materials/edgeMaterial.js';
+import {OutlineMaterial} from '../materials/outlineMaterial.js';
+import {componentClasses} from "../componentClasses.js";
 
 const type = "xeogl.Scene";
 

@@ -71,6 +71,6 @@ export {Frustum} from "./camera/frustum.js";
 export {Ortho} from "./camera/ortho.js";
 export {Perspective} from "./camera/perspective.js";
 export {CustomProjection} from "./camera/customProjection.js"
-export {Scene} from "./scene.js";
+export {Scene} from "./scene/scene.js";
 
 
