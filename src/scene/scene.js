@@ -71,7 +71,7 @@
 
  ````javascript
  scene = teapotMesh.scene;
- scene = xeogl.scene;
+ scene = xeogl.getDefaultScene();
  ````
 
  Find components by ID in their Scene's {{#crossLink "Scene/components:property"}}{{/crossLink}} map:

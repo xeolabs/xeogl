@@ -29,7 +29,9 @@
         var t = 0;
         var ok;
 
-        xeogl.scene.on("tick", function () {
+        var scene = xeogl.getDefaultScene();
+
+        scene.on("tick", function () {
             if (dir === 0) {
                 return;
             }
@@ -105,8 +107,8 @@
     };
 
     function spin() {
-        model.scene.on("tick", function () {
-            model.scene.camera.orbitYaw(0.2);
+        scene.on("tick", function () {
+            scene.camera.orbitYaw(0.2);
         });
     }
 
@@ -176,7 +178,8 @@
 
     // Custom lights
 
-    xeogl.scene.clearLights();
+    scene.clearLights();
+
     new xeogl.AmbientLight({
         color: [1.0, 1.0, 1.0]
     });
