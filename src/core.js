@@ -29,29 +29,6 @@ const core = {
 
     _superTypes: {}, // For each component type, a list of its supertypes, ordered upwards in the hierarchy.
 
-
-    /**
-     The default {{#crossLink "Scene"}}Scene{{/crossLink}}.
-
-     Components created without an explicit parent {{#crossLink "Scene"}}Scene{{/crossLink}} will be created within this
-     {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
-
-     xeogl creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
-     reference this property for the first time, or create your first {{#crossLink "Mesh"}}Mesh{{/crossLink}} without
-     a specified {{#crossLink "Scene"}}Scene{{/crossLink}}.
-
-     @property scene
-     @namespace xeogl
-     @type Scene
-     */
-    get scene() {
-        return this.getDefaultScene();
-    },
-
-    set scene(value) {
-        this.setDefaultScene(value);
-    },
-
     /**
      Returns the current default {{#crossLink "Scene"}}{{/crossLink}}.
 
@@ -137,10 +114,10 @@ const core = {
                     scene.clear();
                 } else {
                     scene.destroy();
+                    delete core.scenes[scene.id];
                 }
             }
         }
-        core.scenes = {};
     },
 
     //////////////////////////////////////////////////////////////////////////
