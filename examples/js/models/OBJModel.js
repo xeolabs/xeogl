@@ -940,6 +940,7 @@
                 });
 
                 model.addChild(mesh);
+                model._addComponent(mesh);
             }
         };
     })();
