@@ -114,8 +114,6 @@
             
                 <li><a href="../classes/Input.html">Input</a></li>
             
-                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-            
                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
             
                 <li><a href="../classes/LightMap.html">LightMap</a></li>
@@ -309,7 +307,9 @@
 
 
 <div class="box intro">
-    <p>Helper that visualizes the position and direction of a plane.</p>
+    <p>Helper that visualizes the position and direction of a <a href="../classes/Clip.html" class="crosslink">Clip</a>.
+The helper works by tracking updates to the <a href="../classes/Clip.html" class="crosslink">Clip</a>&#39;s
+ <a href="../classes/Clip.html#property_pos" class="crosslink">pos</a> and <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>.</p>
 
 </div>
 
@@ -397,43 +397,12 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name optional">[pos=[0,0,0]</code>
-                                    <span class="type">Float32Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                    <code class="param-name">clip</code>
+                                    <span class="type"><a href="../classes/Clip.html" class="crosslink">Clip</a></span>
                                 
 
                                 <div class="param-description">
-                                    <p>World-space position.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[dir=[0,0,1]</code>
-                                    <span class="type">Float32Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>World-space direction vector.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[color=[0.4,0.4,0.4]</code>
-                                    <span class="type">Float32Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>Emmissive color</p>
+                                    <p>A <a href="../classes/Clip.html" class="crosslink">Clip</a> to visualize.</p>
 
                                 </div>
 
@@ -552,14 +521,7 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_color">color</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_dir">dir</a>
+                                <a href="#property_clip">clip</a>
 
                                 
                                 
@@ -580,21 +542,7 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_type">type</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
                                 <a href="#property_visible">visible</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_worldPos">worldPos</a>
 
                                 
                                 
@@ -639,7 +587,7 @@
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l213"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:213</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l73"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:73</code></a>
         
         </p>
 
@@ -666,9 +614,9 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
 </div>
 
                 
-                    <div id="property_color" class="property item">
-    <h3 class="name"><code>color</code></h3>
-    <span class="type">Float32Array</span>
+                    <div id="property_clip" class="property item">
+    <h3 class="name"><code>clip</code></h3>
+    <span class="type"><a href="../classes/Clip.html" class="crosslink">Clip</a></span>
 
     
 
@@ -689,7 +637,7 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l254"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:254</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l45"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:45</code></a>
         
         </p>
 
@@ -699,59 +647,10 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
     </div>
 
     <div class="description">
-        <p>Emmissive color of this ClipHelper.</p>
+        <p>The <a href="../classes/Clip.html" class="crosslink">Clip</a> attached to this ClipHelper.</p>
 
     </div>
 
-    
-        <p><strong>Default:</strong> [0.4,0.4,0.4]</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_dir" class="property item">
-    <h3 class="name"><code>dir</code></h3>
-    <span class="type">Float32Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l176"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:176</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>World-space direction of this ClipHelper.</p>
-
-    </div>
-
-    
-        <p><strong>Default:</strong> [0,0,1]</p>
     
 
     
@@ -783,7 +682,7 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l194"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:194</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l55"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:55</code></a>
         
         </p>
 
@@ -794,13 +693,13 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
 
     <div class="description">
         <p>The width and height of the ClipHelper plane indicator.</p>
-<p>Values assigned to this property will be overridden by an auto-computed value when
-<a href="../classes/ClipHelper.html#property_autoPlaneSize" class="crosslink">autoPlaneSize</a> is true.</p>
+<p>When no value is specified, will automatically size to fit within the
+<a href="../classes/Scene.html#property_aabb" class="crosslink">Scene&#39;s boundary</a>.</p>
 
     </div>
 
     
-        <p><strong>Default:</strong> [1,1]</p>
+        <p><strong>Default:</strong> Fitted to scene boundary</p>
     
 
     
@@ -832,7 +731,7 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l271"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:271</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l92"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:92</code></a>
         
         </p>
 
@@ -842,60 +741,12 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
     </div>
 
     <div class="description">
-        <p>Indicates whether this ClipHelper is filled with color or just wireframe.</p>
+        <p>Indicates whether this ClipHelper&#39;s plane is filled or just wireframe.</p>
 
     </div>
 
     
         <p><strong>Default:</strong> true</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_type" class="property item">
-    <h3 class="name"><code>type</code></h3>
-    <span class="type">String</span>
-
-    
-
-    
-
-    
-        <span class="flag final">final</span>
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l26"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:26</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>JavaScript class name for this Component.</p>
-<p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
-
-    </div>
-
     
 
     
@@ -927,7 +778,7 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l287"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:287</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l107"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:107</code></a>
         
         </p>
 
@@ -943,53 +794,6 @@ to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink
 
     
         <p><strong>Default:</strong> true</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_worldPos" class="property item">
-    <h3 class="name"><code>worldPos</code></h3>
-    <span class="type">Float32Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_examples_js_helpers_clipHelper.js.html#l159"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:159</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>World-space position of this ClipHelper.</p>
-
-    </div>
-
-    
-        <p><strong>Default:</strong> [0,0,0]</p>
     
 
     

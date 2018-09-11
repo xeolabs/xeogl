@@ -37,7 +37,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "GeometryBuilder",
         "Group",
         "Input",
-        "LabelHelper",
         "LambertMaterial",
         "LightMap",
         "Material",

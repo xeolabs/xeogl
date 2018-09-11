@@ -114,8 +114,6 @@
             
                 <li><a href="../classes/Input.html">Input</a></li>
             
-                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-            
                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
             
                 <li><a href="../classes/LightMap.html">LightMap</a></li>
@@ -644,8 +642,8 @@
             this._src = null;
             this._options = {
                 ignoreMaterials: !!cfg.ignoreMaterials,
-                combineGeometry: cfg.combineGeometry !== true,
-                quantizeGeometry: cfg.quantizeGeometry !== true,
+                combineGeometry: cfg.combineGeometry !== false,
+                quantizeGeometry: cfg.quantizeGeometry !== false,
                 edgeThreshold: cfg.edgeThreshold || 20,
                 lambertMaterials: !!cfg.lambertMaterials,
                 handleNode: cfg.handleNode
@@ -1876,7 +1874,6 @@
         }
 
     })();
-
 }
     </pre>
 </div>

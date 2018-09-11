@@ -114,8 +114,6 @@
             
                 <li><a href="../classes/Input.html">Input</a></li>
             
-                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-            
                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
             
                 <li><a href="../classes/LightMap.html">LightMap</a></li>
@@ -405,7 +403,7 @@ class Geometry extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.MetallicMaterial&quot; etc.
 
      @property type
      @type String
@@ -1361,13 +1359,13 @@ var buildEdgesIndices = (function () {
                     continue;
                 }
             }
-            ia = edge.index1;
-            ib = edge.index2;
+            ia = indicesReverseLookup[edge.index1];
+            ib = indicesReverseLookup[edge.index2];
             if (!largeIndex &amp;&amp; ia &gt; 65535 || ib &gt; 65535) {
                 largeIndex = true;
             }
-            edgeIndices.push(indicesReverseLookup[ia]);
-            edgeIndices.push(indicesReverseLookup[ib]);
+            edgeIndices.push(ia);
+            edgeIndices.push(ib);
         }
         return (largeIndex || combined) ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
     };

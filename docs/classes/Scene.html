@@ -114,8 +114,6 @@
             
                 <li><a href="../classes/Input.html">Input</a></li>
             
-                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-            
                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
             
                 <li><a href="../classes/LightMap.html">LightMap</a></li>
@@ -365,7 +363,7 @@ var scene3 = new xeogl.Scene({
 teapotMesh.scene.camera.eye = [45, 45, 45];</code></pre>
 <p>The default Scene can be got from either the Mesh or the xeogl namespace:</p>
 <pre class="code prettyprint"><code class="lang-javascript">scene = teapotMesh.scene;
-scene = xeogl.scene;</code></pre>
+scene = xeogl.getDefaultScene();</code></pre>
 <p>Find components by ID in their Scene&#39;s <a href="../classes/Scene.html#property_components" class="crosslink">components</a> map:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var teapotMesh = scene.components["myMesh"];
 teapotMesh.visible = false;
@@ -7086,7 +7084,7 @@ then this property will have the value:</p>
 
     <div class="description">
         <p>JavaScript class name for this Component.</p>
-<p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
+<p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.MetallicMaterial&quot; etc.</p>
 
     </div>
 

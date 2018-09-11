@@ -114,8 +114,6 @@
             
                 <li><a href="../classes/Input.html">Input</a></li>
             
-                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-            
                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
             
                 <li><a href="../classes/LightMap.html">LightMap</a></li>
@@ -362,7 +360,7 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  scene = teapotMesh.scene;
- scene = xeogl.scene;
+ scene = xeogl.getDefaultScene();
  &#x60;&#x60;&#x60;&#x60;
 
  Find components by ID in their Scene&#x27;s {{#crossLink &quot;Scene/components:property&quot;}}{{/crossLink}} map:
@@ -769,7 +767,7 @@ class Scene extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.MetallicMaterial&quot; etc.
 
      @property type
      @type String

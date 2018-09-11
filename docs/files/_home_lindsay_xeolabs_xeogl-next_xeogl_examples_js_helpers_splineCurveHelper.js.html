@@ -114,8 +114,6 @@
             
                 <li><a href="../classes/Input.html">Input</a></li>
             
-                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-            
                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
             
                 <li><a href="../classes/LightMap.html">LightMap</a></li>
@@ -298,32 +296,10 @@
  */
 xeogl.SplineCurveHelper = class xeoglSplineCurveHelper extends xeogl.Component {
 
-    /**
-     JavaScript class name for this Component.
-
-     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
-
-     @property type
-     @type String
-     @final
-     */
-    get type() {
-        return &quot;xeogl.SplineCurveHelper&quot;;
-    }
-
     init(cfg) {
         super.init(cfg);
         this._divisions = 100;
-        this._line = new xeogl.Mesh(this, {
-            geometry: new xeogl.Geometry(this, {
-                primitive: &quot;lines&quot;,
-                positions: [0, 0, 0],
-                indices: [0, 1]
-            }),
-            material: new xeogl.PhongMaterial(this, {
-                diffuse: [1, 0, 0]
-            })
-        });
+
         this._splineCurve = cfg.splineCurve;
         if (this._splineCurve) {
             const self = this;
@@ -334,6 +310,11 @@ xeogl.SplineCurveHelper = class xeoglSplineCurveHelper extends xeogl.Component {
     }
 
     _update() {
+        if (this._line) {
+            this._line.geometry.destroy();
+            this._line.material.destroy();
+            this._line.destroy();
+        }
         const splineCurve = this._splineCurve;
         if (!splineCurve) {
             return;
@@ -352,8 +333,16 @@ xeogl.SplineCurveHelper = class xeoglSplineCurveHelper extends xeogl.Component {
             indices.push(i);
             indices.push(i + 1);
         }
-        this._line.geometry.positions = positions;
-        this._line.geometry.indices = indices;
+        this._line = new xeogl.Mesh(this, {
+            geometry: new xeogl.Geometry(this, {
+                primitive: &quot;lines&quot;,
+                positions: positions,
+                indices: indices
+            }),
+            material: new xeogl.PhongMaterial(this, {
+                diffuse: [1, 0, 0]
+            })
+        });
     }
 
     /**
