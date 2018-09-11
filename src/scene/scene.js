@@ -448,22 +448,6 @@ function getMeshIDMap(scene, meshIds) {
     return map;
 }
 
-function getMeshIDMapFromentityTypes(scene, entityTypes) {
-    // var objectIds = {};
-    // var entityType;
-    // var mesh;
-    // for (var i = 0, len = entityTypes.length; i < len; i++) {
-    //     entityType = entityTypes[i];
-    //     mesh = scene.meshes[entityType];
-    //     if (!mesh) {
-    //         scene.warn("pick(): Mesh not found: " + entityType);
-    //         continue;
-    //     }
-    //     objectIds[mesh._objectId] = true;
-    // }
-    // return objectIds;
-}
-
 /**
  * Fired whenever a debug message is logged on a component within this Scene.
  * @event log
@@ -719,6 +703,7 @@ class Scene extends Component {
          @type {Canvas}
          */
         this.canvas = new Canvas(this, {
+            dontClear: true, // Never destroy this component with Scene#clear();
             canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
             transparent: transparent,
             backgroundColor: cfg.backgroundColor,
@@ -904,6 +889,7 @@ class Scene extends Component {
          @final
          */
         this.input = new Input(this, {
+            dontClear: true, // Never destroy this component with Scene#clear();
             element: this.canvas.canvas
         });
 
@@ -939,11 +925,13 @@ class Scene extends Component {
 
         this._viewport = new Viewport(this, {
             id: "default.viewport",
-            autoBoundary: true
+            autoBoundary: true,
+            dontClear: true // Never destroy this component with Scene#clear();
         });
 
         this._camera = new Camera(this, {
-            id: "default.camera"
+            id: "default.camera",
+            dontClear: true // Never destroy this component with Scene#clear();
         });
 
         // Default lights
@@ -1559,7 +1547,7 @@ class Scene extends Component {
         return this.components["default.geometry"] ||
             new BoxGeometry(this, {
                 id: "default.geometry",
-                isDefault: true
+                dontClear: true
             });
     }
 
@@ -1579,8 +1567,8 @@ class Scene extends Component {
     get material() {
         return this.components["default.material"] || new PhongMaterial(this, {
                 id: "default.material",
-                isDefault: true,
-                emissive: [0.4, 0.4, 0.4] // Visible by default on geometry without normals
+                emissive: [0.4, 0.4, 0.4], // Visible by default on geometry without normals
+                dontClear: true
             });
     }
 
@@ -1601,7 +1589,7 @@ class Scene extends Component {
         return this.components["default.ghostMaterial"] || new EmphasisMaterial(this, {
                 id: "default.ghostMaterial",
                 preset: "sepia",
-                isDefault: true
+                dontClear: true
             });
     }
 
@@ -1622,7 +1610,7 @@ class Scene extends Component {
         return this.components["default.highlightMaterial"] || new EmphasisMaterial(this, {
                 id: "default.highlightMaterial",
                 preset: "yellowHighlight",
-                isDefault: true
+                dontClear: true
             });
     }
 
@@ -1643,7 +1631,7 @@ class Scene extends Component {
         return this.components["default.selectedMaterial"] || new EmphasisMaterial(this, {
                 id: "default.selectedMaterial",
                 preset: "greenSelected",
-                isDefault: true
+                dontClear: true
             });
     }
 
@@ -1667,7 +1655,7 @@ class Scene extends Component {
                 edgeColor: [0.0, 0.0, 0.0],
                 edgeAlpha: 1.0,
                 edgeWidth: 1,
-                isDefault: true
+                dontClear: true
             });
     }
 
@@ -1687,7 +1675,7 @@ class Scene extends Component {
     get outlineMaterial() {
         return this.components["default.outlineMaterial"] || new OutlineMaterial(this, {
                 id: "default.outlineMaterial",
-                isDefault: true
+                dontClear: true
             });
     }
 
@@ -2229,16 +2217,18 @@ class Scene extends Component {
 
      @method clear
      */
-    clear() {  // FIXME: should only clear user-created components
+    clear() {
+        var component;
         for (const id in this.components) {
             if (this.components.hasOwnProperty(id)) {
                 // Each component fires "destroyed" as it is destroyed,
                 // which this Scene handles by removing the component
-                this.components[id].destroy();
+                component = this.components[id];
+                if (!component._dontClear) { // Don't destroy components like xeogl.Camera, xeogl.Input, xeogl.Viewport etc.
+                    component.destroy();
+                }
             }
         }
-        // Reinitialise defaults
-        this._initDefaults();
     }
 
     /**
@@ -2496,7 +2486,11 @@ class Scene extends Component {
 
         super.destroy();
 
-        this.clear();
+        for (const id in this.components) {
+            if (this.components.hasOwnProperty(id)) {
+                this.components[id].destroy();
+            }
+        }
 
         this.canvas.gl = null;
 

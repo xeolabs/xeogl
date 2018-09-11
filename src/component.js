@@ -215,7 +215,6 @@
  @param [cfg] {*} DepthBuf configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Component.
- @param [cfg.isDefault] {Boolean} Set true when this is one of xeogl's default components.
  */
 
 import {core} from "./core.js";
@@ -294,6 +293,7 @@ class Component {
             this._renderer = this.scene._renderer;
         }
 
+        this._dontClear = !!cfg.dontClear; // Prevent Scene#clear from destroying this component
 
         this._model = null;
         this._renderer = this.scene._renderer;
