@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-09-10
+ * Built on 2018-09-11
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -5393,7 +5393,7 @@ class Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -6666,7 +6666,7 @@ class Spinner extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -6930,7 +6930,7 @@ class Canvas extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -8279,7 +8279,7 @@ class Geometry extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -9235,13 +9235,13 @@ var buildEdgesIndices = (function () {
                     continue;
                 }
             }
-            ia = edge.index1;
-            ib = edge.index2;
+            ia = indicesReverseLookup[edge.index1];
+            ib = indicesReverseLookup[edge.index2];
             if (!largeIndex && ia > 65535 || ib > 65535) {
                 largeIndex = true;
             }
-            edgeIndices.push(indicesReverseLookup[ia]);
-            edgeIndices.push(indicesReverseLookup[ib]);
+            edgeIndices.push(ia);
+            edgeIndices.push(ib);
         }
         return (largeIndex || combined) ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
     };
@@ -9331,7 +9331,7 @@ class AABBGeometry extends Geometry {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -9477,7 +9477,7 @@ class Material extends Component{
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -9667,7 +9667,7 @@ class PhongMaterial extends Material {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -10973,7 +10973,7 @@ class xeoglObject extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -18169,7 +18169,7 @@ class Mesh extends xeoglObject {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -19899,7 +19899,7 @@ class Input extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -22107,7 +22107,7 @@ class Viewport extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -22292,7 +22292,7 @@ class Perspective extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -22519,7 +22519,7 @@ class Ortho extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -22736,7 +22736,7 @@ class Frustum extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -22987,7 +22987,7 @@ class CustomProjection extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -23258,7 +23258,7 @@ class Camera extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -23992,7 +23992,7 @@ class DirLight extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -24212,7 +24212,7 @@ class BoxGeometry extends Geometry {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -24829,7 +24829,7 @@ class EmphasisMaterial extends Material {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -25470,7 +25470,7 @@ class EdgeMaterial extends Material {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -25652,7 +25652,7 @@ class OutlineMaterial extends Material {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -26199,7 +26199,7 @@ class Scene extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -28624,7 +28624,7 @@ class CameraFlightAnimation extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -29219,7 +29219,7 @@ class Clip extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -29406,7 +29406,7 @@ class CameraControl extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -31179,7 +31179,7 @@ class TorusGeometry extends Geometry {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -31369,7 +31369,7 @@ class SphereGeometry extends Geometry {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -31577,7 +31577,7 @@ class OBBGeometry extends Geometry {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -31738,7 +31738,7 @@ class CylinderGeometry extends Geometry {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -32033,7 +32033,7 @@ class PlaneGeometry extends Geometry {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -32232,7 +32232,7 @@ class AmbientLight extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -32386,7 +32386,7 @@ class PointLight extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -32688,7 +32688,7 @@ class SpotLight extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -33201,7 +33201,7 @@ class CubeTexture extends Component{
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -33356,7 +33356,7 @@ class LightMap extends CubeTexture{
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -33417,7 +33417,7 @@ class ReflectionMap extends CubeTexture {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -33510,7 +33510,7 @@ class Shadow extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -33647,7 +33647,7 @@ const type$37 = "xeogl.Group";
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -33716,7 +33716,7 @@ class Model extends Group {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -34066,7 +34066,7 @@ class LambertMaterial extends Material {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -34611,7 +34611,7 @@ class SpecularMaterial extends Material {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -35479,7 +35479,7 @@ const type$41 = "xeogl.MetallicMaterial";
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -36144,7 +36144,7 @@ class Texture extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
@@ -36612,7 +36612,7 @@ class Fresnel extends Component {
     /**
      JavaScript class name for this Component.
 
-     For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
