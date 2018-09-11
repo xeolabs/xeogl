@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-09-11
+ * Built on 2018-09-12
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -5450,6 +5450,7 @@ class Component {
             this._renderer = this.scene._renderer;
         }
 
+        this._dontClear = !!cfg.dontClear;
 
         this._model = null;
         this._renderer = this.scene._renderer;
@@ -19699,12 +19700,16 @@ const Renderer = function ( scene, options) {
         let i;
         let len;
         let mesh;
-        const includeMeshIds = params.includeMeshIds;
-        const excludeMeshIds = params.excludeMeshIds;
+        const pickTransparent = !!params.pickTransparent;
+        const includeMeshIds = !!params.includeMeshIds;
+        const excludeMeshIds = !!params.excludeMeshIds;
 
         for (i = 0, len = meshListLen; i < len; i++) {
             mesh = meshList[i];
             if (mesh._state.culled === true || mesh._state.visible === false || mesh._state.pickable === false) {
+                continue;
+            }
+            if (!pickTransparent && mesh._material._state.alpha < 0) {
                 continue;
             }
             if (includeMeshIds && !includeMeshIds[mesh.id]) {
@@ -25820,7 +25825,15 @@ componentClasses[type$20] = OutlineMaterial;
 
  ````javascript
  scene = teapotMesh.scene;
- scene = xeogl.scene;
+ scene = xeogl.getDefaultScene();
+ ````
+
+ You can also make any Scene instance the default scene, so that components will belong to that Scene when you don't explicitly
+ specify a Scene for them:
+
+ ````javascript
+ var scene = new xeogl.Scene({ ... };
+ xeogl.setDefaultScene( scene );
  ````
 
  Find components by ID in their Scene's {{#crossLink "Scene/components:property"}}{{/crossLink}} map:
@@ -26426,6 +26439,7 @@ class Scene extends Component {
          @type {Canvas}
          */
         this.canvas = new Canvas(this, {
+            dontClear: true, // Never destroy this component with Scene#clear();
             canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
             transparent: transparent,
             backgroundColor: cfg.backgroundColor,
@@ -26611,6 +26625,7 @@ class Scene extends Component {
          @final
          */
         this.input = new Input(this, {
+            dontClear: true, // Never destroy this component with Scene#clear();
             element: this.canvas.canvas
         });
 
@@ -26646,11 +26661,13 @@ class Scene extends Component {
 
         this._viewport = new Viewport(this, {
             id: "default.viewport",
-            autoBoundary: true
+            autoBoundary: true,
+            dontClear: true // Never destroy this component with Scene#clear();
         });
 
         this._camera = new Camera(this, {
-            id: "default.camera"
+            id: "default.camera",
+            dontClear: true // Never destroy this component with Scene#clear();
         });
 
         // Default lights
@@ -27266,7 +27283,8 @@ class Scene extends Component {
         return this.components["default.geometry"] ||
             new BoxGeometry(this, {
                 id: "default.geometry",
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -27287,7 +27305,8 @@ class Scene extends Component {
         return this.components["default.material"] || new PhongMaterial(this, {
                 id: "default.material",
                 isDefault: true,
-                emissive: [0.4, 0.4, 0.4] // Visible by default on geometry without normals
+                emissive: [0.4, 0.4, 0.4], // Visible by default on geometry without normals
+                dontClear: true
             });
     }
 
@@ -27308,7 +27327,8 @@ class Scene extends Component {
         return this.components["default.ghostMaterial"] || new EmphasisMaterial(this, {
                 id: "default.ghostMaterial",
                 preset: "sepia",
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -27329,7 +27349,8 @@ class Scene extends Component {
         return this.components["default.highlightMaterial"] || new EmphasisMaterial(this, {
                 id: "default.highlightMaterial",
                 preset: "yellowHighlight",
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -27350,7 +27371,8 @@ class Scene extends Component {
         return this.components["default.selectedMaterial"] || new EmphasisMaterial(this, {
                 id: "default.selectedMaterial",
                 preset: "greenSelected",
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -27374,7 +27396,8 @@ class Scene extends Component {
                 edgeColor: [0.0, 0.0, 0.0],
                 edgeAlpha: 1.0,
                 edgeWidth: 1,
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -27394,7 +27417,8 @@ class Scene extends Component {
     get outlineMaterial() {
         return this.components["default.outlineMaterial"] || new OutlineMaterial(this, {
                 id: "default.outlineMaterial",
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -27588,6 +27612,7 @@ class Scene extends Component {
 
      @param {*} params Picking parameters.
      @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Mesh.
+     @param {Boolean} [params.pickTransparent=true] Whether to pick transparent objects (true) or pick through them as if they did not exist (false).
      @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
      **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
      directly along the negative View-space Z-axis.
@@ -27937,15 +27962,19 @@ class Scene extends Component {
      @method clear
      */
     clear() {  // FIXME: should only clear user-created components
+        var component;
         for (const id in this.components) {
             if (this.components.hasOwnProperty(id)) {
                 // Each component fires "destroyed" as it is destroyed,
                 // which this Scene handles by removing the component
-                this.components[id].destroy();
+                component = this.components[id];
+                if (!component._dontClear) { // Don't destroy components like xeogl.Camera, xeogl.Input, xeogl.Viewport
+                    component.destroy();
+                } else {
+                    this.log("Not clearing: " + component.type);
+                }
             }
         }
-        // Reinitialise defaults
-        this._initDefaults();
     }
 
     /**
@@ -28266,29 +28295,6 @@ const core = {
 
     _superTypes: {}, // For each component type, a list of its supertypes, ordered upwards in the hierarchy.
 
-
-    /**
-     The default {{#crossLink "Scene"}}Scene{{/crossLink}}.
-
-     Components created without an explicit parent {{#crossLink "Scene"}}Scene{{/crossLink}} will be created within this
-     {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
-
-     xeogl creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
-     reference this property for the first time, or create your first {{#crossLink "Mesh"}}Mesh{{/crossLink}} without
-     a specified {{#crossLink "Scene"}}Scene{{/crossLink}}.
-
-     @property scene
-     @namespace xeogl
-     @type Scene
-     */
-    get scene() {
-        return this.getDefaultScene();
-    },
-
-    set scene(value) {
-        this.setDefaultScene(value);
-    },
-
     /**
      Returns the current default {{#crossLink "Scene"}}{{/crossLink}}.
 
@@ -28317,9 +28323,11 @@ const core = {
 
      @method setDefaultScene
      @param {Scene} scene The new current default scene
+     @returns {Scene} The new current default scene
      */
     setDefaultScene(scene) {
         defaultScene = scene;
+        return defaultScene;
     },
 
     /**
@@ -28372,10 +28380,10 @@ const core = {
                     scene.clear();
                 } else {
                     scene.destroy();
+                    delete core.scenes[scene.id];
                 }
             }
         }
-        core.scenes = {};
     },
 
     //////////////////////////////////////////////////////////////////////////
@@ -28434,23 +28442,26 @@ const numFPSSamples = 30;
 let lastTime = 0;
 let elapsedTime;
 let totalFPS = 0;
+let suspended = false;
 
 const frame = function () {
-    let time = Date.now();
-    if (lastTime > 0) { // Log FPS stats
-        elapsedTime = time - lastTime;
-        var newFPS = 1000 / elapsedTime; // Moving average of FPS
-        totalFPS += newFPS;
-        fpsSamples.push(newFPS);
-        if (fpsSamples.length >= numFPSSamples) {
-            totalFPS -= fpsSamples.shift();
+    if (!suspended) {
+        let time = Date.now();
+        if (lastTime > 0) { // Log FPS stats
+            elapsedTime = time - lastTime;
+            var newFPS = 1000 / elapsedTime; // Moving average of FPS
+            totalFPS += newFPS;
+            fpsSamples.push(newFPS);
+            if (fpsSamples.length >= numFPSSamples) {
+                totalFPS -= fpsSamples.shift();
+            }
+            stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
         }
-        stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
+        runTasks(time);
+        fireTickEvents(time);
+        renderScenes();
+        lastTime = time;
     }
-    runTasks(time);
-    fireTickEvents(time);
-    renderScenes();
-    lastTime = time;
     window.requestAnimationFrame(frame);
 };
 
@@ -29120,12 +29131,6 @@ class CameraFlightAnimation extends Component {
 
     get trail() {
         return this._trail;
-    }
-
-    destroy() {
-        super.destroy();
-        this._state.destroy();
-        super.destroy();
     }
 }
 
