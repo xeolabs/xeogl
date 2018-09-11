@@ -1070,13 +1070,13 @@ var buildEdgesIndices = (function () {
                     continue;
                 }
             }
-            ia = edge.index1;
-            ib = edge.index2;
+            ia = indicesReverseLookup[edge.index1];
+            ib = indicesReverseLookup[edge.index2];
             if (!largeIndex && ia > 65535 || ib > 65535) {
                 largeIndex = true;
             }
-            edgeIndices.push(indicesReverseLookup[ia]);
-            edgeIndices.push(indicesReverseLookup[ib]);
+            edgeIndices.push(ia);
+            edgeIndices.push(ib);
         }
         return (largeIndex || combined) ? new Uint32Array(edgeIndices) : new Uint16Array(edgeIndices);
     };
