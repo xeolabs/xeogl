@@ -353,8 +353,8 @@
             this._src = null;
             this._options = {
                 ignoreMaterials: !!cfg.ignoreMaterials,
-                combineGeometry: cfg.combineGeometry !== true,
-                quantizeGeometry: cfg.quantizeGeometry !== true,
+                combineGeometry: cfg.combineGeometry !== false,
+                quantizeGeometry: cfg.quantizeGeometry !== false,
                 edgeThreshold: cfg.edgeThreshold || 20,
                 lambertMaterials: !!cfg.lambertMaterials,
                 handleNode: cfg.handleNode
@@ -1585,5 +1585,4 @@
         }
 
     })();
-
 }
