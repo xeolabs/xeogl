@@ -19,6 +19,8 @@
 
 <script id="source">
 
+    var scene = xeogl.getDefaultScene();
+
     // A simple animation system that supports animation of alpha and translation
     // of Meshes within a single interpolation frame
 
@@ -28,8 +30,6 @@
         var dir = 0;
         var t = 0;
         var ok;
-
-        var scene = xeogl.getDefaultScene();
 
         scene.on("tick", function () {
             if (dir === 0) {
@@ -56,13 +56,6 @@
         });
 
         this.xray = function (ids, alpha) {
-            var alphaFresnel = new xeogl.Fresnel({
-                edgeBias: 0.2,
-                centerBias: 0.8,
-                edgeColor: [1.0, 1.0, 1.0],
-                centerColor: [0.0, 0.0, 0.0],
-                power: 1.0
-            });
             for (var i = 0, len = ids.length; i < len; i++) {
                 var id = ids [i];
                 tasks.push((function () {
@@ -96,7 +89,7 @@
 
         this.play = function (_ok) {
             dir = 1.0;
-            t = 0.0
+            t = 0.0;
             ok = _ok;
         };
 
@@ -112,11 +105,11 @@
         });
     }
 
-    function outline(ids) {
+    function highlight(ids) {
         for (var i = 0, len = ids.length; i < len; i++) {
             var id = ids [i];
             var object = model.objects[id];
-            object.outlined = true;
+            object.highlighted = true;
         }
     }
 
@@ -366,7 +359,7 @@
                 roofExplode.play();
                 tailExplode.play(function () {
 
-                    outline([
+                    highlight([
                         "sportsCar#Wheels_WheelRF_321_Tires",
                         "sportsCar#Wheels_WheelRR_321_Tires2",
                         "sportsCar#WheelLF_Wheels_321_Tires",
