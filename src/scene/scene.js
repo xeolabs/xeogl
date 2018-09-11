@@ -74,6 +74,14 @@
  scene = xeogl.getDefaultScene();
  ````
 
+ You can also make any Scene instance the default scene, so that components will belong to that Scene when you don't explicitly
+ specify a Scene for them:
+
+ ````javascript
+ var scene = new xeogl.Scene({ ... };
+ xeogl.setDefaultScene( scene );
+ ````
+
  Find components by ID in their Scene's {{#crossLink "Scene/components:property"}}{{/crossLink}} map:
 
  ````javascript

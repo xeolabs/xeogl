@@ -80,9 +80,11 @@ const core = {
 
      @method setDefaultScene
      @param {Scene} scene The new current default scene
+     @returns {Scene} The new current default scene
      */
     setDefaultScene(scene) {
         defaultScene = scene;
+        return defaultScene;
     },
 
     /**
