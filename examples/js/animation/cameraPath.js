@@ -20,6 +20,19 @@
 
     xeogl.CameraPath = class xeoglCameraPath extends xeogl.Component {
 
+        /**
+         JavaScript class name for this Component.
+
+         For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
+
+         @property type
+         @type String
+         @final
+         */
+        get type() {
+            return "xeogl.CameraPath";
+        }
+
         init(cfg) {
 
             super.init(cfg);
