@@ -196,8 +196,6 @@
             
                 <li><a href="../classes/xeogl.xeogl.html">xeogl.xeogl</a></li>
             
-                <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -361,6 +359,14 @@
  &#x60;&#x60;&#x60;&#x60;javascript
  scene = teapotMesh.scene;
  scene = xeogl.getDefaultScene();
+ &#x60;&#x60;&#x60;&#x60;
+
+ You can also make any Scene instance the default scene, so that components will belong to that Scene when you don&#x27;t explicitly
+ specify a Scene for them:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = new xeogl.Scene({ ... };
+ xeogl.setDefaultScene( scene );
  &#x60;&#x60;&#x60;&#x60;
 
  Find components by ID in their Scene&#x27;s {{#crossLink &quot;Scene/components:property&quot;}}{{/crossLink}} map:
@@ -729,22 +735,6 @@ function getMeshIDMap(scene, meshIds) {
     return map;
 }
 
-function getMeshIDMapFromentityTypes(scene, entityTypes) {
-    // var objectIds = {};
-    // var entityType;
-    // var mesh;
-    // for (var i = 0, len = entityTypes.length; i &lt; len; i++) {
-    //     entityType = entityTypes[i];
-    //     mesh = scene.meshes[entityType];
-    //     if (!mesh) {
-    //         scene.warn(&quot;pick(): Mesh not found: &quot; + entityType);
-    //         continue;
-    //     }
-    //     objectIds[mesh._objectId] = true;
-    // }
-    // return objectIds;
-}
-
 /**
  * Fired whenever a debug message is logged on a component within this Scene.
  * @event log
@@ -1000,6 +990,7 @@ class Scene extends Component {
          @type {Canvas}
          */
         this.canvas = new Canvas(this, {
+            dontClear: true, // Never destroy this component with Scene#clear();
             canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
             transparent: transparent,
             backgroundColor: cfg.backgroundColor,
@@ -1185,6 +1176,7 @@ class Scene extends Component {
          @final
          */
         this.input = new Input(this, {
+            dontClear: true, // Never destroy this component with Scene#clear();
             element: this.canvas.canvas
         });
 
@@ -1220,11 +1212,13 @@ class Scene extends Component {
 
         this._viewport = new Viewport(this, {
             id: &quot;default.viewport&quot;,
-            autoBoundary: true
+            autoBoundary: true,
+            dontClear: true // Never destroy this component with Scene#clear();
         });
 
         this._camera = new Camera(this, {
-            id: &quot;default.camera&quot;
+            id: &quot;default.camera&quot;,
+            dontClear: true // Never destroy this component with Scene#clear();
         });
 
         // Default lights
@@ -1840,7 +1834,8 @@ class Scene extends Component {
         return this.components[&quot;default.geometry&quot;] ||
             new BoxGeometry(this, {
                 id: &quot;default.geometry&quot;,
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -1861,7 +1856,8 @@ class Scene extends Component {
         return this.components[&quot;default.material&quot;] || new PhongMaterial(this, {
                 id: &quot;default.material&quot;,
                 isDefault: true,
-                emissive: [0.4, 0.4, 0.4] // Visible by default on geometry without normals
+                emissive: [0.4, 0.4, 0.4], // Visible by default on geometry without normals
+                dontClear: true
             });
     }
 
@@ -1882,7 +1878,8 @@ class Scene extends Component {
         return this.components[&quot;default.ghostMaterial&quot;] || new EmphasisMaterial(this, {
                 id: &quot;default.ghostMaterial&quot;,
                 preset: &quot;sepia&quot;,
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -1903,7 +1900,8 @@ class Scene extends Component {
         return this.components[&quot;default.highlightMaterial&quot;] || new EmphasisMaterial(this, {
                 id: &quot;default.highlightMaterial&quot;,
                 preset: &quot;yellowHighlight&quot;,
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -1924,7 +1922,8 @@ class Scene extends Component {
         return this.components[&quot;default.selectedMaterial&quot;] || new EmphasisMaterial(this, {
                 id: &quot;default.selectedMaterial&quot;,
                 preset: &quot;greenSelected&quot;,
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -1948,7 +1947,8 @@ class Scene extends Component {
                 edgeColor: [0.0, 0.0, 0.0],
                 edgeAlpha: 1.0,
                 edgeWidth: 1,
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -1968,7 +1968,8 @@ class Scene extends Component {
     get outlineMaterial() {
         return this.components[&quot;default.outlineMaterial&quot;] || new OutlineMaterial(this, {
                 id: &quot;default.outlineMaterial&quot;,
-                isDefault: true
+                isDefault: true,
+                dontClear: true
             });
     }
 
@@ -2162,6 +2163,7 @@ class Scene extends Component {
 
      @param {*} params Picking parameters.
      @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Mesh.
+     @param {Boolean} [params.pickTransparent=true] Whether to pick transparent objects (true) or pick through them as if they did not exist (false).
      @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
      **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
      directly along the negative View-space Z-axis.
@@ -2511,15 +2513,19 @@ class Scene extends Component {
      @method clear
      */
     clear() {  // FIXME: should only clear user-created components
+        var component;
         for (const id in this.components) {
             if (this.components.hasOwnProperty(id)) {
                 // Each component fires &quot;destroyed&quot; as it is destroyed,
                 // which this Scene handles by removing the component
-                this.components[id].destroy();
+                component = this.components[id];
+                if (!component._dontClear) { // Don&#x27;t destroy components like xeogl.Camera, xeogl.Input, xeogl.Viewport
+                    component.destroy();
+                } else {
+                    this.log(&quot;Not clearing: &quot; + component.type);
+                }
             }
         }
-        // Reinitialise defaults
-        this._initDefaults();
     }
 
     /**

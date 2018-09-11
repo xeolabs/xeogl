@@ -77,7 +77,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "TorusGeometry",
         "VectorTextGeometry",
         "Viewport",
-        "XML3DModel",
         "xeogl.xeogl"
     ],
     "modules": [

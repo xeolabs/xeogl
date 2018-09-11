@@ -196,8 +196,6 @@
             
                 <li><a href="../classes/xeogl.xeogl.html">xeogl.xeogl</a></li>
             
-                <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -318,29 +316,6 @@ const core = {
 
     _superTypes: {}, // For each component type, a list of its supertypes, ordered upwards in the hierarchy.
 
-
-    /**
-     The default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
-
-     Components created without an explicit parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} will be created within this
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} by default.
-
-     xeogl creates the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as soon as you either
-     reference this property for the first time, or create your first {{#crossLink &quot;Mesh&quot;}}Mesh{{/crossLink}} without
-     a specified {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
-
-     @property scene
-     @namespace xeogl
-     @type Scene
-     */
-    get scene() {
-        return this.getDefaultScene();
-    },
-
-    set scene(value) {
-        this.setDefaultScene(value);
-    },
-
     /**
      Returns the current default {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
 
@@ -369,9 +344,11 @@ const core = {
 
      @method setDefaultScene
      @param {Scene} scene The new current default scene
+     @returns {Scene} The new current default scene
      */
     setDefaultScene(scene) {
         defaultScene = scene;
+        return defaultScene;
     },
 
     /**
@@ -424,10 +401,10 @@ const core = {
                     scene.clear();
                 } else {
                     scene.destroy();
+                    delete core.scenes[scene.id];
                 }
             }
         }
-        core.scenes = {};
     },
 
     //////////////////////////////////////////////////////////////////////////

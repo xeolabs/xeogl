@@ -196,8 +196,6 @@
             
                 <li><a href="../classes/xeogl.xeogl.html">xeogl.xeogl</a></li>
             
-                <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -308,23 +306,26 @@ const numFPSSamples = 30;
 let lastTime = 0;
 let elapsedTime;
 let totalFPS = 0;
+let suspended = false;
 
 const frame = function () {
-    let time = Date.now();
-    if (lastTime &gt; 0) { // Log FPS stats
-        elapsedTime = time - lastTime;
-        var newFPS = 1000 / elapsedTime; // Moving average of FPS
-        totalFPS += newFPS;
-        fpsSamples.push(newFPS);
-        if (fpsSamples.length &gt;= numFPSSamples) {
-            totalFPS -= fpsSamples.shift();
+    if (!suspended) {
+        let time = Date.now();
+        if (lastTime &gt; 0) { // Log FPS stats
+            elapsedTime = time - lastTime;
+            var newFPS = 1000 / elapsedTime; // Moving average of FPS
+            totalFPS += newFPS;
+            fpsSamples.push(newFPS);
+            if (fpsSamples.length &gt;= numFPSSamples) {
+                totalFPS -= fpsSamples.shift();
+            }
+            stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
         }
-        stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
+        runTasks(time);
+        fireTickEvents(time);
+        renderScenes();
+        lastTime = time;
     }
-    runTasks(time);
-    fireTickEvents(time);
-    renderScenes();
-    lastTime = time;
     window.requestAnimationFrame(frame);
 };
 
@@ -389,7 +390,15 @@ function renderScenes() {
 
 window.requestAnimationFrame(frame);
 
-const loop = {};
+const loop = {
+    suspend() {
+        suspended = true;
+    },
+
+    resume() {
+        suspended = false;
+    }
+};
 
 export{loop};
 

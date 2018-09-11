@@ -196,8 +196,6 @@
             
                 <li><a href="../classes/xeogl.xeogl.html">xeogl.xeogl</a></li>
             
-                <li><a href="../classes/XML3DModel.html">XML3DModel</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -1110,12 +1108,16 @@ const Renderer = function ( scene, options) {
         let i;
         let len;
         let mesh;
-        const includeMeshIds = params.includeMeshIds;
-        const excludeMeshIds = params.excludeMeshIds;
+        const pickTransparent = !!params.pickTransparent;
+        const includeMeshIds = !!params.includeMeshIds;
+        const excludeMeshIds = !!params.excludeMeshIds;
 
         for (i = 0, len = meshListLen; i &lt; len; i++) {
             mesh = meshList[i];
             if (mesh._state.culled === true || mesh._state.visible === false || mesh._state.pickable === false) {
+                continue;
+            }
+            if (!pickTransparent &amp;&amp; mesh._material._state.alpha &lt; 0) {
                 continue;
             }
             if (includeMeshIds &amp;&amp; !includeMeshIds[mesh.id]) {
