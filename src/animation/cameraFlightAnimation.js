@@ -613,12 +613,6 @@ class CameraFlightAnimation extends Component {
     get trail() {
         return this._trail;
     }
-
-    destroy() {
-        super.destroy();
-        this._state.destroy();
-        super.destroy();
-    }
 }
 
 componentClasses[type] = CameraFlightAnimation;
