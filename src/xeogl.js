@@ -517,10 +517,10 @@
                         scene.clear();
                     } else {
                         scene.destroy();
+                        delete this.scenes[id];
                     }
                 }
             }
-            this.scenes = {};
         },
 
         /**

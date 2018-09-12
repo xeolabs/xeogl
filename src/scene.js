@@ -621,7 +621,8 @@
                 backgroundImage: cfg.backgroundImage,
                 webgl2: cfg.webgl2 !== false,
                 contextAttr: cfg.contextAttr || {},
-                simulateWebGLContextLost: cfg.simulateWebGLContextLost
+                simulateWebGLContextLost: cfg.simulateWebGLContextLost,
+                dontClear: true
             });
 
             // Redraw as canvas resized
@@ -799,7 +800,8 @@
              @final
              */
             this.input = new xeogl.Input(this, {
-                element: this.canvas.canvas
+                element: this.canvas.canvas,
+                dontClear: true
             });
 
             // Register Scene on engine
@@ -834,11 +836,13 @@
 
             this._viewport = new xeogl.Viewport(this, {
                 id: "default.viewport",
-                autoBoundary: true
+                autoBoundary: true,
+                dontClear: true
             });
 
             this._camera = new xeogl.Camera(this, {
-                id: "default.camera"
+                id: "default.camera",
+                dontClear: true
             });
 
             // Default lights
@@ -1479,7 +1483,7 @@
                     return this.components["default.geometry"] ||
                         new xeogl.BoxGeometry(this, {
                             id: "default.geometry",
-                            isDefault: true
+                            dontClear: true
                         });
                 }
             },
@@ -1502,8 +1506,8 @@
                     return this.components["default.material"] ||
                         new xeogl.PhongMaterial(this, {
                             id: "default.material",
-                            isDefault: true,
-                            emissive: [0.4, 0.4, 0.4] // Visible by default on geometry without normals
+                            emissive: [0.4, 0.4, 0.4], // Visible by default on geometry without normals
+                            dontClear: true
                         });
                 }
             },
@@ -1527,7 +1531,7 @@
                         new xeogl.EmphasisMaterial(this, {
                             id: "default.ghostMaterial",
                             preset: "sepia",
-                            isDefault: true
+                            dontClear: true
                         });
                 }
             },
@@ -1551,7 +1555,7 @@
                         new xeogl.EmphasisMaterial(this, {
                             id: "default.highlightMaterial",
                             preset: "yellowHighlight",
-                            isDefault: true
+                            dontClear: true
                         });
                 }
             },
@@ -1575,7 +1579,7 @@
                         new xeogl.EmphasisMaterial(this, {
                             id: "default.selectedMaterial",
                             preset: "greenSelected",
-                            isDefault: true
+                            dontClear: true
                         });
                 }
             },
@@ -1602,7 +1606,7 @@
                             edgeColor: [0.0, 0.0, 0.0],
                             edgeAlpha: 1.0,
                             edgeWidth: 1,
-                            isDefault: true
+                            dontClear: true
                         });
                 }
             },
@@ -1625,7 +1629,7 @@
                     return this.components["default.outlineMaterial"] ||
                         new xeogl.OutlineMaterial(this, {
                             id: "default.outlineMaterial",
-                            isDefault: true
+                            dontClear: true
                         });
                 }
             },
@@ -2265,15 +2269,18 @@
          @method clear
          */
         clear: function () {  // FIXME: should only clear user-created components
+            var component;
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
-                    // Each component fires "destroyed" as it is destroyed,
-                    // which this Scene handles by removing the component
-                    this.components[id].destroy();
+                    // Each component fires "destroyed" as it is destroyed, which this Scene handles by removing the component
+                    component = this.components[id];
+                    if (!component._dontClear) {
+                        // Don't destroy components like Camera, Viewport etc, and
+                        // don't destroy default components
+                        component.destroy();
+                    }
                 }
             }
-            // Reinitialise defaults
-            this._initDefaults();
         },
 
         /**
@@ -2599,7 +2606,11 @@
 
         _destroy: function () {
 
-            this.clear();
+            for (var id in this.components) {
+                if (this.components.hasOwnProperty(id)) {
+                    this.components[id].destroy();
+                }
+            }
 
             this.canvas.gl = null;
 
