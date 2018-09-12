@@ -859,7 +859,7 @@
 
         function loadTexture(ctx, textureInfo) {
             var texture = new xeogl.Texture(ctx.scene, {
-                src: ctx.basePath + ctx.json.images[textureInfo.source].uri,
+                src: ctx.json.images[textureInfo.source].uri ? ctx.basePath + ctx.json.images[textureInfo.source].uri : undefined,
                 flipY: !!textureInfo.flipY
             });
             ctx.model._addComponent(texture);
