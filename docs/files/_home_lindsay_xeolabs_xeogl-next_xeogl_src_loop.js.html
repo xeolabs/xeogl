@@ -306,26 +306,23 @@ const numFPSSamples = 30;
 let lastTime = 0;
 let elapsedTime;
 let totalFPS = 0;
-let suspended = false;
 
 const frame = function () {
-    if (!suspended) {
-        let time = Date.now();
-        if (lastTime &gt; 0) { // Log FPS stats
-            elapsedTime = time - lastTime;
-            var newFPS = 1000 / elapsedTime; // Moving average of FPS
-            totalFPS += newFPS;
-            fpsSamples.push(newFPS);
-            if (fpsSamples.length &gt;= numFPSSamples) {
-                totalFPS -= fpsSamples.shift();
-            }
-            stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
+    let time = Date.now();
+    if (lastTime &gt; 0) { // Log FPS stats
+        elapsedTime = time - lastTime;
+        var newFPS = 1000 / elapsedTime; // Moving average of FPS
+        totalFPS += newFPS;
+        fpsSamples.push(newFPS);
+        if (fpsSamples.length &gt;= numFPSSamples) {
+            totalFPS -= fpsSamples.shift();
         }
-        runTasks(time);
-        fireTickEvents(time);
-        renderScenes();
-        lastTime = time;
+        stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
     }
+    runTasks(time);
+    fireTickEvents(time);
+    renderScenes();
+    lastTime = time;
     window.requestAnimationFrame(frame);
 };
 
@@ -390,15 +387,7 @@ function renderScenes() {
 
 window.requestAnimationFrame(frame);
 
-const loop = {
-    suspend() {
-        suspended = true;
-    },
-
-    resume() {
-        suspended = false;
-    }
-};
+const loop = {};
 
 export{loop};
 

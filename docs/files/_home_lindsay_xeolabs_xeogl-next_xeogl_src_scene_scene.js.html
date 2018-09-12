@@ -1834,7 +1834,6 @@ class Scene extends Component {
         return this.components[&quot;default.geometry&quot;] ||
             new BoxGeometry(this, {
                 id: &quot;default.geometry&quot;,
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -1855,7 +1854,6 @@ class Scene extends Component {
     get material() {
         return this.components[&quot;default.material&quot;] || new PhongMaterial(this, {
                 id: &quot;default.material&quot;,
-                isDefault: true,
                 emissive: [0.4, 0.4, 0.4], // Visible by default on geometry without normals
                 dontClear: true
             });
@@ -1878,7 +1876,6 @@ class Scene extends Component {
         return this.components[&quot;default.ghostMaterial&quot;] || new EmphasisMaterial(this, {
                 id: &quot;default.ghostMaterial&quot;,
                 preset: &quot;sepia&quot;,
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -1900,7 +1897,6 @@ class Scene extends Component {
         return this.components[&quot;default.highlightMaterial&quot;] || new EmphasisMaterial(this, {
                 id: &quot;default.highlightMaterial&quot;,
                 preset: &quot;yellowHighlight&quot;,
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -1922,7 +1918,6 @@ class Scene extends Component {
         return this.components[&quot;default.selectedMaterial&quot;] || new EmphasisMaterial(this, {
                 id: &quot;default.selectedMaterial&quot;,
                 preset: &quot;greenSelected&quot;,
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -1947,7 +1942,6 @@ class Scene extends Component {
                 edgeColor: [0.0, 0.0, 0.0],
                 edgeAlpha: 1.0,
                 edgeWidth: 1,
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -1968,7 +1962,6 @@ class Scene extends Component {
     get outlineMaterial() {
         return this.components[&quot;default.outlineMaterial&quot;] || new OutlineMaterial(this, {
                 id: &quot;default.outlineMaterial&quot;,
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -2163,7 +2156,6 @@ class Scene extends Component {
 
      @param {*} params Picking parameters.
      @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Mesh.
-     @param {Boolean} [params.pickTransparent=true] Whether to pick transparent objects (true) or pick through them as if they did not exist (false).
      @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
      **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
      directly along the negative View-space Z-axis.
@@ -2512,17 +2504,15 @@ class Scene extends Component {
 
      @method clear
      */
-    clear() {  // FIXME: should only clear user-created components
+    clear() {
         var component;
         for (const id in this.components) {
             if (this.components.hasOwnProperty(id)) {
                 // Each component fires &quot;destroyed&quot; as it is destroyed,
                 // which this Scene handles by removing the component
                 component = this.components[id];
-                if (!component._dontClear) { // Don&#x27;t destroy components like xeogl.Camera, xeogl.Input, xeogl.Viewport
+                if (!component._dontClear) { // Don&#x27;t destroy components like xeogl.Camera, xeogl.Input, xeogl.Viewport etc.
                     component.destroy();
-                } else {
-                    this.log(&quot;Not clearing: &quot; + component.type);
                 }
             }
         }
@@ -2783,7 +2773,11 @@ class Scene extends Component {
 
         super.destroy();
 
-        this.clear();
+        for (const id in this.components) {
+            if (this.components.hasOwnProperty(id)) {
+                this.components[id].destroy();
+            }
+        }
 
         this.canvas.gl = null;
 

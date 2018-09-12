@@ -5377,7 +5377,6 @@ const componentClasses = {
  @param [cfg] {*} DepthBuf configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Component.
- @param [cfg.isDefault] {Boolean} Set true when this is one of xeogl's default components.
  */
 
 const type = "xeogl.Component";
@@ -5450,7 +5449,7 @@ class Component {
             this._renderer = this.scene._renderer;
         }
 
-        this._dontClear = !!cfg.dontClear;
+        this._dontClear = !!cfg.dontClear; // Prevent Scene#clear from destroying this component
 
         this._model = null;
         this._renderer = this.scene._renderer;
@@ -19700,16 +19699,12 @@ const Renderer = function ( scene, options) {
         let i;
         let len;
         let mesh;
-        const pickTransparent = !!params.pickTransparent;
-        const includeMeshIds = !!params.includeMeshIds;
-        const excludeMeshIds = !!params.excludeMeshIds;
+        const includeMeshIds = params.includeMeshIds;
+        const excludeMeshIds = params.excludeMeshIds;
 
         for (i = 0, len = meshListLen; i < len; i++) {
             mesh = meshList[i];
             if (mesh._state.culled === true || mesh._state.visible === false || mesh._state.pickable === false) {
-                continue;
-            }
-            if (!pickTransparent && mesh._material._state.alpha < 0) {
                 continue;
             }
             if (includeMeshIds && !includeMeshIds[mesh.id]) {
@@ -27283,7 +27278,6 @@ class Scene extends Component {
         return this.components["default.geometry"] ||
             new BoxGeometry(this, {
                 id: "default.geometry",
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -27304,7 +27298,6 @@ class Scene extends Component {
     get material() {
         return this.components["default.material"] || new PhongMaterial(this, {
                 id: "default.material",
-                isDefault: true,
                 emissive: [0.4, 0.4, 0.4], // Visible by default on geometry without normals
                 dontClear: true
             });
@@ -27327,7 +27320,6 @@ class Scene extends Component {
         return this.components["default.ghostMaterial"] || new EmphasisMaterial(this, {
                 id: "default.ghostMaterial",
                 preset: "sepia",
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -27349,7 +27341,6 @@ class Scene extends Component {
         return this.components["default.highlightMaterial"] || new EmphasisMaterial(this, {
                 id: "default.highlightMaterial",
                 preset: "yellowHighlight",
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -27371,7 +27362,6 @@ class Scene extends Component {
         return this.components["default.selectedMaterial"] || new EmphasisMaterial(this, {
                 id: "default.selectedMaterial",
                 preset: "greenSelected",
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -27396,7 +27386,6 @@ class Scene extends Component {
                 edgeColor: [0.0, 0.0, 0.0],
                 edgeAlpha: 1.0,
                 edgeWidth: 1,
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -27417,7 +27406,6 @@ class Scene extends Component {
     get outlineMaterial() {
         return this.components["default.outlineMaterial"] || new OutlineMaterial(this, {
                 id: "default.outlineMaterial",
-                isDefault: true,
                 dontClear: true
             });
     }
@@ -27612,7 +27600,6 @@ class Scene extends Component {
 
      @param {*} params Picking parameters.
      @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Mesh.
-     @param {Boolean} [params.pickTransparent=true] Whether to pick transparent objects (true) or pick through them as if they did not exist (false).
      @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
      **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
      directly along the negative View-space Z-axis.
@@ -27961,17 +27948,15 @@ class Scene extends Component {
 
      @method clear
      */
-    clear() {  // FIXME: should only clear user-created components
+    clear() {
         var component;
         for (const id in this.components) {
             if (this.components.hasOwnProperty(id)) {
                 // Each component fires "destroyed" as it is destroyed,
                 // which this Scene handles by removing the component
                 component = this.components[id];
-                if (!component._dontClear) { // Don't destroy components like xeogl.Camera, xeogl.Input, xeogl.Viewport
+                if (!component._dontClear) { // Don't destroy components like xeogl.Camera, xeogl.Input, xeogl.Viewport etc.
                     component.destroy();
-                } else {
-                    this.log("Not clearing: " + component.type);
                 }
             }
         }
@@ -28232,7 +28217,11 @@ class Scene extends Component {
 
         super.destroy();
 
-        this.clear();
+        for (const id in this.components) {
+            if (this.components.hasOwnProperty(id)) {
+                this.components[id].destroy();
+            }
+        }
 
         this.canvas.gl = null;
 
@@ -28442,26 +28431,23 @@ const numFPSSamples = 30;
 let lastTime = 0;
 let elapsedTime;
 let totalFPS = 0;
-let suspended = false;
 
 const frame = function () {
-    if (!suspended) {
-        let time = Date.now();
-        if (lastTime > 0) { // Log FPS stats
-            elapsedTime = time - lastTime;
-            var newFPS = 1000 / elapsedTime; // Moving average of FPS
-            totalFPS += newFPS;
-            fpsSamples.push(newFPS);
-            if (fpsSamples.length >= numFPSSamples) {
-                totalFPS -= fpsSamples.shift();
-            }
-            stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
+    let time = Date.now();
+    if (lastTime > 0) { // Log FPS stats
+        elapsedTime = time - lastTime;
+        var newFPS = 1000 / elapsedTime; // Moving average of FPS
+        totalFPS += newFPS;
+        fpsSamples.push(newFPS);
+        if (fpsSamples.length >= numFPSSamples) {
+            totalFPS -= fpsSamples.shift();
         }
-        runTasks(time);
-        fireTickEvents(time);
-        renderScenes();
-        lastTime = time;
+        stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
     }
+    runTasks(time);
+    fireTickEvents(time);
+    renderScenes();
+    lastTime = time;
     window.requestAnimationFrame(frame);
 };
 
