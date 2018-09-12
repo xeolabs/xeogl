@@ -34,10 +34,12 @@
 
     // Create the default scene ourselves so we can
     // have a transparent canvas on it
-    xeogl.scene = new xeogl.Scene({
+    var scene = new xeogl.Scene({
         canvas: "myCanvas",
         transparent: true
     });
+
+    xeogl.setDefaultScene(scene);
 
     // Torus mesh
     new xeogl.Mesh({
@@ -57,8 +59,6 @@
         })
     });
 
-
-    var scene = xeogl.scene;
     var camera = scene.camera;
 
     camera.eye = [0, 0, -4];

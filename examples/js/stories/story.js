@@ -1,86 +1,77 @@
-(function () {
+/**
+ A **Story** defines a panel of text generated from markdown.
 
-    "use strict";
+ Story is the base class for:
 
-    /**
-     A **Story** defines a panel of text generated from markdown.
+ * {{#crossLink "AnnotationStory"}}{{/crossLink}} - a list of
+ {{#crossLink "Annotation"}}Annotations{{/crossLink}} accompanied by a panel of text containing links
+ that activate them.
 
-     Story is the base class for:
+ @class Story
+ @module xeogl
+ @submodule stories
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Story in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Story.
+ @param [cfg.text=""] {String} Story text in markdown format.
+ @extends Component
+ */
+{
+    var converter = new showdown.Converter();
 
-     * {{#crossLink "AnnotationStory"}}{{/crossLink}} - a list of
-     {{#crossLink "Annotation"}}Annotations{{/crossLink}} accompanied by a panel of text containing links
-     that activate them.
+    function idToString(id) {
+        return xeogl._isNumeric(id) ? id : ("'" + id + "'");
+    }
 
-     @class Story
-     @module xeogl
-     @submodule stories
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Story in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Story.
-     @param [cfg.text=""] {String} Story text in markdown format.
-     @extends Component
-     */
-    xeogl.Story = xeogl.Component.extend({
+    xeogl.Story = class xeoglStory extends xeogl.Component {
 
-        type: "xeogl.Story",
-
-        _init: function (cfg) {
+        init(cfg) {
             this._container = document.createElement("div");
             this._container.className = "xeogl-story";
             document.body.appendChild(this._container);
+            this._actions = cfg.actions || {};
             this.text = cfg.text;
-        },
+        }
 
-        _props: {
+        set text(value) {
+            this._text = value || [];
+            this._updateText();
+        }
 
-            text: {
-                set: function (value) {
-                    this._text = value || [];
-                    this._updateText();
-                },
-                get: function () {
-                    return this._text;
+        get text() {
+            return this._text;
+        }
+
+        _updateText() {
+            var text = this._text.join("\n");
+            for (var action in this._actions) {
+                if (this._actions.hasOwnProperty(action)) {
+                    text = text.split(action + "(").join("javascript:xeogl.scenes[" +
+                        idToString(this.scene.id) + "].components[" + idToString(this.id) + "]._actions." + action + ".call(xeogl.scenes[" +
+                        idToString(this.scene.id) + "].components[" + idToString(this.id) + "],");
                 }
             }
-        },
+            this._container.innerHTML = converter.makeHtml(text);
+        }
 
-        _actions: {},
-
-        _updateText: (function () {
-            var converter = new showdown.Converter();
-            function idToString(id) {
-                return xeogl._isNumeric(id) ? id : ("'" + id + "'");
-            }
-            return function () {
-                var text = this._text.join("\n");
-                for (var action in this._actions) {
-                    if (this._actions.hasOwnProperty(action)) {
-                        text = text.split(action + "(").join("javascript:xeogl.scenes[" +
-                            idToString(this.scene.id) + "].components[" + idToString(this.id) + "]._actions." + action + ".call(xeogl.scenes[" +
-                            idToString(this.scene.id) + "].components[" + idToString(this.id) + "],");
-                    }
-                }
-                this._container.innerHTML = converter.makeHtml(text);
-            };
-        })(),
-
-        _clear: function () {
+        _clear() {
             this._text = [];
             this._container.innerHTML = "";
-        },
+        }
 
-        _getJSON: function () {
+        _getJSON() {
             return {
                 text: this._text.slice()
             };
-        },
+        }
 
-        _destroy: function () {
+        destroy() {
+            super.destroy();
             this._container.parentNode.removeChild(this._container);
         }
-    });
-})();
+    }
+}

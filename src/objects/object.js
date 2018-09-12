@@ -568,7 +568,7 @@
  @module xeogl
  @submodule objects
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.guid] {String} Optional globally unique identifier. This is unique not only within the {{#crossLink "Scene"}}{{/crossLink}}, but throughout the entire universe.
@@ -601,20 +601,47 @@
  {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
  @extends Component
  */
-xeogl.Object = xeogl.Component.extend({
+
+import {utils} from '../utils.js';
+import {Component} from '../component.js';
+import {Mesh} from './mesh.js';
+import {AABBGeometry} from '../geometry/aabbGeometry.js';
+import {PhongMaterial} from '../materials/phongMaterial.js';
+import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.Object";
+const angleAxis = new Float32Array(4);
+const q1 = new Float32Array(4);
+const q2 = new Float32Array(4);
+const xAxis = new Float32Array([1, 0, 0]);
+const yAxis = new Float32Array([0, 1, 0]);
+const zAxis = new Float32Array([0, 0, 1]);
+
+const veca = new Float32Array(3);
+const vecb = new Float32Array(3);
+
+const identityMat = math.identityMat4();
+
+class xeoglObject extends Component {
+
 
     /**
-     JavaScript class name for this xeogl.Object.
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
      @property type
      @type String
      @final
      */
-    type: "xeogl.Object",
+    get type() {
+        return type;
+    }
 
-    _init: function (cfg) {
+    init(cfg) {
 
-        var math = xeogl.math;
+        super.init(cfg);
 
         this._guid = cfg.guid;
 
@@ -683,8 +710,8 @@ xeogl.Object = xeogl.Component.extend({
         // Add children, which inherit state from this Object
 
         if (cfg.children) {
-            var children = cfg.children;
-            for (var i = 0, len = children.length; i < len; i++) {
+            const children = cfg.children;
+            for (let i = 0, len = children.length; i < len; i++) {
                 this.addChild(children[i], cfg.inheritStates);
             }
         }
@@ -694,94 +721,91 @@ xeogl.Object = xeogl.Component.extend({
         }
 
         this.scene._objectCreated(this);
-    },
+    }
 
-    _setLocalMatrixDirty: function () {
+    _setLocalMatrixDirty() {
         this._localMatrixDirty = true;
         this._setWorldMatrixDirty();
-    },
+    }
 
-    _setWorldMatrixDirty: function () {
+    _setWorldMatrixDirty() {
         this._worldMatrixDirty = true;
         this._worldNormalMatrixDirty = true;
         if (this._childList) {
-            for (var i = 0, len = this._childList.length; i < len; i++) {
+            for (let i = 0, len = this._childList.length; i < len; i++) {
                 this._childList[i]._setWorldMatrixDirty();
             }
         }
-    },
+    }
 
-    _buildWorldMatrix: function () {
-        var localMatrix = this.matrix;
+    _buildWorldMatrix() {
+        const localMatrix = this.matrix;
         if (!this._parent) {
-            for (var i = 0, len = localMatrix.length; i < len; i++) {
+            for (let i = 0, len = localMatrix.length; i < len; i++) {
                 this._worldMatrix[i] = localMatrix[i];
             }
         } else {
-            xeogl.math.mulMat4(this._parent.worldMatrix, localMatrix, this._worldMatrix);
+            math.mulMat4(this._parent.worldMatrix, localMatrix, this._worldMatrix);
         }
         this._worldMatrixDirty = false;
-    },
+    }
 
-    _buildWorldNormalMatrix: function () {
+    _buildWorldNormalMatrix() {
         if (this._worldMatrixDirty) {
             this._buildWorldMatrix();
         }
         if (!this._worldNormalMatrix) {
-            this._worldNormalMatrix = xeogl.math.mat4();
+            this._worldNormalMatrix = math.mat4();
         }
-        xeogl.math.inverseMat4(this._worldMatrix, this._worldNormalMatrix);
-        xeogl.math.transposeMat4(this._worldNormalMatrix);
+        math.inverseMat4(this._worldMatrix, this._worldNormalMatrix);
+        math.transposeMat4(this._worldNormalMatrix);
         this._worldNormalMatrixDirty = false;
-    },
+    }
 
-    _setAABBDirty: (function () {
-
-        function setSubtreeAABBsDirty(object) {
-            object._aabbDirty = true;
-            object.fire("boundary", true);
-            if (object._childList) {
-                for (var i = 0, len = object._childList.length; i < len; i++) {
-                    setSubtreeAABBsDirty(object._childList[i]);
-                }
+    _setSubtreeAABBsDirty(object) {
+        object._aabbDirty = true;
+        object.fire("boundary", true);
+        if (object._childList) {
+            for (let i = 0, len = object._childList.length; i < len; i++) {
+                this._setSubtreeAABBsDirty(object._childList[i]);
             }
         }
+    }
 
-        return function () {
-            setSubtreeAABBsDirty(this);
-            if (this.collidable) {
-                for (var object = this; object; object = object._parent) {
-                    object._aabbDirty = true;
-                    object.fire("boundary", true);
-                }
+    _setAABBDirty() {
+        this._setSubtreeAABBsDirty(this);
+        if (this.collidable) {
+            for (let object = this; object; object = object._parent) {
+                object._aabbDirty = true;
+                object.fire("boundary", true);
             }
-        };
-    })(),
+        }
+    }
 
-    _updateAABB: function () {
+    _updateAABB() {
         this.scene._aabbDirty = true;
         if (!this._aabb) {
-            this._aabb = xeogl.math.AABB3();
+            this._aabb = math.AABB3();
         }
         if (this._buildMeshAABB) {
             this._buildMeshAABB(this.worldMatrix, this._aabb); // Geometry
         } else { // Object | Group | Model
-            xeogl.math.collapseAABB3(this._aabb);
-            var object;
-            for (var i = 0, len = this._childList.length; i < len; i++) {
+            math.collapseAABB3(this._aabb);
+            let object;
+            for (let i = 0, len = this._childList.length; i < len; i++) {
                 object = this._childList[i];
                 if (!object.collidable) {
                     continue;
                 }
-                xeogl.math.expandAABB3(this._aabb, object.aabb);
+                math.expandAABB3(this._aabb, object.aabb);
             }
             if (!this._aabbCenter) {
                 this._aabbCenter = new Float32Array(3);
             }
-            xeogl.math.getAABB3Center(this._aabb, this._aabbCenter);
+            math.getAABB3Center(this._aabb, this._aabbCenter);
         }
         this._aabbDirty = false;
-    },
+    }
 
     /**
      Adds a child.
@@ -800,17 +824,17 @@ xeogl.Object = xeogl.Component.extend({
      {{#crossLink "Object/selected:property"}}{{/crossLink}}, {{#crossLink "Object/edges:property"}}{{/crossLink}}, {{#crossLink "Object/colorize:property"}}{{/crossLink}} and {{#crossLink "Object/opacity:property"}}{{/crossLink}}.
      @returns {Object} The child object.
      */
-    addChild: function (object, inheritStates) {
-        if (xeogl._isNumeric(object) || xeogl._isString(object)) {
-            var objectId = object;
+    addChild(object, inheritStates) {
+        if (utils.isNumeric(object) || utils.isString(object)) {
+            const objectId = object;
             object = this.scene.objects[objectId];
             if (!object) {
-                this.warn("Object not found: " + xeogl._inQuotes(objectId));
+                this.warn("Object not found: " + utils.inQuotes(objectId));
                 return;
             }
-        } else if (xeogl._isObject(object)) {
+        } else if (utils.isObject(object)) {
             throw "addChild( * ) not implemented";
-            var cfg = object;
+            const cfg = object;
             // object = new xeogl.Group(this.scene, cfg);
             if (!object) {
                 return;
@@ -828,7 +852,7 @@ xeogl.Object = xeogl.Component.extend({
                 object._parent.removeChild(object);
             }
         }
-        var id = object.id;
+        const id = object.id;
         if (object.scene.id !== this.scene.id) {
             this.error("Object not in same Scene: " + object.id);
             return;
@@ -857,7 +881,7 @@ xeogl.Object = xeogl.Component.extend({
         object._setWorldMatrixDirty();
         object._setAABBDirty();
         return object;
-    },
+    }
 
     /**
      Removes the given child.
@@ -865,8 +889,8 @@ xeogl.Object = xeogl.Component.extend({
      @method removeChild
      @param {Object} object Child to remove.
      */
-    removeChild: function (object) {
-        for (var i = 0, len = this._childList.length; i < len; i++) {
+    removeChild(object) {
+        for (let i = 0, len = this._childList.length; i < len; i++) {
             if (this._childList[i].id === object.id) {
                 object._parent = null;
                 this._childList = this._childList.splice(i, 1);
@@ -879,16 +903,16 @@ xeogl.Object = xeogl.Component.extend({
                 return;
             }
         }
-    },
+    }
 
     /**
      Removes all children.
 
      @method removeChildren
      */
-    removeChildren: function () {
-        var object;
-        for (var i = 0, len = this._childList.length; i < len; i++) {
+    removeChildren() {
+        let object;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
             object = this._childList[i];
             object._parent = null;
             this.scene.rootObjects[object.id] = object;
@@ -899,7 +923,7 @@ xeogl.Object = xeogl.Component.extend({
         this._childMap = {};
         this._childIDs = null;
         this._setAABBDirty();
-    },
+    }
 
     /**
      Rotates about the given local axis by the given increment.
@@ -908,24 +932,19 @@ xeogl.Object = xeogl.Component.extend({
      @paream {Float32Array} axis Local axis about which to rotate.
      @param {Number} angle Angle increment in degrees.
      */
-    rotate: (function () {
-        var angleAxis = new Float32Array(4);
-        var q1 = new Float32Array(4);
-        var q2 = new Float32Array(4);
-        return function rotateOnWorldAxis(axis, angle) {
-            angleAxis[0] = axis[0];
-            angleAxis[1] = axis[1];
-            angleAxis[2] = axis[2];
-            angleAxis[3] = angle * xeogl.math.DEGTORAD;
-            xeogl.math.angleAxisToQuaternion(angleAxis, q1);
-            xeogl.math.mulQuaternions(this.quaternion, q1, q2);
-            this.quaternion = q2;
-            this._setLocalMatrixDirty();
-            this._setAABBDirty();
-            this._renderer.imageDirty();
-            return this;
-        };
-    })(),
+    rotate(axis, angle) {
+        angleAxis[0] = axis[0];
+        angleAxis[1] = axis[1];
+        angleAxis[2] = axis[2];
+        angleAxis[3] = angle * math.DEGTORAD;
+        math.angleAxisToQuaternion(angleAxis, q1);
+        math.mulQuaternions(this.quaternion, q1, q2);
+        this.quaternion = q2;
+        this._setLocalMatrixDirty();
+        this._setAABBDirty();
+        this._renderer.imageDirty();
+        return this;
+    }
 
     /**
      Rotates about the given World-space axis by the given increment.
@@ -934,20 +953,16 @@ xeogl.Object = xeogl.Component.extend({
      @paream {Float32Array} axis Local axis about which to rotate.
      @param {Number} angle Angle increment in degrees.
      */
-    rotateOnWorldAxis: (function () {
-        var angleAxis = new Float32Array(4);
-        var q1 = new Float32Array(4);
-        return function rotateOnWorldAxis(axis, angle) {
-            angleAxis[0] = axis[0];
-            angleAxis[1] = axis[1];
-            angleAxis[2] = axis[2];
-            angleAxis[3] = angle * xeogl.math.DEGTORAD;
-            xeogl.math.angleAxisToQuaternion(angleAxis, q1);
-            xeogl.math.mulQuaternions(q1, this.quaternion, q1);
-            //this.quaternion.premultiply(q1);
-            return this;
-        };
-    })(),
+    rotateOnWorldAxis(axis, angle) {
+        angleAxis[0] = axis[0];
+        angleAxis[1] = axis[1];
+        angleAxis[2] = axis[2];
+        angleAxis[3] = angle * math.DEGTORAD;
+        math.angleAxisToQuaternion(angleAxis, q1);
+        math.mulQuaternions(q1, this.quaternion, q1);
+        //this.quaternion.premultiply(q1);
+        return this;
+    }
 
     /**
      Rotates about the local X-axis by the given increment.
@@ -955,12 +970,9 @@ xeogl.Object = xeogl.Component.extend({
      @method rotateX
      @param {Number} angle Angle increment in degrees.
      */
-    rotateX: (function () {
-        var axis = new Float32Array([1, 0, 0]);
-        return function rotateX(angle) {
-            return this.rotate(axis, angle);
-        };
-    })(),
+    rotateX(angle) {
+        return this.rotate(xAxis, angle);
+    }
 
     /**
      Rotates about the local Y-axis by the given increment.
@@ -968,12 +980,9 @@ xeogl.Object = xeogl.Component.extend({
      @method rotateY
      @param {Number} angle Angle increment in degrees.
      */
-    rotateY: (function () {
-        var axis = new Float32Array([0, 1, 0]);
-        return function rotateY(angle) {
-            return this.rotate(axis, angle);
-        };
-    })(),
+    rotateY(angle) {
+        return this.rotate(yAxis, angle);
+    }
 
     /**
      Rotates about the local Z-axis by the given increment.
@@ -981,12 +990,9 @@ xeogl.Object = xeogl.Component.extend({
      @method rotateZ
      @param {Number} angle Angle increment in degrees.
      */
-    rotateZ: (function () {
-        var axis = new Float32Array([0, 0, 1]);
-        return function rotateZ(angle) {
-            return this.rotate(axis, angle);
-        };
-    })(),
+    rotateZ(angle) {
+        return this.rotate(zAxis, angle);
+    }
 
     /**
      Translates along local space vector by the given increment.
@@ -995,19 +1001,15 @@ xeogl.Object = xeogl.Component.extend({
      @param {Float32Array} axis Normalized local space 3D vector along which to translate.
      @param {Number} distance Distance to translate along  the vector.
      */
-    translate: (function () {
-        var veca = new Float32Array(3);
-        var vecb = new Float32Array(3);
-        return function (axis, distance) {
-            xeogl.math.vec3ApplyQuaternion(this.quaternion, axis, veca);
-            xeogl.math.mulVec3Scalar(veca, distance, vecb);
-            xeogl.math.addVec3(this.position, vecb, this.position);
-            this._setLocalMatrixDirty();
-            this._setAABBDirty();
-            this._renderer.imageDirty();
-            return this;
-        };
-    })(),
+    translate(axis, distance) {
+        math.vec3ApplyQuaternion(this.quaternion, axis, veca);
+        math.mulVec3Scalar(veca, distance, vecb);
+        math.addVec3(this.position, vecb, this.position);
+        this._setLocalMatrixDirty();
+        this._setAABBDirty();
+        this._renderer.imageDirty();
+        return this;
+    }
 
     /**
      Translates along the local X-axis by the given increment.
@@ -1015,12 +1017,9 @@ xeogl.Object = xeogl.Component.extend({
      @method translateX
      @param {Number} distance Distance to translate along  the X-axis.
      */
-    translateX: (function () {
-        var v1 = new Float32Array([1, 0, 0]);
-        return function translateX(distance) {
-            return this.translate(v1, distance);
-        };
-    })(),
+    translateX(distance) {
+        return this.translate(xAxis, distance);
+    }
 
     /**
      * Translates along the local Y-axis by the given increment.
@@ -1028,12 +1027,9 @@ xeogl.Object = xeogl.Component.extend({
      * @method translateX
      * @param {Number} distance Distance to translate along  the Y-axis.
      */
-    translateY: (function () {
-        var v1 = new Float32Array([0, 1, 0]);
-        return function translateY(distance) {
-            return this.translate(v1, distance);
-        };
-    })(),
+    translateY(distance) {
+        return this.translate(yAxis, distance);
+    }
 
     /**
      Translates along the local Z-axis by the given increment.
@@ -1041,759 +1037,710 @@ xeogl.Object = xeogl.Component.extend({
      @method translateX
      @param {Number} distance Distance to translate along  the Z-axis.
      */
-    translateZ: (function () {
-        var v1 = new Float32Array([0, 0, 1]);
-        return function translateZ(distance) {
-            return this.translate(v1, distance);
-        };
-    })(),
-
-    _props: {
-
-        /**
-         Globally unique identifier.
-
-         This is unique not only within the {{#crossLink "Scene"}}{{/crossLink}}, but throughout the entire universe.
-
-         Only defined when given to the constructor.
-
-         @property guid
-         @type String
-         @final
-         */
-        guid: {
-            get: function () {
-                return this._guid;
-            }
-        },
-
-        /**
-         Optional entity classification when using within a semantic data model.
-
-         See the Object documentation on "Applying a semantic data model" for usage.
-
-         @property entityType
-         @default null
-         @type String
-         @final
-         */
-        entityType: {
-            get: function () {
-                return this._entityType;
-            }
-        },
-
-        //------------------------------------------------------------------------------------------------------------------
-        // Children and parent properties
-        //------------------------------------------------------------------------------------------------------------------
-
-        /**
-         Number of child {{#crossLink "Object"}}Objects{{/crossLink}}.
-
-         @property numChildren
-         @final
-         @type Number
-         */
-        numChildren: {
-            get: function () {
-                return this._childList.length;
-            }
-        },
-
-        /**
-         Array of child {{#crossLink "Object"}}Objects{{/crossLink}}.
-
-         @property children
-         @final
-         @type Array
-         */
-        children: {
-            get: function () {
-                return this._childList;
-            }
-        },
-
-        /**
-         Child {{#crossLink "Object"}}Objects{{/crossLink}} mapped to their IDs.
-
-         @property childMap
-         @final
-         @type {*}
-         */
-        childMap: {
-            get: function () {
-                return this._childMap;
-            }
-        },
-
-        /**
-         IDs of child {{#crossLink "Object"}}Objects{{/crossLink}}.
-
-         @property childIDs
-         @final
-         @type Array
-         */
-        childIDs: {
-            get: function () {
-                if (!this._childIDs) {
-                    this._childIDs = Object.keys(this._childMap);
-                }
-                return this._childIDs;
-            }
-        },
-
-        /**
-         The parent.
-
-         The parent Group may also be set by passing the Object to the
-         Group/Model's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
-
-         @property parent
-         @type Group
-         */
-        parent: {
-            set: function (object) {
-                if (xeogl._isNumeric(object) || xeogl._isString(object)) {
-                    var objectId = object;
-                    object = this.scene.objects[objectId];
-                    if (!object) {
-                        this.warn("Group not found: " + xeogl._inQuotes(objectId));
-                        return;
-                    }
-                }
-                if (object.scene.id !== this.scene.id) {
-                    this.error("Group not in same Scene: " + object.id);
-                    return;
-                }
-                if (this._parent && this._parent.id === object.id) {
-                    this.warn("Already a child of Group: " + object.id);
-                    return;
-                }
-                object.addChild(this);
-            },
-            get: function () {
-                return this._parent;
-            }
-        },
-
-        //------------------------------------------------------------------------------------------------------------------
-        // Transform properties
-        //------------------------------------------------------------------------------------------------------------------
-
-        /**
-         Local translation.
-
-         @property position
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-        position: {
-            set: function (value) {
-                this._position.set(value || [0, 0, 0]);
-                this._setLocalMatrixDirty();
-                this._setAABBDirty();
-                this._renderer.imageDirty();
-            },
-            get: function () {
-                return this._position;
-            }
-        },
-
-        /**
-         Local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
-
-         @property rotation
-         @default [0,0,0]
-         @type {Float32Array}
-         */
-        rotation: {
-            set: function (value) {
-                this._rotation.set(value || [0, 0, 0]);
-                xeogl.math.eulerToQuaternion(this._rotation, "XYZ", this._quaternion);
-                this._setLocalMatrixDirty();
-                this._setAABBDirty();
-                this._renderer.imageDirty();
-            },
-            get: function () {
-                return this._rotation;
-            }
-        },
-
-        /**
-         Local rotation quaternion.
-
-         @property quaternion
-         @default [0,0,0, 1]
-         @type {Float32Array}
-         */
-        quaternion: {
-            set: function (value) {
-                this._quaternion.set(value || [0, 0, 0, 1]);
-                xeogl.math.quaternionToEuler(this._quaternion, "XYZ", this._rotation);
-                this._setLocalMatrixDirty();
-                this._setAABBDirty();
-                this._renderer.imageDirty();
-            },
-            get: function () {
-                return this._quaternion;
-            }
-        },
-
-        /**
-         Local scale.
-
-         @property scale
-         @default [1,1,1]
-         @type {Float32Array}
-         */
-        scale: {
-            set: function (value) {
-                this._scale.set(value || [1, 1, 1]);
-                this._setLocalMatrixDirty();
-                this._setAABBDirty();
-                this._renderer.imageDirty();
-            },
-            get: function () {
-                return this._scale;
-            }
-        },
-
-        /**
-         * Local matrix.
-         *
-         * @property matrix
-         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-         * @type {Float32Array}
-         */
-        matrix: {
-            set: (function () {
-                var identityMat = xeogl.math.identityMat4();
-                return function (value) {
-                    if (!this.__localMatrix) {
-                        this.__localMatrix = xeogl.math.identityMat4();
-                    }
-                    this.__localMatrix.set(value || identityMat);
-                    xeogl.math.decomposeMat4(this.__localMatrix, this._position, this._quaternion, this._scale);
-                    this._localMatrixDirty = false;
-                    this._setWorldMatrixDirty();
-                    this._setAABBDirty();
-                    this._renderer.imageDirty();
-                };
-            })(),
-            get: function () {
-                if (this._localMatrixDirty) {
-                    if (!this.__localMatrix) {
-                        this.__localMatrix = xeogl.math.identityMat4();
-                    }
-                    xeogl.math.composeMat4(this._position, this._quaternion, this._scale, this.__localMatrix);
-                    this._localMatrixDirty = false;
-                }
-                return this.__localMatrix;
-            }
-        },
-
-        /**
-         * The World matrix.
-         *
-         * @property worldMatrix
-         * @type {Float32Array}
-         */
-        worldMatrix: {
-            get: function () {
-                if (this._worldMatrixDirty) {
-                    this._buildWorldMatrix();
-                }
-                return this._worldMatrix;
-            }
-        },
-
-        /**
-         * This World normal matrix.
-         *
-         * @property worldNormalMatrix
-         * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-         * @type {Float32Array}
-         */
-        worldNormalMatrix: {
-            get: function () {
-                if (this._worldNormalMatrixDirty) {
-                    this._buildWorldNormalMatrix();
-                }
-                return this._worldNormalMatrix;
-            }
-        },
-
-        // worldPosition: {
-        //     get: function (optionalTarget) {
-        //         var result = optionalTarget || new Vector3();
-        //         this.updateMatrixWorld(true);
-        //         return result.setFromMatrixPosition(this.matrixWorld);
-        //     }
-        // },
-        //
-        // worldQuaternion: {
-        //     get: function () {
-        //         var position = new Vector3();
-        //         var scale = new Vector3();
-        //         return function getWorldQuaternion(optionalTarget) {
-        //             var result = optionalTarget || new Quaternion();
-        //             this.updateMatrixWorld(true);
-        //             this.matrixWorld.decompose(position, result, scale);
-        //             return result;
-        //         };
-        //     }()
-        // },
-        //
-        // worldRotation: {
-        //     get: function () {
-        //         var quaternion = new Quaternion();
-        //         return function getWorldRotation(optionalTarget) {
-        //             var result = optionalTarget || new Euler();
-        //             this.getWorldQuaternion(quaternion);
-        //             return result.setFromQuaternion(quaternion, this.rotation.order, false)
-        //         };
-        //     }
-        // }(),
-        //
-        // worldScale: {
-        //     get: (function () {
-        //         var position = new Float32Array(3);
-        //         var quaternion = new Float32Array(4);
-        //         return function getWorldScale(optionalTarget) {
-        //             var result = optionalTarget || new Float32Array(3);
-        //             xeogl.math.decomposeMat4(this.worldMatrix, position, quaternion, result);
-        //             return result;
-        //         };
-        //     })()
-        // },
-        //
-        // worldDirection: {
-        //     get: (function () {
-        //         var quaternion = new Quaternion();
-        //         return function getWorldDirection(optionalTarget) {
-        //             var result = optionalTarget || new Vector3();
-        //             this.getWorldQuaternion(quaternion);
-        //             return result.set(0, 0, 1).applyQuaternion(quaternion);
-        //         };
-        //     })()
-        // },
-
-        //------------------------------------------------------------------------------------------------------------------
-        // Boundary properties
-        //------------------------------------------------------------------------------------------------------------------
-
-        /**
-         World-space 3D axis-aligned bounding box (AABB).
-
-         Represented by a six-element Float32Array containing the min/max extents of the
-         axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
-
-         @property aabb
-         @final
-         @type {Float32Array}
-         */
-        aabb: {
-            get: function () {
-                if (this._aabbDirty) {
-                    this._updateAABB();
-                }
-                return this._aabb;
-            }
-        },
-
-        /**
-         World-space 3D center.
-
-         @property center
-         @final
-         @type {Float32Array}
-         */
-        center: {
-            get: function () {
-                if (this._aabbDirty) {
-                    this._updateAABB();
-                }
-                return this._aabbCenter;
-            }
-        },
-
-        /**
-         Indicates if visible.
-
-         Only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
-         {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
-
-         Each visible Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is set to a value.
-
-         @property visible
-         @default true
-         @type Boolean
-         */
-        visible: {
-            set: function (visible) {
-                visible = visible !== false;
-                this._visible = visible;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].visible = visible;
-                }
-                if (this._entityType) {
-                    this.scene._entityVisibilityUpdated(this, visible);
-                }
-            },
-            get: function () {
-                return this._visible;
-            }
-        },
-
-        /**
-         Indicates if highlighted.
-
-         Each highlighted Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is set to a value.
-
-         @property highlighted
-         @default false
-         @type Boolean
-         */
-        highlighted: {
-            set: function (highlighted) {
-                highlighted = !!highlighted;
-                this._highlighted = highlighted;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].highlighted = highlighted;
-                }
-                if (this._entityType) {
-                    this.scene._entityHighlightedUpdated(this, highlighted);
-                }
-            },
-            get: function () {
-                return this._highlighted;
-            }
-        },
-
-        /**
-         Indicates if ghosted.
-
-         Each ghosted Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is set to a value.
-
-         @property ghosted
-         @default false
-         @type Boolean
-         */
-        ghosted: {
-            set: function (ghosted) {
-                ghosted = !!ghosted;
-                this._ghosted = ghosted;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].ghosted = ghosted;
-                }
-                if (this._entityType) {
-                    this.scene._entityGhostedUpdated(this, ghosted);
-                }
-            },
-            get: function () {
-                return this._ghosted;
-            }
-        },
-
-        /**
-         Indicates if selected.
-
-         Each selected Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
-         {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-         is set to a value.
-
-         @property selected
-         @default false
-         @type Boolean
-         */
-        selected: {
-            set: function (selected) {
-                selected = !!selected;
-                this._selected = selected;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].selected = selected;
-                }
-                if (this._entityType) {
-                    this.scene._entitySelectedUpdated(this, selected);
-                }
-            },
-            get: function () {
-                return this._selected;
-            }
-        },
-
-        /**
-         Indicates if edges are emphasized.
-
-         @property edges
-         @default false
-         @type Boolean
-         */
-        edges: {
-            set: function (edges) {
-                edges = !!edges;
-                this._edges = edges;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].edges = edges;
-                }
-            },
-            get: function () {
-                return this._edges;
-            }
-        },
-
-        /**
-         Indicates if culled from view.
-
-         Only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
-         {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
-
-         @property culled
-         @default false
-         @type Boolean
-         */
-        culled: {
-            set: function (culled) {
-                culled = !!culled;
-                this._culled = culled;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].culled = culled;
-                }
-            },
-            get: function () {
-                return this._culled;
-            }
-        },
-
-        /**
-         Indicates if clippable.
-
-         Clipping is done by the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}} component.
-
-         @property clippable
-         @default true
-         @type Boolean
-         */
-        clippable: {
-            set: function (clippable) {
-                clippable = clippable !== false;
-                this._clippable = clippable;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].clippable = clippable;
-                }
-            },
-            get: function () {
-                return this._clippable;
-            }
-        },
-
-        /**
-         Indicates if included in boundary calculations.
-
-         @property collidable
-         @default true
-         @type Boolean
-         */
-        collidable: {
-            set: function (collidable) {
-                collidable = collidable !== false;
-                this._collidable = collidable;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].collidable = collidable;
-                }
-            },
-            get: function () {
-                return this._collidable;
-            }
-        },
-
-        /**
-         Whether or not to allow picking.
-
-         Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
-
-         @property pickable
-         @default true
-         @type Boolean
-         */
-        pickable: {
-            set: function (pickable) {
-                pickable = pickable !== false;
-                this._pickable = pickable;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].pickable = pickable;
-                }
-            },
-            get: function () {
-                return this._pickable;
-            }
-        },
-
-        /**
-         RGB colorize color, multiplies by the rendered fragment color.
-
-         @property colorize
-         @default [1.0, 1.0, 1.0]
-         @type Float32Array
-         */
-        colorize: {
-            set: function (rgb) {
-                var colorize = this._colorize;
-                if (!colorize) {
-                    colorize = this._colorize = new Float32Array(4);
-                    colorize[3] = 1.0;
-                }
-                if (rgb) {
-                    colorize[0] = rgb[0];
-                    colorize[1] = rgb[1];
-                    colorize[2] = rgb[2];
-                } else {
-                    colorize[0] = 1;
-                    colorize[1] = 1;
-                    colorize[2] = 1;
-                }
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].colorize = colorize;
-                }
-            },
-            get: function () {
-                return this._colorize.slice(0, 3);
-            }
-        },
-
-        /**
-         Opacity factor, multiplies by the rendered fragment alpha.
-
-         This is a factor in range ````[0..1]````.
-
-         @property opacity
-         @default 1.0
-         @type Number
-         */
-        opacity: {
-            set: function (opacity) {
-                var colorize = this._colorize;
-                if (!colorize) {
-                    colorize = this._colorize = new Float32Array(4);
-                    colorize[0] = 1;
-                    colorize[1] = 1;
-                    colorize[2] = 1;
-                }
-                colorize[3] = opacity !== null && opacity !== undefined ? opacity : 1.0;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].opacity = opacity;
-                }
-            },
-            get: function () {
-                return this._colorize[3];
-            }
-        },
-
-        /**
-         Indicates if outlined.
-
-         @property outlined
-         @default false
-         @type Boolean
-         */
-        outlined: {
-            set: function (outlined) {
-                outlined = !!outlined;
-                this._outlined = outlined;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].outlined = outlined;
-                }
-            },
-            get: function () {
-                return this._outlined;
-            }
-        },
-
-        /**
-         Indicates if casting shadows.
-
-         @property castShadow
-         @default true
-         @type Boolean
-         */
-        castShadow: {
-            set: function (castShadow) {
-                castShadow = !!castShadow;
-                this._castShadow = castShadow;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].castShadow = castShadow;
-                }
-            },
-            get: function () {
-                return this._castShadow;
-            }
-        },
-
-        /**
-         Indicates if receiving shadows.
-
-         @property receiveShadow
-         @default true
-         @type Boolean
-         */
-        receiveShadow: {
-            set: function (receiveShadow) {
-                receiveShadow = !!receiveShadow;
-                this._receiveShadow = receiveShadow;
-                for (var i = 0, len = this._childList.length; i < len; i++) {
-                    this._childList[i].receiveShadow = receiveShadow;
-                }
-            },
-            get: function () {
-                return this._receiveShadow;
-            }
-        },
-
-        /**
-         Indicates if the 3D World-space axis-aligned bounding box (AABB) is visible.
-
-         @property aabbVisible
-         @default false
-         @type {Boolean}
-         */
-        aabbVisible: {
-            set: function (show) {
-                if (!show && !this._aabbHelper) {
-                    return;
-                }
-                if (!this._aabbHelper) {
-                    this._aabbHelper = new xeogl.Mesh(this, {
-                        geometry: new xeogl.AABBGeometry(this, {
-                            target: this
-                        }),
-                        material: new xeogl.PhongMaterial(this, {
-                            diffuse: [0.5, 1.0, 0.5],
-                            emissive: [0.5, 1.0, 0.5],
-                            lineWidth: 2
-                        })
-                    });
-                }
-                this._aabbHelper.visible = show;
-            },
-            get: function () {
-                return this._aabbHelper ? this._aabbHelper.visible : false;
+    translateZ(distance) {
+        return this.translate(zAxis, distance);
+    }
+
+    /**
+     Globally unique identifier.
+
+     This is unique not only within the {{#crossLink "Scene"}}{{/crossLink}}, but throughout the entire universe.
+
+     Only defined when given to the constructor.
+
+     @property guid
+     @type String
+     @final
+     */
+    get guid() {
+        return this._guid;
+    }
+
+    /**
+     Optional entity classification when using within a semantic data model.
+
+     See the Object documentation on "Applying a semantic data model" for usage.
+
+     @property entityType
+     @default null
+     @type String
+     @final
+     */
+    get entityType() {
+        return this._entityType;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Children and parent properties
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     Number of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+     @property numChildren
+     @final
+     @type Number
+     */
+    get numChildren() {
+        return this._childList.length;
+    }
+
+    /**
+     Array of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+     @property children
+     @final
+     @type Array
+     */
+    get children() {
+        return this._childList;
+    }
+
+    /**
+     Child {{#crossLink "Object"}}Objects{{/crossLink}} mapped to their IDs.
+
+     @property childMap
+     @final
+     @type {*}
+     */
+    get childMap() {
+        return this._childMap;
+    }
+
+    /**
+     IDs of child {{#crossLink "Object"}}Objects{{/crossLink}}.
+
+     @property childIDs
+     @final
+     @type Array
+     */
+    get childIDs() {
+        if (!this._childIDs) {
+            this._childIDs = Object.keys(this._childMap);
+        }
+        return this._childIDs;
+    }
+
+    /**
+     The parent.
+
+     The parent Group may also be set by passing the Object to the
+     Group/Model's {{#crossLink "Group/addChild:method"}}addChild(){{/crossLink}} method.
+
+     @property parent
+     @type Group
+     */
+    set parent(object) {
+        if (utils.isNumeric(object) || utils.isString(object)) {
+            const objectId = object;
+            object = this.scene.objects[objectId];
+            if (!object) {
+                this.warn("Group not found: " + utils.inQuotes(objectId));
+                return;
             }
         }
-    },
+        if (object.scene.id !== this.scene.id) {
+            this.error("Group not in same Scene: " + object.id);
+            return;
+        }
+        if (this._parent && this._parent.id === object.id) {
+            this.warn("Already a child of Group: " + object.id);
+            return;
+        }
+        object.addChild(this);
+    }
 
-    _destroy: function () {
-        this._super();
+    get parent() {
+        return this._parent;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Transform properties
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     Local translation.
+
+     @property position
+     @default [0,0,0]
+     @type {Float32Array}
+     */
+    set position(value) {
+        this._position.set(value || [0, 0, 0]);
+        this._setLocalMatrixDirty();
+        this._setAABBDirty();
+        this._renderer.imageDirty();
+    }
+
+    get position() {
+        return this._position;
+    }
+
+    /**
+     Local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+
+     @property rotation
+     @default [0,0,0]
+     @type {Float32Array}
+     */
+    set rotation(value) {
+        this._rotation.set(value || [0, 0, 0]);
+        math.eulerToQuaternion(this._rotation, "XYZ", this._quaternion);
+        this._setLocalMatrixDirty();
+        this._setAABBDirty();
+        this._renderer.imageDirty();
+    }
+
+    get rotation() {
+        return this._rotation;
+    }
+
+    /**
+     Local rotation quaternion.
+
+     @property quaternion
+     @default [0,0,0, 1]
+     @type {Float32Array}
+     */
+    set quaternion(value) {
+        this._quaternion.set(value || [0, 0, 0, 1]);
+        math.quaternionToEuler(this._quaternion, "XYZ", this._rotation);
+        this._setLocalMatrixDirty();
+        this._setAABBDirty();
+        this._renderer.imageDirty();
+    }
+
+    get quaternion() {
+        return this._quaternion;
+    }
+
+    /**
+     Local scale.
+
+     @property scale
+     @default [1,1,1]
+     @type {Float32Array}
+     */
+    set scale(value) {
+        this._scale.set(value || [1, 1, 1]);
+        this._setLocalMatrixDirty();
+        this._setAABBDirty();
+        this._renderer.imageDirty();
+    }
+
+    get scale() {
+        return this._scale;
+    }
+
+    /**
+     * Local matrix.
+     *
+     * @property matrix
+     * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+     * @type {Float32Array}
+     */
+    set matrix(value) {
+
+        if (!this.__localMatrix) {
+            this.__localMatrix = math.identityMat4();
+        }
+        this.__localMatrix.set(value || identityMat);
+        math.decomposeMat4(this.__localMatrix, this._position, this._quaternion, this._scale);
+        this._localMatrixDirty = false;
+        this._setWorldMatrixDirty();
+        this._setAABBDirty();
+        this._renderer.imageDirty();
+    }
+
+    get matrix() {
+        if (this._localMatrixDirty) {
+            if (!this.__localMatrix) {
+                this.__localMatrix = math.identityMat4();
+            }
+            math.composeMat4(this._position, this._quaternion, this._scale, this.__localMatrix);
+            this._localMatrixDirty = false;
+        }
+        return this.__localMatrix;
+    }
+
+    /**
+     * The World matrix.
+     *
+     * @property worldMatrix
+     * @type {Float32Array}
+     */
+    get worldMatrix() {
+        if (this._worldMatrixDirty) {
+            this._buildWorldMatrix();
+        }
+        return this._worldMatrix;
+    }
+
+    /**
+     * This World normal matrix.
+     *
+     * @property worldNormalMatrix
+     * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+     * @type {Float32Array}
+     */
+    get worldNormalMatrix() {
+        if (this._worldNormalMatrixDirty) {
+            this._buildWorldNormalMatrix();
+        }
+        return this._worldNormalMatrix;
+    }
+
+    // worldPosition: {
+    //     get: function (optionalTarget) {
+    //         var result = optionalTarget || new Vector3();
+    //         this.updateMatrixWorld(true);
+    //         return result.setFromMatrixPosition(this.matrixWorld);
+    //     }
+    // },
+    //
+    // worldQuaternion: {
+    //     get: function () {
+    //         var position = new Vector3();
+    //         var scale = new Vector3();
+    //         return function getWorldQuaternion(optionalTarget) {
+    //             var result = optionalTarget || new Quaternion();
+    //             this.updateMatrixWorld(true);
+    //             this.matrixWorld.decompose(position, result, scale);
+    //             return result;
+    //         };
+    //     }()
+    // },
+    //
+    // worldRotation: {
+    //     get: function () {
+    //         var quaternion = new Quaternion();
+    //         return function getWorldRotation(optionalTarget) {
+    //             var result = optionalTarget || new Euler();
+    //             this.getWorldQuaternion(quaternion);
+    //             return result.setFromQuaternion(quaternion, this.rotation.order, false)
+    //         };
+    //     }
+    // }(),
+    //
+    // worldScale: {
+    //     get: (function () {
+    //         var position = new Float32Array(3);
+    //         var quaternion = new Float32Array(4);
+    //         return function getWorldScale(optionalTarget) {
+    //             var result = optionalTarget || new Float32Array(3);
+    //             math.decomposeMat4(this.worldMatrix, position, quaternion, result);
+    //             return result;
+    //         };
+    //     })()
+    // },
+    //
+    // worldDirection: {
+    //     get: (function () {
+    //         var quaternion = new Quaternion();
+    //         return function getWorldDirection(optionalTarget) {
+    //             var result = optionalTarget || new Vector3();
+    //             this.getWorldQuaternion(quaternion);
+    //             return result.set(0, 0, 1).applyQuaternion(quaternion);
+    //         };
+    //     })()
+    // },
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Boundary properties
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     World-space 3D axis-aligned bounding box (AABB).
+
+     Represented by a six-element Float32Array containing the min/max extents of the
+     axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+
+     @property aabb
+     @final
+     @type {Float32Array}
+     */
+    get aabb() {
+        if (this._aabbDirty) {
+            this._updateAABB();
+        }
+        return this._aabb;
+    }
+
+    /**
+     World-space 3D center.
+
+     @property center
+     @final
+     @type {Float32Array}
+     */
+    get center() {
+        if (this._aabbDirty) {
+            this._updateAABB();
+        }
+        return this._aabbCenter;
+    }
+
+    /**
+     Indicates if visible.
+
+     Only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+     {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+     Each visible Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is set to a value.
+
+     @property visible
+     @default true
+     @type Boolean
+     */
+    set visible(visible) {
+        visible = visible !== false;
+        this._visible = visible;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].visible = visible;
+        }
+        if (this._entityType) {
+            this.scene._entityVisibilityUpdated(this, visible);
+        }
+    }
+
+    get visible() {
+        return this._visible;
+    }
+
+    /**
+     Indicates if highlighted.
+
+     Each highlighted Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is set to a value.
+
+     @property highlighted
+     @default false
+     @type Boolean
+     */
+    set highlighted(highlighted) {
+        highlighted = !!highlighted;
+        this._highlighted = highlighted;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].highlighted = highlighted;
+        }
+        if (this._entityType) {
+            this.scene._entityHighlightedUpdated(this, highlighted);
+        }
+    }
+
+    get highlighted() {
+        return this._highlighted;
+    }
+
+    /**
+     Indicates if ghosted.
+
+     Each ghosted Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is set to a value.
+
+     @property ghosted
+     @default false
+     @type Boolean
+     */
+    set ghosted(ghosted) {
+        ghosted = !!ghosted;
+        this._ghosted = ghosted;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].ghosted = ghosted;
+        }
+        if (this._entityType) {
+            this.scene._entityGhostedUpdated(this, ghosted);
+        }
+    }
+
+    get ghosted() {
+        return this._ghosted;
+    }
+
+    /**
+     Indicates if selected.
+
+     Each selected Object is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map while its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is set to a value.
+
+     @property selected
+     @default false
+     @type Boolean
+     */
+    set selected(selected) {
+        selected = !!selected;
+        this._selected = selected;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].selected = selected;
+        }
+        if (this._entityType) {
+            this.scene._entitySelectedUpdated(this, selected);
+        }
+    }
+
+    get selected() {
+        return this._selected;
+    }
+
+    /**
+     Indicates if edges are emphasized.
+
+     @property edges
+     @default false
+     @type Boolean
+     */
+    set edges(edges) {
+        edges = !!edges;
+        this._edges = edges;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].edges = edges;
+        }
+    }
+
+    get edges() {
+        return this._edges;
+    }
+
+    /**
+     Indicates if culled from view.
+
+     Only rendered when {{#crossLink "Object/visible:property"}}{{/crossLink}} is true and
+     {{#crossLink "Object/culled:property"}}{{/crossLink}} is false.
+
+     @property culled
+     @default false
+     @type Boolean
+     */
+    set culled(culled) {
+        culled = !!culled;
+        this._culled = culled;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].culled = culled;
+        }
+    }
+
+    get culled() {
+        return this._culled;
+    }
+
+    /**
+     Indicates if clippable.
+
+     Clipping is done by the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}} component.
+
+     @property clippable
+     @default true
+     @type Boolean
+     */
+    set clippable(clippable) {
+        clippable = clippable !== false;
+        this._clippable = clippable;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].clippable = clippable;
+        }
+    }
+
+    get clippable() {
+        return this._clippable;
+    }
+
+    /**
+     Indicates if included in boundary calculations.
+
+     @property collidable
+     @default true
+     @type Boolean
+     */
+    set collidable(collidable) {
+        collidable = collidable !== false;
+        this._collidable = collidable;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].collidable = collidable;
+        }
+    }
+
+    get collidable() {
+        return this._collidable;
+    }
+
+    /**
+     Whether or not to allow picking.
+
+     Picking is done via calls to {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}}.
+
+     @property pickable
+     @default true
+     @type Boolean
+     */
+    set pickable(pickable) {
+        pickable = pickable !== false;
+        this._pickable = pickable;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].pickable = pickable;
+        }
+    }
+
+    get pickable() {
+        return this._pickable;
+    }
+
+    /**
+     RGB colorize color, multiplies by the rendered fragment color.
+
+     @property colorize
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set colorize(rgb) {
+        let colorize = this._colorize;
+        if (!colorize) {
+            colorize = this._colorize = new Float32Array(4);
+            colorize[3] = 1.0;
+        }
+        if (rgb) {
+            colorize[0] = rgb[0];
+            colorize[1] = rgb[1];
+            colorize[2] = rgb[2];
+        } else {
+            colorize[0] = 1;
+            colorize[1] = 1;
+            colorize[2] = 1;
+        }
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].colorize = colorize;
+        }
+    }
+
+    get colorize() {
+        return this._colorize.slice(0, 3);
+    }
+
+    /**
+     Opacity factor, multiplies by the rendered fragment alpha.
+
+     This is a factor in range ````[0..1]````.
+
+     @property opacity
+     @default 1.0
+     @type Number
+     */
+    set opacity(opacity) {
+        let colorize = this._colorize;
+        if (!colorize) {
+            colorize = this._colorize = new Float32Array(4);
+            colorize[0] = 1;
+            colorize[1] = 1;
+            colorize[2] = 1;
+        }
+        colorize[3] = opacity !== null && opacity !== undefined ? opacity : 1.0;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].opacity = opacity;
+        }
+    }
+
+    get opacity() {
+        return this._colorize[3];
+    }
+
+    /**
+     Indicates if outlined.
+
+     @property outlined
+     @default false
+     @type Boolean
+     */
+    set outlined(outlined) {
+        outlined = !!outlined;
+        this._outlined = outlined;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].outlined = outlined;
+        }
+    }
+
+    get outlined() {
+        return this._outlined;
+    }
+
+    /**
+     Indicates if casting shadows.
+
+     @property castShadow
+     @default true
+     @type Boolean
+     */
+    set castShadow(castShadow) {
+        castShadow = !!castShadow;
+        this._castShadow = castShadow;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].castShadow = castShadow;
+        }
+    }
+
+    get castShadow() {
+        return this._castShadow;
+    }
+
+    /**
+     Indicates if receiving shadows.
+
+     @property receiveShadow
+     @default true
+     @type Boolean
+     */
+    set receiveShadow(receiveShadow) {
+        receiveShadow = !!receiveShadow;
+        this._receiveShadow = receiveShadow;
+        for (let i = 0, len = this._childList.length; i < len; i++) {
+            this._childList[i].receiveShadow = receiveShadow;
+        }
+    }
+
+    get receiveShadow() {
+        return this._receiveShadow;
+    }
+
+    /**
+     Indicates if the 3D World-space axis-aligned bounding box (AABB) is visible.
+
+     @property aabbVisible
+     @default false
+     @type {Boolean}
+     */
+    set aabbVisible(visible) {
+        if (!visible && !this._aabbHelper) {
+            return;
+        }
+        if (!this._aabbHelper) {
+            this._aabbHelper = new Mesh(this, {
+                geometry: new AABBGeometry(this, {
+                    target: this
+                }),
+                material: new PhongMaterial(this, {
+                    diffuse: [0.5, 1.0, 0.5],
+                    emissive: [0.5, 1.0, 0.5],
+                    lineWidth: 2
+                })
+            });
+        }
+        this._aabbHelper.visible = visible;
+    }
+
+    get aabbVisible() {
+        return this._aabbHelper ? this._aabbHelper.visible : false;
+    }
+
+    destroy() {
+        super.destroy();
         if (this._parent) {
             this._parent.removeChild(this);
         }
         if (this._entityType) {
-            var scene = this.scene;
+            const scene = this.scene;
             scene._entityTypeRemoved(this, this._entityType);
             if (this._visible) {
                 scene._entityVisibilityUpdated(this, false);
@@ -1810,9 +1757,9 @@ xeogl.Object = xeogl.Component.extend({
         }
         if (this._childList.length) {
             // Clone the _childList before iterating it, so our children don't mess us up when calling removeChild().
-            var tempChildList = this._childList.splice();
-            var object;
-            for (var i = 0, len = tempChildList.length; i < len; i++) {
+            const tempChildList = this._childList.splice();
+            let object;
+            for (let i = 0, len = tempChildList.length; i < len; i++) {
                 object = tempChildList[i];
                 object.destroy();
             }
@@ -1824,4 +1771,8 @@ xeogl.Object = xeogl.Component.extend({
         this.scene._aabbDirty = true;
         this.scene._objectDestroyed(this);
     }
-});
+}
+
+componentClasses[type] = xeoglObject;
+
+export {xeoglObject};

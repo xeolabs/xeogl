@@ -24,7 +24,9 @@
 
 <script>
 
-    xeogl.loadOBJGeometry(xeogl.scene, "models/obj/CyberCity3D/Miami_Sample.obj", function (miamiGeometry) {
+    var scene = xeogl.getDefaultScene();
+
+    xeogl.loadOBJGeometry(scene, "models/obj/CyberCity3D/Miami_Sample.obj", function (miamiGeometry) {
 
         // Mesh on top of the "water", instancing the geometry
         var city = new xeogl.Mesh({
@@ -86,13 +88,13 @@
         });
 
         // Initial camera pose
-        var camera = city.scene.camera;
+        var camera = scene.camera;
         camera.look = [0, -1.5, 0];
         camera.eye = [0, -1.5, -10];
         camera.orbitPitch(20);
 
         // Orbit the camera
-        city.scene.on("tick", function () {
+        scene.on("tick", function () {
             camera.orbitYaw(-0.1);
         });
 

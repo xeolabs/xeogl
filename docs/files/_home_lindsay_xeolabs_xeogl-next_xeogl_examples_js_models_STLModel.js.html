@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>/home/lindsay/xeolabs/xeogl-next/xeogl/examples/js/models/STLModel.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+            
+                <li><a href="../classes/AABBHelper.html">AABBHelper</a></li>
+            
+                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+            
+                <li><a href="../classes/Annotation.html">Annotation</a></li>
+            
+                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+            
+                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
+            
+                <li><a href="../classes/BIMServerModel.html">BIMServerModel</a></li>
+            
+                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+            
+                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+            
+                <li><a href="../classes/Button.html">Button</a></li>
+            
+                <li><a href="../classes/Camera.html">Camera</a></li>
+            
+                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+            
+                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+            
+                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+            
+                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+            
+                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+            
+                <li><a href="../classes/Canvas.html">Canvas</a></li>
+            
+                <li><a href="../classes/Clip.html">Clip</a></li>
+            
+                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
+            
+                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
+            
+                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
+            
+                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+            
+                <li><a href="../classes/Curve.html">Curve</a></li>
+            
+                <li><a href="../classes/CustomProjection.html">CustomProjection</a></li>
+            
+                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+            
+                <li><a href="../classes/DirLight.html">DirLight</a></li>
+            
+                <li><a href="../classes/EdgeMaterial.html">EdgeMaterial</a></li>
+            
+                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
+            
+                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+            
+                <li><a href="../classes/Frustum.html">Frustum</a></li>
+            
+                <li><a href="../classes/Geometry.html">Geometry</a></li>
+            
+                <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
+            
+                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+            
+                <li><a href="../classes/Group.html">Group</a></li>
+            
+                <li><a href="../classes/Input.html">Input</a></li>
+            
+                <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
+            
+                <li><a href="../classes/LightMap.html">LightMap</a></li>
+            
+                <li><a href="../classes/Material.html">Material</a></li>
+            
+                <li><a href="../classes/Mesh.html">Mesh</a></li>
+            
+                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
+            
+                <li><a href="../classes/Model.html">Model</a></li>
+            
+                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+            
+                <li><a href="../classes/Object.html">Object</a></li>
+            
+                <li><a href="../classes/OBJModel.html">OBJModel</a></li>
+            
+                <li><a href="../classes/Ortho.html">Ortho</a></li>
+            
+                <li><a href="../classes/OutlineMaterial.html">OutlineMaterial</a></li>
+            
+                <li><a href="../classes/Path.html">Path</a></li>
+            
+                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+            
+                <li><a href="../classes/Perspective.html">Perspective</a></li>
+            
+                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+            
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
+                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+            
+                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
+            
+                <li><a href="../classes/PointLight.html">PointLight</a></li>
+            
+                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+            
+                <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
+            
+                <li><a href="../classes/Scene.html">Scene</a></li>
+            
+                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+            
+                <li><a href="../classes/Shadow.html">Shadow</a></li>
+            
+                <li><a href="../classes/Skybox.html">Skybox</a></li>
+            
+                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
+            
+                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+            
+                <li><a href="../classes/Spinner.html">Spinner</a></li>
+            
+                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+            
+                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
+            
+                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
+            
+                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+            
+                <li><a href="../classes/STLModel.html">STLModel</a></li>
+            
+                <li><a href="../classes/Story.html">Story</a></li>
+            
+                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+            
+                <li><a href="../classes/TestModel.html">TestModel</a></li>
+            
+                <li><a href="../classes/Texture.html">Texture</a></li>
+            
+                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+            
+                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+            
+                <li><a href="../classes/Viewport.html">Viewport</a></li>
+            
+                <li><a href="../classes/xeogl.xeogl.html">xeogl.xeogl</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..//modules/animation.html">animation</a></li>
+            
+                <li><a href="..//modules/annotations.html">annotations</a></li>
+            
+                <li><a href="..//modules/camera.html">camera</a></li>
+            
+                <li><a href="..//modules/canvas.html">canvas</a></li>
+            
+                <li><a href="..//modules/clipping.html">clipping</a></li>
+            
+                <li><a href="..//modules/controls.html">controls</a></li>
+            
+                <li><a href="..//modules/curves.html">curves</a></li>
+            
+                <li><a href="..//modules/effects.html">effects</a></li>
+            
+                <li><a href="..//modules/generation.html">generation</a></li>
+            
+                <li><a href="..//modules/geometry.html">geometry</a></li>
+            
+                <li><a href="..//modules/helpers.html">helpers</a></li>
+            
+                <li><a href="..//modules/input.html">input</a></li>
+            
+                <li><a href="..//modules/lighting.html">lighting</a></li>
+            
+                <li><a href="..//modules/materials.html">materials</a></li>
+            
+                <li><a href="..//modules/math.html">math</a></li>
+            
+                <li><a href="..//modules/meshes.html">meshes</a></li>
+            
+                <li><a href="..//modules/models.html">models</a></li>
+            
+                <li><a href="..//modules/objects.html">objects</a></li>
+            
+                <li><a href="..//modules/rendering.html">rendering</a></li>
+            
+                <li><a href="..//modules/scene.html">scene</a></li>
+            
+                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+            
+                <li><a href="..//modules/stories.html">stories</a></li>
+            
+                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+        <!--Show:-->
+        <!--<label for="api-show-inherited">-->
+            <!--<input type="checkbox" id="api-show-inherited" checked>-->
+            <!--Inherited-->
+        <!--</label>-->
+
+        <!--<label for="api-show-protected">-->
+            <!--<input type="checkbox" id="api-show-protected">-->
+            <!--Protected-->
+        <!--</label>-->
+
+        <!--<label for="api-show-private">-->
+            <!--<input type="checkbox" id="api-show-private">-->
+            <!--Private-->
+        <!--</label>-->
+        <!--<label for="api-show-deprecated">-->
+            <!--<input type="checkbox" id="api-show-deprecated">-->
+            <!--Deprecated-->
+        <!--</label>-->
+
+    <!--</div>-->
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: /home/lindsay/xeolabs/xeogl-next/xeogl/examples/js/models/STLModel.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ An **STLModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that&#x27;s loaded from an &lt;a href=&quot;https://en.wikipedia.org/wiki/STL_(file_format)&quot;&gt;STL&lt;/a&gt; file.
+
+ &lt;a href=&quot;../../examples/#importing_stl_shapes&quot;&gt;&lt;img src=&quot;../../../assets/images/screenshots/STLModel.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+ ## Overview
+
+ * An &lt;a href=&quot;https://en.wikipedia.org/wiki/STL_(file_format)&quot;&gt;STL&lt;/a&gt; (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is
+ tessellated logically into a series of triangles. Each facet is described by a perpendicular
+ direction and three points representing the vertices (corners) of the triangle.
+ * An STLModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from an STL file.
+ * It begins loading as soon as you set its {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}}
+ property to the location of a valid STL file.
+ * You can set {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}} to a new file path at any time, which causes
+ the STLModel to clear itself and load components from the new file.
+ * For binary STL, has the option to create a separate {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} for each group of faces
+ that share the same vertex colors. This allows us to treat STL models as parts assemblies.
+ * Can be configured to automatically smooth STL models by converting their face-oriented normals to vertex-oriented.
+
+ STLModel inherits these capabilities from its {{#crossLink &quot;Group&quot;}}{{/crossLink}} base class:
+
+ * Allows you to access and manipulate the {{#crossLink &quot;Meshes&quot;}}{{/crossLink}} within it.
+ * Can be transformed as a unit within World-space.
+ * Can be a child within a parent {{#crossLink &quot;Group&quot;}}{{/crossLink}}.
+ * Provides its World-space axis-aligned and object-aligned boundaries.
+
+ ## Examples
+
+ * [Simple shapes with smoothing](../../examples/#importing_stl_shapes)
+ * [F1 concept car with smoothing](../../examples/#importing_stl_F1Concept)
+ * [Models within an object hierarchy](../../examples/#objects_hierarchy_models)
+
+ ## Usage
+
+ * [Loading STL](#loading-stl)
+ * [Parsing STL](#parsing-stl)
+ * [Options](#options)
+ * [Smoothing Normals](#smoothing-normals)
+ * [Finding loaded Meshes](#finding-loaded-meshes)
+ * [Transforming an STLModel](#transforming-a-gltfmodel)
+ * [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-an-stlmodel)
+ * [Clearing an STLModel](#clearing-a-gltfmodel)
+ * [Destroying an STLModel](#destroying-a-gltfmodel)
+
+ ### Loading STL
+
+ Load an STL file by creating an STLModel:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var model = new xeogl.STLModel({
+     id: &quot;myModel&quot;,
+     src: &quot;models/stl/F1Concept.stl&quot;,
+
+     // Some example loading options (see &quot;Options&quot; below)
+     smoothNormals: true,
+     smoothNormalsAngleThreshold: 45
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ An STLModel prefixes its own ID to those of its components. The ID is optional, but in this example we&#x27;re providing our own custom ID.
+
+ The STLModel begins loading the STL file immediately.
+
+ To bind a callback to be notified when the file has loaded (which fires immediately if already loaded):
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ model.on(&quot;loaded&quot;, function() {
+        // STLModel has loaded!
+    });
+ &#x60;&#x60;&#x60;&#x60;
+
+ You can also bind a callback to fire if loading fails:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ model.on(&quot;error&quot;, function(msg) {
+        // Error occurred
+    });
+ &#x60;&#x60;&#x60;&#x60;
+
+ To switch to a different STL file, you can dynamically update {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}}:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ model.src = &quot;models/stl/F1Concept.stl&quot;
+ &#x60;&#x60;&#x60;&#x60;
+
+ That will apply whatever options were specified to the constructor.
+
+ ### Parsing STL
+
+ If we have STL data in memory, then we can parse it directly into an existing STLModel instance using the
+ static {{#crossLink &quot;STLModel/parse:method&quot;}}{{/crossLink}} method:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ xeogl.STLModel.parse(model, stlData, {
+
+    // Some example parsing options (see &quot;Options&quot; below)
+     smoothNormals: true,
+     smoothNormalsAngleThreshold: 45,
+     combineGeometry: true,
+     quantizeGeometry: true
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ That&#x27;s asynchronous because STL is self-contained and does not need to load any external assets.
+
+ ### Options
+
+ The following options may be specified when loading or parsing STL:
+
+ | Option | Type | Range | Default Value | Description |
+ |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
+ | quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}). |
+ | combineGeometry | Boolean |  | true | When true, internally combines geometry vertex buffers to improve rendering performance (see {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}). |
+ | smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See [Smoothing Normals](#smoothing-normals). |
+ | smoothNormalsAngleThreshold | Number (degrees) | [0..180] | 20 | See [Smoothing Normals](#smoothing-normals). |
+ | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
+ | ghosted | Boolean |  | false | When true, ghosts all the model&#x27;s Meshes (see {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} and {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}}). |
+ | outlined | Boolean |  | false | When true, outlines all the model&#x27;s Meshes (see {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} and {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}}). |
+ | highlighted | Boolean |  | false | When true, highlights all the model&#x27;s Meshes (see {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} and {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}}). |
+ | selected | Boolean |  | false | When true, renders all the model&#x27;s Meshes as selected (see {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} and {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}}). |
+ | edges | Boolean |  | false | When true, emphasizes the edges on all the model&#x27;s Meshes (see {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} and {{#crossLink &quot;EdgeMaterial&quot;}}{{/crossLink}}). |
+ | edgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ | splitMeshes | Boolean |  | true | When true, creates a separate {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
+
+ ### Smoothing Normals
+
+ As mentioned above, providing a &#x60;&#x60;&#x60;&#x60;smoothNormals&#x60;&#x60;&#x60;&#x60; flag to the constructor gives our STLModel a smooth appearance. Triangles in STL
+ are disjoint, where each triangle has its own separate vertex positions, normals and (optionally) colors. This means that you can
+ have gaps between triangles. Normals for each triangle are perpendicular to the triangle&#x27;s surface, which gives the model a faceted appearance by default.
+
+ The &#x60;&#x60;&#x60;smoothNormals&#x60;&#x60;&#x60; flag causes the STLModel to recalculate its normals, so that each normal&#x27;s direction is the average
+ of the orientations of the triangles adjacent to its vertex. When smoothing, each vertex normal is set to the average of the
+ orientations of all other triangles that have a vertex at the same position, excluding those triangles whose direction deviates from
+ the direction of the vertice&#x27;s triangle by a threshold given in &#x60;&#x60;&#x60;&#x60;smoothNormalsAngleThreshold&#x60;&#x60;&#x60;&#x60;. This makes
+ smoothing robust for hard edges, which you can see on the cylindrical objects in one of the examples:
+
+ &lt;a href=&quot;../../examples/#importing_stl_shapes&quot;&gt;&lt;img src=&quot;../../../assets/images/screenshots/STLModelHardEdges.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+ Note how the rim is smooth, yet the there is still a sharp edge adjacent to the flat portions.
+
+ ### Finding STLModels in Scenes
+
+ Our STLModel will now be registered by ID on its Scene, so we can now find it like this:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = xeogl.getDefaultScene();
+ model = scene.models[&quot;myModel&quot;];
+ &#x60;&#x60;&#x60;&#x60;
+
+ That&#x27;s assuming that we&#x27;ve created the STLModel in the default xeogl Scene, which we&#x27;re doing in these examples.
+
+ We can also get all the STLModels in a Scene, using the Scene&#x27;s {{#crossLink &quot;Scene/types:property&quot;}}{{/crossLink}} map:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = xeogl.getDefaultScene();
+ var stlModels = scene.types[&quot;xeogl.STLModel&quot;];
+
+ model = stlModels[&quot;myModel&quot;];
+ &#x60;&#x60;&#x60;&#x60;
+
+ ### Finding loaded Meshes
+
+ Once the STLModel has loaded, its {{#crossLink &quot;Scene&quot;}}{{/crossLink}} will contain various components that represent the elements of the STL file.
+ We&#x27;ll now access some of those components by ID, to query and update them programmatically.
+
+ Let&#x27;s highlight an {{#crossLink &quot;Object&quot;}}{{/crossLink}} in our STLModel:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ scene.omponents[&quot;myModel#1&quot;].highlighted = true;
+ &#x60;&#x60;&#x60;&#x60;
+
+ An STLModel also has an ID map of the components within it. Let&#x27;s highlight another {{#crossLink &quot;Object&quot;}}{{/crossLink}} via the STLModel:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ model.components[&quot;myModel#2&quot;].highlighted = true;
+ &#x60;&#x60;&#x60;&#x60;
+
+ An STLModel also has a map containing just the {{#crossLink &quot;Objects&quot;}}Objects{{/crossLink}}:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ model.objects[&quot;myModel#3&quot;].highlighted = true;
+ &#x60;&#x60;&#x60;&#x60;
+
+ TODO: ID format description
+
+ ### Transforming an STLModel
+
+ An STLModel lets us transform its Meshes as a group:
+
+ &#x60;&#x60;&#x60;&#x60; Javascript
+ var model = new xeogl.STLModel({
+     src: &quot;models/stl/F1Concept.stl&quot;,
+     position: [-35, 0, 0],
+     rotation: [0, 45, 0],
+     scale: [0.5, 0.5, 0.5]
+ });
+
+ model.position = [-20, 0, 0];
+ &#x60;&#x60;&#x60;&#x60;
+
+ ### Getting the World-space boundary of an STLModel
+
+ Get the World-space axis-aligned boundary like this:
+
+ &#x60;&#x60;&#x60;&#x60; Javascript
+ model.on(&quot;boundary&quot;, function() {
+    var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]
+    //...
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ We can also subscribe to changes to that boundary, which will happen whenever
+
+ * the STLModel&#x27;s {{#crossLink &quot;Transform&quot;}}{{/crossLink}} is updated,
+ * components are added or removed, or
+ * the STLModel is reloaded from a different source,
+ * the {{#crossLink &quot;Geometry&quot;}}Geometries{{/crossLink}} or {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}} of its {{#crossLink &quot;Mesh&quot;}}Meshes{{/crossLink}} are updated.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ model.on(&quot;boundary&quot;, function() {
+    var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ ### Clearing an STLModel
+
+ &#x60;&#x60;&#x60;&#x60; Javascript
+ model.clear();
+ &#x60;&#x60;&#x60;&#x60;
+
+ ### Destroying an STLModel
+
+ &#x60;&#x60;&#x60;&#x60; Javascript
+ model.destroy();
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class STLModel
+ @module xeogl
+ @submodule models
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this STLModel in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink &quot;Object&quot;}}{{/crossLink}} documentation for usage.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this STLModel.
+ @param [cfg.src] {String} Path to an STL file. You can set this to a new file path at any time, which will cause the
+ @param [cfg.quantizeGeometry=true] {Boolean} When true, quantizes geometry to reduce memory and GPU bus usage.
+ @param [cfg.combineGeometry=true] {Boolean} When true, combines geometry vertex buffers to improve rendering performance.
+ @param [cfg.smoothNormals=false] {Boolean} When true, automatically converts face-oriented normals to vertex normals for a smooth appearance - see &lt;a href=&quot;#smoothing-normals&quot;&gt;Smoothing Normals&lt;/a&gt;.
+ @param [cfg.smoothNormalsAngleThreshold=20] {Number} See &lt;a href=&quot;#smoothing-normals&quot;&gt;Smoothing Normals&lt;/a&gt;.
+ @param [cfg.backfaces=false] {Boolean} When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces.
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model&#x27;s Meshes initially ghosted.
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model&#x27;s Meshes initially highlighted.
+ @param [cfg.outline=false] {Boolean} When true, sets all the Model&#x27;s Meshes initially outlined.
+ @param [cfg.edgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
+ @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink &quot;Transform&quot;}}{{/crossLink}} to attach to this STLModel.
+ Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this STLModel. Internally, the given
+ {{#crossLink &quot;Transform&quot;}}{{/crossLink}} will be inserted above each top-most {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}}
+ that the STLModel attaches to its {{#crossLink &quot;Mesh&quot;}}Meshes{{/crossLink}}.
+ @param [cfg.splitMeshes=true] {Boolean} When true, creates a separate {{#crossLink &quot;Mesh&quot;}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
+ @param [cfg.position=[0,0,0]] {Float32Array} The STLModel&#x27;s local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} The STLModel&#x27;s local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} The STLModel&#x27;s local rotation, as Euler angles given in degrees.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} The STLModel&#x27;s local transform matrix. Overrides the position, scale and rotation parameters.
+ @extends Model
+ */
+{
+    xeogl.STLModel = class xeoglSTLModel extends xeogl.Model {
+
+        init(cfg) {
+            super.init(cfg);
+            this._src = null;
+            this._options = {
+                combineGeometry: cfg.combineGeometry !== false,
+                quantizeGeometry: cfg.quantizeGeometry !== false,
+                edgeThreshold: cfg.edgeThreshold,
+                splitMeshes: cfg.splitMeshes,
+                smoothNormals: cfg.smoothNormals,
+                smoothNormalsAngleThreshold: cfg.smoothNormalsAngleThreshold
+            };
+            this.src = cfg.src;
+        }
+
+        /**
+         Path to an STL file.
+
+         You can set this to a new file path at any time (except while loading), which will cause the STLModel to load components from
+         the new file (after first destroying any components loaded from a previous file path).
+
+         Fires a {{#crossLink &quot;STLModel/loaded:event&quot;}}{{/crossLink}} event when the STL has loaded.
+
+         @property src
+         @type String
+         */
+        set src(value) {
+            if (!value) {
+                return;
+            }
+            if (!xeogl._isString(value)) {
+                this.error(&quot;Value for &#x27;src&#x27; should be a string&quot;);
+                return;
+            }
+            if (value === this._src) { // Already loaded this STLModel
+
+                /**
+                 Fired whenever this STLModel has finished loading components from the STL file
+                 specified by {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}}.
+                 @event loaded
+                 */
+                this.fire(&quot;loaded&quot;, true, true);
+                return;
+            }
+            this.clear();
+            this._src = value;
+            xeogl.STLModel.load(this, this._src, this._options);
+        }
+
+        get source() {
+            return this._src;
+        }
+
+
+        destroy() {
+            this.destroyAll();
+            super.destroy();
+        }
+
+
+        /**
+         * Loads STL from a URL into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
+         *
+         * @method load
+         * @static
+         * @param {Model} model Model to load into.
+         * @param {String} src Path to STL file.
+         * @param {Object} options Loading options.
+         * @param {Function} [ok] Completion callback.
+         * @param {Function} [error] Error callback.
+         */
+        static load(model, src, options, ok, error) {
+            var spinner = model.scene.canvas.spinner;
+            spinner.processes++;
+            load(model, src, options, function () {
+                    spinner.processes--;
+                    xeogl.scheduleTask(function () {
+                        model.fire(&quot;loaded&quot;, true, true);
+                    });
+                    if (ok) {
+                        ok();
+                    }
+                },
+                function (msg) {
+                    spinner.processes--;
+                    model.error(msg);
+                    if (error) {
+                        error(msg);
+                    }
+                    /**
+                     Fired whenever this STLModel fails to load the STL file
+                     specified by {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}}.
+                     @event error
+                     @param msg {String} Description of the error
+                     */
+                    model.fire(&quot;error&quot;, msg);
+                });
+        }
+
+        /**
+         * Parses STL into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
+         *
+         * @method parse
+         * @static
+         * @param {Model} model Model to parse into.
+         * @param {ArrayBuffer} data The STL data.
+         * @param {Object} [options] Parsing options
+         * @param {String} [options.basePath] Base path path to find external resources on, if any.
+         * @param {String} [options.loadBuffer] Callback to load buffer files.
+         */
+        static parse(model, data, options) {
+            options = options || {};
+            var spinner = model.scene.canvas.spinner;
+            spinner.processes++;
+            parse(data, &quot;&quot;, options, model, function () {
+                    spinner.processes--;
+                    model.fire(&quot;loaded&quot;, true, true);
+                },
+                function (msg) {
+                    spinner.processes--;
+                    model.error(msg);
+                    model.fire(&quot;error&quot;, msg);
+                });
+        }
+    };
+
+    var load = (function () {
+        function loadData(src, ok, error) {
+            var request = new XMLHttpRequest();
+            request.overrideMimeType(&quot;application/json&quot;);
+            request.open(&#x27;GET&#x27;, src, true);
+            request.responseType = &#x27;arraybuffer&#x27;;
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 &amp;&amp; request.status == &quot;200&quot;) {
+                    ok(request.response, this);
+                }
+            };
+            request.send(null);
+        }
+
+        return function (model, src, options, ok, error) {
+            loadData(src, function (data) { // OK
+                    parse(data, model, options);
+                    ok();
+                },
+                error);
+        };
+    })();
+
+    function parse(data, model, options) {
+
+        var entityCount = 0;
+
+        function isBinary(data) {
+            var reader = new DataView(data);
+            var numFaces = reader.getUint32(80, true);
+            var faceSize = ( 32 / 8 * 3 ) + ( ( 32 / 8 * 3 ) * 3 ) + ( 16 / 8 );
+            var numExpectedBytes = 80 + ( 32 / 8 ) + ( numFaces * faceSize );
+            if (numExpectedBytes === reader.byteLength) {
+                return true;
+            }
+            var solid = [115, 111, 108, 105, 100];
+            for (var i = 0; i &lt; 5; i++) {
+                if (solid[i] != reader.getUint8(i, false)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function parseBinary(data, model, options) {
+            var autoVertexNormals = options.autoVertexNormals;
+            var reader = new DataView(data);
+            var faces = reader.getUint32(80, true);
+            var r;
+            var g;
+            var b;
+            var hasColors = false;
+            var colors;
+            var defaultR;
+            var defaultG;
+            var defaultB;
+            var lastR = null;
+            var lastG = null;
+            var lastB = null;
+            var newMesh = false;
+            var alpha;
+            var indices;
+            var geometry;
+            var mesh;
+            for (var index = 0; index &lt; 80 - 10; index++) {
+                if (( reader.getUint32(index, false) == 0x434F4C4F /*COLO*/ ) &amp;&amp;
+                    ( reader.getUint8(index + 4) == 0x52 /*&#x27;R&#x27;*/ ) &amp;&amp;
+                    ( reader.getUint8(index + 5) == 0x3D /*&#x27;=&#x27;*/ )) {
+                    hasColors = true;
+                    colors = [];
+                    defaultR = reader.getUint8(index + 6) / 255;
+                    defaultG = reader.getUint8(index + 7) / 255;
+                    defaultB = reader.getUint8(index + 8) / 255;
+                    alpha = reader.getUint8(index + 9) / 255;
+                }
+            }
+            var material = new xeogl.MetallicMaterial(model, { // Share material with all meshes
+                roughness: 0.5
+            });
+            // var material = new xeogl.PhongMaterial(model, { // Share material with all meshes
+            //     diffuse: [0.4, 0.4, 0.4],
+            //     reflectivity: 1,
+            //     specular: [0.5, 0.5, 1.0]
+            // });
+            model._addComponent(material);
+            var dataOffset = 84;
+            var faceLength = 12 * 4 + 2;
+            var positions = [];
+            var normals = [];
+            var splitMeshes = options.splitMeshes;
+            for (var face = 0; face &lt; faces; face++) {
+                var start = dataOffset + face * faceLength;
+                var normalX = reader.getFloat32(start, true);
+                var normalY = reader.getFloat32(start + 4, true);
+                var normalZ = reader.getFloat32(start + 8, true);
+                if (hasColors) {
+                    var packedColor = reader.getUint16(start + 48, true);
+                    if (( packedColor &amp; 0x8000 ) === 0) {
+                        r = ( packedColor &amp; 0x1F ) / 31;
+                        g = ( ( packedColor &gt;&gt; 5 ) &amp; 0x1F ) / 31;
+                        b = ( ( packedColor &gt;&gt; 10 ) &amp; 0x1F ) / 31;
+                    } else {
+                        r = defaultR;
+                        g = defaultG;
+                        b = defaultB;
+                    }
+                    if (splitMeshes &amp;&amp; r !== lastR || g !== lastG || b !== lastB) {
+                        if (lastR !== null) {
+                            newMesh = true;
+                        }
+                        lastR = r;
+                        lastG = g;
+                        lastB = b;
+                    }
+                }
+                for (var i = 1; i &lt;= 3; i++) {
+                    var vertexstart = start + i * 12;
+                    positions.push(reader.getFloat32(vertexstart, true));
+                    positions.push(reader.getFloat32(vertexstart + 4, true));
+                    positions.push(reader.getFloat32(vertexstart + 8, true));
+                    if (!autoVertexNormals) {
+                        normals.push(normalX, normalY, normalZ);
+                    }
+                    if (hasColors) {
+                        colors.push(r, g, b, 1); // TODO: handle alpha
+                    }
+                }
+                if (splitMeshes &amp;&amp; newMesh) {
+                    addMesh(model, positions, normals, colors, material, options);
+                    positions = [];
+                    normals = [];
+                    colors = colors ? [] : null;
+                    newMesh = false;
+                }
+            }
+            if (positions.length &gt; 0) {
+                addMesh(model, positions, normals, colors, material, options);
+            }
+        }
+
+        function parseASCII(data, model, options) {
+            var faceRegex = /facet([\s\S]*?)endfacet/g;
+            var faceCounter = 0;
+            var floatRegex = /[\s]+([+-]?(?:\d+.\d+|\d+.|\d+|.\d+)(?:[eE][+-]?\d+)?)/.source;
+            var vertexRegex = new RegExp(&#x27;vertex&#x27; + floatRegex + floatRegex + floatRegex, &#x27;g&#x27;);
+            var normalRegex = new RegExp(&#x27;normal&#x27; + floatRegex + floatRegex + floatRegex, &#x27;g&#x27;);
+            var positions = [];
+            var normals = [];
+            var colors = null;
+            var normalx;
+            var normaly;
+            var normalz;
+            var result;
+            var verticesPerFace;
+            var normalsPerFace;
+            var text;
+            while (( result = faceRegex.exec(data) ) !== null) {
+                verticesPerFace = 0;
+                normalsPerFace = 0;
+                text = result[0];
+                while (( result = normalRegex.exec(text) ) !== null) {
+                    normalx = parseFloat(result[1]);
+                    normaly = parseFloat(result[2]);
+                    normalz = parseFloat(result[3]);
+                    normalsPerFace++;
+                }
+                while (( result = vertexRegex.exec(text) ) !== null) {
+                    positions.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
+                    normals.push(normalx, normaly, normalz);
+                    verticesPerFace++;
+                }
+                if (normalsPerFace !== 1) {
+                    model.error(&quot;Error in normal of face &quot; + faceCounter);
+                }
+                if (verticesPerFace !== 3) {
+                    model.error(&quot;Error in positions of face &quot; + faceCounter);
+                }
+                faceCounter++;
+            }
+            var material = new xeogl.MetallicMaterial(model, {
+                roughness: 0.5
+            });
+            // var material = new xeogl.PhongMaterial(model, {
+            //     diffuse: [0.4, 0.4, 0.4],
+            //     reflectivity: 1,
+            //     specular: [0.5, 0.5, 1.0]
+            // });
+            model._addComponent(material);
+            addMesh(model, positions, normals, colors, material, options);
+        }
+
+        function addMesh(model, positions, normals, colors, material, options) {
+
+            var indices = new Int32Array(positions.length / 3);
+            for (var ni = 0, len = indices.length; ni &lt; len; ni++) {
+                indices[ni] = ni;
+            }
+
+            normals = normals &amp;&amp; normals.length &gt; 0 ? normals : null;
+            colors = colors &amp;&amp; colors.length &gt; 0 ? colors : null;
+
+            if (options.smoothNormals) {
+                xeogl.math.faceToVertexNormals(positions, normals, options);
+            }
+
+            var geometry = new xeogl.Geometry(model, {
+                primitive: &quot;triangles&quot;,
+                positions: positions,
+                normals: normals,
+                // autoVertexNormals: !normals,
+                colors: colors,
+                indices: indices
+            });
+
+            var mesh = new xeogl.Mesh(model, {
+                id: model.id + &quot;#&quot; + entityCount++,
+                geometry: geometry,
+                material: material
+            });
+
+            model._addComponent(geometry);
+            model.addChild(mesh);
+        }
+
+        function ensureString(buffer) {
+            if (typeof buffer !== &#x27;string&#x27;) {
+                return decodeText(new Uint8Array(buffer));
+            }
+            return buffer;
+        }
+
+        function ensureBinary(buffer) {
+            if (typeof buffer === &#x27;string&#x27;) {
+                var arrayBuffer = new Uint8Array(buffer.length);
+                for (var i = 0; i &lt; buffer.length; i++) {
+                    arrayBuffer[i] = buffer.charCodeAt(i) &amp; 0xff; // implicitly assumes little-endian
+                }
+                return arrayBuffer.buffer || arrayBuffer;
+            } else {
+                return buffer;
+            }
+        }
+
+        function decodeText(array) {
+            if (typeof TextDecoder !== &#x27;undefined&#x27;) {
+                return new TextDecoder().decode(array);
+            }
+            var s = &#x27;&#x27;;
+            for (var i = 0, il = array.length; i &lt; il; i++) {
+                s += String.fromCharCode(array[i]); // Implicitly assumes little-endian.
+            }
+            return decodeURIComponent(escape(s));
+        }
+
+        var binData = ensureBinary(data);
+
+        return isBinary(binData) ? parseBinary(binData, model, options) : parseASCII(ensureString(data), model, options);
+
+    }
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

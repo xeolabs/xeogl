@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>/home/lindsay/xeolabs/xeogl-next/xeogl/src/lighting/spotLight.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+            
+                <li><a href="../classes/AABBHelper.html">AABBHelper</a></li>
+            
+                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+            
+                <li><a href="../classes/Annotation.html">Annotation</a></li>
+            
+                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+            
+                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
+            
+                <li><a href="../classes/BIMServerModel.html">BIMServerModel</a></li>
+            
+                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+            
+                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+            
+                <li><a href="../classes/Button.html">Button</a></li>
+            
+                <li><a href="../classes/Camera.html">Camera</a></li>
+            
+                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+            
+                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+            
+                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+            
+                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+            
+                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+            
+                <li><a href="../classes/Canvas.html">Canvas</a></li>
+            
+                <li><a href="../classes/Clip.html">Clip</a></li>
+            
+                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
+            
+                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
+            
+                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
+            
+                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+            
+                <li><a href="../classes/Curve.html">Curve</a></li>
+            
+                <li><a href="../classes/CustomProjection.html">CustomProjection</a></li>
+            
+                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+            
+                <li><a href="../classes/DirLight.html">DirLight</a></li>
+            
+                <li><a href="../classes/EdgeMaterial.html">EdgeMaterial</a></li>
+            
+                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
+            
+                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+            
+                <li><a href="../classes/Frustum.html">Frustum</a></li>
+            
+                <li><a href="../classes/Geometry.html">Geometry</a></li>
+            
+                <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
+            
+                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+            
+                <li><a href="../classes/Group.html">Group</a></li>
+            
+                <li><a href="../classes/Input.html">Input</a></li>
+            
+                <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
+            
+                <li><a href="../classes/LightMap.html">LightMap</a></li>
+            
+                <li><a href="../classes/Material.html">Material</a></li>
+            
+                <li><a href="../classes/Mesh.html">Mesh</a></li>
+            
+                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
+            
+                <li><a href="../classes/Model.html">Model</a></li>
+            
+                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+            
+                <li><a href="../classes/Object.html">Object</a></li>
+            
+                <li><a href="../classes/OBJModel.html">OBJModel</a></li>
+            
+                <li><a href="../classes/Ortho.html">Ortho</a></li>
+            
+                <li><a href="../classes/OutlineMaterial.html">OutlineMaterial</a></li>
+            
+                <li><a href="../classes/Path.html">Path</a></li>
+            
+                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+            
+                <li><a href="../classes/Perspective.html">Perspective</a></li>
+            
+                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+            
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
+                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+            
+                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
+            
+                <li><a href="../classes/PointLight.html">PointLight</a></li>
+            
+                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+            
+                <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
+            
+                <li><a href="../classes/Scene.html">Scene</a></li>
+            
+                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+            
+                <li><a href="../classes/Shadow.html">Shadow</a></li>
+            
+                <li><a href="../classes/Skybox.html">Skybox</a></li>
+            
+                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
+            
+                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+            
+                <li><a href="../classes/Spinner.html">Spinner</a></li>
+            
+                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+            
+                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
+            
+                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
+            
+                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+            
+                <li><a href="../classes/STLModel.html">STLModel</a></li>
+            
+                <li><a href="../classes/Story.html">Story</a></li>
+            
+                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+            
+                <li><a href="../classes/TestModel.html">TestModel</a></li>
+            
+                <li><a href="../classes/Texture.html">Texture</a></li>
+            
+                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+            
+                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+            
+                <li><a href="../classes/Viewport.html">Viewport</a></li>
+            
+                <li><a href="../classes/xeogl.xeogl.html">xeogl.xeogl</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..//modules/animation.html">animation</a></li>
+            
+                <li><a href="..//modules/annotations.html">annotations</a></li>
+            
+                <li><a href="..//modules/camera.html">camera</a></li>
+            
+                <li><a href="..//modules/canvas.html">canvas</a></li>
+            
+                <li><a href="..//modules/clipping.html">clipping</a></li>
+            
+                <li><a href="..//modules/controls.html">controls</a></li>
+            
+                <li><a href="..//modules/curves.html">curves</a></li>
+            
+                <li><a href="..//modules/effects.html">effects</a></li>
+            
+                <li><a href="..//modules/generation.html">generation</a></li>
+            
+                <li><a href="..//modules/geometry.html">geometry</a></li>
+            
+                <li><a href="..//modules/helpers.html">helpers</a></li>
+            
+                <li><a href="..//modules/input.html">input</a></li>
+            
+                <li><a href="..//modules/lighting.html">lighting</a></li>
+            
+                <li><a href="..//modules/materials.html">materials</a></li>
+            
+                <li><a href="..//modules/math.html">math</a></li>
+            
+                <li><a href="..//modules/meshes.html">meshes</a></li>
+            
+                <li><a href="..//modules/models.html">models</a></li>
+            
+                <li><a href="..//modules/objects.html">objects</a></li>
+            
+                <li><a href="..//modules/rendering.html">rendering</a></li>
+            
+                <li><a href="..//modules/scene.html">scene</a></li>
+            
+                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+            
+                <li><a href="..//modules/stories.html">stories</a></li>
+            
+                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+        <!--Show:-->
+        <!--<label for="api-show-inherited">-->
+            <!--<input type="checkbox" id="api-show-inherited" checked>-->
+            <!--Inherited-->
+        <!--</label>-->
+
+        <!--<label for="api-show-protected">-->
+            <!--<input type="checkbox" id="api-show-protected">-->
+            <!--Protected-->
+        <!--</label>-->
+
+        <!--<label for="api-show-private">-->
+            <!--<input type="checkbox" id="api-show-private">-->
+            <!--Private-->
+        <!--</label>-->
+        <!--<label for="api-show-deprecated">-->
+            <!--<input type="checkbox" id="api-show-deprecated">-->
+            <!--Deprecated-->
+        <!--</label>-->
+
+    <!--</div>-->
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: /home/lindsay/xeolabs/xeogl-next/xeogl/src/lighting/spotLight.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **SpotLight** defines a positional light source that originates from a single point and eminates in a given direction,
+ to illuminate {{#crossLink &quot;Mesh&quot;}}Meshes{{/crossLink}}.
+
+ ## Overview
+
+ * SpotLights have a position and direction.
+ * SpotLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
+ are relative to the World coordinate system, and will appear to move as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.
+ When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer&#x27;s
+ head as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.
+ * SpotLights have {{#crossLink &quot;SpotLight/constantAttenuation:property&quot;}}{{/crossLink}}, {{#crossLink &quot;SpotLight/linearAttenuation:property&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;SpotLight/quadraticAttenuation:property&quot;}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
+ * A SpotLight can also have a {{#crossLink &quot;Shadow&quot;}}{{/crossLink}} component, to configure it to cast a shadow.
+ * {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}}, {{#crossLink &quot;DirLight&quot;}}{{/crossLink}},
+ {{#crossLink &quot;SpotLight&quot;}}{{/crossLink}} and {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} instances are registered by ID
+ on {{#crossLink &quot;Scene/lights:property&quot;}}Scene#lights{{/crossLink}} for convenient access.
+ ## Examples
+
+ TODO
+
+ ## Usage
+
+ In the example below we&#x27;ll customize the default Scene&#x27;s light sources, defining an AmbientLight and a couple of
+ SpotLights, then create a Phong-shaded box mesh.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new xeogl.AmbientLight({
+     color: [0.8, 0.8, 0.8],
+     intensity: 0.5
+ });
+
+ new xeogl.SpotLight({
+     pos: [0, 100, 100],
+     dir: [0, -1, 0],
+     color: [0.5, 0.7, 0.5],
+     intensity: 1
+     constantAttenuation: 0,
+     linearAttenuation: 0,
+     quadraticAttenuation: 0,
+     space: &quot;view&quot;
+ });
+
+ new xeogl.PointLight({
+     pos: [0, 100, 100],
+     dir: [0, -1, 0],
+     color: [0.5, 0.7, 0.5],
+     intensity: 1
+     constantAttenuation: 0,
+     linearAttenuation: 0,
+     quadraticAttenuation: 0,
+     space: &quot;view&quot;
+ });
+
+ // Create box mesh
+ new xeogl.Mesh({
+    material: new xeogl.PhongMaterial({
+        ambient: [0.5, 0.5, 0.5],
+        diffuse: [1,0.3,0.3]
+    }),
+    geometry: new xeogl.BoxGeometry()
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class SpotLight
+ @module xeogl
+ @submodule lighting
+ @constructor
+ @extends Component
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
+ @param [cfg] {*} The SpotLight configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SpotLight.
+ @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Float32Array} Position, in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.dir=[ 0.0, -1.0, 0.0 ]] {Float32Array} Direction in which this Spotlight is shining, in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.color=[0.7, 0.7, 0.8 ]] {Float32Array} Color of this SpotLight.
+ @param [cfg.intensity=1.0] {Number} Intensity of this SpotLight.
+ @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
+ @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
+ @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
+ @param [cfg.space=&quot;view&quot;] {String} The coordinate system this SpotLight is defined in - &quot;view&quot; or &quot;world&quot;.
+ @param [cfg.shadow=false] {Boolean} Flag which indicates if this SpotLight casts a shadow.
+ */
+
+import {Component} from &#x27;../component.js&#x27;;
+import {State} from &#x27;../renderer/state.js&#x27;;
+import {RenderBuffer} from &#x27;../renderer/renderBuffer.js&#x27;;
+import {math} from &#x27;../math/math.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
+
+const type = &quot;xeogl.SpotLight&quot;;
+
+class SpotLight extends Component {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.MetallicMaterial&quot; etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
+
+        const self = this;
+
+        this._shadowRenderBuf = null;
+        this._shadowViewMatrix = null;
+        this._shadowProjMatrix = null;
+        this._shadowViewMatrixDirty = true;
+        this._shadowProjMatrixDirty = true;
+
+        this._state = new State({
+            type: &quot;spot&quot;,
+            pos: math.vec3([1.0, 1.0, 1.0]),
+            dir: math.vec3([0.0, -1.0, 0.0]),
+            color: math.vec3([0.7, 0.7, 0.8]),
+            intensity: 1.0,
+            attenuation: [0.0, 0.0, 0.0],
+            space: cfg.space || &quot;view&quot;,
+            shadow: false,
+            shadowDirty: true,
+
+            getShadowViewMatrix: (function () {
+                const look = math.vec3();
+                const up = math.vec3([0, 1, 0]);
+                return function () {
+                    if (self._shadowViewMatrixDirty) {
+                        if (!self._shadowViewMatrix) {
+                            self._shadowViewMatrix = math.identityMat4();
+                        }
+                        math.addVec3(self._state.pos, self._state.dir, look);
+                        math.lookAtMat4v(self._state.pos, look, up, self._shadowViewMatrix);
+                        self._shadowViewMatrixDirty = false;
+                    }
+                    return self._shadowViewMatrix;
+                };
+            })(),
+
+            getShadowProjMatrix: function () {
+                if (self._shadowProjMatrixDirty) { // TODO: Set when canvas resizes
+                    if (!self._shadowProjMatrix) {
+                        self._shadowProjMatrix = math.identityMat4();
+                    }
+                    const canvas = self.scene.canvas.canvas;
+                    math.perspectiveMat4(60 * (Math.PI / 180.0), canvas.clientWidth / canvas.clientHeight, 0.1, 400.0, self._shadowProjMatrix);
+                    self._shadowProjMatrixDirty = false;
+                }
+                return self._shadowProjMatrix;
+            },
+
+            getShadowRenderBuf: function () {
+                if (!self._shadowRenderBuf) {
+                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
+                }
+                return self._shadowRenderBuf;
+            }
+        });
+
+        this.pos = cfg.pos;
+        this.color = cfg.color;
+        this.intensity = cfg.intensity;
+        this.constantAttenuation = cfg.constantAttenuation;
+        this.linearAttenuation = cfg.linearAttenuation;
+        this.quadraticAttenuation = cfg.quadraticAttenuation;
+        this.shadow = cfg.shadow;
+        this.scene._lightCreated(this);
+    }
+
+
+    /**
+     The position of this SpotLight.
+
+     This will be either World- or View-space, depending on the value of {{#crossLink &quot;SpotLight/space:property&quot;}}{{/crossLink}}.
+
+     @property pos
+     @default [1.0, 1.0, 1.0]
+     @type Array(Number)
+     */
+    set pos(value) {
+        this._state.pos.set(value || [1.0, 1.0, 1.0]);
+        this._shadowViewMatrixDirty = true;
+        this._renderer.imageDirty();
+    }
+
+    get pos() {
+        return this._state.pos;
+    }
+
+    /**
+     The direction in which the light is shining.
+
+     @property dir
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set dir(value) {
+        this._state.dir.set(value || [1.0, 1.0, 1.0]);
+        this._shadowViewMatrixDirty = true;
+        this._renderer.imageDirty();
+    }
+
+    get dir() {
+        return this._state.dir;
+    }
+
+    /**
+     The color of this SpotLight.
+
+     @property color
+     @default [0.7, 0.7, 0.8]
+     @type Float32Array
+     */
+    set color(value) {
+        this._state.color.set(value || [0.7, 0.7, 0.8]);
+        this._renderer.imageDirty();
+    }
+
+    get color() {
+        return this._state.color;
+    }
+
+    /**
+     The intensity of this SpotLight.
+
+     Fires a {{#crossLink &quot;SpotLight/intensity:event&quot;}}{{/crossLink}} event on change.
+
+     @property intensity
+     @default 1.0
+     @type Number
+     */
+    set intensity(value) {
+        value = value !== undefined ? value : 1.0;
+        this._state.intensity = value;
+        this._renderer.imageDirty();
+    }
+
+    get intensity() {
+        return this._state.intensity;
+    }
+
+    /**
+     The constant attenuation factor for this SpotLight.
+
+     @property constantAttenuation
+     @default 0
+     @type Number
+     */
+    set constantAttenuation(value) {
+        this._state.attenuation[0] = value || 0.0;
+        this._renderer.imageDirty();
+    }
+
+    get constantAttenuation() {
+        return this._state.attenuation[0];
+    }
+
+    /**
+     The linear attenuation factor for this SpotLight.
+
+     @property linearAttenuation
+     @default 0
+     @type Number
+     */
+    set linearAttenuation(value) {
+        this._state.attenuation[1] = value || 0.0;
+        this._renderer.imageDirty();
+    }
+
+    get linearAttenuation() {
+        return this._state.attenuation[1];
+    }
+
+    /**
+     The quadratic attenuation factor for this SpotLight.
+
+     @property quadraticAttenuation
+     @default 0
+     @type Number
+     */
+    set quadraticAttenuation(value) {
+        this._state.attenuation[2] = value || 0.0;
+        this._renderer.imageDirty();
+    }
+
+    get quadraticAttenuation() {
+        return this._state.attenuation[2];
+    }
+
+    /**
+     Flag which indicates if this SpotLight casts a shadow.
+
+     @property shadow
+     @default false
+     @type Boolean
+     */
+    set shadow(value) {
+        value = !!value;
+        if (this._state.shadow === value) {
+            return;
+        }
+        this._state.shadow = value;
+        this._shadowViewMatrixDirty = true;
+        this._renderer.imageDirty();
+        this.fire(&quot;dirty&quot;, true);
+    }
+
+    get shadow() {
+        return this._state.shadow;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+        if (this._shadowRenderBuf) {
+            this._shadowRenderBuf.destroy();
+        }
+        this.scene._lightDestroyed(this);
+
+    }
+}
+
+componentClasses[type] = SpotLight;
+
+export{SpotLight};
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

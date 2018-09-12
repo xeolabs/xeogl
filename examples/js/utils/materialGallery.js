@@ -152,14 +152,16 @@ function materialGallery(menuId, cfg) {
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
+    var scene = cameraFlight.scene;
+
     cameraFlight.jumpTo({
-        aabb: xeogl.scene.aabb,
+        aabb: scene.aabb,
         fit: true,
         fitFOV: 40
     });
 
     window.flyTo = function (id) {
-        var mesh = xeogl.scene.meshes[id];
+        var mesh = scene.meshes[id];
         if (mesh) {
             cameraFlight.flyTo({
                 aabb: mesh.aabb,

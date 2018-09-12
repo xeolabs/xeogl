@@ -3,7 +3,7 @@
 
  ## Overview
 
- 
+
  * A Path can be constructed from these {{#crossLink "Curve"}}{{/crossLink}} subtypes: {{#crossLink "SplineCurve"}}{{/crossLink}},
  {{#crossLink "CubicBezierCurve"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}.
  * You can sample a {{#crossLink "Path/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
@@ -100,7 +100,7 @@
      positions: xeogl.math.flatten(path.getPoints(50))
  });
  ````
- 
+
  @class Path
  @module xeogl
  @submodule curves
@@ -113,322 +113,234 @@
  @param [cfg.t=0] Current position on this Path, in range between 0..1.
  @extends path
  */
-(function () {
 
-    "use strict";
+xeogl.Path = class xeoglPath extends xeogl.Curve {
 
-    xeogl.Path = xeogl.Curve.extend({
+    init(cfg) {
+        super.init(cfg);
+        this._cachedLengths = [];
+        this._dirty = true;
+        this._curves = []; // Array of child Curve components
+        this._t = 0;
+        this._dirtySubs = []; // Subscriptions to "dirty" events from child Curve components
+        this._destroyedSubs = []; // Subscriptions to "destroyed" events from child Curve components
+        this.curves = cfg.curves || [];    // Add initial curves
+        this.t = cfg.t; // Set initial progress
+    }
 
+    /**
+     * Adds a {{#crossLink "Curve"}}{{/crossLink}} to this Path.
+     *
+     * Fires a {{#crossLink "Path/curves:event"}}{{/crossLink}} event on change.
+     *
+     * @param {Curve} curve The {{#crossLink "Curve"}}{{/crossLink}} to add.
+     */
+    addCurve(curve) {
+        this._curves.push(curve);
+        this._dirty = true;
         /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
+         * Fired whenever this Path's
+         * {{#crossLink "Path/curves:property"}}{{/crossLink}} property changes.
+         * @event curves
+         * @param value The property's new value
          */
-        type: "xeogl.Path",
+        this.fire("curves", this._curves);
+    }
 
-        _init: function (cfg) {
+    /**
+     The {{#crossLink "Curve"}}Curves{{/crossLink}} in this Path.
 
-            this._super(cfg);
+     Fires a {{#crossLink "Path/curves:event"}}{{/crossLink}} event on change.
 
-            this._cachedLengths = [];
-            this._dirty = true;
+     @property curves
+     @default []
+     @type {{Array of Spline, Path, QuadraticBezierCurve or CubicBezierCurve}}
+     */
+    set   curves(value) {
 
-            // Array of child Curve components
-            this._curves = [];
+        value = value || [];
 
-            this._t = 0;
+        var curve;
+        // Unsubscribe from events on old curves
+        var i;
+        var len;
+        for (i = 0, len = this._curves.length; i < len; i++) {
+            curve = this._curves[i];
+            curve.off(this._dirtySubs[i]);
+            curve.off(this._destroyedSubs[i]);
+        }
 
-            // Subscriptions to "dirty" events from child Curve components
-            this._dirtySubs = [];
+        this._curves = [];
+        this._dirtySubs = [];
+        this._destroyedSubs = [];
 
-            // Subscriptions to "destroyed" events from child Curve components
-            this._destroyedSubs = [];
+        var self = this;
 
-            // Add initial curves
-            this.curves = cfg.curves || [];
+        function curveDirty() {
+            self._dirty = true;
+        }
 
-            // Set initial progress
-            this.t = cfg.t;
-        },
+        function curveDestroyed() {
+            var id = this.id;
+            for (i = 0, len = self._curves.length; i < len; i++) {
+                if (self._curves[i].id === id) {
+                    self._curves = self._curves.slice(i, i + 1);
+                    self._dirtySubs = self._dirtySubs.slice(i, i + 1);
+                    self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
+                    self._dirty = true;
+                    self.fire("curves", self._curves);
+                    return;
+                }
+            }
+        }
 
-        /**
-         * Adds a {{#crossLink "Curve"}}{{/crossLink}} to this Path.
-         *
-         * Fires a {{#crossLink "Path/curves:event"}}{{/crossLink}} event on change.
-         *
-         * @param {Curve} curve The {{#crossLink "Curve"}}{{/crossLink}} to add.
-         */
-        addCurve: function (curve) {
+        for (i = 0, len = value.length; i < len; i++) {
+            curve = value[i];
+            if (xeogl._isNumeric(curve) || xeogl._isString(curve)) {
+                // ID given for curve - find the curve component
+                var id = curve;
+                curve = this.scene.components[id];
+                if (!curve) {
+                    this.error("Component not found: " + xeogl._inQuotes(id));
+                    continue;
+                }
+            }
+
+            var type = curve.type;
+
+            if (type !== "xeogl.SplineCurve" &&
+                type !== "xeogl.Path" &&
+                type !== "xeogl.CubicBezierCurve" &&
+                type !== "xeogl.QuadraticBezierCurve") {
+
+                this.error("Component " + xeogl._inQuotes(curve.id)
+                    + " is not a xeogl.SplineCurve, xeogl.Path or xeogl.QuadraticBezierCurve");
+
+                continue;
+            }
 
             this._curves.push(curve);
-
-            this._dirty = true;
-
-            /**
-             * Fired whenever this Path's
-             * {{#crossLink "Path/curves:property"}}{{/crossLink}} property changes.
-             * @event curves
-             * @param value The property's new value
-             */
-            this.fire("curves", this._curves);
-        },
-
-        _props: {
-
-            /**
-             The {{#crossLink "Curve"}}Curves{{/crossLink}} in this Path.
-
-             Fires a {{#crossLink "Path/curves:event"}}{{/crossLink}} event on change.
-
-             @property curves
-             @default []
-             @type {{Array of Spline, Path, QuadraticBezierCurve or CubicBezierCurve}}
-             */
-            curves: {
-
-                set: function (value) {
-
-                    value = value || [];
-
-                    var curve;
-
-                    // Unsubscribe from events on old curves
-
-                    var i;
-                    var len;
-
-                    for (i = 0, len = this._curves.length; i < len; i++) {
-
-                        curve = this._curves[i];
-
-                        curve.off(this._dirtySubs[i]);
-                        curve.off(this._destroyedSubs[i]);
-                    }
-
-                    this._curves = [];
-
-                    this._dirtySubs = [];
-                    this._destroyedSubs = [];
-
-                    var self = this;
-
-                    function curveDirty() {
-                        self._dirty = true;
-                    }
-
-                    function curveDestroyed() {
-
-                        var id = this.id;
-
-                        for (i = 0, len = self._curves.length; i < len; i++) {
-
-                            if (self._curves[i].id === id) {
-
-                                self._curves = self._curves.slice(i, i + 1);
-                                self._dirtySubs = self._dirtySubs.slice(i, i + 1);
-                                self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
-
-                                self._dirty = true;
-
-                                self.fire("curves", self._curves);
-
-                                return;
-                            }
-                        }
-                    }
-
-                    for (i = 0, len = value.length; i < len; i++) {
-
-                        curve = value[i];
-
-                        if (xeogl._isNumeric(curve) || xeogl._isString(curve)) {
-
-                            // ID given for curve - find the curve component
-
-                            var id = curve;
-
-                            curve = this.scene.components[id];
-
-                            if (!curve) {
-                                this.error("Component not found: " + xeogl._inQuotes(id));
-                                continue;
-                            }
-                        }
-
-                        var type = curve.type;
-
-                        if (type !== "xeogl.SplineCurve" &&
-                            type !== "xeogl.Path" &&
-                            type !== "xeogl.CubicBezierCurve" &&
-                            type !== "xeogl.QuadraticBezierCurve") {
-
-                            this.error("Component " + xeogl._inQuotes(curve.id)
-                                + " is not a xeogl.SplineCurve, xeogl.Path or xeogl.QuadraticBezierCurve");
-
-                            continue;
-                        }
-
-                        this._curves.push(curve);
-
-                        this._dirtySubs.push(curve.on("dirty", curveDirty));
-
-                        this._destroyedSubs.push(curve.on("destroyed", curveDestroyed));
-                    }
-
-                    this._dirty = true;
-
-                    this.fire("curves", this._curves);
-                },
-
-                get: function () {
-                    return this._curves;
-                }
-            },
-
-            /**
-             Current point of progress along this Path.
-
-             Automatically clamps to range [0..1].
-
-             Fires a {{#crossLink "Path/t:event"}}{{/crossLink}} event on change.
-
-             @property t
-             @default 0
-             @type Number
-             */
-            t: {
-                set: function (value) {
-
-                    value = value || 0;
-
-                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
-
-                    /**
-                     * Fired whenever this Path's
-                     * {{#crossLink "Path/t:property"}}{{/crossLink}} property changes.
-                     * @event t
-                     * @param value The property's new value
-                     */
-                    this.fire("t", this._t);
-                },
-
-                get: function () {
-                    return this._t;
-                }
-            },
-
-            /**
-             Point on this Path corresponding to the current value of {{#crossLink "Path/t:property"}}{{/crossLink}}.
-
-             @property point
-             @type {{Array of Number}}
-             */
-            point: {
-
-                get: function () {
-                    return this.getPoint(this._t);
-                }
-            },
-
-            /**
-             Length of this Path, which is the cumulative length of all {{#crossLink "Curve/t:property"}}Curves{{/crossLink}}
-             currently in {{#crossLink "Path/curves:property"}}{{/crossLink}}.
-
-             @property length
-             @type {Number}
-             */
-            length: {
-
-                get: function () {
-                    var lens = this._getCurveLengths();
-                    return lens[lens.length - 1];
-                }
-            }
-        },
-
-        /**
-         * Gets a point on this Path corresponding to the given progress position.
-         * @param {Number} t Indicates point of progress along this curve, in the range [0..1].
-         * @returns {{Array of Number}}
-         */
-        getPoint: function (t) {
-
-            var d = t * this.length;
-            var curveLengths = this._getCurveLengths();
-            var i = 0, diff, curve;
-
-            while (i < curveLengths.length) {
-
-                if (curveLengths[i] >= d) {
-
-                    diff = curveLengths[i] - d;
-                    curve = this._curves[i];
-
-                    var u = 1 - diff / curve.length;
-
-                    return curve.getPointAt(u);
-                }
-                i++;
-            }
-            return null;
-        },
-
-        _getCurveLengths: function () {
-
-            if (!this._dirty) {
-                return this._cachedLengths;
-            }
-
-            var lengths = [];
-            var sums = 0;
-            var i, il = this._curves.length;
-
-            for (i = 0; i < il; i++) {
-
-                sums += this._curves[i].length;
-                lengths.push(sums);
-
-            }
-
-            this._cachedLengths = lengths;
-            this._dirty = false;
-
-            return lengths;
-        },
-
-        _getJSON: function () {
-
-            var curveIds = [];
-
-            for (var i = 0, len = this._curves.length; i < len; i++) {
-                curveIds.push(this._curves[i].id);
-            }
-
-            return {
-                curves: curveIds,
-                t: this._t
-            };
-        },
-
-        _destroy: function () {
-
-            var i;
-            var len;
-            var curve;
-
-            for (i = 0, len = this._curves.length; i < len; i++) {
-
-                curve = this._curves[i];
-
-                curve.off(this._dirtySubs[i]);
-                curve.off(this._destroyedSubs[i]);
-            }
-
-            this._super();
+            this._dirtySubs.push(curve.on("dirty", curveDirty));
+            this._destroyedSubs.push(curve.on("destroyed", curveDestroyed));
         }
-    });
 
-})();
+        this._dirty = true;
+
+        this.fire("curves", this._curves);
+    }
+
+    get curves() {
+        return this._curves;
+    }
+
+    /**
+     Current point of progress along this Path.
+
+     Automatically clamps to range [0..1].
+
+     Fires a {{#crossLink "Path/t:event"}}{{/crossLink}} event on change.
+
+     @property t
+     @default 0
+     @type Number
+     */
+    set t(value) {
+        value = value || 0;
+        this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
+        /**
+         * Fired whenever this Path's
+         * {{#crossLink "Path/t:property"}}{{/crossLink}} property changes.
+         * @event t
+         * @param value The property's new value
+         */
+        this.fire("t", this._t);
+    }
+
+    get t() {
+        return this._t;
+    }
+
+    /**
+     Point on this Path corresponding to the current value of {{#crossLink "Path/t:property"}}{{/crossLink}}.
+
+     @property point
+     @type {{Array of Number}}
+     */
+    get point() {
+        return this.getPoint(this._t);
+    }
+
+    /**
+     Length of this Path, which is the cumulative length of all {{#crossLink "Curve/t:property"}}Curves{{/crossLink}}
+     currently in {{#crossLink "Path/curves:property"}}{{/crossLink}}.
+
+     @property length
+     @type {Number}
+     */
+    get length() {
+        var lens = this._getCurveLengths();
+        return lens[lens.length - 1];
+    }
+
+    /**
+     * Gets a point on this Path corresponding to the given progress position.
+     * @param {Number} t Indicates point of progress along this curve, in the range [0..1].
+     * @returns {{Array of Number}}
+     */
+    getPoint(t) {
+        var d = t * this.length;
+        var curveLengths = this._getCurveLengths();
+        var i = 0, diff, curve;
+        while (i < curveLengths.length) {
+            if (curveLengths[i] >= d) {
+                diff = curveLengths[i] - d;
+                curve = this._curves[i];
+                var u = 1 - diff / curve.length;
+                return curve.getPointAt(u);
+            }
+            i++;
+        }
+        return null;
+    }
+
+    _getCurveLengths() {
+        if (!this._dirty) {
+            return this._cachedLengths;
+        }
+        var lengths = [];
+        var sums = 0;
+        var i, il = this._curves.length;
+        for (i = 0; i < il; i++) {
+            sums += this._curves[i].length;
+            lengths.push(sums);
+
+        }
+        this._cachedLengths = lengths;
+        this._dirty = false;
+        return lengths;
+    }
+
+    _getJSON() {
+        var curveIds = [];
+        for (var i = 0, len = this._curves.length; i < len; i++) {
+            curveIds.push(this._curves[i].id);
+        }
+        return {
+            curves: curveIds,
+            t: this._t
+        };
+    }
+
+    destroy() {
+        super.destroy();
+        var i;
+        var len;
+        var curve;
+        for (i = 0, len = this._curves.length; i < len; i++) {
+            curve = this._curves[i];
+            curve.off(this._dirtySubs[i]);
+            curve.off(this._destroyedSubs[i]);
+        }
+    }
+};
 

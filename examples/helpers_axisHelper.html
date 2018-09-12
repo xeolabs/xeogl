@@ -9,7 +9,7 @@
     <script src="js/geometry/vectorTextGeometry.js"></script>
     <script src="js/helpers/axisHelper.js"></script>
     <script src="js/geometry/k3d.js"></script>
-    <script src="js/geometry/objGeometry.js"></script>
+    <script src="js/geometry/objGeometryLoader.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -21,51 +21,51 @@
 
 <script>
 
-    var mesh = new xeogl.Mesh({
+    var scene = xeogl.getDefaultScene();
 
-        geometry: new xeogl.OBJGeometry({
-            src: "models/obj/raptor/raptor.obj"
-        }),
+    xeogl.loadOBJGeometry(scene, "models/obj/raptor/raptor.obj", function (geometry) {
 
-        material: new xeogl.PhongMaterial({
+        var mesh = new xeogl.Mesh({
 
-            diffuseMap: new xeogl.Texture({
-                src: "models/obj/raptor/raptor.jpg"
+            geometry: geometry,
+
+            material: new xeogl.PhongMaterial({
+
+                diffuseMap: new xeogl.Texture({
+                    src: "models/obj/raptor/raptor.jpg"
+                }),
+
+                specularFresnel: new xeogl.Fresnel({
+                    edgeBias: 0.2,
+                    centerBias: 0.8,
+                    power: 0.2,
+                    edgeColor: [0.4, 0.4, 0.4],
+                    centerColor: [0.0, 0.0, 0.0]
+                }),
+
+                emissive: [1, 1, 1],
+
+                emissiveFresnel: new xeogl.Fresnel({
+                    edgeBias: 0.3,
+                    centerBias: 0.8,
+                    edgeColor: [0.3, 0.3, 0.3],
+                    centerColor: [0.0, 0.0, 0.0],
+                    power: 0.3
+                })
             }),
 
-            specularFresnel: new xeogl.Fresnel({
-                edgeBias: 0.2,
-                centerBias: 0.8,
-                power: 0.2,
-                edgeColor: [0.4, 0.4, 0.4],
-                centerColor: [0.0, 0.0, 0.0]
-            }),
+            rotation: [0, 120, 0],
+            position: [10, 3, 10]
+        });
 
-            emissive: [1, 1, 1],
-
-            emissiveFresnel: new xeogl.Fresnel({
-                edgeBias: 0.3,
-                centerBias: 0.8,
-                edgeColor: [0.3, 0.3, 0.3],
-                centerColor: [0.0, 0.0, 0.0],
-                power: 0.3
-            })
-        }),
-
-        rotation: [0, 120, 0],
-        position: [10, 3, 10]
-    });
-
-    mesh.geometry.on("loaded", function () {
         var cameraFlight = new xeogl.CameraFlightAnimation();
         cameraFlight.jumpTo({
             aabb: mesh.aabb,
             fit: true,
             fitFOV: 45
         });
-    });
 
-    var scene = mesh.scene;
+    });
 
     new xeogl.AxisHelper({
         camera: scene.camera,

@@ -15,21 +15,23 @@
  {{#crossLink "PlaneHelper/planeSize:property"}}{{/crossLink}} is automatically sized to fit within
  the {{#crossLink "Scene/aabb:property"}}Scene's boundary{{/crossLink}}.
  */
-(function () {
 
-    "use strict";
+{
+    const arrowPositions = new Float32Array(6);
+    const zeroVec = new Float32Array([0, 0, -1]);
+    const quat = new Float32Array(4);
 
-    xeogl.PlaneHelper = xeogl.Component.extend({
+    xeogl.PlaneHelper = class xeoglPlaneHelper extends xeogl.Component {
 
-        type: "xeogl.PlaneHelper",
+        init(cfg) {
 
-        _init: function (cfg) {
+            super.init(cfg);
 
             this._solid = false;
             this._visible = false;
 
             this._group = new xeogl.Group(this, {
-                positions: [10,10,0],
+                positions: [10, 10, 0],
                 backfaces: false,
                 clippable: false
             });
@@ -122,209 +124,177 @@
             this.color = cfg.color;
             this.solid = cfg.solid;
             this.visible = cfg.visible;
-        },
+        }
 
-        _update: (function () {
-            var arrowPositions = new Float32Array(6);
-            return function () {
+        _update() {
 
-                var pos = this._pos;
-                var dir = this._dir;
+            const pos = this._pos;
+            const dir = this._dir;
 
-                // Rebuild arrow geometry
+            // Rebuild arrow geometry
 
-                arrowPositions[0] = pos[0];
-                arrowPositions[1] = pos[1];
-                arrowPositions[2] = pos[2];
-                arrowPositions[3] = pos[0] + dir[0];
-                arrowPositions[4] = pos[1] + dir[1];
-                arrowPositions[5] = pos[2] + dir[2];
+            arrowPositions[0] = pos[0];
+            arrowPositions[1] = pos[1];
+            arrowPositions[2] = pos[2];
+            arrowPositions[3] = pos[0] + dir[0];
+            arrowPositions[4] = pos[1] + dir[1];
+            arrowPositions[5] = pos[2] + dir[2];
 
-                this._arrow.geometry.positions = arrowPositions;
+            this._arrow.geometry.positions = arrowPositions;
+        }
+
+        /**
+         * World-space position of this PlaneHelper.
+         *
+         * @property worldPos
+         * @default [0,0,0]
+         * @type {Float32Array}
+         */
+        set pos(value) {
+            (this._pos = this._pos || xeogl.math.vec3()).set(value || [0, 0, 0]);
+            this._group.position = this._pos;
+            this._needUpdate(); // Need to rebuild arrow
+        }
+
+        get pos() {
+            return this._pos;
+        }
+
+        /**
+         * World-space direction of this PlaneHelper.
+         *
+         * @property dir
+         * @default [0,0,1]
+         * @type {Float32Array}
+         */
+        set dir(value) {
+            (this._dir = this._dir || xeogl.math.vec3()).set(value || [0, 0, 1]);
+            xeogl.math.vec3PairToQuaternion(zeroVec, this._dir, quat);
+            this._group.quaternion = quat;
+            this._needUpdate(); // Need to rebuild arrow
+        }
+
+        get dir() {
+            return this._dir;
+        }
+
+        /**
+         * The width and height of the PlaneHelper plane indicator.
+         *
+         * Values assigned to this property will be overridden by an auto-computed value when
+         * {{#crossLink "PlaneHelper/autoPlaneSize:property"}}{{/crossLink}} is true.
+         *
+         * @property planeSize
+         * @default [1,1]
+         * @type {Float32Array}
+         */
+        set planeSize(value) {
+            (this._planeSize = this._planeSize || xeogl.math.vec2()).set(value || [1, 1]);
+            this._group.scale = [this._planeSize[0], this._planeSize[1], 1.0];
+        }
+
+        get planeSize() {
+            return this._planeSize;
+        }
+
+        /**
+         * Indicates whether this PlaneHelper's {{#crossLink "PlaneHelper/planeSize:property"}}{{/crossLink}} is automatically
+         * generated or not.
+         *
+         * When auto-generated, {{#crossLink "PlaneHelper/planeSize:property"}}{{/crossLink}} will automatically size
+         * to fit within the {{#crossLink "Scene/aabb:property"}}Scene's boundary{{/crossLink}}.
+         *
+         * @property autoPlaneSize
+         * @default false
+         * @type {Boolean}
+         */
+        set autoPlaneSize(value) {
+
+            value = !!value;
+
+            if (this._autoPlaneSize === value) {
+                return;
             }
-        })(),
 
-        _props: {
+            this._autoPlaneSize = value;
 
-            /**
-             * World-space position of this PlaneHelper.
-             *
-             * @property worldPos
-             * @default [0,0,0]
-             * @type {Float32Array}
-             */
-            pos: {
-
-                set: function (value) {
-                    (this._pos = this._pos || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-                    this._group.position = this._pos;
-                    this._needUpdate(); // Need to rebuild arrow
-                },
-
-                get: function () {
-                    return this._pos;
+            if (this._autoPlaneSize) {
+                if (!this._onSceneAABB) {
+                    this._onSceneAABB = this.scene.on("boundary", function () {
+                        const aabbDiag = xeogl.math.getAABB3Diag(this.scene.aabb);
+                        const clipSize = (aabbDiag * 0.50);
+                        this.planeSize = [clipSize, clipSize];
+                    }, this);
                 }
-            },
-
-            /**
-             * World-space direction of this PlaneHelper.
-             *
-             * @property dir
-             * @default [0,0,1]
-             * @type {Float32Array}
-             */
-            dir: {
-
-                set: (function () {
-
-                    var zeroVec = new Float32Array([0, 0, -1]);
-                    var quat = new Float32Array(4);
-
-                    return function (value) {
-                        (this._dir = this._dir || new xeogl.math.vec3()).set(value || [0, 0, 1]);
-                        xeogl.math.vec3PairToQuaternion(zeroVec, this._dir, quat);
-                        this._group.quaternion = quat;
-                        this._needUpdate(); // Need to rebuild arrow
-                    };
-                })(),
-
-                get: function () {
-                    return this._dir;
-                }
-            },
-
-            /**
-             * The width and height of the PlaneHelper plane indicator.
-             *
-             * Values assigned to this property will be overridden by an auto-computed value when
-             * {{#crossLink "PlaneHelper/autoPlaneSize:property"}}{{/crossLink}} is true.
-             *
-             * @property planeSize
-             * @default [1,1]
-             * @type {Float32Array}
-             */
-            planeSize: {
-
-                set: function (value) {
-                    (this._planeSize = this._planeSize || new xeogl.math.vec2()).set(value || [1, 1]);
-                    this._group.scale = [this._planeSize[0], this._planeSize[1], 1.0];
-                },
-
-                get: function () {
-                    return this._planeSize;
-                }
-            },
-
-            /**
-             * Indicates whether this PlaneHelper's {{#crossLink "PlaneHelper/planeSize:property"}}{{/crossLink}} is automatically
-             * generated or not.
-             *
-             * When auto-generated, {{#crossLink "PlaneHelper/planeSize:property"}}{{/crossLink}} will automatically size
-             * to fit within the {{#crossLink "Scene/aabb:property"}}Scene's boundary{{/crossLink}}.
-             *
-             * @property autoPlaneSize
-             * @default false
-             * @type {Boolean}
-             */
-            autoPlaneSize: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._autoPlaneSize === value) {
-                        return;
-                    }
-
-                    this._autoPlaneSize = value;
-
-                    if (this._autoPlaneSize) {
-                        if (!this._onSceneAABB) {
-                            this._onSceneAABB = this.scene.on("boundary", function () {
-                                var aabbDiag = xeogl.math.getAABB3Diag(this.scene.aabb);
-                                var clipSize = (aabbDiag * 0.50);
-                                this.planeSize = [clipSize, clipSize];
-                            }, this);
-                        }
-                    } else {
-                        if (this._onSceneAABB) {
-                            this.scene.off(this._onSceneAABB);
-                            this._onSceneAABB = null;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._autoPlaneSize;
-                }
-            },
-
-            /**
-             * Emmissive color of this PlaneHelper.
-             *
-             * @property color
-             * @default [0.4,0.4,0.4]
-             * @type {Float32Array}
-             */
-            color: {
-
-                set: function (value) {
-                    (this._color = this._color || new xeogl.math.vec3()).set(value || [0.4,0.4,0.4]);
-                    this._planeWire.material.emissive = this._color;
-                    this._arrow.material.emissive = this._color;
-                },
-
-                get: function () {
-                    return this._color;
-                }
-            },
-
-            /**
-             Indicates whether this PlaneHelper is filled with color or just wireframe.
-
-             @property solid
-             @default true
-             @type Boolean
-             */
-            solid: {
-
-                set: function (value) {
-                    this._solid = value !== false;
-                    this._planeSolid.visible = this._solid && this._visible;
-                },
-
-                get: function () {
-                    return this._solid;
-                }
-            },
-            
-            /**
-             Indicates whether this PlaneHelper is visible or not.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-
-                set: function (value) {
-                    this._visible = value !== false;
-                    this._planeWire.visible = this._visible;
-                    this._planeSolid.visible = this._solid && this._visible;
-                    this._arrow.visible = this._visible;
-                    this._label.visible = this._visible;
-                },
-
-                get: function () {
-                    return this._visible;
+            } else {
+                if (this._onSceneAABB) {
+                    this.scene.off(this._onSceneAABB);
+                    this._onSceneAABB = null;
                 }
             }
-        },
+        }
 
-        _destroy: function () {
+        get color() {
+            return this._autoPlaneSize;
+        }
+
+        /**
+         * Emmissive color of this PlaneHelper.
+         *
+         * @property color
+         * @default [0.4,0.4,0.4]
+         * @type {Float32Array}
+         */
+        set color(value) {
+            (this._color = this._color || xeogl.math.vec3()).set(value || [0.4, 0.4, 0.4]);
+            this._planeWire.material.emissive = this._color;
+            this._arrow.material.emissive = this._color;
+        }
+
+        get color() {
+            return this._color;
+        }
+
+        /**
+         Indicates whether this PlaneHelper is filled with color or just wireframe.
+
+         @property solid
+         @default true
+         @type Boolean
+         */
+        set solid(value) {
+            this._solid = value !== false;
+            this._planeSolid.visible = this._solid && this._visible;
+        }
+
+        get solid() {
+            return this._solid;
+        }
+
+        /**
+         Indicates whether this PlaneHelper is visible or not.
+
+         @property visible
+         @default true
+         @type Boolean
+         */
+        set visible(value) {
+            this._visible = value !== false;
+            this._planeWire.visible = this._visible;
+            this._planeSolid.visible = this._solid && this._visible;
+            this._arrow.visible = this._visible;
+            this._label.visible = this._visible;
+        }
+
+        get visible() {
+            return this._visible;
+        }
+
+        destroy() {
+            super.destroy();
             if (this._onSceneAABB) {
                 this.scene.off(this._onSceneAABB);
             }
         }
-    });
-})();
+    };
+}

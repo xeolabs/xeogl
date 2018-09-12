@@ -134,307 +134,248 @@
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as CameraPathAnimation. .
  @extends Component
  */
-(function () {
+xeogl.CameraPathAnimation = class xeoglCameraPathAnimation extends xeogl.Component {
 
-    "use strict";
+    init(cfg) {
 
-    xeogl.CameraPathAnimation = xeogl.Component.extend({
+        super.init(cfg);
 
-        /**
-         JavaScript class name for this Component.
+        this._cameraFlightAnimation = this.create({
+            type: "xeogl.CameraFlightAnimation"
+        });
 
-         @property type
-         @type String
-         @final
-         */
-        type: "xeogl.CameraPathAnimation",
+        this._t = 0;
 
-        _init: function (cfg) {
+        this.state = xeogl.CameraPathAnimation.SCRUBBING;
 
-            this._cameraFlightAnimation = this.create({
-                type: "xeogl.CameraFlightAnimation"
-            });
+        this._playingFromT = 0;
+        this._playingToT = 0;
+        this._playingRate = cfg.playingRate || 1.0;
+        this._playingDir = 1.0;
 
-            this._t = 0;
+        this.cameraPath = cfg.cameraPath;
 
-            this.state = this.SCRUBBING;
+        this._tick = this.scene.on("tick", this._updateT, this);
+    }
 
-            this._playingFromT = 0;
-            this._playingToT = 0;
-            this._playingRate = cfg.playingRate || 1.0;
-            this._playingDir = 1.0;
+    _updateT() {
 
-            this.cameraPath = cfg.cameraPath;
+        const cameraPath = this._attached.cameraPath;
 
-            this._tick = this.scene.on("tick", this._updateT, this);
-        },
-
-        _updateT: function () {
-
-            var cameraPath = this._attached.cameraPath;
-
-            if (!cameraPath) {
-                return;
-            }
-
-            var f = 0.002;
-            //var f = 1.0;
-
-            switch (this.state) {
-
-                case this.SCRUBBING:
-                    return;
-
-                case this.PLAYING:
-
-                    this._t += this._playingRate * f;
-
-                    var numFrames = this.cameraPath.frames.length;
-                    if (numFrames === 0 || (this._playingDir < 0 && this._t <= 0) || (this._playingDir > 0 && this._t >= this.cameraPath.frames[numFrames-1].t)) {
-                        this.state = this.SCRUBBING;
-                        this._t = this.cameraPath.frames[numFrames-1].t;
-                        return;
-                    }
-
-                    cameraPath.loadFrame(this._t);
-
-                    break;
-
-                case this.PLAYING_TO:
-
-                    var t = this._t + (this._playingRate * f * this._playingDir);
-
-                    //t = this._ease(t, this._playingFromT, this._playingToT, this._playingToT - this._playingFromT);
-
-                    if ((this._playingDir < 0 && t <= this._playingToT) || (this._playingDir > 0 && t >= this._playingToT)) {
-                        t = this._playingToT;
-                        this.state = this.SCRUBBING;
-                    }
-
-                    this._t = t;
-
-                    cameraPath.loadFrame(this._t);
-
-                    break;
-            }
-        },
-
-        // Quadratic easing out - decelerating to zero velocity
-        // http://gizma.com/easing
-
-        _ease: function (t, b, c, d) {
-            t /= d;
-            return -c * t * (t - 2) + b;
-        },
-
-        STOPPED: 0,
-        SCRUBBING: 1,
-        PLAYING: 2,
-        PLAYING_TO: 3,
-
-        _props: {
-
-            /**
-             The {{#crossLink "CameraPath"}}{{/crossLink}} for this CameraPathAnimation.
-
-             Fires a {{#crossLink "CameraPathAnimation/cameraPath:event"}}{{/crossLink}} event on change.
-
-             @property cameraPath
-             @type CameraPath
-             */
-            cameraPath: {
-
-                set: function (value) {
-                    this._attach({
-                        name: "cameraPath",
-                        type: "xeogl.CameraPath",
-                        component: value,
-                        sceneDefault: false
-                    });
-                },
-
-                get: function () {
-                    return this._attached.cameraPath;
-                }
-            },
-
-            /**
-             The rate at which this CameraPathAnimation plays.
-
-             @property rate
-             @type Number
-             */
-            rate: {
-
-                set: function (value) {
-                    this._playingRate = value;
-                },
-
-                get: function () {
-                    return this._playingRate;
-                }
-            }
-        },
-
-        /**
-         * Begins playing this CameraPathAnimation from the current time.
-         * @method play
-         */
-        play: function () {
-
-            if (!this._attached.cameraPath) {
-                return;
-            }
-
-            this.state = this.PLAYING;
-        },
-
-        /**
-         * Begins playing this CameraPathAnimation from the current time to the given time.
-         *
-         * @method playToT
-         * @param {Number} t Time instant.
-         */
-        playToT: function (t) {
-
-            var cameraPath = this._attached.cameraPath;
-
-            if (!cameraPath) {
-                return;
-            }
-
-            this._playingFromT = this._t;
-            this._playingToT = t;
-            this._playingDir = (this._playingToT - this._playingFromT) < 0 ? -1 : 1;
-
-            this.state = this.PLAYING_TO;
-        },
-
-        /**
-         * Begins playing this CameraPathAnimation from the current time to the time at the given frame.
-         *
-         * @method playToFrame
-         * @param {Number} frameIdx Index of the frame to play to.
-         */
-        playToFrame: function (frameIdx) {
-
-            var cameraPath = this._attached.cameraPath;
-
-            if (!cameraPath) {
-                return;
-            }
-
-            var frame = cameraPath.frames[frameIdx];
-
-            if (!frame) {
-                this.error("playToFrame - frame index out of range: " + frameIdx);
-                return;
-            }
-
-            var t = (1.0 / cameraPath.frames.length ) * frameIdx;
-
-            this.playToT(t);
-        },
-
-        /**
-         * Flies this CameraPathAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the time at the given frame.
-         *
-         * @method flyToFrame
-         * @param {Number} frameIdx Index of the frame to play to.
-         * @param {Function} [ok] Callback to fire when playing is complete.
-         */
-        flyToFrame: function (frameIdx, ok) {
-
-            var cameraPath = this._attached.cameraPath;
-
-            if (!cameraPath) {
-                return;
-            }
-
-            var frame = cameraPath.frames[frameIdx];
-
-            if (!frame) {
-                this.error("flyToFrame - frame index out of range: " + frameIdx);
-                return;
-            }
-
-            this.state = this.SCRUBBING;
-            this._cameraFlightAnimation.flyTo(frame, ok);
-        },
-
-        /**
-         * Scrubs (sets) this CameraPathAnimation to the the given time.
-         *
-         * @method scrubToT
-         * @param {Number} t Time instant.
-         */
-        scrubToT: function (t) {
-
-            var cameraPath = this._attached.cameraPath;
-
-            if (!cameraPath) {
-                return;
-            }
-
-            var camera = this.scene.camera;
-
-            if (!camera) {
-                return;
-            }
-
-            this._t = t;
-
-            cameraPath.loadFrame(this._t, camera);
-
-            this.state = this.SCRUBBING;
-        },
-
-        /**
-         * Scrubs this CameraPathAnimation to the given frame.
-         *
-         * @method scrubToFrame
-         * @param {Number} frameIdx Index of the frame to scrub to.
-         */
-        scrubToFrame: function (frameIdx) {
-
-            var cameraPath = this._attached.cameraPath;
-
-            if (!cameraPath) {
-                return;
-            }
-
-            var camera = this.scene.camera;
-
-            if (!camera) {
-                return;
-            }
-
-            var frame = cameraPath.frames[frameIdx];
-
-            if (!frame) {
-                this.error("playToFrame - frame index out of range: " + frameIdx);
-                return;
-            }
-
-            this._t = (1.0 / cameraPath.frames.length ) * frameIdx;
-
-            cameraPath.loadFrame(this._t, camera);
-
-            this.state = this.SCRUBBING;
-        },
-
-        /**
-         * Stops playing this CameraPathAnimation.
-         *
-         * @method stop
-         */
-        stop: function () {
-            this.state = this.SCRUBBING;
-        },
-
-        _destroy: function () {
-            this.scene.off(this._tick);
+        if (!cameraPath) {
+            return;
         }
-    });
 
-})();
+        const f = 0.002;
+        //var f = 1.0;
+
+        switch (this.state) {
+
+            case xeogl.CameraPathAnimation.SCRUBBING:
+                return;
+
+            case xeogl.CameraPathAnimation.PLAYING:
+
+                this._t += this._playingRate * f;
+
+                const numFrames = this.cameraPath.frames.length;
+                if (numFrames === 0 || (this._playingDir < 0 && this._t <= 0) || (this._playingDir > 0 && this._t >= this.cameraPath.frames[numFrames - 1].t)) {
+                    this.state = xeogl.CameraPathAnimation.SCRUBBING;
+                    this._t = this.cameraPath.frames[numFrames - 1].t;
+                    return;
+                }
+
+                cameraPath.loadFrame(this._t);
+
+                break;
+
+            case xeogl.CameraPathAnimation.PLAYING_TO:
+
+                let t = this._t + (this._playingRate * f * this._playingDir);
+
+                //t = this._ease(t, this._playingFromT, this._playingToT, this._playingToT - this._playingFromT);
+
+                if ((this._playingDir < 0 && t <= this._playingToT) || (this._playingDir > 0 && t >= this._playingToT)) {
+                    t = this._playingToT;
+                    this.state = xeogl.CameraPathAnimation.SCRUBBING;
+                }
+
+                this._t = t;
+
+                cameraPath.loadFrame(this._t);
+
+                break;
+        }
+    }
+
+    // Quadratic easing out - decelerating to zero velocity
+    // http://gizma.com/easing
+
+    _ease(t, b, c, d) {
+        t /= d;
+        return -c * t * (t - 2) + b;
+    }
+
+    /**
+     The {{#crossLink "CameraPath"}}{{/crossLink}} for this CameraPathAnimation.
+
+     Fires a {{#crossLink "CameraPathAnimation/cameraPath:event"}}{{/crossLink}} event on change.
+
+     @property cameraPath
+     @type CameraPath
+     */
+    set cameraPath(value) {
+        this._attach({name: "cameraPath", type: "xeogl.CameraPath", component: value, sceneDefault: false});
+    }
+
+    get cameraPath() {
+        return this._attached.cameraPath;
+    }
+
+    /**
+     The rate at which this CameraPathAnimation plays.
+
+     @property rate
+     @type Number
+     */
+    set rate(value) {
+        this._playingRate = value;
+    }
+
+    get rate() {
+        return this._playingRate;
+    }
+
+    /**
+     * Begins playing this CameraPathAnimation from the current time.
+     * @method play
+     */
+    play() {
+        if (!this._attached.cameraPath) {
+            return;
+        }
+        this.state = xeogl.CameraPathAnimation.PLAYING;
+    }
+
+    /**
+     * Begins playing this CameraPathAnimation from the current time to the given time.
+     *
+     * @method playToT
+     * @param {Number} t Time instant.
+     */
+    playToT(t) {
+        const cameraPath = this._attached.cameraPath;
+        if (!cameraPath) {
+            return;
+        }
+        this._playingFromT = this._t;
+        this._playingToT = t;
+        this._playingDir = (this._playingToT - this._playingFromT) < 0 ? -1 : 1;
+        this.state = xeogl.CameraPathAnimation.PLAYING_TO;
+    }
+
+    /**
+     * Begins playing this CameraPathAnimation from the current time to the time at the given frame.
+     *
+     * @method playToFrame
+     * @param {Number} frameIdx Index of the frame to play to.
+     */
+    playToFrame(frameIdx) {
+        const cameraPath = this._attached.cameraPath;
+        if (!cameraPath) {
+            return;
+        }
+        const frame = cameraPath.frames[frameIdx];
+        if (!frame) {
+            this.error("playToFrame - frame index out of range: " + frameIdx);
+            return;
+        }
+        const t = (1.0 / cameraPath.frames.length ) * frameIdx;
+        this.playToT(t);
+    }
+
+    /**
+     * Flies this CameraPathAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the time at the given frame.
+     *
+     * @method flyToFrame
+     * @param {Number} frameIdx Index of the frame to play to.
+     * @param {Function} [ok] Callback to fire when playing is complete.
+     */
+    flyToFrame(frameIdx, ok) {
+        const cameraPath = this._attached.cameraPath;
+        if (!cameraPath) {
+            return;
+        }
+        const frame = cameraPath.frames[frameIdx];
+        if (!frame) {
+            this.error("flyToFrame - frame index out of range: " + frameIdx);
+            return;
+        }
+        this.state = xeogl.CameraPathAnimation.SCRUBBING;
+        this._cameraFlightAnimation.flyTo(frame, ok);
+    }
+
+    /**
+     * Scrubs (sets) this CameraPathAnimation to the the given time.
+     *
+     * @method scrubToT
+     * @param {Number} t Time instant.
+     */
+    scrubToT(t) {
+        const cameraPath = this._attached.cameraPath;
+        if (!cameraPath) {
+            return;
+        }
+        const camera = this.scene.camera;
+        if (!camera) {
+            return;
+        }
+        this._t = t;
+        cameraPath.loadFrame(this._t, camera);
+        this.state = xeogl.CameraPathAnimation.SCRUBBING;
+    }
+
+    /**
+     * Scrubs this CameraPathAnimation to the given frame.
+     *
+     * @method scrubToFrame
+     * @param {Number} frameIdx Index of the frame to scrub to.
+     */
+    scrubToFrame(frameIdx) {
+        const cameraPath = this._attached.cameraPath;
+        if (!cameraPath) {
+            return;
+        }
+        const camera = this.scene.camera;
+        if (!camera) {
+            return;
+        }
+        const frame = cameraPath.frames[frameIdx];
+        if (!frame) {
+            this.error("playToFrame - frame index out of range: " + frameIdx);
+            return;
+        }
+        this._t = (1.0 / cameraPath.frames.length ) * frameIdx;
+        cameraPath.loadFrame(this._t, camera);
+        this.state = xeogl.CameraPathAnimation.SCRUBBING;
+    }
+
+    /**
+     * Stops playing this CameraPathAnimation.
+     *
+     * @method stop
+     */
+    stop() {
+        this.state = xeogl.CameraPathAnimation.SCRUBBING;
+    }
+
+    destroy() {
+        super.destroy();
+        this.scene.off(this._tick);
+    }
+};
+
+xeogl.CameraPathAnimation.STOPPED = 0;
+xeogl.CameraPathAnimation.SCRUBBING = 1;
+xeogl.CameraPathAnimation.PLAYING = 2;
+xeogl.CameraPathAnimation.PLAYING_TO = 3;

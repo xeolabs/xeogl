@@ -34,9 +34,11 @@
     // Metals taken from https://docs.unrealengine.com/latest/INT/Engine/Rendering/Materials/PhysicallyBased/
     //-----------------------------------------------------------------------------------------------------
 
-    xeogl.scene = new xeogl.Scene({
+    var scene = new xeogl.Scene({
         transparent: true
     });
+
+    xeogl.setDefaultScene(scene);
 
     var roughnessMap = new xeogl.Texture({
         type: "xeogl.Texture",

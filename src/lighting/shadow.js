@@ -53,99 +53,108 @@
  @submodule lighting
  @constructor
  @extends Component
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Shadow within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} The Shadow configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shadow.
  @param [cfg.resolution=[1000,1000]] {Uint16Array} Resolution of the texture map for this Shadow.
  @param [cfg.intensity=1.0] {Number} Intensity of this Shadow.
  */
-(function () {
+import {Component} from '../component.js';
+import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
-    "use strict";
+const type = "xeogl.Shadow";
 
-    xeogl.Shadow = xeogl.Component.extend({
+class Shadow extends Component {
 
-        type: "xeogl.Shadow",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
-            this._state = {
-                resolution: xeogl.math.vec3([1000, 1000]),
-                intensity: 1.0
-            };
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            this.resolution = cfg.resolution;
-            this.intensity = cfg.intensity;
-        },
+    init(cfg) {
+        super.init(cfg);
+        this._state = {
+            resolution: math.vec3([1000, 1000]),
+            intensity: 1.0
+        };
+        this.resolution = cfg.resolution;
+        this.intensity = cfg.intensity;
+    }
 
-        _props: {
+    /**
+     The resolution of the texture map for this Shadow.
 
-            /**
-             The resolution of the texture map for this Shadow.
+     This will be either World- or View-space, depending on the value of {{#crossLink "Shadow/space:property"}}{{/crossLink}}.
 
-             This will be either World- or View-space, depending on the value of {{#crossLink "Shadow/space:property"}}{{/crossLink}}.
+     Fires a {{#crossLink "Shadow/resolution:event"}}{{/crossLink}} event on change.
 
-             Fires a {{#crossLink "Shadow/resolution:event"}}{{/crossLink}} event on change.
+     @property resolution
+     @default [1000, 1000]
+     @type Uint16Array
+     */
+    set resolution(value) {
 
-             @property resolution
-             @default [1000, 1000]
-             @type Uint16Array
-             */
-            resolution: {
+        this._state.resolution.set(value || [1000.0, 1000.0]);
 
-                set: function (value) {
+        this._renderer.imageDirty();
 
-                    this._state.resolution.set(value || [1000.0, 1000.0]);
+        /**
+         Fired whenever this Shadow's  {{#crossLink "Shadow/resolution:property"}}{{/crossLink}} property changes.
+         @event resolution
+         @param value The property's new value
+         */
+        this.fire("resolution", this._state.resolution);
+    }
 
-                    this._renderer.imageDirty();
+    get resolution() {
+        return this._state.resolution;
+    }
 
-                    /**
-                     Fired whenever this Shadow's  {{#crossLink "Shadow/resolution:property"}}{{/crossLink}} property changes.
-                     @event resolution
-                     @param value The property's new value
-                     */
-                    this.fire("resolution", this._state.resolution);
-                },
+    /**
+     The intensity of this Shadow.
 
-                get: function () {
-                    return this._state.resolution;
-                }
-            },
-            
-            /**
-             The intensity of this Shadow.
+     Fires a {{#crossLink "Shadow/intensity:event"}}{{/crossLink}} event on change.
 
-             Fires a {{#crossLink "Shadow/intensity:event"}}{{/crossLink}} event on change.
+     @property intensity
+     @default 1.0
+     @type Number
+     */
+    set intensity(value) {
 
-             @property intensity
-             @default 1.0
-             @type Number
-             */
-            intensity: {
+        value = value !== undefined ? value : 1.0;
 
-                set: function (value) {
+        this._state.intensity = value;
 
-                    value = value !== undefined ? value : 1.0;
+        this._renderer.imageDirty();
 
-                    this._state.intensity = value;
+        /**
+         * Fired whenever this Shadow's  {{#crossLink "Shadow/intensity:property"}}{{/crossLink}} property changes.
+         * @event intensity
+         * @param value The property's new value
+         */
+        this.fire("intensity", this._state.intensity);
+    }
 
-                    this._renderer.imageDirty();
+    get intensity() {
+        return this._state.intensity;
+    }
 
-                    /**
-                     * Fired whenever this Shadow's  {{#crossLink "Shadow/intensity:property"}}{{/crossLink}} property changes.
-                     * @event intensity
-                     * @param value The property's new value
-                     */
-                    this.fire("intensity", this._state.intensity);
-                },
+    destroy() {
+        super.destroy();
+        //this._state.destroy();
+    }
+}
 
-                get: function () {
-                    return this._state.intensity;
-                }
-            }
-        }
-    });
+componentClasses[type] = Shadow;
 
-})();
+export{Shadow};

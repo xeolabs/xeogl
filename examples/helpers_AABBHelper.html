@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/helpers/aabbHelper.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>using <a href="../docs/classes/AABBHelper.html" target="_parent">AABBHelpers</a> to visualize boundaries of <a href="../docs/classes/Mesh.html" target="_parent">Mesh</a>s within a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></h1>
+    <pre id="log">model:  gearbox assembly - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/GearboxAssy/README.md'
+            target="_parent">model info</a>]</pre>
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        id: "gearbox",
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+    });
+
+    model.on("loaded", function () {
+
+        var meshes = model.meshes;
+
+        for (var id in meshes) {
+            if (meshes.hasOwnProperty(id)) {
+                var mesh = meshes[id];
+                new xeogl.AABBHelper({
+                    target: mesh,
+                    color: [1, 0, 0],
+                    visible: true
+                });
+            }
+        }
+
+        new xeogl.AABBHelper({
+            target: model,
+            color: [0, 0, 1],
+            visible: true
+        });
+    });
+
+    var scene = xeogl.getDefaultScene();
+    var camera = scene.camera;
+
+    camera.eye = [184.21, 10.54, -7.03];
+    camera.look = [159.20, 17.02, 3.21];
+    camera.up = [-0.15, 0.97, 0.13];
+
+    new xeogl.CameraControl();
+
+
+</script>
+</body>
+</html>

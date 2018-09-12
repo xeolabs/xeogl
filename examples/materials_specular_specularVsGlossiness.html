@@ -36,7 +36,8 @@
         active: false
     });
 
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+    scene.clearLights();
 
     new xeogl.DirLight({
         id: "keyLight",
@@ -169,7 +170,7 @@
 
     new xeogl.CameraControl(); // Allow user camera interaction
 
-    var camera = xeogl.scene.camera; // Move eye position back a bit
+    var camera = scene.camera; // Move eye position back a bit
     camera.eye = [0, 0, 30];
 
     //------------------------------------------------------------------------------------------------------------------

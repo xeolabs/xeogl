@@ -19,7 +19,9 @@
 
 <script>
 
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
 
     new xeogl.AmbientLight({
         color: [0.9, 0.9, 0.9]
@@ -43,7 +45,7 @@
 
     var model = new xeogl.Model();
 
-    model.scene.canvas.spinner.processes++;
+    scene.canvas.spinner.processes++;
 
     var basePath = "models/obj/sportsCar/";
 
@@ -53,7 +55,7 @@
 
             xeogl.OBJModel.parse(model, objText, mtlText, basePath);
 
-            model.scene.canvas.spinner.processes--;
+            scene.canvas.spinner.processes--;
         });
     });
 
@@ -70,7 +72,7 @@
         request.send(null);
     }
 
-    var camera = xeogl.scene.camera;
+    var camera = scene.camera;
 
     camera.orbitYaw(-30);
     camera.orbitPitch(15);
@@ -83,7 +85,7 @@
     });
 
     // Start orbiting thecamera
-    model.scene.on("tick", function () {
+    scene.on("tick", function () {
         model.scene.camera.orbitYaw(-0.2);
     });
 

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>/home/lindsay/xeolabs/xeogl-next/xeogl/src/camera/perspective.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+            
+                <li><a href="../classes/AABBHelper.html">AABBHelper</a></li>
+            
+                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+            
+                <li><a href="../classes/Annotation.html">Annotation</a></li>
+            
+                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+            
+                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
+            
+                <li><a href="../classes/BIMServerModel.html">BIMServerModel</a></li>
+            
+                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+            
+                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+            
+                <li><a href="../classes/Button.html">Button</a></li>
+            
+                <li><a href="../classes/Camera.html">Camera</a></li>
+            
+                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+            
+                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+            
+                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+            
+                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+            
+                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+            
+                <li><a href="../classes/Canvas.html">Canvas</a></li>
+            
+                <li><a href="../classes/Clip.html">Clip</a></li>
+            
+                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
+            
+                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
+            
+                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
+            
+                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+            
+                <li><a href="../classes/Curve.html">Curve</a></li>
+            
+                <li><a href="../classes/CustomProjection.html">CustomProjection</a></li>
+            
+                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+            
+                <li><a href="../classes/DirLight.html">DirLight</a></li>
+            
+                <li><a href="../classes/EdgeMaterial.html">EdgeMaterial</a></li>
+            
+                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
+            
+                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+            
+                <li><a href="../classes/Frustum.html">Frustum</a></li>
+            
+                <li><a href="../classes/Geometry.html">Geometry</a></li>
+            
+                <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
+            
+                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+            
+                <li><a href="../classes/Group.html">Group</a></li>
+            
+                <li><a href="../classes/Input.html">Input</a></li>
+            
+                <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
+            
+                <li><a href="../classes/LightMap.html">LightMap</a></li>
+            
+                <li><a href="../classes/Material.html">Material</a></li>
+            
+                <li><a href="../classes/Mesh.html">Mesh</a></li>
+            
+                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
+            
+                <li><a href="../classes/Model.html">Model</a></li>
+            
+                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+            
+                <li><a href="../classes/Object.html">Object</a></li>
+            
+                <li><a href="../classes/OBJModel.html">OBJModel</a></li>
+            
+                <li><a href="../classes/Ortho.html">Ortho</a></li>
+            
+                <li><a href="../classes/OutlineMaterial.html">OutlineMaterial</a></li>
+            
+                <li><a href="../classes/Path.html">Path</a></li>
+            
+                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+            
+                <li><a href="../classes/Perspective.html">Perspective</a></li>
+            
+                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+            
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
+                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+            
+                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
+            
+                <li><a href="../classes/PointLight.html">PointLight</a></li>
+            
+                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+            
+                <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
+            
+                <li><a href="../classes/Scene.html">Scene</a></li>
+            
+                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+            
+                <li><a href="../classes/Shadow.html">Shadow</a></li>
+            
+                <li><a href="../classes/Skybox.html">Skybox</a></li>
+            
+                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
+            
+                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+            
+                <li><a href="../classes/Spinner.html">Spinner</a></li>
+            
+                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+            
+                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
+            
+                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
+            
+                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+            
+                <li><a href="../classes/STLModel.html">STLModel</a></li>
+            
+                <li><a href="../classes/Story.html">Story</a></li>
+            
+                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+            
+                <li><a href="../classes/TestModel.html">TestModel</a></li>
+            
+                <li><a href="../classes/Texture.html">Texture</a></li>
+            
+                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+            
+                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+            
+                <li><a href="../classes/Viewport.html">Viewport</a></li>
+            
+                <li><a href="../classes/xeogl.xeogl.html">xeogl.xeogl</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..//modules/animation.html">animation</a></li>
+            
+                <li><a href="..//modules/annotations.html">annotations</a></li>
+            
+                <li><a href="..//modules/camera.html">camera</a></li>
+            
+                <li><a href="..//modules/canvas.html">canvas</a></li>
+            
+                <li><a href="..//modules/clipping.html">clipping</a></li>
+            
+                <li><a href="..//modules/controls.html">controls</a></li>
+            
+                <li><a href="..//modules/curves.html">curves</a></li>
+            
+                <li><a href="..//modules/effects.html">effects</a></li>
+            
+                <li><a href="..//modules/generation.html">generation</a></li>
+            
+                <li><a href="..//modules/geometry.html">geometry</a></li>
+            
+                <li><a href="..//modules/helpers.html">helpers</a></li>
+            
+                <li><a href="..//modules/input.html">input</a></li>
+            
+                <li><a href="..//modules/lighting.html">lighting</a></li>
+            
+                <li><a href="..//modules/materials.html">materials</a></li>
+            
+                <li><a href="..//modules/math.html">math</a></li>
+            
+                <li><a href="..//modules/meshes.html">meshes</a></li>
+            
+                <li><a href="..//modules/models.html">models</a></li>
+            
+                <li><a href="..//modules/objects.html">objects</a></li>
+            
+                <li><a href="..//modules/rendering.html">rendering</a></li>
+            
+                <li><a href="..//modules/scene.html">scene</a></li>
+            
+                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+            
+                <li><a href="..//modules/stories.html">stories</a></li>
+            
+                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+        <!--Show:-->
+        <!--<label for="api-show-inherited">-->
+            <!--<input type="checkbox" id="api-show-inherited" checked>-->
+            <!--Inherited-->
+        <!--</label>-->
+
+        <!--<label for="api-show-protected">-->
+            <!--<input type="checkbox" id="api-show-protected">-->
+            <!--Protected-->
+        <!--</label>-->
+
+        <!--<label for="api-show-private">-->
+            <!--<input type="checkbox" id="api-show-private">-->
+            <!--Private-->
+        <!--</label>-->
+        <!--<label for="api-show-deprecated">-->
+            <!--<input type="checkbox" id="api-show-deprecated">-->
+            <!--Deprecated-->
+        <!--</label>-->
+
+    <!--</div>-->
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: /home/lindsay/xeolabs/xeogl-next/xeogl/src/camera/perspective.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **Perspective** defines a perspective projection transform for a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}.
+
+ ## Overview
+
+ * A {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} has a Perspective to configure its perspective projection mode.
+
+ ## Examples
+
+ * [Camera with perspective projection](../../examples/#camera_perspective)
+
+ ## Usage
+
+ * See {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
+
+ @class Perspective
+ @module xeogl
+ @submodule camera
+ @constructor
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink &quot;Transform&quot;}}{{/crossLink}} within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ @param [cfg.fov=60.0] {Number} Field-of-view angle, in degrees.
+ @param [cfg.fovAxis=&quot;min&quot;] {String} The field-of-view axis: &quot;x&quot;, &quot;y&quot;, or &quot;min&quot; to use whichever is currently the minimum.
+ @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
+ @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
+ @author xeolabs / http://xeolabs.com
+ @author Artur-Sampaio / https://github.com/Artur-Sampaio
+ @extends Component
+ */
+
+import {math} from &#x27;../math/math.js&#x27;;
+import {Component} from &#x27;../component.js&#x27;;
+import {State} from &#x27;../renderer/state.js&#x27;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
+
+const type = &quot;xeogl.Perspective&quot;;
+
+class Perspective extends Component {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.MetallicMaterial&quot; etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
+
+        this._state = new State({
+            matrix: math.mat4()
+        });
+
+        this._dirty = false;
+        this._fov = 60.0;
+        this._near = 0.1;
+        this._far = 10000.0;
+
+        // Recompute aspect from change in canvas size
+        this._canvasResized = this.scene.canvas.on(&quot;boundary&quot;, this._needUpdate, this);
+
+        this.fov = cfg.fov;
+        this.fovAxis = cfg.fovAxis;
+        this.near = cfg.near;
+        this.far = cfg.far;
+    }
+
+    _update() {
+        const WIDTH_INDEX = 2;
+        const HEIGHT_INDEX = 3;
+        const boundary = this.scene.viewport.boundary;
+        const aspect = boundary[WIDTH_INDEX] / boundary[HEIGHT_INDEX];
+        let fov = this._fov;
+        const fovAxis = this._fovAxis;
+        if (fovAxis == &quot;x&quot; || (fovAxis == &quot;min&quot; &amp;&amp; aspect &lt; 1) || (fovAxis == &quot;max&quot; &amp;&amp; aspect &gt; 1)) {
+            fov = fov / aspect;
+        }
+        fov = Math.min(fov, 120);
+        math.perspectiveMat4(fov * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
+        this._renderer.imageDirty();
+        this.fire(&quot;matrix&quot;, this._state.matrix);
+    }
+
+    /**
+     The field-of-view angle (FOV).
+
+     Fires a {{#crossLink &quot;Perspective/fov:event&quot;}}{{/crossLink}} event on change.
+
+     @property fov
+     @default 60.0
+     @type Number
+     */
+    set fov(value) {
+        this._fov = (value !== undefined &amp;&amp; value !== null) ? value : 60.0;
+        this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+        /**
+         Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fov:property&quot;}}{{/crossLink}} property changes.
+
+         @event fov
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;fov&quot;, this._fov);
+    }
+
+    get fov() {
+        return this._fov;
+    }
+
+    /**
+     The FOV axis.
+
+     Options are &quot;x&quot;, &quot;y&quot; or &quot;min&quot;, to use the minimum axis.
+
+     Fires a {{#crossLink &quot;Perspective/fov:event&quot;}}{{/crossLink}} event on change.
+
+     @property fovAxis
+     @default &quot;min&quot;
+     @type String
+     */
+    set fovAxis(value) {
+        value = value || &quot;min&quot;;
+        if (this._fovAxis === value) {
+            return;
+        }
+        if (value !== &quot;x&quot; &amp;&amp; value !== &quot;y&quot; &amp;&amp; value !== &quot;min&quot;) {
+            this.error(&quot;Unsupported value for &#x27;fovAxis&#x27;: &quot; + value + &quot; - defaulting to &#x27;min&#x27;&quot;);
+            value = &quot;min&quot;;
+        }
+        this._fovAxis = value;
+        this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+        /**
+         Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fovAxis:property&quot;}}{{/crossLink}} property changes.
+
+         @event fovAxis
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;fovAxis&quot;, this._fovAxis);
+    }
+
+    get fovAxis() {
+        return this._fovAxis;
+    }
+
+    /**
+     Position of this Perspective&#x27;s near plane on the positive View-space Z-axis.
+
+     Fires a {{#crossLink &quot;Perspective/near:event&quot;}}{{/crossLink}} event on change.
+
+     @property near
+     @default 0.1
+     @type Number
+     */
+    set near(value) {
+        this._near = (value !== undefined &amp;&amp; value !== null) ? value : 0.1;
+        this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+        /**
+         Fired whenever this Perspective&#x27;s   {{#crossLink &quot;Perspective/near:property&quot;}}{{/crossLink}} property changes.
+         @event near
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;near&quot;, this._near);
+    }
+
+    get near() {
+        return this._near;
+    }
+
+    /**
+     Position of this Perspective&#x27;s far plane on the positive View-space Z-axis.
+
+     Fires a {{#crossLink &quot;Perspective/far:event&quot;}}{{/crossLink}} event on change.
+
+     @property far
+     @default 10000.0
+     @type Number
+     */
+    set far(value) {
+        this._far = (value !== undefined &amp;&amp; value !== null) ? value : 10000;
+        this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+        /**
+         Fired whenever this Perspective&#x27;s  {{#crossLink &quot;Perspective/far:property&quot;}}{{/crossLink}} property changes.
+
+         @event far
+         @param value The property&#x27;s new value
+         */
+        this.fire(&quot;far&quot;, this._far);
+    }
+
+    get far() {
+        return this._far;
+    }
+
+    /**
+     The Perspective&#x27;s projection transform matrix.
+
+     Fires a {{#crossLink &quot;Perspective/matrix:event&quot;}}{{/crossLink}} event on change.
+
+     @property matrix
+     @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+     @type {Float32Array}
+     */
+    get matrix() {
+        if (this._updateScheduled) {
+            this._doUpdate();
+        }
+        return this._state.matrix;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+        super.destroy();
+        this.scene.canvas.off(this._canvasResized);
+    }
+}
+
+componentClasses[type] = Perspective;
+
+export{Perspective};
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

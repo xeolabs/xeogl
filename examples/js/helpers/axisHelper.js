@@ -1,6 +1,4 @@
-(function () {
-
-    "use strict";
+{
 
     /**s
 
@@ -189,7 +187,6 @@
             // Sphere behind gnomon
 
             new xeogl.Mesh(scene, {
-                lights: new xeogl.Lights(scene),
                 geometry: new xeogl.SphereGeometry(scene, {
                     radius: 9.0,
                     heightSegments: 60,
@@ -229,7 +226,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                position: [0, 5, 0],
+                position: [-5, 0, 0],
                 rotation: [0, 0, 90]
             }),
 
@@ -239,7 +236,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                position: [0, 2, 0],
+                position: [-2, 0, 0],
                 rotation: [0, 0, 90]
             }),
 
@@ -291,7 +288,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                position: [0, 5, 0],
+                position: [0, 0, 5],
                 rotation: [90, 0, 0]
             }),
 
@@ -301,7 +298,7 @@
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
-                position: [0, 2, 0],
+                position: [0, 0, 2],
                 rotation: [90, 0, 0]
             }),
 
@@ -326,4 +323,4 @@
             }
         }
     };
-})();
+}

@@ -15,13 +15,14 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a> loaded from a Wavefront .OBJ file
-    </h1>
+    <h1>importing geometry from a Wavefront .OBJ file</h1>
 </div>
 
 <script>
 
-    xeogl.loadOBJGeometry(xeogl.scene, "models/obj/raptor/raptor.obj", function (geometry) {
+    var scene = xeogl.getDefaultScene();
+
+    xeogl.loadOBJGeometry(scene, "models/obj/raptor/raptor.obj", function (geometry) {
 
         var mesh = new xeogl.Mesh({
 

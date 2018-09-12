@@ -37,8 +37,7 @@
  @module xeogl
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CylinderGeometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
@@ -54,229 +53,244 @@
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
-(function () {
+import {utils} from '../utils.js';
+import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
 
-    "use strict";
+const type = "xeogl.CylinderGeometry";
 
-    xeogl.CylinderGeometry = xeogl.Geometry.extend({
+class CylinderGeometry extends Geometry {
 
-        type: "xeogl.CylinderGeometry",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
-            var radiusTop = cfg.radiusTop || 1;
-            if (radiusTop < 0) {
-                this.error("negative radiusTop not allowed - will invert");
-                radiusTop *= -1;
-            }
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            var radiusBottom = cfg.radiusBottom || 1;
-            if (radiusBottom < 0) {
-                this.error("negative radiusBottom not allowed - will invert");
-                radiusBottom *= -1;
-            }
+    init(cfg) {
 
-            var height = cfg.height || 1;
-            if (height < 0) {
-                this.error("negative height not allowed - will invert");
-                height *= -1;
-            }
-
-            var radialSegments = cfg.radialSegments || 32;
-            if (radialSegments < 0) {
-                this.error("negative radialSegments not allowed - will invert");
-                radialSegments *= -1;
-            }
-            if (radialSegments < 3) {
-                radialSegments = 3;
-            }
-
-            var heightSegments = cfg.heightSegments || 1;
-            if (heightSegments < 0) {
-                this.error("negative heightSegments not allowed - will invert");
-                heightSegments *= -1;
-            }
-            if (heightSegments < 1) {
-                heightSegments = 1;
-            }
-
-            var openEnded = !!cfg.openEnded;
-
-            var center = cfg.center;
-            var centerX = center ? center[0] : 0;
-            var centerY = center ? center[1] : 0;
-            var centerZ = center ? center[2] : 0;
-
-            var heightHalf = height / 2;
-            var heightLength = height / heightSegments;
-            var radialAngle = (2.0 * Math.PI / radialSegments);
-            var radialLength = 1.0 / radialSegments;
-            //var nextRadius = this._radiusBottom;
-            var radiusChange = (radiusTop - radiusBottom) / heightSegments;
-
-            var positions = [];
-            var normals = [];
-            var uvs = [];
-            var indices = [];
-
-            var h;
-            var i;
-
-            var x;
-            var z;
-
-            var currentRadius;
-            var currentHeight;
-
-            var first;
-            var second;
-
-            var startIndex;
-            var tu;
-            var tv;
-
-            // create vertices
-            var normalY = (90.0 - (Math.atan(height / (radiusBottom - radiusTop))) * 180 / Math.PI) / 90.0;
-
-            for (h = 0; h <= heightSegments; h++) {
-                currentRadius = radiusTop - h * radiusChange;
-                currentHeight = heightHalf - h * heightLength;
-
-                for (i = 0; i <= radialSegments; i++) {
-                    x = Math.sin(i * radialAngle);
-                    z = Math.cos(i * radialAngle);
-
-                    normals.push(currentRadius * x);
-                    normals.push(normalY); //todo
-                    normals.push(currentRadius * z);
-
-                    uvs.push((i * radialLength));
-                    uvs.push(h * 1 / heightSegments);
-
-                    positions.push((currentRadius * x) + centerX);
-                    positions.push((currentHeight) + centerY);
-                    positions.push((currentRadius * z) + centerZ);
-                }
-            }
-
-            // create faces
-            for (h = 0; h < heightSegments; h++) {
-                for (i = 0; i <= radialSegments; i++) {
-
-                    first = h * (radialSegments + 1) + i;
-                    second = first + radialSegments;
-
-                    indices.push(first);
-                    indices.push(second);
-                    indices.push(second + 1);
-
-                    indices.push(first);
-                    indices.push(second + 1);
-                    indices.push(first + 1);
-                }
-            }
-
-            // create top cap
-            if (!openEnded && radiusTop > 0) {
-                startIndex = (positions.length / 3);
-
-                // top center
-                normals.push(0.0);
-                normals.push(1.0);
-                normals.push(0.0);
-
-                uvs.push(0.5);
-                uvs.push(0.5);
-
-                positions.push(0 + centerX);
-                positions.push(heightHalf + centerY);
-                positions.push(0 + centerZ);
-
-                // top triangle fan
-                for (i = 0; i <= radialSegments; i++) {
-                    x = Math.sin(i * radialAngle);
-                    z = Math.cos(i * radialAngle);
-                    tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
-                    tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
-
-                    normals.push(radiusTop * x);
-                    normals.push(1.0);
-                    normals.push(radiusTop * z);
-
-                    uvs.push(tu);
-                    uvs.push(tv);
-
-                    positions.push((radiusTop * x) + centerX);
-                    positions.push((heightHalf) + centerY);
-                    positions.push((radiusTop * z) + centerZ);
-                }
-
-                for (i = 0; i < radialSegments; i++) {
-                    center = startIndex;
-                    first = startIndex + 1 + i;
-
-                    indices.push(first);
-                    indices.push(first + 1);
-                    indices.push(center);
-                }
-            }
-
-            // create bottom cap
-            if (!openEnded && radiusBottom > 0) {
-
-                startIndex = (positions.length / 3);
-
-                // top center
-                normals.push(0.0);
-                normals.push(-1.0);
-                normals.push(0.0);
-
-                uvs.push(0.5);
-                uvs.push(0.5);
-
-                positions.push(0 + centerX);
-                positions.push(0 - heightHalf + centerY);
-                positions.push(0 + centerZ);
-
-                // top triangle fan
-                for (i = 0; i <= radialSegments; i++) {
-
-                    x = Math.sin(i * radialAngle);
-                    z = Math.cos(i * radialAngle);
-
-                    tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
-                    tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
-
-                    normals.push(radiusBottom * x);
-                    normals.push(-1.0);
-                    normals.push(radiusBottom * z);
-
-                    uvs.push(tu);
-                    uvs.push(tv);
-
-                    positions.push((radiusBottom * x) + centerX);
-                    positions.push((0 - heightHalf) + centerY);
-                    positions.push((radiusBottom * z) + centerZ);
-                }
-
-                for (i = 0; i < radialSegments; i++) {
-
-                    center = startIndex;
-                    first = startIndex + 1 + i;
-
-                    indices.push(center);
-                    indices.push(first + 1);
-                    indices.push(first);
-                }
-            }
-
-            this._super(xeogl._apply(cfg, {
-                positions: positions,
-                normals: normals,
-                uv: uvs,
-                indices: indices
-            }));
+        let radiusTop = cfg.radiusTop || 1;
+        if (radiusTop < 0) {
+            this.error("negative radiusTop not allowed - will invert");
+            radiusTop *= -1;
         }
-    });
 
-})();
+        let radiusBottom = cfg.radiusBottom || 1;
+        if (radiusBottom < 0) {
+            this.error("negative radiusBottom not allowed - will invert");
+            radiusBottom *= -1;
+        }
+
+        let height = cfg.height || 1;
+        if (height < 0) {
+            this.error("negative height not allowed - will invert");
+            height *= -1;
+        }
+
+        let radialSegments = cfg.radialSegments || 32;
+        if (radialSegments < 0) {
+            this.error("negative radialSegments not allowed - will invert");
+            radialSegments *= -1;
+        }
+        if (radialSegments < 3) {
+            radialSegments = 3;
+        }
+
+        let heightSegments = cfg.heightSegments || 1;
+        if (heightSegments < 0) {
+            this.error("negative heightSegments not allowed - will invert");
+            heightSegments *= -1;
+        }
+        if (heightSegments < 1) {
+            heightSegments = 1;
+        }
+
+        const openEnded = !!cfg.openEnded;
+
+        let center = cfg.center;
+        const centerX = center ? center[0] : 0;
+        const centerY = center ? center[1] : 0;
+        const centerZ = center ? center[2] : 0;
+
+        const heightHalf = height / 2;
+        const heightLength = height / heightSegments;
+        const radialAngle = (2.0 * Math.PI / radialSegments);
+        const radialLength = 1.0 / radialSegments;
+        //var nextRadius = this._radiusBottom;
+        const radiusChange = (radiusTop - radiusBottom) / heightSegments;
+
+        const positions = [];
+        const normals = [];
+        const uvs = [];
+        const indices = [];
+
+        let h;
+        let i;
+
+        let x;
+        let z;
+
+        let currentRadius;
+        let currentHeight;
+
+        let first;
+        let second;
+
+        let startIndex;
+        let tu;
+        let tv;
+
+        // create vertices
+        const normalY = (90.0 - (Math.atan(height / (radiusBottom - radiusTop))) * 180 / Math.PI) / 90.0;
+
+        for (h = 0; h <= heightSegments; h++) {
+            currentRadius = radiusTop - h * radiusChange;
+            currentHeight = heightHalf - h * heightLength;
+
+            for (i = 0; i <= radialSegments; i++) {
+                x = Math.sin(i * radialAngle);
+                z = Math.cos(i * radialAngle);
+
+                normals.push(currentRadius * x);
+                normals.push(normalY); //todo
+                normals.push(currentRadius * z);
+
+                uvs.push((i * radialLength));
+                uvs.push(h * 1 / heightSegments);
+
+                positions.push((currentRadius * x) + centerX);
+                positions.push((currentHeight) + centerY);
+                positions.push((currentRadius * z) + centerZ);
+            }
+        }
+
+        // create faces
+        for (h = 0; h < heightSegments; h++) {
+            for (i = 0; i <= radialSegments; i++) {
+
+                first = h * (radialSegments + 1) + i;
+                second = first + radialSegments;
+
+                indices.push(first);
+                indices.push(second);
+                indices.push(second + 1);
+
+                indices.push(first);
+                indices.push(second + 1);
+                indices.push(first + 1);
+            }
+        }
+
+        // create top cap
+        if (!openEnded && radiusTop > 0) {
+            startIndex = (positions.length / 3);
+
+            // top center
+            normals.push(0.0);
+            normals.push(1.0);
+            normals.push(0.0);
+
+            uvs.push(0.5);
+            uvs.push(0.5);
+
+            positions.push(0 + centerX);
+            positions.push(heightHalf + centerY);
+            positions.push(0 + centerZ);
+
+            // top triangle fan
+            for (i = 0; i <= radialSegments; i++) {
+                x = Math.sin(i * radialAngle);
+                z = Math.cos(i * radialAngle);
+                tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
+                tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
+
+                normals.push(radiusTop * x);
+                normals.push(1.0);
+                normals.push(radiusTop * z);
+
+                uvs.push(tu);
+                uvs.push(tv);
+
+                positions.push((radiusTop * x) + centerX);
+                positions.push((heightHalf) + centerY);
+                positions.push((radiusTop * z) + centerZ);
+            }
+
+            for (i = 0; i < radialSegments; i++) {
+                center = startIndex;
+                first = startIndex + 1 + i;
+
+                indices.push(first);
+                indices.push(first + 1);
+                indices.push(center);
+            }
+        }
+
+        // create bottom cap
+        if (!openEnded && radiusBottom > 0) {
+
+            startIndex = (positions.length / 3);
+
+            // top center
+            normals.push(0.0);
+            normals.push(-1.0);
+            normals.push(0.0);
+
+            uvs.push(0.5);
+            uvs.push(0.5);
+
+            positions.push(0 + centerX);
+            positions.push(0 - heightHalf + centerY);
+            positions.push(0 + centerZ);
+
+            // top triangle fan
+            for (i = 0; i <= radialSegments; i++) {
+
+                x = Math.sin(i * radialAngle);
+                z = Math.cos(i * radialAngle);
+
+                tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
+                tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
+
+                normals.push(radiusBottom * x);
+                normals.push(-1.0);
+                normals.push(radiusBottom * z);
+
+                uvs.push(tu);
+                uvs.push(tv);
+
+                positions.push((radiusBottom * x) + centerX);
+                positions.push((0 - heightHalf) + centerY);
+                positions.push((radiusBottom * z) + centerZ);
+            }
+
+            for (i = 0; i < radialSegments; i++) {
+
+                center = startIndex;
+                first = startIndex + 1 + i;
+
+                indices.push(center);
+                indices.push(first + 1);
+                indices.push(first);
+            }
+        }
+
+        super.init(utils.apply(cfg, {
+            positions: positions,
+            normals: normals,
+            uv: uvs,
+            indices: indices
+        }));
+    }
+}
+
+componentClasses[type] = CylinderGeometry;
+
+export{CylinderGeometry};

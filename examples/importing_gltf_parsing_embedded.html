@@ -22,7 +22,9 @@
 
     var model = new xeogl.Model();
 
-    model.scene.canvas.spinner.processes++;
+    var scene = model.scene;
+
+    scene.canvas.spinner.processes++;
 
     loadJSON(src, function (response) {
 
@@ -64,7 +66,7 @@
         return (i !== 0) ? src.substring(0, i + 1) : "";
     }
 
-    var camera = xeogl.scene.camera;
+    var camera = scene.camera;
     camera.eye = [10.15, 28.75, -60.93];
     camera.look = [21.66, 10.49, -6.8];
     camera.up = [0.07, 0.95, 0.31];
@@ -77,8 +79,8 @@
     });
 
     // Start orbiting thecamera
-    model.scene.on("tick", function () {
-        model.scene.camera.orbitYaw(-0.2);
+    scene.on("tick", function () {
+        scene.camera.orbitYaw(-0.2);
     });
 
 </script>

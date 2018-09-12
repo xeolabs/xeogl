@@ -130,7 +130,9 @@
     };
 
     // Custom lights
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
     new xeogl.AmbientLight({
         color: [0.4, 0.4, 0.45]
     });
