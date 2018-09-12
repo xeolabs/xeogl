@@ -124,8 +124,7 @@
  @submodule materials
  @constructor
  @extends Material
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this PhongMaterial within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} The PhongMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this PhongMaterial.
@@ -157,727 +156,702 @@
  @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  */
-(function () {
-
-    "use strict";
-
-    xeogl.PhongMaterial = xeogl.Material.extend({
-
-        type: "xeogl.PhongMaterial",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this._state = new xeogl.renderer.State({
-                type: "PhongMaterial",
-                ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
-                diffuse: xeogl.math.vec3([1.0, 1.0, 1.0]),
-                specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
-                emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
-                alpha: null,
-                shininess: null,
-                reflectivity: null,
-                alphaMode: null,
-                alphaCutoff: null,
-                lineWidth: null,
-                pointSize: null,
-                backfaces: null,
-                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-                hash: null
-            });
-
-            this.ambient = cfg.ambient;
-            this.diffuse = cfg.diffuse;
-            this.specular = cfg.specular;
-            this.emissive = cfg.emissive;
-            this.alpha = cfg.alpha;
-            this.shininess = cfg.shininess;
-            this.reflectivity = cfg.reflectivity;
-            this.lineWidth = cfg.lineWidth;
-            this.pointSize = cfg.pointSize;
-
-            if (cfg.ambientMap) {
-                this._ambientMap = this._checkComponent("xeogl.Texture", cfg.ambientMap);
-            }
-            if (cfg.diffuseMap) {
-                this._diffuseMap = this._checkComponent("xeogl.Texture", cfg.diffuseMap);
-            }
-            if (cfg.specularMap) {
-                this._specularMap = this._checkComponent("xeogl.Texture", cfg.specularMap);
-            }
-            if (cfg.emissiveMap) {
-                this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
-            }
-            if (cfg.alphaMap) {
-                this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
-            }
-            if (cfg.reflectivityMap) {
-                this._reflectivityMap = this._checkComponent("xeogl.Texture", cfg.reflectivityMap);
-            }
-            if (cfg.normalMap) {
-                this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
-            }
-            if (cfg.occlusionMap) {
-                this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
-            }
-            if (cfg.diffuseFresnel) {
-                this._diffuseFresnel = this._checkComponent("xeogl.Fresnel", cfg.diffuseFresnel);
-            }
-            if (cfg.specularFresnel) {
-                this._specularFresnel = this._checkComponent("xeogl.Fresnel", cfg.specularFresnel);
-            }
-            if (cfg.emissiveFresnel) {
-                this._emissiveFresnel = this._checkComponent("xeogl.Fresnel", cfg.emissiveFresnel);
-            }
-            if (cfg.alphaFresnel) {
-                this._alphaFresnel = this._checkComponent("xeogl.Fresnel", cfg.alphaFresnel);
-            }
-            if (cfg.reflectivityFresnel) {
-                this._reflectivityFresnel = this._checkComponent("xeogl.Fresnel", cfg.reflectivityFresnel);
-            }
-
-            this.alphaMode = cfg.alphaMode;
-            this.alphaCutoff = cfg.alphaCutoff;
-            this.backfaces = cfg.backfaces;
-            this.frontface = cfg.frontface;
-
-            this._makeHash();
-        },
-
-        _makeHash: function () {
-            var state = this._state;
-            var hash = ["/p"]; // 'P' for Phong
-            if (this._normalMap) {
-                hash.push("/nm");
-                if (this._normalMap.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._ambientMap) {
-                hash.push("/am");
-                if (this._ambientMap.hasMatrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + this._ambientMap.encoding);
-            }
-            if (this._diffuseMap) {
-                hash.push("/dm");
-                if (this._diffuseMap.hasMatrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + this._diffuseMap.encoding);
-            }
-            if (this._specularMap) {
-                hash.push("/sm");
-                if (this._specularMap.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._emissiveMap) {
-                hash.push("/em");
-                if (this._emissiveMap.hasMatrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + this._emissiveMap.encoding);
-            }
-            if (this._alphaMap) {
-                hash.push("/opm");
-                if (this._alphaMap.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._reflectivityMap) {
-                hash.push("/rm");
-                if (this._reflectivityMap.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._occlusionMap) {
-                hash.push("/ocm");
-                if (this._occlusionMap.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._diffuseFresnel) {
-                hash.push("/df");
-            }
-            if (this._specularFresnel) {
-                hash.push("/sf");
-            }
-            if (this._emissiveFresnel) {
-                hash.push("/ef");
-            }
-            if (this._alphaFresnel) {
-                hash.push("/of");
-            }
-            if (this._reflectivityFresnel) {
-                hash.push("/rf");
-            }
-            hash.push(";");
-            state.hash = hash.join("");
-        },
-
-        _props: {
-
-            /**
-             The PhongMaterial's ambient color.
-
-             @property ambient
-             @default [0.3, 0.3, 0.3]
-             @type Float32Array
-             */
-            ambient: {
-                set: function (value) {
-                    var ambient = this._state.ambient;
-                    if (!ambient) {
-                        ambient = this._state.ambient = new Float32Array(3);
-                    } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        ambient[0] = value[0];
-                        ambient[1] = value[1];
-                        ambient[2] = value[2];
-                    } else {
-                        ambient[0] = .2;
-                        ambient[1] = .2;
-                        ambient[2] = .2;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.ambient;
-                }
-            },
-
-            /**
-             The PhongMaterial's diffuse color.
-
-             Multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}.
-
-             @property diffuse
-             @default [1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            diffuse: {
-                set: function (value) {
-                    var diffuse = this._state.diffuse;
-                    if (!diffuse) {
-                        diffuse = this._state.diffuse = new Float32Array(3);
-                    } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        diffuse[0] = value[0];
-                        diffuse[1] = value[1];
-                        diffuse[2] = value[2];
-                    } else {
-                        diffuse[0] = 1;
-                        diffuse[1] = 1;
-                        diffuse[2] = 1;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.diffuse;
-                }
-            },
-
-            /**
-             The material's specular color.
-
-             Multiplies by {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}}.
-
-             @property specular
-             @default [1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            specular: {
-                set: function (value) {
-                    var specular = this._state.specular;
-                    if (!specular) {
-                        specular = this._state.specular = new Float32Array(3);
-                    } else if (value && specular[0] === value[0] && specular[1] === value[1] && specular[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        specular[0] = value[0];
-                        specular[1] = value[1];
-                        specular[2] = value[2];
-                    } else {
-                        specular[0] = 1;
-                        specular[1] = 1;
-                        specular[2] = 1;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.specular;
-                }
-            },
-
-            /**
-             The PhongMaterial's emissive color.
-
-             Multiplies by {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}.
-
-             @property emissive
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            emissive: {
-                set: function (value) {
-                    var emissive = this._state.emissive;
-                    if (!emissive) {
-                        emissive = this._state.emissive = new Float32Array(3);
-                    } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        emissive[0] = value[0];
-                        emissive[1] = value[1];
-                        emissive[2] = value[2];
-                    } else {
-                        emissive[0] = 0;
-                        emissive[1] = 0;
-                        emissive[2] = 0;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.emissive;
-                }
-            },
-
-            /**
-             Factor in the range [0..1] indicating how transparent the PhongMaterial is.
-
-             A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
-             Multiplies by {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}}.
-
-             @property alpha
-             @default 1.0
-             @type Number
-             */
-            alpha: {
-                set: function (value) {
-                    value = (value !== undefined && value !== null) ? value : 1.0;
-                    if (this._state.alpha === value) {
-                        return;
-                    }
-                    this._state.alpha = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.alpha;
-                }
-            },
-
-            /**
-             A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this PhongMaterial.
-
-             Larger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never
-             desirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp
-             highlight.
-
-             @property shininess
-             @default 80.0
-             @type Number
-             */
-            shininess: {
-                set: function (value) {
-                    this._state.shininess = value !== undefined ? value : 80;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.shininess;
-                }
-            },
-
-            /**
-             The PhongMaterial's line width.
-
-             @property lineWidth
-             @default 1.0
-             @type Number
-             */
-            lineWidth: {
-                set: function (value) {
-                    this._state.lineWidth = value || 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.lineWidth;
-                }
-            },
-
-            /**
-             The PhongMaterial's point size.
-
-             @property pointSize
-             @default 1.0
-             @type Number
-             */
-            pointSize: {
-                set: function (value) {
-                    this._state.pointSize = value || 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.pointSize;
-                }
-            },
-
-            /**
-             Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected by this PhongMaterial.
-
-             The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.
-
-             Multiplies by {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}}.
-
-             @property reflectivity
-             @default 1.0
-             @type Number
-             */
-            reflectivity: {
-                set: function (value) {
-                    this._state.reflectivity = value !== undefined ? value : 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.reflectivity;
-                }
-            },
-
-            /**
-             Normal map.
-
-             @property normalMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            normalMap: {
-                get: function () {
-                    return this._normalMap;
-                }
-            },
-
-            /**
-             Ambient map.
-
-             Multiplies by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.
-
-             @property ambientMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            ambientMap: {
-                get: function () {
-                    return this._ambientMap;
-                }
-            },
-
-            /**
-             Diffuse map.
-
-             Multiplies by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}.
-
-             @property diffuseMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            diffuseMap: {
-                get: function () {
-                    return this._diffuseMap;
-                }
-            },
-
-            /**
-             Specular map.
-
-             Multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}.
-
-             @property specularMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            specularMap: {
-                get: function () {
-                    return this._specularMap;
-                }
-            },
-
-            /**
-             Emissive map.
-
-             Multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}.
-
-             @property emissiveMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            emissiveMap: {
-                get: function () {
-                    return this._emissiveMap;
-                }
-            },
-
-            /**
-             Alpha map.
-
-             Multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}.
-
-             @property alphaMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            alphaMap: {
-                get: function () {
-                    return this._alphaMap;
-                }
-            },
-
-            /**
-             Reflectivity map.
-
-             Multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}.
-
-             @property reflectivityMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            reflectivityMap: {
-                get: function () {
-                    return this._reflectivityMap;
-                }
-            },
-
-            /**
-
-             Occlusion map.
-
-             @property occlusionMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            occlusionMap: {
-                get: function () {
-                    return this._occlusionMap;
-                }
-            },
-
-            /**
-             Diffuse Fresnel.
-
-             Applies to {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}}.
-
-             @property diffuseFresnel
-             @default undefined
-             @type {Fresnel}
-             @final
-             */
-            diffuseFresnel: {
-                get: function () {
-                    return this._diffuseFresnel;
-                }
-            },
-
-            /**
-             Specular Fresnel.
-
-             Applies to {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}.
-
-             @property specularFresnel
-             @default undefined
-             @type {Fresnel}
-             @final
-             */
-            specularFresnel: {
-                get: function () {
-                    return this._specularFresnel;
-                }
-            },
-
-            /**
-             Emissive Fresnel.
-
-             Applies to {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}.
-
-             @property emissiveFresnel
-             @default undefined
-             @type {Fresnel}
-             @final
-             */
-            emissiveFresnel: {
-                get: function () {
-                    return this._emissiveFresnel;
-                }
-            },
-
-            /**
-             Alpha Fresnel.
-
-             Applies to {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}.
-
-             @property alphaFresnel
-             @default undefined
-             @type {Fresnel}
-             @final
-             */
-            alphaFresnel: {
-                get: function () {
-                    return this._alphaFresnel;
-                }
-            },
-
-            /**
-             Reflectivity Fresnel.
-
-             Applies to {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}.
-
-             @property reflectivityFresnel
-             @default undefined
-             @type {Fresnel}
-             @final
-             */
-            reflectivityFresnel: {
-                get: function () {
-                    return this._reflectivityFresnel;
-                }
-            },
-
-            /**
-             The alpha rendering mode.
-
-             This governs how alpha is treated. Alpha is the combined result of the
-             {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} and
-             {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} properties.
-
-             * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
-             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
-             * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
-
-             @property alphaMode
-             @default "opaque"
-             @type {String}
-             */
-            alphaMode: (function () {
-                var modes = {"opaque": 0, "mask": 1, "blend": 2};
-                var modeNames = ["opaque", "mask", "blend"];
-                return {
-                    set: function (alphaMode) {
-                        alphaMode = alphaMode || "opaque";
-                        var value = modes[alphaMode];
-                        if (value === undefined) {
-                            this.error("Unsupported value for 'alphaMode': " + alphaMode + " - defaulting to 'opaque'");
-                            value = "opaque";
-                        }
-                        if (this._state.alphaMode === value) {
-                            return;
-                        }
-                        this._state.alphaMode = value;
-                        this._renderer.imageDirty();
-                    },
-                    get: function () {
-                        return modeNames[this._state.alphaMode];
-                    }
-                };
-            })(),
-
-            /**
-             The alpha cutoff value.
-
-             Specifies the cutoff threshold when {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}}
-             equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
-             opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
-             material as fully transparent. This value is ignored for other modes.
-
-             Alpha is the combined result of the
-             {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} and
-             {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} properties.
-
-             @property alphaCutoff
-             @default 0.5
-             @type {Number}
-             */
-            alphaCutoff: {
-                set: function (alphaCutoff) {
-                    if (alphaCutoff === null || alphaCutoff === undefined) {
-                        alphaCutoff = 0.5;
-                    }
-                    if (this._state.alphaCutoff === alphaCutoff) {
-                        return;
-                    }
-                    this._state.alphaCutoff = alphaCutoff;
-                },
-                get: function () {
-                    return this._state.alphaCutoff;
-                }
-            },
-
-            /**
-             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             @property backfaces
-             @default false
-             @type Boolean
-             */
-            backfaces: {
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.backfaces === value) {
-                        return;
-                    }
-                    this._state.backfaces = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.backfaces;
-                }
-            },
-
-            /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             @property frontface
-             @default "ccw"
-             @type String
-             */
-            frontface: {
-                set: function (value) {
-                    value = value !== "cw";
-                    if (this._state.frontface === value) {
-                        return;
-                    }
-                    this._state.frontface = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.frontface ? "ccw" : "cw";
-                }
-            }
-        },
-
-        _destroy: function () {
-            this._super();
-            this._state.destroy();
+import {core} from "./../core.js";
+import {Material} from './material.js';
+import {State} from '../renderer/state.js';
+import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.PhongMaterial";
+const alphaModes = {"opaque": 0, "mask": 1, "blend": 2};
+const alphaModeNames = ["opaque", "mask", "blend"];
+
+class PhongMaterial extends Material {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
+
+        this._state = new State({
+            type: "PhongMaterial",
+            ambient: math.vec3([1.0, 1.0, 1.0]),
+            diffuse: math.vec3([1.0, 1.0, 1.0]),
+            specular: math.vec3([1.0, 1.0, 1.0]),
+            emissive: math.vec3([0.0, 0.0, 0.0]),
+            alpha: null,
+            shininess: null,
+            reflectivity: null,
+            alphaMode: null,
+            alphaCutoff: null,
+            lineWidth: null,
+            pointSize: null,
+            backfaces: null,
+            frontface: null, // Boolean for speed; true == "ccw", false == "cw"
+            hash: null
+        });
+
+        this.ambient = cfg.ambient;
+        this.diffuse = cfg.diffuse;
+        this.specular = cfg.specular;
+        this.emissive = cfg.emissive;
+        this.alpha = cfg.alpha;
+        this.shininess = cfg.shininess;
+        this.reflectivity = cfg.reflectivity;
+        this.lineWidth = cfg.lineWidth;
+        this.pointSize = cfg.pointSize;
+
+        if (cfg.ambientMap) {
+            this._ambientMap = this._checkComponent("xeogl.Texture", cfg.ambientMap);
         }
-    });
+        if (cfg.diffuseMap) {
+            this._diffuseMap = this._checkComponent("xeogl.Texture", cfg.diffuseMap);
+        }
+        if (cfg.specularMap) {
+            this._specularMap = this._checkComponent("xeogl.Texture", cfg.specularMap);
+        }
+        if (cfg.emissiveMap) {
+            this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
+        }
+        if (cfg.alphaMap) {
+            this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
+        }
+        if (cfg.reflectivityMap) {
+            this._reflectivityMap = this._checkComponent("xeogl.Texture", cfg.reflectivityMap);
+        }
+        if (cfg.normalMap) {
+            this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
+        }
+        if (cfg.occlusionMap) {
+            this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
+        }
+        if (cfg.diffuseFresnel) {
+            this._diffuseFresnel = this._checkComponent("xeogl.Fresnel", cfg.diffuseFresnel);
+        }
+        if (cfg.specularFresnel) {
+            this._specularFresnel = this._checkComponent("xeogl.Fresnel", cfg.specularFresnel);
+        }
+        if (cfg.emissiveFresnel) {
+            this._emissiveFresnel = this._checkComponent("xeogl.Fresnel", cfg.emissiveFresnel);
+        }
+        if (cfg.alphaFresnel) {
+            this._alphaFresnel = this._checkComponent("xeogl.Fresnel", cfg.alphaFresnel);
+        }
+        if (cfg.reflectivityFresnel) {
+            this._reflectivityFresnel = this._checkComponent("xeogl.Fresnel", cfg.reflectivityFresnel);
+        }
 
-})();
+        this.alphaMode = cfg.alphaMode;
+        this.alphaCutoff = cfg.alphaCutoff;
+        this.backfaces = cfg.backfaces;
+        this.frontface = cfg.frontface;
+
+        this._makeHash();
+    }
+
+    _makeHash() {
+        const state = this._state;
+        const hash = ["/p"]; // 'P' for Phong
+        if (this._normalMap) {
+            hash.push("/nm");
+            if (this._normalMap.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._ambientMap) {
+            hash.push("/am");
+            if (this._ambientMap.hasMatrix) {
+                hash.push("/mat");
+            }
+            hash.push("/" + this._ambientMap.encoding);
+        }
+        if (this._diffuseMap) {
+            hash.push("/dm");
+            if (this._diffuseMap.hasMatrix) {
+                hash.push("/mat");
+            }
+            hash.push("/" + this._diffuseMap.encoding);
+        }
+        if (this._specularMap) {
+            hash.push("/sm");
+            if (this._specularMap.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._emissiveMap) {
+            hash.push("/em");
+            if (this._emissiveMap.hasMatrix) {
+                hash.push("/mat");
+            }
+            hash.push("/" + this._emissiveMap.encoding);
+        }
+        if (this._alphaMap) {
+            hash.push("/opm");
+            if (this._alphaMap.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._reflectivityMap) {
+            hash.push("/rm");
+            if (this._reflectivityMap.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._occlusionMap) {
+            hash.push("/ocm");
+            if (this._occlusionMap.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._diffuseFresnel) {
+            hash.push("/df");
+        }
+        if (this._specularFresnel) {
+            hash.push("/sf");
+        }
+        if (this._emissiveFresnel) {
+            hash.push("/ef");
+        }
+        if (this._alphaFresnel) {
+            hash.push("/of");
+        }
+        if (this._reflectivityFresnel) {
+            hash.push("/rf");
+        }
+        hash.push(";");
+        state.hash = hash.join("");
+    }
+
+    /**
+     The PhongMaterial's ambient color.
+
+     @property ambient
+     @default [0.3, 0.3, 0.3]
+     @type Float32Array
+     */
+    set ambient(value) {
+        let ambient = this._state.ambient;
+        if (!ambient) {
+            ambient = this._state.ambient = new Float32Array(3);
+        } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            ambient[0] = value[0];
+            ambient[1] = value[1];
+            ambient[2] = value[2];
+        } else {
+            ambient[0] = .2;
+            ambient[1] = .2;
+            ambient[2] = .2;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get ambient() {
+        return this._state.ambient;
+    }
+
+    /**
+     The PhongMaterial's diffuse color.
+
+     Multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}.
+
+     @property diffuse
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set diffuse(value) {
+        let diffuse = this._state.diffuse;
+        if (!diffuse) {
+            diffuse = this._state.diffuse = new Float32Array(3);
+        } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            diffuse[0] = value[0];
+            diffuse[1] = value[1];
+            diffuse[2] = value[2];
+        } else {
+            diffuse[0] = 1;
+            diffuse[1] = 1;
+            diffuse[2] = 1;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get diffuse() {
+        return this._state.diffuse;
+    }
+
+    /**
+     The material's specular color.
+
+     Multiplies by {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}}.
+
+     @property specular
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set specular(value) {
+        let specular = this._state.specular;
+        if (!specular) {
+            specular = this._state.specular = new Float32Array(3);
+        } else if (value && specular[0] === value[0] && specular[1] === value[1] && specular[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            specular[0] = value[0];
+            specular[1] = value[1];
+            specular[2] = value[2];
+        } else {
+            specular[0] = 1;
+            specular[1] = 1;
+            specular[2] = 1;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get specular() {
+        return this._state.specular;
+    }
+
+    /**
+     The PhongMaterial's emissive color.
+
+     Multiplies by {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}.
+
+     @property emissive
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set emissive(value) {
+        let emissive = this._state.emissive;
+        if (!emissive) {
+            emissive = this._state.emissive = new Float32Array(3);
+        } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            emissive[0] = value[0];
+            emissive[1] = value[1];
+            emissive[2] = value[2];
+        } else {
+            emissive[0] = 0;
+            emissive[1] = 0;
+            emissive[2] = 0;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get emissive() {
+        return this._state.emissive;
+    }
+
+    /**
+     Factor in the range [0..1] indicating how transparent the PhongMaterial is.
+
+     A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+
+     Multiplies by {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}}.
+
+     @property alpha
+     @default 1.0
+     @type Number
+     */
+    set alpha(value) {
+        value = (value !== undefined && value !== null) ? value : 1.0;
+        if (this._state.alpha === value) {
+            return;
+        }
+        this._state.alpha = value;
+        this._renderer.imageDirty();
+    }
+
+    get alpha() {
+        return this._state.alpha;
+    }
+
+    /**
+     A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this PhongMaterial.
+
+     Larger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never
+     desirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp
+     highlight.
+
+     @property shininess
+     @default 80.0
+     @type Number
+     */
+    set shininess(value) {
+        this._state.shininess = value !== undefined ? value : 80;
+        this._renderer.imageDirty();
+    }
+
+    get shininess() {
+        return this._state.shininess;
+    }
+
+    /**
+     The PhongMaterial's line width.
+
+     @property lineWidth
+     @default 1.0
+     @type Number
+     */
+    set lineWidth(value) {
+        this._state.lineWidth = value || 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get lineWidth() {
+        return this._state.lineWidth;
+    }
+
+    /**
+     The PhongMaterial's point size.
+
+     @property pointSize
+     @default 1.0
+     @type Number
+     */
+    set pointSize(value) {
+        this._state.pointSize = value || 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get pointSize() {
+        return this._state.pointSize;
+    }
+
+    /**
+     Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected by this PhongMaterial.
+
+     The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.
+
+     Multiplies by {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}}.
+
+     @property reflectivity
+     @default 1.0
+     @type Number
+     */
+    set reflectivity(value) {
+        this._state.reflectivity = value !== undefined ? value : 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get reflectivity() {
+        return this._state.reflectivity;
+    }
+
+    /**
+     Normal map.
+
+     @property normalMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get normalMap() {
+        return this._normalMap;
+    }
+
+    /**
+     Ambient map.
+
+     Multiplies by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.
+
+     @property ambientMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get ambientMap() {
+        return this._ambientMap;
+    }
+
+    /**
+     Diffuse map.
+
+     Multiplies by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}.
+
+     @property diffuseMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get diffuseMap() {
+        return this._diffuseMap;
+    }
+
+    /**
+     Specular map.
+
+     Multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}.
+
+     @property specularMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+
+    get specularMap() {
+        return this._specularMap;
+    }
+
+    /**
+     Emissive map.
+
+     Multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}.
+
+     @property emissiveMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get emissiveMap() {
+        return this._emissiveMap;
+    }
+
+    /**
+     Alpha map.
+
+     Multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}.
+
+     @property alphaMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get alphaMap() {
+        return this._alphaMap;
+    }
+
+    /**
+     Reflectivity map.
+
+     Multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}.
+
+     @property reflectivityMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get reflectivityMap() {
+        return this._reflectivityMap;
+    }
+
+    /**
+
+     Occlusion map.
+
+     @property occlusionMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get occlusionMap() {
+        return this._occlusionMap;
+    }
+
+    /**
+     Diffuse Fresnel.
+
+     Applies to {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}}.
+
+     @property diffuseFresnel
+     @default undefined
+     @type {Fresnel}
+     @final
+     */
+    get diffuseFresnel() {
+        return this._diffuseFresnel;
+    }
+
+    /**
+     Specular Fresnel.
+
+     Applies to {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}.
+
+     @property specularFresnel
+     @default undefined
+     @type {Fresnel}
+     @final
+     */
+    get specularFresnel() {
+        return this._specularFresnel;
+    }
+
+    /**
+     Emissive Fresnel.
+
+     Applies to {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}.
+
+     @property emissiveFresnel
+     @default undefined
+     @type {Fresnel}
+     @final
+     */
+    get emissiveFresnel() {
+        return this._emissiveFresnel;
+    }
+
+    /**
+     Alpha Fresnel.
+
+     Applies to {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}.
+
+     @property alphaFresnel
+     @default undefined
+     @type {Fresnel}
+     @final
+     */
+    get alphaFresnel() {
+        return this._alphaFresnel;
+    }
+
+    /**
+     Reflectivity Fresnel.
+
+     Applies to {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}.
+
+     @property reflectivityFresnel
+     @default undefined
+     @type {Fresnel}
+     @final
+     */
+    get reflectivityFresnel() {
+        return this._reflectivityFresnel;
+    }
+
+    /**
+     The alpha rendering mode.
+
+     This governs how alpha is treated. Alpha is the combined result of the
+     {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} and
+     {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+     * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
+     * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
+     * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
+
+     @property alphaMode
+     @default "opaque"
+     @type {String}
+     */
+
+    set alphaMode(alphaMode) {
+        alphaMode = alphaMode || "opaque";
+        let value = alphaModes[alphaMode];
+        if (value === undefined) {
+            this.error("Unsupported value for 'alphaMode': " + alphaMode + " - defaulting to 'opaque'");
+            value = "opaque";
+        }
+        if (this._state.alphaMode === value) {
+            return;
+        }
+        this._state.alphaMode = value;
+        this._renderer.imageDirty();
+    }
+
+    get alphaMode() {
+        return alphaModeNames[this._state.alphaMode];
+    }
+
+    /**
+     The alpha cutoff value.
+
+     Specifies the cutoff threshold when {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}}
+     equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
+     opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+     material as fully transparent. This value is ignored for other modes.
+
+     Alpha is the combined result of the
+     {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} and
+     {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+     @property alphaCutoff
+     @default 0.5
+     @type {Number}
+     */
+    set alphaCutoff(alphaCutoff) {
+        if (alphaCutoff === null || alphaCutoff === undefined) {
+            alphaCutoff = 0.5;
+        }
+        if (this._state.alphaCutoff === alphaCutoff) {
+            return;
+        }
+        this._state.alphaCutoff = alphaCutoff;
+    }
+
+    get alphaCutoff() {
+        return this._state.alphaCutoff;
+    }
+
+    /**
+     Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+     the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     @property backfaces
+     @default false
+     @type Boolean
+     */
+    set backfaces(value) {
+        value = !!value;
+        if (this._state.backfaces === value) {
+            return;
+        }
+        this._state.backfaces = value;
+        this._renderer.imageDirty();
+    }
+
+    get backfaces() {
+        return this._state.backfaces;
+    }
+
+    /**
+     Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+     the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     @property frontface
+     @default "ccw"
+     @type String
+     */
+    set frontface(value) {
+        value = value !== "cw";
+        if (this._state.frontface === value) {
+            return;
+        }
+        this._state.frontface = value;
+        this._renderer.imageDirty();
+    }
+
+    get frontface() {
+        return this._state.frontface ? "ccw" : "cw";
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+componentClasses[type] = PhongMaterial;
+
+export{PhongMaterial};

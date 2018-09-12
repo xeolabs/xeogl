@@ -22,7 +22,9 @@
 
 <script>
 
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
 
     new xeogl.PointLight({
         pos: [-0.5, 6.7, 10.0],
@@ -32,6 +34,7 @@
         linearAttenuation: 0.010,
         quadraticAttenuation: 0.0038
     });
+
     new xeogl.PointLight({
         pos: [-2.5, 6.7, 30.0],
         color: [1.0, 1.0, 1.0],
@@ -40,6 +43,7 @@
         linearAttenuation: 0.010,
         quadraticAttenuation: 0.0038
     });
+
     new xeogl.PointLight({
         pos: [0.0, 6.7, 30.0],
         color: [1.0, 1., 1.0],
@@ -816,12 +820,10 @@
 
     new xeogl.CameraControl();
 
-    var scene = xeogl.scene;
     var camera = scene.camera;
     camera.gimbalLock = true;
     camera.orbitYaw(165);
     // camera.orbitPitch(35);
-
 
     var input = scene.input;
 

@@ -15,11 +15,11 @@
 
 <body>
 
-<div id="info-bottom">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF</h1>
-    <pre id="log">model: <a
-            href='https://sketchfab.com/ruslans3d' target="_parent">sketchfab.com/ruslans3d</a></pre>
-</div>
+<!--<div id="info-bottom">-->
+    <!--<h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF</h1>-->
+    <!--<pre id="log">model: <a-->
+            <!--href='https://sketchfab.com/ruslans3d' target="_parent">sketchfab.com/ruslans3d</a></pre>-->
+<!--</div>-->
 
 <script>
 
@@ -27,9 +27,11 @@
     // Customize lighting
     //-----------------------------------------------------------------------------------------------------
 
-    xeogl.scene.clearLights();
-    xeogl.scene.gammaOutput = false;
-    xeogl.scene.gammaInput = false;
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
+    scene.gammaOutput = false;
+    scene.gammaInput = false;
 
     new xeogl.DirLight({
         dir: [-3116.85791015625, -4015.44873046875, -1726.414306640625],
@@ -39,7 +41,6 @@
     });
 
     new xeogl.DirLight({
-
         dir: [0.6, -0.4, -0.4],
         color: [0.90, 0.90, 0.93],
         intensity: 0.4,
@@ -47,7 +48,6 @@
     });
 
     new xeogl.DirLight({
-
         dir: [0.2, -0.1, -0.6],
         color: [0.55, 0.55, 0.5],
         intensity: 0.4,
@@ -84,7 +84,7 @@
     // Camera
     //-----------------------------------------------------------------------------------------------------
 
-    var camera = xeogl.scene.camera;
+    var camera = xeogl.getDefaultScene().camera;
 
     camera.eye = [0.8758724331855774, 1.4675921201705933, 1.8011291027069092];
     camera.look = [5.207973480224609, 1.9065524339675903, 1.8830772638320923];

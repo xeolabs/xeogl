@@ -1,97 +1,82 @@
-(function () {
+{
+    function toArray(typedArray) {
+        return Array.prototype.slice.call(typedArray);
+    }
 
-    "use strict";
+    xeogl.Bookmarks = class xeoglBookmarks extends xeogl.Component {
 
-
-    xeogl.Bookmarks = xeogl.Component.extend({
-
-        type: "xeogl.Bookmarks",
-
-        _init: function (cfg) {
+        init(cfg) {
+            super.init();
             this._cameraFlight = new xeogl.CameraFlightAnimation(this);
             this._bookmarks = {};
             this.flyTo = cfg.flyTo;
             this.thumbnails = cfg.thumbnails;
             this.thumbnailSize = cfg.thumbnailSize;
-        },
+        }
 
-        _props: {
+        set flyTo(value) {
+            this._flyTo = value !== false;
+        }
 
-            flyTo: {
-                set: function (value) {
-                    this._flyTo = value !== false;
+        get flyTo() {
+            return this._flyTo;
+        }
+
+        set thumbnails(thumbnails) {
+            this._thumbnails = thumbnails;
+        }
+
+        get thumbnails() {
+            return this._thumbnails;
+        }
+
+        set thumbnailSize(thumbnailSize) {
+            this._thumbnailSize = thumbnailSize || [150, 150]
+        }
+
+        get thumbnailSize() {
+            return this._thumbnailSize;
+        }
+
+        get bookmarks() {
+            return this._bookmarks;
+        }
+
+        save() {
+            var id = "" + xeogl.math.createUUID();
+            var scene = this.scene;
+            var bookmark = {
+                id: id,
+                meta: {},
+                visibleEntityIds: scene.visibleEntityIds.slice(0),
+                ghostedEntityIds: scene.ghostedEntityIds.slice(0),
+                highlightedEntityIds: scene.highlightedEntityIds.slice(0),
+                selectedEntityIds: scene.selectedEntityIds.slice(0),
+                camera: {
+                    eye: toArray(scene.camera.eye),
+                    look: toArray(scene.camera.look),
+                    up: toArray(scene.camera.up),
+                    projection: scene.camera.projection
                 },
-                get: function () {
-                    return this._flyTo;
-                }
-            },
-
-            thumbnails: {
-                set: function (thumbnails) {
-                    this._thumbnails = thumbnails;
-                },
-                get: function () {
-                    return this._thumbnails;
-                }
-            },
-
-            thumbnailSize: {
-                set: function (thumbnailSize) {
-                    this._thumbnailSize = thumbnailSize || [150, 150]
-                },
-                get: function () {
-                    return this._thumbnailSize;
-                }
-            },
-
-            bookmarks: {
-                get: function () {
-                    return this._bookmarks;
-                }
-            }
-        },
-
-        save: (function () {
-            function toArray(typedArray) {
-                return Array.prototype.slice.call(typedArray);
-            }
-
-            return function () {
-                var id = "" + xeogl.math.createUUID();
-                var scene = this.scene;
-                var bookmark = {
-                    id: id,
-                    meta: {},
-                    visibleEntityIds: scene.visibleEntityIds.slice(0),
-                    ghostedEntityIds: scene.ghostedEntityIds.slice(0),
-                    highlightedEntityIds: scene.highlightedEntityIds.slice(0),
-                    selectedEntityIds: scene.selectedEntityIds.slice(0),
-                    camera: {
-                        eye: toArray(scene.camera.eye),
-                        look: toArray(scene.camera.look),
-                        up: toArray(scene.camera.up),
-                        projection: scene.camera.projection
-                    },
-                    screenshot: null
-                };
-                this._bookmarks[id] = bookmark;
-                if (this._thumbnails) {
-                    var self = this;
-                    scene.canvas.getSnapshot({
-                        width: this._thumbnailSize[0],
-                        height: this._thumbnailSize[1],
-                        format: "png"
-                    }, function (imageDataURL) {
-                        bookmark.thumbnail = imageDataURL;
-                        self.fire("saved", bookmark);
-                    });
-                } else {
-                    this.fire("saved", bookmark);
-                }
+                screenshot: null
             };
-        })(),
+            this._bookmarks[id] = bookmark;
+            if (this._thumbnails) {
+                var self = this;
+                scene.canvas.getSnapshot({
+                    width: this._thumbnailSize[0],
+                    height: this._thumbnailSize[1],
+                    format: "png"
+                }, function (imageDataURL) {
+                    bookmark.thumbnail = imageDataURL;
+                    self.fire("saved", bookmark);
+                });
+            } else {
+                this.fire("saved", bookmark);
+            }
+        }
 
-        load: function (id) {
+        load(id) {
             var bookmark = this._bookmarks[id];
             if (!bookmark) {
                 this.error("Bookmark not found: " + id);
@@ -128,14 +113,14 @@
                 scene.camera.look = bookmark.camera.look;
                 scene.camera.up = bookmark.camera.up;
             }
-        },
+        }
 
-        remove: function (id) {
+        remove(id) {
             delete this._bookmarks[id];
-        },
+        }
 
-        clear: function () {
+        clear() {
             this._bookmarks = {};
         }
-    });
-})();
+    }
+}

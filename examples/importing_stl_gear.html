@@ -36,9 +36,11 @@
 
     // Load ASCII STL model
 
-    xeogl.scene = new xeogl.Scene({
+    var scene = new xeogl.Scene({
         transparent: true
     });
+
+    xeogl.setDefaultScene(scene);
 
     var model = new xeogl.STLModel({
         src: "models/stl/binary/spurGear.stl",
@@ -51,7 +53,6 @@
 
     // Initial camera position
 
-    var scene = xeogl.scene;
     var camera = scene.camera;
 
     camera.eye = [37.24, 45.17, -15.02];

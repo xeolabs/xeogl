@@ -7,8 +7,6 @@
 
     <script src="../build/xeogl.js"></script>
 
-    <script src="js/libs/dat.gui.min.js"></script>
-
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -19,8 +17,7 @@
         target="_parent">Textures</a>
 </div>
 
-<div id="dat-gui-container">
-</div>
+
 
 <script>
 
@@ -51,37 +48,6 @@
 
     new xeogl.CameraControl();
 
-
-    var Menu = function () {
-
-        this["diffuseMap.encoding"] = mesh.material.diffuseMap.encoding;
-        this["scene.gammaOutput"] = mesh.scene.gammaOutput;
-        this["scene.gammaFactor"] = mesh.scene.gammaFactor;
-
-        var self = this;
-
-        var update = function () {
-
-            mesh.material.diffuseMap.encoding = self["diffuseMap.encoding"];
-            mesh.scene.gammaOutput = self["scene.gammaOutput"];
-            mesh.scene.gammaFactor = self["scene.gammaFactor"];
-
-            requestAnimationFrame(update);
-        };
-
-        update();
-    };
-    var gui = new dat.GUI({autoPlace: false, top: 0, width: 300});
-
-    document.getElementById('dat-gui-container').appendChild(gui.domElement);
-
-    var menu = new Menu();
-
-    var gammaFolder = gui.addFolder('gamma');
-    gammaFolder.add(menu, 'diffuseMap.encoding', ["sRGB", "gamma", "linear"]);
-    gammaFolder.add(menu, 'scene.gammaOutput', true).listen();
-    gammaFolder.add(menu, 'scene.gammaFactor', 0.0, 3.0).listen();
-    gammaFolder.open();
 
 </script>
 </body>

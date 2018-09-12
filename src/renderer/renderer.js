@@ -2,41 +2,44 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-xeogl.renderer = xeogl.renderer || {};
+import {Frame} from './frame.js';
+import {RenderBuffer} from './renderBuffer.js';
+import {math} from '../math/math.js';
+import {stats} from './../stats.js';
+import {WEBGL_INFO} from './../webglInfo.js';
+import {Mesh} from '../objects/mesh.js';
 
-
-xeogl.renderer.Renderer = function (stats, scene, options) {
+const Renderer = function ( scene, options) {
 
     "use strict";
 
     options = options || {};
-    stats = stats || {};
 
-    var frame = new xeogl.renderer.Frame();
-    var canvas = scene.canvas.canvas;
-    var gl = scene.canvas.gl;
-    var shadowLightMeshes = {};
-    var canvasTransparent = options.transparent === true;
-    var meshList = [];
-    var meshListLen = 0;
-    var meshPickList = [];
-    var meshPickListLen = 0;
-    var shadowMeshLists = {};
+    const frame = new Frame();
+    const canvas = scene.canvas.canvas;
+    const gl = scene.canvas.gl;
+    const shadowLightMeshes = {};
+    const canvasTransparent = options.transparent === true;
+    const meshList = [];
+    let meshListLen = 0;
+    const meshPickList = [];
+    let meshPickListLen = 0;
+    const shadowMeshLists = {};
 
-    var meshListDirty = true;
-    var stateSortDirty = true;
-    var imageDirty = true;
-    var shadowsDirty = true;
+    let meshListDirty = true;
+    let stateSortDirty = true;
+    let imageDirty = true;
+    let shadowsDirty = true;
 
     this.imageForceDirty = true;
 
-    var blendOneMinusSrcAlpha = true;
+    let blendOneMinusSrcAlpha = true;
 
-    var pickBuf = null;
-    var readPixelBuf = null;
+    let pickBuf = null;
+    let readPixelBuf = null;
 
-    var bindOutputFrameBuffer = null;
-    var unbindOutputFrameBuffer = null;
+    const bindOutputFrameBuffer = null;
+    const unbindOutputFrameBuffer = null;
 
     this.meshListDirty = function () {
         meshListDirty = true;
@@ -82,12 +85,12 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
      */
     this.clear = function (params) {
         params = params || {};
-        var boundary = scene.viewport.boundary;
+        const boundary = scene.viewport.boundary;
         gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
         if (canvasTransparent) { // Canvas is transparent
             gl.clearColor(0, 0, 0, 0);
         } else {
-            var color = params.ambientColor || this.lights.getAmbientColor();
+            const color = params.ambientColor || this.lights.getAmbientColor();
             gl.clearColor(color[0], color[1], color[2], 1.0);
         }
         if (bindOutputFrameBuffer) {
@@ -121,7 +124,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
             stateSortDirty = true;
         }
         if (stateSortDirty) {
-            meshList.sort(xeogl.Mesh._compareState);
+            meshList.sort(Mesh._compareState);
             stateSortDirty = false;
             imageDirty = true;
         }
@@ -133,19 +136,19 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
 
     function buildMeshList() {
         meshListLen = 0;
-        for (var meshId in scene.meshes) {
+        for (const meshId in scene.meshes) {
             if (scene.meshes.hasOwnProperty(meshId)) {
                 meshList[meshListLen++] = scene.meshes[meshId];
             }
         }
-        for (var i = meshListLen, len = meshList.length; i < len; i++) {
+        for (let i = meshListLen, len = meshList.length; i < len; i++) {
             meshList[i] = null; // Release memory
         }
         meshList.length = meshListLen;
     }
 
     function stateSort() {
-        meshList.sort(xeogl.Mesh._compareState);
+        meshList.sort(Mesh._compareState);
     }
 
     function drawShadowMaps() {
@@ -164,13 +167,13 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
 
     function drawShadowMap(light) {
 
-        var shadow = light.shadow;
+        const shadow = light.shadow;
 
         if (!shadow) {
             return;
         }
 
-        var renderBuf = light.getShadowRenderBuf();
+        const renderBuf = light.getShadowRenderBuf();
 
         if (!renderBuf) {
             return;
@@ -186,7 +189,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
         frame.shadowViewMatrix = light.getShadowViewMatrix();
         frame.shadowProjMatrix = light.getShadowProjMatrix();
 
-        var boundary = scene.viewport.boundary;
+        const boundary = scene.viewport.boundary;
         gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
 
         gl.clearColor(0, 0, 0, 1);
@@ -194,8 +197,8 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        var i;
-        var mesh;
+        let i;
+        let mesh;
 
         for (i = 0; i < meshListLen; i++) {
             mesh = meshList[i];
@@ -213,51 +216,51 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
 
     var drawMeshes = (function () {
 
-        var opaqueGhostFillMeshes = [];
-        var opaqueGhostVerticesMeshes = [];
-        var opaqueGhostEdgesMeshes = [];
-        var transparentGhostFillMeshes = [];
-        var transparentGhostVerticesMeshes = [];
-        var transparentGhostEdgesMeshes = [];
+        const opaqueGhostFillMeshes = [];
+        const opaqueGhostVerticesMeshes = [];
+        const opaqueGhostEdgesMeshes = [];
+        const transparentGhostFillMeshes = [];
+        const transparentGhostVerticesMeshes = [];
+        const transparentGhostEdgesMeshes = [];
 
-        var opaqueHighlightFillMeshes = [];
-        var opaqueHighlightVerticesMeshes = [];
-        var opaqueHighlightEdgesMeshes = [];
-        var transparentHighlightFillMeshes = [];
-        var transparentHighlightVerticesMeshes = [];
-        var transparentHighlightEdgesMeshes = [];
+        const opaqueHighlightFillMeshes = [];
+        const opaqueHighlightVerticesMeshes = [];
+        const opaqueHighlightEdgesMeshes = [];
+        const transparentHighlightFillMeshes = [];
+        const transparentHighlightVerticesMeshes = [];
+        const transparentHighlightEdgesMeshes = [];
 
-        var opaqueSelectedFillMeshes = [];
-        var opaqueSelectedVerticesMeshes = [];
-        var opaqueSelectedEdgesMeshes = [];
-        var transparentSelectedFillMeshes = [];
-        var transparentSelectedVerticesMeshes = [];
-        var transparentSelectedEdgesMeshes = [];
+        const opaqueSelectedFillMeshes = [];
+        const opaqueSelectedVerticesMeshes = [];
+        const opaqueSelectedEdgesMeshes = [];
+        const transparentSelectedFillMeshes = [];
+        const transparentSelectedVerticesMeshes = [];
+        const transparentSelectedEdgesMeshes = [];
 
-        var opaqueEdgesMeshes = [];
-        var transparentEdgesMeshes = [];
+        const opaqueEdgesMeshes = [];
+        const transparentEdgesMeshes = [];
 
-        var outlinedMeshes = [];
-        var highlightMeshes = [];
-        var selectedMeshes = [];
-        var transparentMeshes = [];
-        var numTransparentMeshes = 0;
+        const outlinedMeshes = [];
+        const highlightMeshes = [];
+        const selectedMeshes = [];
+        const transparentMeshes = [];
+        let numTransparentMeshes = 0;
 
         return function (params) {
 
-            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {  // In case context lost/recovered
+            if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {  // In case context lost/recovered
                 gl.getExtension("OES_element_index_uint");
             }
-            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping w/o precomputed tangents
+            if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping w/o precomputed tangents
                 gl.getExtension("OES_standard_derivatives");
             }
 
-            var ambientColor = scene._lightsState.getAmbientColor();
+            const ambientColor = scene._lightsState.getAmbientColor();
 
             frame.reset();
             frame.pass = params.pass;
 
-            var boundary = scene.viewport.boundary;
+            const boundary = scene.viewport.boundary;
             gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
 
             if (canvasTransparent) { // Canvas is transparent
@@ -271,14 +274,14 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
             gl.enable(gl.CULL_FACE);
             gl.depthMask(true);
 
-            var i;
-            var len;
-            var mesh;
-            var meshState;
-            var materialState;
-            var transparent;
+            let i;
+            let len;
+            let mesh;
+            let meshState;
+            let materialState;
+            let transparent;
 
-            var startTime = Date.now();
+            const startTime = Date.now();
 
             if (bindOutputFrameBuffer) {
                 bindOutputFrameBuffer(params.pass);
@@ -288,33 +291,33 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
 
-            var numOpaqueGhostFillMeshes = 0;
-            var numOpaqueGhostVerticesMeshes = 0;
-            var numOpaqueGhostEdgesMeshes = 0;
-            var numTransparentGhostFillMeshes = 0;
-            var numTransparentGhostVerticesMeshes = 0;
-            var numTransparentGhostEdgesMeshes = 0;
+            let numOpaqueGhostFillMeshes = 0;
+            let numOpaqueGhostVerticesMeshes = 0;
+            let numOpaqueGhostEdgesMeshes = 0;
+            let numTransparentGhostFillMeshes = 0;
+            let numTransparentGhostVerticesMeshes = 0;
+            let numTransparentGhostEdgesMeshes = 0;
 
-            var numOutlinedMeshes = 0;
-            var numHighlightMeshes = 0;
-            var numSelectedMeshes = 0;
+            let numOutlinedMeshes = 0;
+            let numHighlightMeshes = 0;
+            let numSelectedMeshes = 0;
 
-            var numOpaqueHighlightFillMeshes = 0;
-            var numOpaqueHighlightVerticesMeshes = 0;
-            var numOpaqueHighlightEdgesMeshes = 0;
-            var numTransparentHighlightFillMeshes = 0;
-            var numTransparentHighlightVerticesMeshes = 0;
-            var numTransparentHighlightEdgesMeshes = 0;
+            let numOpaqueHighlightFillMeshes = 0;
+            let numOpaqueHighlightVerticesMeshes = 0;
+            let numOpaqueHighlightEdgesMeshes = 0;
+            let numTransparentHighlightFillMeshes = 0;
+            let numTransparentHighlightVerticesMeshes = 0;
+            let numTransparentHighlightEdgesMeshes = 0;
 
-            var numOpaqueSelectedFillMeshes = 0;
-            var numOpaqueSelectedVerticesMeshes = 0;
-            var numOpaqueSelectedEdgesMeshes = 0;
-            var numTransparentSelectedFillMeshes = 0;
-            var numTransparentSelectedVerticesMeshes = 0;
-            var numTransparentSelectedEdgesMeshes = 0;
+            let numOpaqueSelectedFillMeshes = 0;
+            let numOpaqueSelectedVerticesMeshes = 0;
+            let numOpaqueSelectedEdgesMeshes = 0;
+            let numTransparentSelectedFillMeshes = 0;
+            let numTransparentSelectedVerticesMeshes = 0;
+            let numTransparentSelectedEdgesMeshes = 0;
 
-            var numOpaqueEdgesMeshes = 0;
-            var numTransparentEdgesMeshes = 0;
+            let numOpaqueEdgesMeshes = 0;
+            let numTransparentEdgesMeshes = 0;
 
             numTransparentMeshes = 0;
 
@@ -335,7 +338,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 }
 
                 if (meshState.ghosted) {
-                    var ghostMaterialState = mesh._ghostMaterial._state;
+                    const ghostMaterialState = mesh._ghostMaterial._state;
                     if (ghostMaterialState.edges) {
                         if (ghostMaterialState.edgeAlpha < 1.0) {
                             transparentGhostEdgesMeshes[numTransparentGhostEdgesMeshes++] = mesh;
@@ -375,7 +378,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 }
 
                 if (meshState.selected) {
-                    var selectedMaterialState = mesh._selectedMaterial._state;
+                    const selectedMaterialState = mesh._selectedMaterial._state;
                     if (selectedMaterialState.edges) {
                         if (selectedMaterialState.edgeAlpha < 1.0) {
                             transparentSelectedEdgesMeshes[numTransparentSelectedEdgesMeshes++] = mesh;
@@ -403,7 +406,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 }
 
                 if (meshState.highlighted) {
-                    var highlightMaterialState = mesh._highlightMaterial._state;
+                    const highlightMaterialState = mesh._highlightMaterial._state;
                     if (highlightMaterialState.edges) {
                         if (highlightMaterialState.edgeAlpha < 1.0) {
                             transparentHighlightEdgesMeshes[numTransparentHighlightEdgesMeshes++] = mesh;
@@ -431,7 +434,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 }
 
                 if (meshState.edges) {
-                    var edgeMaterial = mesh._edgeMaterial._state;
+                    const edgeMaterial = mesh._edgeMaterial._state;
                     if (edgeMaterial.edgeAlpha < 1.0) {
                         transparentEdgesMeshes[numTransparentEdgesMeshes++] = mesh;
                     } else {
@@ -499,7 +502,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 }
             }
 
-            var transparentDepthMask = true;
+            const transparentDepthMask = true;
 
             if (numTransparentGhostFillMeshes > 0 || numTransparentGhostEdgesMeshes > 0 || numTransparentGhostVerticesMeshes > 0 || numTransparentMeshes > 0) {
 
@@ -690,8 +693,8 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 //        gl.enable(gl.DEPTH_TEST);
             }
 
-            var endTime = Date.now();
-            var frameStats = stats.frame;
+            const endTime = Date.now();
+            const frameStats = stats.frame;
 
             frameStats.renderTime = (endTime - startTime) / 1000.0;
             frameStats.drawElements = frame.drawElements;
@@ -700,8 +703,8 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
             frameStats.bindTexture = frame.bindTexture;
             frameStats.bindArray = frame.bindArray;
 
-            var numTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-            for (var ii = 0; ii < numTextureUnits; ii++) {
+            const numTextureUnits = WEBGL_INFO.MAX_TEXTURE_UNITS;
+            for (let ii = 0; ii < numTextureUnits; ii++) {
                 gl.activeTexture(gl.TEXTURE0 + ii);
             }
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
@@ -724,27 +727,26 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
      */
     this.pick = (function () {
 
-        var math = xeogl.math;
-        var tempVec3a = math.vec3();
-        var tempMat4a = math.mat4();
-        var up = math.vec3([0, 1, 0]);
-        var pickFrustumMatrix = math.frustumMat4(-1, 1, -1, 1, 0.1, 10000);
+        const tempVec3a = math.vec3();
+        const tempMat4a = math.mat4();
+        const up = math.vec3([0, 1, 0]);
+        const pickFrustumMatrix = math.frustumMat4(-1, 1, -1, 1, 0.1, 10000);
 
         return function (params) {
 
             update();
 
-            if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) { // In case context lost/recovered
+            if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) { // In case context lost/recovered
                 gl.getExtension("OES_element_index_uint");
             }
 
-            var canvasX;
-            var canvasY;
-            var origin;
-            var direction;
-            var look;
-            var pickViewMatrix = null;
-            var pickProjMatrix = null;
+            let canvasX;
+            let canvasY;
+            let origin;
+            let direction;
+            let look;
+            let pickViewMatrix = null;
+            let pickProjMatrix = null;
 
             if (params.canvasPos) {
 
@@ -767,17 +769,17 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
                 canvasY = canvas.clientHeight * 0.5;
             }
 
-            pickBuf = pickBuf || new xeogl.renderer.RenderBuffer(canvas, gl);
+            pickBuf = pickBuf || new RenderBuffer(canvas, gl);
             pickBuf.bind();
 
-            var mesh = pickMesh(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params);
+            const mesh = pickMesh(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params);
 
             if (!mesh) {
                 pickBuf.unbind();
                 return null;
             }
 
-            var hit = {
+            const hit = {
                 mesh: mesh
             };
 
@@ -805,7 +807,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
         frame.pickProjMatrix = pickProjMatrix;
         frame.pickMeshIndex = 1;
 
-        var boundary = scene.viewport.boundary;
+        const boundary = scene.viewport.boundary;
         gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
 
         gl.clearColor(0, 0, 0, 0);
@@ -816,11 +818,11 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
 
         meshPickListLen = 0;
 
-        var i;
-        var len;
-        var mesh;
-        var includeMeshIds = params.includeMeshIds;
-        var excludeMeshIds = params.excludeMeshIds;
+        let i;
+        let len;
+        let mesh;
+        const includeMeshIds = params.includeMeshIds;
+        const excludeMeshIds = params.excludeMeshIds;
 
         for (i = 0, len = meshListLen; i < len; i++) {
             mesh = meshList[i];
@@ -837,8 +839,8 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
             mesh._pickMesh(frame);
         }
 
-        var pix = pickBuf.read(Math.round(canvasX), Math.round(canvasY));
-        var pickedMeshIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+        const pix = pickBuf.read(Math.round(canvasX), Math.round(canvasY));
+        let pickedMeshIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
 
         pickedMeshIndex--;
 
@@ -853,7 +855,7 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
         frame.pickViewMatrix = pickViewMatrix; // Can be null
         frame.pickProjMatrix = pickProjMatrix; // Can be null
 
-        var boundary = scene.viewport.boundary;
+        const boundary = scene.viewport.boundary;
         gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
 
         gl.clearColor(0, 0, 0, 0);
@@ -864,9 +866,9 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
 
         mesh._pickTriangle(frame);
 
-        var pix = pickBuf.read(canvasX, canvasY);
+        const pix = pickBuf.read(canvasX, canvasY);
 
-        var primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+        let primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
 
         primIndex *= 3; // Convert from triangle number to first vertex in indices
 
@@ -881,14 +883,14 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
      * @param opaqueOnly
      */
     this.readPixels = function (pixels, colors, len, opaqueOnly) {
-        readPixelBuf = readPixelBuf || (readPixelBuf = new xeogl.renderer.RenderBuffer(canvas, gl));
+        readPixelBuf = readPixelBuf || (readPixelBuf = new RenderBuffer(canvas, gl));
         readPixelBuf.bind();
         readPixelBuf.clear();
         this.render({force: true, opaqueOnly: opaqueOnly});
-        var color;
-        var i;
-        var j;
-        var k;
+        let color;
+        let i;
+        let j;
+        let k;
         for (i = 0; i < len; i++) {
             j = i * 2;
             k = i * 4;
@@ -914,3 +916,5 @@ xeogl.renderer.Renderer = function (stats, scene, options) {
         }
     };
 };
+
+export{Renderer};

@@ -37,11 +37,12 @@
     // Camera animation and user control
     //-----------------------------------------------------------------------------------------------------
 
-    var camera = xeogl.scene.camera;
+    var scene = xeogl.getDefaultScene();
+    var camera = scene.camera;
 
     var spinning = true;
 
-    xeogl.scene.on("tick", function () { // Slowly orbit the camera
+    scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
             camera.orbitYaw(-0.05);
         }
@@ -63,7 +64,7 @@
         active: false
     });
 
-    xeogl.scene.clearLights();
+    scene.clearLights();
 
     new xeogl.DirLight({
         id: "keyLight",

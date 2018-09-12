@@ -90,11 +90,17 @@
  @param [cfg.occludable=false] {Boolean} Indicates whether occlusion testing is performed for the Pin, where it will be flagged invisible whenever it's hidden by something else in the 3D view.
  @extends Component
  */
-(function () {
+{
+    const math = xeogl.math;
 
-    "use strict";
+    const tempVec3a = math.vec3();
+    const tempVec3b = math.vec3();
+    const tempVec3c = math.vec3();
+    const tempVec3d = math.vec3();
+    const tempVec4a = math.vec4([0, 0, 0, 1]);
+    const tempVec4b = math.vec4();
 
-    const PIN_COLOR = xeogl.math.vec3([1.0, 1.0, 0.0]);
+    const PIN_COLOR = math.vec3([1.0, 1.0, 0.0]);
 
     // Do occlusion test per this number of ticks. Having a high-ish number
     // gives a nice hysteresis where, when occluded, the label remains visible
@@ -105,14 +111,14 @@
     // pins are visible, which is when they are within the canvas boundary and
     // are not obscured by any objects in the 3D view.
 
-    var VisibilityTester = function (scene) {
+    const VisibilityTester = function (scene) {
 
         this._scene = scene;
         this._pins = {};
         this._markers = {};
         this._testablePins = {};
 
-        var countDown = TEST_TICKS;
+        let countDown = TEST_TICKS;
 
         scene.on("tick", function () {
             if (--countDown <= 0) {
@@ -124,27 +130,27 @@
 
     VisibilityTester.prototype._runTest = (function () {
 
-        var testList = [];
-        var pixels = [];
-        var colors = [];
+        const testList = [];
+        const pixels = [];
+        const colors = [];
 
         return function () {
 
-            var canvas = this._scene.canvas;
-            var pin;
-            var canvasPos;
-            var canvasX;
-            var canvasY;
-            var lenPixels = 0;
-            var i;
-            var boundary = canvas.boundary;
-            var canvasWidth = boundary[2];
-            var canvasHeight = boundary[2];
-            var testListLen = 0;
+            const canvas = this._scene.canvas;
+            let pin;
+            let canvasPos;
+            let canvasX;
+            let canvasY;
+            let lenPixels = 0;
+            let i;
+            const boundary = canvas.boundary;
+            const canvasWidth = boundary[2];
+            const canvasHeight = boundary[3];
+            let testListLen = 0;
 
             // Hide pins that fall outside canvas
 
-            for (var id in this._testablePins) {
+            for (const id in this._testablePins) {
                 if (this._testablePins.hasOwnProperty(id)) {
 
                     pin = this._testablePins[id];
@@ -176,13 +182,13 @@
 
             // Hide pins that are occluded by 3D objects
 
-            var opaqueOnly = true;
+            const opaqueOnly = true;
 
             canvas.readPixels(pixels, colors, testListLen, opaqueOnly);
 
-            var r = PIN_COLOR[0] * 255;
-            var g = PIN_COLOR[1] * 255;
-            var b = PIN_COLOR[2] * 255;
+            const r = PIN_COLOR[0] * 255;
+            const g = PIN_COLOR[1] * 255;
+            const b = PIN_COLOR[2] * 255;
 
             for (i = 0; i < testListLen; i++) {
                 pin = testList[i];
@@ -193,7 +199,7 @@
 
     // Registers a Pin for visibility testing
     VisibilityTester.prototype.addPin = function (pin) {
-        var pinId = pin.id;
+        const pinId = pin.id;
         this._pins[pinId] = pin;
 
         // Mesh which renders a 3D point that we'll test for occlusion
@@ -218,7 +224,7 @@
 
     // Enables or disables occlusion testing for a Pin
     VisibilityTester.prototype.setPinTestable = function (pinId, testable) {
-        var pin = this._pins[pinId];
+        const pin = this._pins[pinId];
         if (pin) {
             this._markers[pinId].visible = testable;
             testable ? this._testablePins[pinId] = pin : delete this._testablePins[pinId];
@@ -232,7 +238,7 @@
 
     // De-registers a Pin, so that it is not tested for visibility
     VisibilityTester.prototype.removePin = function (pinId) {
-        var info = this._pins[pinId];
+        const info = this._pins[pinId];
         if (info) {
             delete this._pins[pinId];
             this._markers[pinId].destroy();
@@ -241,10 +247,10 @@
         }
     };
 
-    var visibilityTesters = {};
+    const visibilityTesters = {};
 
     function getVisibilityTester(scene) {
-        var visibilityTester = visibilityTesters[scene.id];
+        let visibilityTester = visibilityTesters[scene.id];
         if (!visibilityTester) {
             visibilityTester = new VisibilityTester(scene);
             visibilityTesters[scene.id] = visibilityTester;
@@ -255,11 +261,11 @@
         return visibilityTester;
     }
 
-    xeogl.Pin = xeogl.Component.extend({
+    xeogl.Pin = class xeoglPin extends xeogl.Component {
 
-        type: "xeogl.Pin",
+        init(cfg) {
 
-        _init: function (cfg) {
+            super.init(cfg);
 
             this._visible = null;
             this._localPos = new Float32Array(3);
@@ -277,378 +283,336 @@
             this.bary = cfg.bary;
             this.offset = cfg.offset;
             this.occludable = cfg.occludable;
-        },
+        }
 
-        _props: {
+        /**
+         The {{#crossLink "Mesh"}}{{/crossLink}} this Pin is attached to.
 
-            /**
-             The {{#crossLink "Mesh"}}{{/crossLink}} this Pin is attached to.
+         You can attach a Pin to a different {{#crossLink "Mesh"}}{{/crossLink}} at any time.
 
-             You can attach a Pin to a different {{#crossLink "Mesh"}}{{/crossLink}} at any time.
+         Note that {{#crossLink "Pin/primIndex:property"}}{{/crossLink}} should always
+         be within the {{#crossLink "Geometry/indices:property"}}{{/crossLink}} of the {{#crossLink "Geometry"}}{{/crossLink}} belonging to the {{#crossLink "Mesh"}}Mesh{{/crossLink}}.
 
-             Note that {{#crossLink "Pin/primIndex:property"}}{{/crossLink}} should always
-             be within the {{#crossLink "Geometry/indices:property"}}{{/crossLink}} of the {{#crossLink "Geometry"}}{{/crossLink}} belonging to the {{#crossLink "Mesh"}}Mesh{{/crossLink}}.
+         Fires an {{#crossLink "Pin/mesh:event"}}{{/crossLink}} event on change.
 
-             Fires an {{#crossLink "Pin/mesh:event"}}{{/crossLink}} event on change.
-
-             @property mesh
-             @type {Number | String | xeogl.Mesh}
-             */
-            mesh: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Pin's {{#crossLink "Pin/mesh:property"}}{{/crossLink}} property changes.
-                     * @event mesh
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "mesh",
-                        type: "xeogl.Mesh",
-                        component: value,
-                        sceneDefault: false,
-                        onAttached: {callback: this._meshAttached, scope: this},
-                        onDetached: {callback: this._meshDetached, scope: this}
-                    });
-                },
-
-                get: function () {
-                    return this._attached.mesh;
-                }
-            },
+         @property mesh
+         @type {Number | String | xeogl.Mesh}
+         */
+        set mesh(value) {
 
             /**
-             Index of the triangle containing this pin.
-
-             Within the {{#crossLink "Geometry/indices:property"}}{{/crossLink}} of the {{#crossLink "Geometry"}}{{/crossLink}} attached to the {{#crossLink "Mesh"}}{{/crossLink}}, this is the index of the first element for that triangle.
-
-             Fires a {{#crossLink "Pin/primIndex:event"}}{{/crossLink}} event on change.
-
-             @property primIndex
-             @default 0
-             @type Number
+             * Fired whenever this Pin's {{#crossLink "Pin/mesh:property"}}{{/crossLink}} property changes.
+             * @event mesh
+             * @param value The property's new value
              */
-            primIndex: {
-
-                set: function (value) {
-
-                    value = value || 0;
-
-                    if (value === this._primIndex) {
-                        return;
-                    }
-
-                    this._primIndex = value;
-
-                    this._setLocalPosDirty();
-
-                    /**
-                     * Fired whenever this Pin's {{#crossLink "Pin/primIndex:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event primIndex
-                     * @param value Number The property's new value
-                     */
-                    this.fire("primIndex", this._primIndex);
-                },
-
-                get: function () {
-                    return this._primIndex;
-                }
-            },
-
-            /**
-             Barycentric coordinates of this Pin within its triangle.
-
-             A value of ````[0.3, 0.3, 0.3]```` is the center of the triangle.
-
-             Fires a {{#crossLink "Pin/bary:event"}}{{/crossLink}} event on change.
-
-             @property bary
-             @default [0.3,0.3,0.3]
-             @type Float32Array
-             */
-            bary: {
-
-                set: function (value) {
-                    this._bary = value || xeogl.math.vec3([.3, .3, .3]);
-                    this._setLocalPosDirty();
-
-                    /**
-                     * Fired whenever this Pin's {{#crossLink "Pin/bary:property"}}{{/crossLink}} property changes.
-                     * @event bary
-                     * @param value Float32Array The property's new value
-                     */
-                    this.fire("bary", this._bary);
-                },
-
-                get: function () {
-                    return this._bary;
-                }
-            },
-
-            /**
-             How far the Pin is lifted out of its triangle, along the surface normal vector.
-
-             This is used when occlusion culling, to ensure that the Pin is not lost inside
-             the surface it's attached to.
-
-             Fires a {{#crossLink "Pin/offset:event"}}{{/crossLink}} event on change.
-
-             @property offset
-             @default 0.2
-             @type Number
-             */
-            offset: {
-
-                set: function (value) {
-                    this._offset = value !== undefined ? value : 0.2;
-                    this._setWorldPosDirty();
-
-                    /**
-                     * Fired whenever this Pin's {{#crossLink "Pin/offset:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event offset
-                     * @param value Number The property's new value
-                     */
-                    this.fire("offset", this._offset);
-                },
-
-                get: function () {
-                    return this._offset;
-                }
-            },
-
-            /**
-             Indicates whether occlusion testing is performed for this Pin.
-
-             When this is true, then {{#crossLink "Pin/visible:property"}}{{/crossLink}} will
-             be false whenever the Pin is hidden behind something else in the 3D view.
-
-             Set this false if the Pin is to remain visible when hidden behind things while
-             being within the canvas.
-
-             Fires a {{#crossLink "Pin/occludable:event"}}{{/crossLink}} event on change.
-
-             @property occludable
-             @default false
-             @type Float32Array
-             */
-            occludable: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (value === this._occludable) {
-                        return;
-                    }
-
-                    this._occludable = value;
-
-                    if (this._occludable) {
-                        if (!this._visTester) {
-                            this._visTester = getVisibilityTester(this.scene);
-                        }
-                        this._visTester.addPin(this);
-                    } else {
-                        if (this._visTester) {
-                            this._visTester.removePin(this);
-                        }
-                        this._setVisible(true);
-                    }
-
-                    /**
-                     * Fired whenever this Pin's {{#crossLink "Pin/occludable:property"}}{{/crossLink}} property changes.
-                     * @event occludable
-                     * @param value Float32Array The property's new value
-                     */
-                    this.fire("occludable", this._occludable);
-                },
-
-                get: function () {
-                    return this._occludable;
-                }
-            },
-
-            /**
-             Local-space 3D coordinates of this Pin.
-
-             This is read-only and is automatically calculated.
-
-             Fires a {{#crossLink "Pin/localPos:event"}}{{/crossLink}} event on change.
-
-             @property localPos
-             @default [0,0,0]
-             @type Float32Array
-             @final
-             */
-            localPos: {
-
-                get: function () {
-                    this.__update();
-                    return this._localPos;
-                }
-            },
-
-            /**
-             World-space 3D coordinates of this Pin.
-
-             This is read-only and is automatically calculated.
-
-             Fires a {{#crossLink "Pin/worldPos:event"}}{{/crossLink}} event on change.
-
-             @property worldPos
-             @default [0,0,0]
-             @type Float32Array
-             @final
-             */
-            worldPos: {
-
-                get: function () {
-                    this.__update();
-                    return this._worldPos;
-                }
-            },
-
-            /**
-             View-space 3D coordinates of this Pin.
-
-             This is read-only and is automatically calculated.
-
-             @property viewPos
-             @default [0,0,0]
-             @type Float32Array
-             @final
-             */
-            viewPos: {
-
-                get: function () {
-                    this.__update();
-                    xeogl.math.transformPoint3(this.scene.camera.viewMatrix, this.worldPos, this._viewPos);
-                    return this._viewPos;
-                }
-            },
-
-            /**
-             Canvas-space 2D coordinates of this Pin.
-
-             This is read-only and is automatically calculated.
-
-             @property canvasPos
-             @default [0,0]
-             @type Float32Array
-             @final
-             */
-            canvasPos: {
-
-                get: (function () {
-
-                    var tempVec4a = xeogl.math.vec4([0, 0, 0, 1]);
-                    var tempVec4b = xeogl.math.vec4();
-
-                    return function () {
-
-                        tempVec4a.set(this.viewPos);
-
-                        xeogl.math.transformPoint4(this.scene.camera.projMatrix, tempVec4a, tempVec4b);
-
-                        var aabb = this.scene.canvas.boundary;
-
-                        this._canvasPos[0] = Math.floor((1 + tempVec4b[0] / tempVec4b[3]) * aabb[2] / 2);
-                        this._canvasPos[1] = Math.floor((1 - tempVec4b[1] / tempVec4b[3]) * aabb[3] / 2);
-
-                        return this._canvasPos;
-                    };
-                })()
-            },
-
-            /**
-             World-space normal vector of this Pin.
-
-             This is read-only and is automatically calculated.
-
-             Fires a {{#crossLink "Pin/worldNormal:event"}}{{/crossLink}} event on change.
-
-             @property worldNormal
-             @default [0,0,1]
-             @type Float32Array
-             @final
-             */
-            worldNormal: {
-
-                get: function () {
-                    this.__update();
-                    return this._worldNormal;
-                }
-            },
-
-            /**
-             Indicates if this Pin is currently visible.
-
-             This is read-only and is automatically calculated.
-
-             The Pin is invisible whenever:
-
-             * {{#crossLink "Pin/canvasPos:property"}}{{/crossLink}} is currently outside the canvas, or
-             * {{#crossLink "Pin/occludable:property"}}{{/crossLink}} is true and the Pin is currently occluded by something in the 3D view.
-
-             Fires a {{#crossLink "Pin/visible:event"}}{{/crossLink}} event on change.
-
-             @property visible
-             @default true
-             @type Boolean
-             @final
-             */
-            visible: {
-
-                get: function () {
-                    return !!this._visible;
-                }
+            this._attach({
+                name: "mesh",
+                type: "xeogl.Mesh",
+                component: value,
+                sceneDefault: false,
+                onAttached: {callback: this._meshAttached, scope: this},
+                onDetached: {callback: this._meshDetached, scope: this}
+            });
+        }
+
+        get mesh() {
+            return this._attached.mesh;
+        }
+
+        /**
+         Index of the triangle containing this pin.
+
+         Within the {{#crossLink "Geometry/indices:property"}}{{/crossLink}} of the {{#crossLink "Geometry"}}{{/crossLink}} attached to the {{#crossLink "Mesh"}}{{/crossLink}}, this is the index of the first element for that triangle.
+
+         Fires a {{#crossLink "Pin/primIndex:event"}}{{/crossLink}} event on change.
+
+         @property primIndex
+         @default 0
+         @type Number
+         */
+        set primIndex(value) {
+
+            value = value || 0;
+
+            if (value === this._primIndex) {
+                return;
             }
-        },
 
-        _meshAttached: function (mesh) {
+            this._primIndex = value;
+
+            this._setLocalPosDirty();
+
+            /**
+             * Fired whenever this Pin's {{#crossLink "Pin/primIndex:property"}}{{/crossLink}} property changes.
+             *
+             * @event primIndex
+             * @param value Number The property's new value
+             */
+            this.fire("primIndex", this._primIndex);
+        }
+
+        get primIndex() {
+            return this._primIndex;
+        }
+
+        /**
+         Barycentric coordinates of this Pin within its triangle.
+
+         A value of ````[0.3, 0.3, 0.3]```` is the center of the triangle.
+
+         Fires a {{#crossLink "Pin/bary:event"}}{{/crossLink}} event on change.
+
+         @property bary
+         @default [0.3,0.3,0.3]
+         @type Float32Array
+         */
+        set bary(value) {
+            this._bary = value || xeogl.math.vec3([.3, .3, .3]);
+            this._setLocalPosDirty();
+
+            /**
+             * Fired whenever this Pin's {{#crossLink "Pin/bary:property"}}{{/crossLink}} property changes.
+             * @event bary
+             * @param value Float32Array The property's new value
+             */
+            this.fire("bary", this._bary);
+        }
+
+        get bary() {
+            return this._bary;
+        }
+
+        /**
+         How far the Pin is lifted out of its triangle, along the surface normal vector.
+
+         This is used when occlusion culling, to ensure that the Pin is not lost inside
+         the surface it's attached to.
+
+         Fires a {{#crossLink "Pin/offset:event"}}{{/crossLink}} event on change.
+
+         @property offset
+         @default 0.2
+         @type Number
+         */
+        set offset(value) {
+            this._offset = value !== undefined ? value : 0.2;
+            this._setWorldPosDirty();
+
+            /**
+             * Fired whenever this Pin's {{#crossLink "Pin/offset:property"}}{{/crossLink}} property changes.
+             *
+             * @event offset
+             * @param value Number The property's new value
+             */
+            this.fire("offset", this._offset);
+        }
+
+        get offset() {
+            return this._offset;
+        }
+
+        /**
+         Indicates whether occlusion testing is performed for this Pin.
+
+         When this is true, then {{#crossLink "Pin/visible:property"}}{{/crossLink}} will
+         be false whenever the Pin is hidden behind something else in the 3D view.
+
+         Set this false if the Pin is to remain visible when hidden behind things while
+         being within the canvas.
+
+         Fires a {{#crossLink "Pin/occludable:event"}}{{/crossLink}} event on change.
+
+         @property occludable
+         @default false
+         @type Float32Array
+         */
+        set occludable(value) {
+
+            value = !!value;
+
+            if (value === this._occludable) {
+                return;
+            }
+
+            this._occludable = value;
+
+            if (this._occludable) {
+                if (!this._visTester) {
+                    this._visTester = getVisibilityTester(this.scene);
+                }
+                this._visTester.addPin(this);
+            } else {
+                if (this._visTester) {
+                    this._visTester.removePin(this);
+                }
+                this._setVisible(true);
+            }
+
+            /**
+             * Fired whenever this Pin's {{#crossLink "Pin/occludable:property"}}{{/crossLink}} property changes.
+             * @event occludable
+             * @param value Float32Array The property's new value
+             */
+            this.fire("occludable", this._occludable);
+        }
+
+        get occludable() {
+            return this._occludable;
+        }
+
+        /**
+         Local-space 3D coordinates of this Pin.
+
+         This is read-only and is automatically calculated.
+
+         Fires a {{#crossLink "Pin/localPos:event"}}{{/crossLink}} event on change.
+
+         @property localPos
+         @default [0,0,0]
+         @type Float32Array
+         @final
+         */
+        get localPos() {
+            this.__update();
+            return this._localPos;
+        }
+
+        /**
+         World-space 3D coordinates of this Pin.
+
+         This is read-only and is automatically calculated.
+
+         Fires a {{#crossLink "Pin/worldPos:event"}}{{/crossLink}} event on change.
+
+         @property worldPos
+         @default [0,0,0]
+         @type Float32Array
+         @final
+         */
+        get worldPos() {
+            this.__update();
+            return this._worldPos;
+        }
+
+        /**
+         View-space 3D coordinates of this Pin.
+
+         This is read-only and is automatically calculated.
+
+         @property viewPos
+         @default [0,0,0]
+         @type Float32Array
+         @final
+         */
+        get viewPos() {
+            this.__update();
+            xeogl.math.transformPoint3(this.scene.camera.viewMatrix, this.worldPos, this._viewPos);
+            return this._viewPos;
+        }
+
+        /**
+         Canvas-space 2D coordinates of this Pin.
+
+         This is read-only and is automatically calculated.
+
+         @property canvasPos
+         @default [0,0]
+         @type Float32Array
+         @final
+         */
+        get canvasPos() {
+
+            tempVec4a.set(this.viewPos);
+
+            xeogl.math.transformPoint4(this.scene.camera.projMatrix, tempVec4a, tempVec4b);
+
+            const aabb = this.scene.canvas.boundary;
+
+            this._canvasPos[0] = Math.floor((1 + tempVec4b[0] / tempVec4b[3]) * aabb[2] / 2);
+            this._canvasPos[1] = Math.floor((1 - tempVec4b[1] / tempVec4b[3]) * aabb[3] / 2);
+
+            return this._canvasPos;
+        }
+
+        /**
+         World-space normal vector of this Pin.
+
+         This is read-only and is automatically calculated.
+
+         Fires a {{#crossLink "Pin/worldNormal:event"}}{{/crossLink}} event on change.
+
+         @property worldNormal
+         @default [0,0,1]
+         @type Float32Array
+         @final
+         */
+        get worldNormal() {
+            this.__update();
+            return this._worldNormal;
+        }
+
+        /**
+         Indicates if this Pin is currently visible.
+
+         This is read-only and is automatically calculated.
+
+         The Pin is invisible whenever:
+
+         * {{#crossLink "Pin/canvasPos:property"}}{{/crossLink}} is currently outside the canvas, or
+         * {{#crossLink "Pin/occludable:property"}}{{/crossLink}} is true and the Pin is currently occluded by something in the 3D view.
+
+         Fires a {{#crossLink "Pin/visible:event"}}{{/crossLink}} event on change.
+
+         @property visible
+         @default true
+         @type Boolean
+         @final
+         */
+        get visible() {
+            return !!this._visible;
+        }
+
+        _meshAttached(mesh) {
             this._onGeometryBoundary = mesh.geometry.on("boundary", this._setLocalPosDirty, this);
             this._onMeshBoundary = mesh.on("boundary", this._setWorldPosDirty, this);
             this._onMeshVisible = mesh.on("visible", this._meshVisible, this);
             this._setLocalPosDirty();
-        },
+        }
 
-        _setLocalPosDirty: function () {
+        _setLocalPosDirty() {
             if (!this._localPosDirty) {
                 this._localPosDirty = true;
                 this._needUpdate();
             }
-        },
+        }
 
-        _setWorldPosDirty: function () {
+        _setWorldPosDirty() {
             if (!this._worldPosDirty) {
                 this._worldPosDirty = true;
                 this._needUpdate();
             }
-        },
+        }
 
-        _meshVisible: function (visible) {
+        _meshVisible(visible) {
             if (!visible) {
                 this._setVisible(false);
             }
             if (this._visTester) {
                 this._visTester.setPinTestable(this.id, visible);
             }
-        },
+        }
 
-        _meshDetached: function (mesh) {
+        _meshDetached(mesh) {
             mesh.geometry.off(this._onGeometryBoundary);
             mesh.off(this._onMeshBoundary);
             mesh.off(this._onMeshVisible);
             this._meshVisible(false);
-        },
+        }
 
-        _update: function () {
+        _update() {
 
-            var localPosDirty = this._localPosDirty;
-            var worldPosDirty = localPosDirty || this._worldPosDirty;
+            const localPosDirty = this._localPosDirty;
+            const worldPosDirty = localPosDirty || this._worldPosDirty;
 
             this.__update();
 
@@ -675,100 +639,91 @@
                  */
                 this.fire("worldNormal", this._worldNormal);
             }
-        },
+        }
 
-        __update: (function () {
+        __update() {
 
-            var math = xeogl.math;
-            var a = math.vec3();
-            var b = math.vec3();
-            var c = math.vec3();
-            var normal = math.vec3();
+            const math = xeogl.math;
+            const mesh = this._attached.mesh;
 
-            return function () {
+            if (!mesh) {
+                return;
+            }
 
-                var mesh = this._attached.mesh;
+            if (this.destroyed) {
+                return;
+            }
 
-                if (!mesh) {
+            if (this._localPosDirty) {
+
+                // Get Local position from mesh's Geometry, primitive index and barycentric coordinates
+
+                const geometry = mesh.geometry;
+                const indices = geometry.indices;
+                const positions = geometry.positions;
+
+                if (!indices || !positions) {
                     return;
                 }
 
-                if (this.destroyed) {
-                    return;
+                const i = this._primIndex;
+
+                const ia = indices[i];
+                const ib = indices[i + 1];
+                const ic = indices[i + 2];
+
+                const ia3 = ia * 3;
+                const ib3 = ib * 3;
+                const ic3 = ic * 3;
+
+                tempVec3a[0] = positions[ia3];
+                tempVec3a[1] = positions[ia3 + 1];
+                tempVec3a[2] = positions[ia3 + 2];
+
+                tempVec3b[0] = positions[ib3];
+                tempVec3b[1] = positions[ib3 + 1];
+                tempVec3b[2] = positions[ib3 + 2];
+
+                tempVec3c[0] = positions[ic3];
+                tempVec3c[1] = positions[ic3 + 1];
+                tempVec3c[2] = positions[ic3 + 2];
+
+                math.barycentricToCartesian(this._bary, tempVec3a, tempVec3b, tempVec3c, this._localPos);
+
+                // Lift the cartesian coords out of the plane of the triangle
+                math.triangleNormal(tempVec3a, tempVec3b, tempVec3c, tempVec3d);
+                math.mulVec3Scalar(tempVec3d, this._offset, tempVec3d);
+                math.addVec3(this._localPos, tempVec3d, this._localPos);
+
+                this._localPosDirty = false;
+                this._worldPosDirty = true;
+                this._worldNormalDirty = true;
+            }
+
+            if (this._worldPosDirty) {
+
+                // Transform Local position into World space
+
+                math.transformPoint3(mesh.worldMatrix, this._localPos, this._worldPos);
+
+                if (this._visTester) {
+                    this._visTester.setPinWorldPos(this.id, this._worldPos);
                 }
 
-                if (this._localPosDirty) {
+                this._worldPosDirty = false;
+            }
 
-                    // Get Local position from mesh's Geometry, primitive index and barycentric coordinates
+            if (this._worldNormalDirty) {
 
-                    var geometry = mesh.geometry;
-                    var indices = geometry.indices;
-                    var positions = geometry.positions;
+                // Transform Local normal into World space
 
-                    if (!indices || !positions) {
-                        return;
-                    }
+                math.transformVec3(mesh.worldMatrix, this._localNormal, this._worldNormal);
 
-                    var i = this._primIndex;
+                this._worldNormalDirty = false;
+            }
+        }
 
-                    var ia = indices[i];
-                    var ib = indices[i + 1];
-                    var ic = indices[i + 2];
-
-                    var ia3 = ia * 3;
-                    var ib3 = ib * 3;
-                    var ic3 = ic * 3;
-
-                    a[0] = positions[ia3];
-                    a[1] = positions[ia3 + 1];
-                    a[2] = positions[ia3 + 2];
-
-                    b[0] = positions[ib3];
-                    b[1] = positions[ib3 + 1];
-                    b[2] = positions[ib3 + 2];
-
-                    c[0] = positions[ic3];
-                    c[1] = positions[ic3 + 1];
-                    c[2] = positions[ic3 + 2];
-
-                    math.barycentricToCartesian(this._bary, a, b, c, this._localPos);
-
-                    // Lift the cartesian coords out of the plane of the triangle
-                    math.triangleNormal(a, b, c, normal);
-                    math.mulVec3Scalar(normal, this._offset, normal);
-                    math.addVec3(this._localPos, normal, this._localPos);
-
-                    this._localPosDirty = false;
-                    this._worldPosDirty = true;
-                    this._worldNormalDirty = true;
-                }
-
-                if (this._worldPosDirty) {
-
-                    // Transform Local position into World space
-
-                    math.transformPoint3(mesh.worldMatrix, this._localPos, this._worldPos);
-
-                    if (this._visTester) {
-                        this._visTester.setPinWorldPos(this.id, this._worldPos);
-                    }
-
-                    this._worldPosDirty = false;
-                }
-
-                if (this._worldNormalDirty) {
-
-                    // Transform Local normal into World space
-
-                    math.transformVec3(mesh.worldMatrix, this._localNormal, this._worldNormal);
-
-                    this._worldNormalDirty = false;
-                }
-            };
-
-        })(),
-
-        _setVisible: function (value) { // Called by VisibilityTester
+        _setVisible(value) { // Called by VisibilityTester
 
             if (this._visible === value) {
                 return;
@@ -782,10 +737,10 @@
              * @param value Float32Array The property's new value
              */
             this.fire("visible", this._visible);
-        },
+        }
 
-        getJSON: function () {
-            var json = {
+        getJSON() {
+            const json = {
                 primIndex: this._primIndex,
                 bary: xeogl.math.vecToArray(this._bary),
                 offset: this._offset,
@@ -795,13 +750,14 @@
                 json.mesh = this._attached.mesh.id;
             }
             return json;
-        },
+        }
 
-        _destroy: function () {
+        destroy() {
             if (this._visTester) {
                 this._visTester.removePin(this.id);
             }
+            super.destroy();
         }
-    });
-})();
+    };
+}
     

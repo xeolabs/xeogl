@@ -17,7 +17,7 @@
 
 <script>
 
-    new xeogl.Mesh({
+    var mesh = new xeogl.Mesh({
         geometry: new xeogl.CylinderGeometry({
             radiusTop: 2.0,
             radiusBottom: 2.0,
@@ -33,9 +33,10 @@
         })
     });
 
-    var camera = xeogl.scene.camera;
+    var scene = mesh.scene;
+    var camera = scene.camera;
 
-    xeogl.scene.on("tick", function () {
+    scene.on("tick", function () {
         camera.orbitYaw(0.6);
         camera.orbitPitch(0.3);
     });

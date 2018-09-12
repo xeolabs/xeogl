@@ -37,7 +37,7 @@
  // Decrement the count; count now zero,
  // so spinner becomes invisible
  spinner.process--;
-````
+ ````
 
  By default, a Spinner shows while resources are loading for components like
  {{#crossLink "Texture"}}{{/crossLink}}. We can disable that like this:
@@ -52,168 +52,14 @@
  @submodule canvas
  @extends Component
  */
-(function () {
 
-    "use strict";
+import {Component} from '../component.js';
 
-    // Ensures lazy-injected CSS only injected once  
-    var spinnerCSSInjected = false;
+const type = "xeogl.Spinner";
 
-    xeogl.Spinner = xeogl.Component.extend({
+let spinnerCSSInjected = false; // Ensures lazy-injected CSS only injected once
 
-        type: "xeogl.Spinner",
-
-        serializable: false,
-
-        _init: function (cfg) {
-
-            this._canvas = cfg.canvas;
-
-            this._injectSpinnerCSS();
-
-            // Create spinner elements
-
-            var div = document.createElement('div');
-            var style = div.style;
-
-            style["z-index"] = "9000";
-            style.position = "absolute";
-
-            div.innerHTML = '<div class="sk-fading-circle">\
-                <div class="sk-circle1 sk-circle"></div>\
-                <div class="sk-circle2 sk-circle"></div>\
-                <div class="sk-circle3 sk-circle"></div>\
-                <div class="sk-circle4 sk-circle"></div>\
-                <div class="sk-circle5 sk-circle"></div>\
-                <div class="sk-circle6 sk-circle"></div>\
-                <div class="sk-circle7 sk-circle"></div>\
-                <div class="sk-circle8 sk-circle"></div>\
-                <div class="sk-circle9 sk-circle"></div>\
-                <div class="sk-circle10 sk-circle"></div>\
-                <div class="sk-circle11 sk-circle"></div>\
-                <div class="sk-circle12 sk-circle"></div>\
-                </div>';
-
-            this._canvas.parentElement.appendChild(div);
-            this._element = div;
-
-            this._adjustPosition();
-
-            this.processes = 0;
-
-            this.textures = cfg.textures;
-        },
-
-        _props: {
-
-            /**
-             * Whether Spinner shows while images are loading for components like {{#crossLink "Texture"}}{{/crossLink}}.
-             *
-             * @property textures
-             * @default true
-             * @type Boolean
-             */
-            textures: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    this._textures = value;
-                },
-
-                get: function () {
-                    return this._textures;
-                }
-            },
-
-            /**
-             The number of processes this Spinner represents.
-
-             The Spinner is visible while this property is greater than zero.
-
-             Increment this property whenever you commence some process during which you want
-             the Spinner to be visible, then decrement it again when the process is complete.
-
-             Clamps to zero if you attempt to set to to a negative value.
-
-             Fires a {{#crossLink "Spinner/processes:event"}}{{/crossLink}} event on change.
-
-             @property processes
-             @default 0
-             @type Number
-             */
-            processes: {
-
-                set: function (value) {
-
-                    value = value || 0;
-
-                    if (this._processes === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        return;
-                    }
-
-                    var prevValue = this._processes;
-
-                    this._processes = value;
-
-                    this._element.style["visibility"] = (this._processes > 0) ? "visible" : "hidden";
-
-                    /**
-                     Fired whenever this Spinner's {{#crossLink "Spinner/visible:property"}}{{/crossLink}} property changes.
-
-                     @event processes
-                     @param value The property's new value
-                     */
-                    this.fire("processes", this._processes);
-
-                    if (this._processes === 0 && this._processes !== prevValue) {
-
-                        /**
-                         Fired whenever this Spinner's {{#crossLink "Spinner/visible:property"}}{{/crossLink}} property becomes zero.
-
-                         @event zeroProcesses
-                         */
-                        this.fire("zeroProcesses", this._processes);
-                    }
-                },
-
-                get: function () {
-                    return this._processes;
-                }
-            }
-        },
-
-        // (Re)positions spinner DIV over the center of the canvas
-        _adjustPosition: function () {
-
-            if (!this._canvas || !this._element) {
-                return;
-            }
-
-            var canvas = this._canvas;
-            var spinner = this._element;
-            var spinnerStyle = spinner.style;
-
-            spinnerStyle["left"] = (canvas.offsetLeft + (canvas.clientWidth * 0.5) - (spinner.clientWidth * 0.5)) + "px";
-            spinnerStyle["top"] = (canvas.offsetTop + (canvas.clientHeight * 0.5) - (spinner.clientHeight * 0.5)) + "px";
-        },
-
-        _injectSpinnerCSS: function () {
-            if (spinnerCSSInjected) {
-                return;
-            }
-            var node = document.createElement('style');
-            node.innerHTML = this._spinnerCSS;
-            document.body.appendChild(node);
-            spinnerCSSInjected = true;
-        },
-
-        _spinnerCSS: ".sk-fading-circle {\
+const spinnerCSS = ".sk-fading-circle {\
         background: transparent;\
         margin: 20px auto;\
         width: 50px;\
@@ -344,6 +190,119 @@
     @keyframes sk-circleFadeDelay {\
         0%, 39%, 100% { opacity: 0; }\
         40% { opacity: 1; }\
-    }"
-    });
-})();
+    }";
+
+class Spinner extends Component {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+        super.init(cfg);
+        this._canvas = cfg.canvas;
+        this._injectSpinnerCSS();
+        const div = document.createElement('div');
+        const style = div.style;
+        style["z-index"] = "9000";
+        style.position = "absolute";
+        div.innerHTML = '<div class="sk-fading-circle">\
+                <div class="sk-circle1 sk-circle"></div>\
+                <div class="sk-circle2 sk-circle"></div>\
+                <div class="sk-circle3 sk-circle"></div>\
+                <div class="sk-circle4 sk-circle"></div>\
+                <div class="sk-circle5 sk-circle"></div>\
+                <div class="sk-circle6 sk-circle"></div>\
+                <div class="sk-circle7 sk-circle"></div>\
+                <div class="sk-circle8 sk-circle"></div>\
+                <div class="sk-circle9 sk-circle"></div>\
+                <div class="sk-circle10 sk-circle"></div>\
+                <div class="sk-circle11 sk-circle"></div>\
+                <div class="sk-circle12 sk-circle"></div>\
+                </div>';
+        this._canvas.parentElement.appendChild(div);
+        this._element = div;
+        this._adjustPosition();
+        this.processes = 0;
+    }
+
+    /**
+     The number of processes this Spinner represents.
+
+     The Spinner is visible while this property is greater than zero.
+
+     Increment this property whenever you commence some process during which you want
+     the Spinner to be visible, then decrement it again when the process is complete.
+
+     Clamps to zero if you attempt to set to to a negative value.
+
+     Fires a {{#crossLink "Spinner/processes:event"}}{{/crossLink}} event on change.
+
+     @property processes
+     @default 0
+     @type Number
+     */
+    set processes(value) {
+        value = value || 0;
+        if (this._processes === value) {
+            return;
+        }
+        if (value < 0) {
+            return;
+        }
+        const prevValue = this._processes;
+        this._processes = value;
+        this._element.style["visibility"] = (this._processes > 0) ? "visible" : "hidden";
+        /**
+         Fired whenever this Spinner's {{#crossLink "Spinner/visible:property"}}{{/crossLink}} property changes.
+
+         @event processes
+         @param value The property's new value
+         */
+        this.fire("processes", this._processes);
+        if (this._processes === 0 && this._processes !== prevValue) {
+            /**
+             Fired whenever this Spinner's {{#crossLink "Spinner/visible:property"}}{{/crossLink}} property becomes zero.
+
+             @event zeroProcesses
+             */
+            this.fire("zeroProcesses", this._processes);
+        }
+    }
+
+    get processes() {
+        return this._processes;
+    }
+
+    _adjustPosition() { // (Re)positions spinner DIV over the center of the canvas
+        if (!this._canvas || !this._element) {
+            return;
+        }
+        const canvas = this._canvas;
+        const spinner = this._element;
+        const spinnerStyle = spinner.style;
+        spinnerStyle["left"] = (canvas.offsetLeft + (canvas.clientWidth * 0.5) - (spinner.clientWidth * 0.5)) + "px";
+        spinnerStyle["top"] = (canvas.offsetTop + (canvas.clientHeight * 0.5) - (spinner.clientHeight * 0.5)) + "px";
+    }
+
+    _injectSpinnerCSS() {
+        if (spinnerCSSInjected) {
+            return;
+        }
+        const node = document.createElement('style');
+        node.innerHTML = spinnerCSS;
+        document.body.appendChild(node);
+        spinnerCSSInjected = true;
+    }
+}
+
+export{Spinner};

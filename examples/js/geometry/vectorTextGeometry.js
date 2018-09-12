@@ -44,17 +44,13 @@
  @param [cfg.text=""] {String} The text.
  @extends Geometry
  */
-(function () {
-
-    "use strict";
+{
 
     var letters;
 
-    xeogl.VectorTextGeometry = xeogl.Geometry.extend({
+    xeogl.VectorTextGeometry = class xeoVertexGeometry extends xeogl.Geometry {
 
-        type: "xeogl.VectorTextGeometry",
-
-        _init: function (cfg) {
+        init(cfg) {
 
             if (!letters) {
                 letters = buildStrokeData();
@@ -151,13 +147,13 @@
                 y -= 35 * mag * size;
             }
 
-            this._super(xeogl._apply(cfg, {
+            super.init(xeogl._apply(cfg, {
                 primitive: "lines",
                 positions: positions,
                 indices: indices
             }));
         }
-    });
+    };
 
     function buildStrokeData() {
         return {
@@ -1734,4 +1730,4 @@
             }
         };
     }
-})();
+}

@@ -17,7 +17,9 @@
 
 <script>
 
-    xeogl.scene.clearLights();
+    var scene = xeogl.getDefaultScene();
+
+    scene.clearLights();
 
     var material = new xeogl.PhongMaterial({
         ambient: [0.0, 0.7, 0.7],

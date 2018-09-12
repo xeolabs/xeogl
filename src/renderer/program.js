@@ -2,19 +2,39 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-(function () {
+import {Map} from "../utils/map.js";
+import {Shader} from "./shader.js";
+import {Sampler} from "./sampler.js";
+import {Attribute} from "./attribute.js";
 
-    "use strict";
+const ids = new Map({});
 
-    var ids = new xeogl.utils.Map({});
+function joinSansComments(srcLines) {
+    const src = [];
+    let line;
+    let n;
+    for (let i = 0, len = srcLines.length; i < len; i++) {
+        line = srcLines[i];
+        n = line.indexOf("/");
+        if (n > 0) {
+            if (line.charAt(n + 1) === "/") {
+                line = line.substring(0, n);
+            }
+        }
+        src.push(line);
+    }
+    return src.join("\n");
+}
 
-    xeogl.renderer.Program = function (gl, shaderSource) {
+class Program {
+
+    constructor(gl, shaderSource) {
         this.id = ids.addItem({});
         this.source = shaderSource;
         this.init(gl);
-    };
+    }
 
-    xeogl.renderer.Program.prototype.init = function (gl) {
+    init(gl) {
         this.gl = gl;
         this.allocated = false;
         this.compiled = false;
@@ -24,8 +44,8 @@
         this.uniforms = {};
         this.samplers = {};
         this.attributes = {};
-        this._vertexShader = new xeogl.renderer.Shader(gl, gl.VERTEX_SHADER, joinSansComments(this.source.vertex));
-        this._fragmentShader = new xeogl.renderer.Shader(gl, gl.FRAGMENT_SHADER, joinSansComments(this.source.fragment));
+        this._vertexShader = new Shader(gl, gl.VERTEX_SHADER, joinSansComments(this.source.vertex));
+        this._fragmentShader = new Shader(gl, gl.FRAGMENT_SHADER, joinSansComments(this.source.fragment));
         if (!this._vertexShader.allocated) {
             this.errors = ["Vertex shader failed to allocate"].concat(this._vertexShader.errors);
             return;
@@ -44,11 +64,11 @@
             return;
         }
         this.compiled = true;
-        var a;
-        var i;
-        var u;
-        var uName;
-        var location;
+        let a;
+        let i;
+        let u;
+        let uName;
+        let location;
         this.handle = gl.createProgram();
         if (!this.handle) {
             this.errors = ["Failed to allocate program"];
@@ -71,7 +91,7 @@
             this.errors = this.errors.concat(shaderSource.fragment);
             return;
         }
-        var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
+        const numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
         for (i = 0; i < numUniforms; ++i) {
             u = gl.getActiveUniform(this.handle, i);
             if (u) {
@@ -81,74 +101,57 @@
                 }
                 location = gl.getUniformLocation(this.handle, uName);
                 if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
-                    this.samplers[uName] = new xeogl.renderer.Sampler(gl, location);
+                    this.samplers[uName] = new Sampler(gl, location);
                 } else {
                     this.uniforms[uName] = location;
                 }
             }
         }
-        var numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
+        const numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
         for (i = 0; i < numAttribs; i++) {
             a = gl.getActiveAttrib(this.handle, i);
             if (a) {
                 location = gl.getAttribLocation(this.handle, a.name);
-                this.attributes[a.name] = new xeogl.renderer.Attribute(gl, location);
+                this.attributes[a.name] = new Attribute(gl, location);
             }
         }
         this.allocated = true;
-    };
-
-    function joinSansComments(srcLines) {
-        var src = [];
-        var line;
-        var n;
-        for (var i = 0, len = srcLines.length; i < len; i++) {
-            line = srcLines[i];
-            n = line.indexOf("/");
-            if (n > 0) {
-                if (line.charAt(n + 1) === "/") {
-                    line = line.substring(0, n);
-                }
-            }
-            src.push(line);
-        }
-        return src.join("\n");
     }
 
-    xeogl.renderer.Program.prototype.bind = function () {
+    bind() {
         if (!this.allocated) {
             return;
         }
         this.gl.useProgram(this.handle);
-    };
+    }
 
-    xeogl.renderer.Program.prototype.getLocation = function (name) {
+    getLocation(name) {
         if (!this.allocated) {
             return;
         }
         return this.uniforms[name];
-    };
+    }
 
-    xeogl.renderer.Program.prototype.getAttribute = function (name) {
+    getAttribute(name) {
         if (!this.allocated) {
             return;
         }
         return this.attributes[name];
-    };
+    }
 
-    xeogl.renderer.Program.prototype.bindTexture = function (name, texture, unit) {
+    bindTexture(name, texture, unit) {
         if (!this.allocated) {
             return false;
         }
-        var sampler = this.samplers[name];
+        const sampler = this.samplers[name];
         if (sampler) {
             return sampler.bindTexture(texture, unit);
         } else {
             return false;
         }
-    };
+    }
 
-    xeogl.renderer.Program.prototype.destroy = function () {
+    destroy() {
         if (!this.allocated) {
             return;
         }
@@ -161,5 +164,7 @@
         this.uniforms = null;
         this.samplers = null;
         this.allocated = false;
-    };
-})();
+    }
+}
+
+export{Program};

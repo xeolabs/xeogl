@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>/home/lindsay/xeolabs/xeogl-next/xeogl/src/models/model.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+            
+                <li><a href="../classes/AABBHelper.html">AABBHelper</a></li>
+            
+                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+            
+                <li><a href="../classes/Annotation.html">Annotation</a></li>
+            
+                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+            
+                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
+            
+                <li><a href="../classes/BIMServerModel.html">BIMServerModel</a></li>
+            
+                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+            
+                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+            
+                <li><a href="../classes/Button.html">Button</a></li>
+            
+                <li><a href="../classes/Camera.html">Camera</a></li>
+            
+                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+            
+                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+            
+                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+            
+                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+            
+                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+            
+                <li><a href="../classes/Canvas.html">Canvas</a></li>
+            
+                <li><a href="../classes/Clip.html">Clip</a></li>
+            
+                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
+            
+                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
+            
+                <li><a href="../classes/Component.html">Component</a></li>
+            
+                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
+            
+                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+            
+                <li><a href="../classes/Curve.html">Curve</a></li>
+            
+                <li><a href="../classes/CustomProjection.html">CustomProjection</a></li>
+            
+                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+            
+                <li><a href="../classes/DirLight.html">DirLight</a></li>
+            
+                <li><a href="../classes/EdgeMaterial.html">EdgeMaterial</a></li>
+            
+                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
+            
+                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+            
+                <li><a href="../classes/Frustum.html">Frustum</a></li>
+            
+                <li><a href="../classes/Geometry.html">Geometry</a></li>
+            
+                <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
+            
+                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+            
+                <li><a href="../classes/Group.html">Group</a></li>
+            
+                <li><a href="../classes/Input.html">Input</a></li>
+            
+                <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
+            
+                <li><a href="../classes/LightMap.html">LightMap</a></li>
+            
+                <li><a href="../classes/Material.html">Material</a></li>
+            
+                <li><a href="../classes/Mesh.html">Mesh</a></li>
+            
+                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
+            
+                <li><a href="../classes/Model.html">Model</a></li>
+            
+                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+            
+                <li><a href="../classes/Object.html">Object</a></li>
+            
+                <li><a href="../classes/OBJModel.html">OBJModel</a></li>
+            
+                <li><a href="../classes/Ortho.html">Ortho</a></li>
+            
+                <li><a href="../classes/OutlineMaterial.html">OutlineMaterial</a></li>
+            
+                <li><a href="../classes/Path.html">Path</a></li>
+            
+                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+            
+                <li><a href="../classes/Perspective.html">Perspective</a></li>
+            
+                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+            
+                <li><a href="../classes/Pin.html">Pin</a></li>
+            
+                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+            
+                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
+            
+                <li><a href="../classes/PointLight.html">PointLight</a></li>
+            
+                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+            
+                <li><a href="../classes/ReflectionMap.html">ReflectionMap</a></li>
+            
+                <li><a href="../classes/Scene.html">Scene</a></li>
+            
+                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+            
+                <li><a href="../classes/Shadow.html">Shadow</a></li>
+            
+                <li><a href="../classes/Skybox.html">Skybox</a></li>
+            
+                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
+            
+                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+            
+                <li><a href="../classes/Spinner.html">Spinner</a></li>
+            
+                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+            
+                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
+            
+                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
+            
+                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+            
+                <li><a href="../classes/STLModel.html">STLModel</a></li>
+            
+                <li><a href="../classes/Story.html">Story</a></li>
+            
+                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+            
+                <li><a href="../classes/TestModel.html">TestModel</a></li>
+            
+                <li><a href="../classes/Texture.html">Texture</a></li>
+            
+                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+            
+                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+            
+                <li><a href="../classes/Viewport.html">Viewport</a></li>
+            
+                <li><a href="../classes/xeogl.xeogl.html">xeogl.xeogl</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..//modules/animation.html">animation</a></li>
+            
+                <li><a href="..//modules/annotations.html">annotations</a></li>
+            
+                <li><a href="..//modules/camera.html">camera</a></li>
+            
+                <li><a href="..//modules/canvas.html">canvas</a></li>
+            
+                <li><a href="..//modules/clipping.html">clipping</a></li>
+            
+                <li><a href="..//modules/controls.html">controls</a></li>
+            
+                <li><a href="..//modules/curves.html">curves</a></li>
+            
+                <li><a href="..//modules/effects.html">effects</a></li>
+            
+                <li><a href="..//modules/generation.html">generation</a></li>
+            
+                <li><a href="..//modules/geometry.html">geometry</a></li>
+            
+                <li><a href="..//modules/helpers.html">helpers</a></li>
+            
+                <li><a href="..//modules/input.html">input</a></li>
+            
+                <li><a href="..//modules/lighting.html">lighting</a></li>
+            
+                <li><a href="..//modules/materials.html">materials</a></li>
+            
+                <li><a href="..//modules/math.html">math</a></li>
+            
+                <li><a href="..//modules/meshes.html">meshes</a></li>
+            
+                <li><a href="..//modules/models.html">models</a></li>
+            
+                <li><a href="..//modules/objects.html">objects</a></li>
+            
+                <li><a href="..//modules/rendering.html">rendering</a></li>
+            
+                <li><a href="..//modules/scene.html">scene</a></li>
+            
+                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+            
+                <li><a href="..//modules/stories.html">stories</a></li>
+            
+                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+        <!--Show:-->
+        <!--<label for="api-show-inherited">-->
+            <!--<input type="checkbox" id="api-show-inherited" checked>-->
+            <!--Inherited-->
+        <!--</label>-->
+
+        <!--<label for="api-show-protected">-->
+            <!--<input type="checkbox" id="api-show-protected">-->
+            <!--Protected-->
+        <!--</label>-->
+
+        <!--<label for="api-show-private">-->
+            <!--<input type="checkbox" id="api-show-private">-->
+            <!--Private-->
+        <!--</label>-->
+        <!--<label for="api-show-deprecated">-->
+            <!--<input type="checkbox" id="api-show-deprecated">-->
+            <!--Deprecated-->
+        <!--</label>-->
+
+    <!--</div>-->
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: /home/lindsay/xeolabs/xeogl-next/xeogl/src/models/model.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **Model** is a {{#crossLink &quot;Group&quot;}}{{/crossLink}} of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}}.
+
+ Model is an abstract base class that&#x27;s subclassed by (at least):
+
+ * {{#crossLink &quot;GLTFModel&quot;}}{{/crossLink}}, which loads its components from glTF files.
+ * {{#crossLink &quot;OBJModel&quot;}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.
+ * {{#crossLink &quot;STLModel&quot;}}{{/crossLink}}, which loads its components from .STL files.
+ * {{#crossLink &quot;SceneJSModel&quot;}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
+ * {{#crossLink &quot;BuildableModel&quot;}}{{/crossLink}}, which provides a fluent API for building its components.
+
+
+ @class Model
+ @module xeogl
+ @submodule models
+ @constructor
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata.
+ @param [cfg.entityType] {String} Optional entity classification when using within a semantic data model. See the {{#crossLink &quot;Object&quot;}}{{/crossLink}} documentation for usage.
+ @param [cfg.parent] {Object} The parent.
+ @param [cfg.position=[0,0,0]] {Float32Array} Local 3D position.
+ @param [cfg.scale=[1,1,1]] {Float32Array} Local scale.
+ @param [cfg.rotation=[0,0,0]] {Float32Array} Local rotation, as Euler angles given in degrees, for each of the X, Y and Z axis.
+ @param [cfg.matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] {Float32Array} Local modelling transform matrix. Overrides the position, scale and rotation parameters.
+ @param [cfg.visible=true] {Boolean}        Indicates if visible.
+ @param [cfg.culled=false] {Boolean}        Indicates if culled from view.
+ @param [cfg.pickable=true] {Boolean}       Indicates if pickable.
+ @param [cfg.clippable=true] {Boolean}      Indicates if clippable.
+ @param [cfg.collidable=true] {Boolean}     Indicates if included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean}     Indicates if casting shadows.
+ @param [cfg.receiveShadow=true] {Boolean}  Indicates if receiving shadows.
+ @param [cfg.outlined=false] {Boolean}      Indicates if outline is rendered.
+ @param [cfg.ghosted=false] {Boolean}       Indicates if rendered as ghosted.
+ @param [cfg.highlighted=false] {Boolean}   Indicates if rendered as highlighted.
+ @param [cfg.selected=false] {Boolean}      Indicates if rendered as selected.
+ @param [cfg.edges=false] {Boolean}         Indicates if edges are emphasized.
+ @param [cfg.aabbVisible=false] {Boolean}   Indicates if axis-aligned World-space bounding box is visible.
+ @param [cfg.obbVisible=false] {Boolean}    Indicates if oriented World-space bounding box is visible.
+ @param [cfg.colorize=[1.0,1.0,1.0]] {Float32Array}  RGB colorize color, multiplies by the rendered fragment colors.
+ @param [cfg.opacity=1.0] {Number} Opacity factor, multiplies by the rendered fragment alpha.
+
+ @extends Group
+ */
+import {core} from &quot;../core.js&quot;;
+import {utils} from &#x27;../utils.js&#x27;;
+import {Group} from &quot;../objects/group.js&quot;;
+import {componentClasses} from &quot;./../componentClasses.js&quot;;
+
+const type = &quot;xeogl.Model&quot;;
+
+class Model extends Group {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.MetallicMaterial&quot; etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+
+        /**
+         All contained {{#crossLink &quot;Components&quot;}}{{/crossLink}}, mapped to their IDs.
+
+         @property components
+         @type {{String:Component}}
+         */
+        this.components = {};
+
+        /**
+         Number of contained {{#crossLink &quot;Components&quot;}}{{/crossLink}}.
+
+         @property numComponents
+         @type Number
+         */
+        this.numComponents = 0;
+
+        /**
+         A map of maps; for each contained {{#crossLink &quot;Component&quot;}}{{/crossLink}} type,
+         a map to IDs to {{#crossLink &quot;Component&quot;}}{{/crossLink}} instances, eg.
+
+         &#x60;&#x60;&#x60;&#x60;
+         &quot;xeogl.Geometry&quot;: {
+                &quot;alpha&quot;: &lt;xeogl.Geometry&gt;,
+                &quot;beta&quot;: &lt;xeogl.Geometry&gt;
+              },
+         &quot;xeogl.Rotate&quot;: {
+                &quot;charlie&quot;: &lt;xeogl.Rotate&gt;,
+                &quot;delta&quot;: &lt;xeogl.Rotate&gt;,
+                &quot;echo&quot;: &lt;xeogl.Rotate&gt;,
+              },
+         //...
+         &#x60;&#x60;&#x60;&#x60;
+
+         @property types
+         @type {String:{String:xeogl.Component}}
+         */
+        this.types = {};
+
+        /**
+         All contained {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}}, mapped to their IDs.
+
+         @property objects
+         @final
+         @type {{String:Object}}
+         */
+        this.objects = {};
+
+        /**
+         {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} in this Model that have GUIDs, mapped to their GUIDs.
+
+         Each Object is registered in this map when its {{#crossLink &quot;Object/guid:property&quot;}}{{/crossLink}} is
+         assigned a value.
+
+         @property guidObjects
+         @final
+         @type {{String:Object}}
+         */
+        this.guidObjects = {};
+
+        /**
+         All contained {{#crossLink &quot;Mesh&quot;}}Meshes{{/crossLink}}, mapped to their IDs.
+
+         @property meshes
+         @final
+         @type {String:xeogl.Mesh}
+         */
+        this.meshes = {};
+
+        /**
+         {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} in this Model that have entity types, mapped to their IDs.
+
+         Each Object is registered in this map when its {{#crossLink &quot;Object/entityType:property&quot;}}{{/crossLink}} is
+         set to value.
+
+         @property entities
+         @final
+         @type {{String:Object}}
+         */
+        this.entities = {};
+
+        /**
+         For each entity type, a map of IDs to {{#crossLink &quot;Object&quot;}}Objects{{/crossLink}} of that entity type.
+
+         Each Object is registered in this map when its {{#crossLink &quot;Object/entityType:property&quot;}}{{/crossLink}} is
+         assigned a value.
+
+         @property entityTypes
+         @final
+         @type {String:{String:xeogl.Component}}
+         */
+        this.entityTypes = {};
+
+        /**
+         Lazy-regenerated ID lists.
+         */
+        this._objectGUIDs = null;
+        this._entityIds = null;
+
+        // xeogl.Model overrides xeogl.Group / xeogl.Object state properties, (eg. visible, ghosted etc)
+        // and those redefined properties are being set here through the super constructor.
+
+        super.init(cfg); // Call xeogl.Group._init()
+
+        this.scene._modelCreated(this);
+    }
+
+    _addComponent(component) {
+        let componentId;
+        let types;
+        if (utils.isNumeric(component) || utils.isString(component)) { // Component ID
+            component = this.scene.components[component];
+            if (!component) {
+                this.warn(&quot;Component not found: &quot; + utils.inQuotes(component));
+                return;
+            }
+        } else if (utils.isObject(component)) { // Component config
+            const type = component.type || &quot;xeogl.Component&quot;;
+            if (!core.isComponentType(type)) {
+                this.error(&quot;Not a xeogl component type: &quot; + type);
+                return;
+            }
+            component = new window[type](this.scene, component);
+        }
+        if (component.scene !== this.scene) { // Component in wrong Scene
+            this.error(&quot;Attempted to add component from different xeogl.Scene: &quot; + utils.inQuotes(component.id));
+            return;
+        }
+        if (this.components[component.id]) { // Component already in this Model
+            return;
+        }
+        if (component.model &amp;&amp; component.model.id !== this.id) { // Component in other Model
+            component.model._removeComponent(component); // Transferring to this Model
+        }
+        this.components[component.id] = component;
+        types = this.types[component.type];
+        if (!types) {
+            types = this.types[component.type] = {};
+        }
+        types[component.id] = component;
+        if (component.isType(&quot;xeogl.Object&quot;)) {
+            const object = component;
+            this.objects[object.id] = object;
+            if (object.entityType) {
+                this.entities[object.id] = object;
+                let objectsOfType = this.entityTypes[object.entityType];
+                if (!objectsOfType) {
+                    objectsOfType = {};
+                    this.entityTypes[object.entityType] = objectsOfType;
+                }
+                objectsOfType[object.id] = object;
+                this._entityIds = null; // Lazy regenerate
+                this._entityTypeIds = null; // Lazy regenerate
+            }
+            if (object.guid) {
+                this.guidObjects[object.id] = object;
+                this._objectGUIDs = null; // To lazy-rebuild
+            }
+            if (component.isType(&quot;xeogl.Mesh&quot;)) {
+                this.meshes[component.id] = component;
+            }
+        }
+        this.numComponents++;
+        component._addedToModel(this);
+        return component;
+    }
+
+    _removeComponent(component) {
+        const id = component.id;
+        delete this.components[id];
+        delete this.meshes[id];
+        delete this.objects[id];
+        if (component.entityType) {
+            delete this.entities[id];
+            const objectsOfType = this.entityTypes[component.entityType];
+            if (objectsOfType) {
+                delete objectsOfType[id];
+            }
+            this._entityIds = null; // Lazy regenerate
+            this._entityTypeIds = null; // Lazy regenerate
+        }
+        if (component.guid) {
+            delete this.guidObjects[component.guid];
+            this._objectGUIDs = null; // To lazy-rebuild
+        }
+    }
+
+    /**
+     Destroys all {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} in this Model.
+     @method clear
+     */
+    clear() {
+        // For efficiency, destroy Meshes first to avoid
+        // xeogl&#x27;s automatic default component substitutions
+        for (var id in this.meshes) {
+            if (this.meshes.hasOwnProperty(id)) {
+                this.meshes[id].destroy();
+            }
+        }
+        for (var id in this.components) {
+            if (this.components.hasOwnProperty(id)) {
+                this.components[id].destroy(); // Groups in this Model will remove themselves when they&#x27;re destroyed
+            }
+        }
+        this.components = {};
+        this.numComponents = 0;
+        this.types = {};
+        this.objects = {};
+        this.meshes = {};
+        this.entities = {};
+    }
+
+    /**
+     Convenience array of entity type IDs in {{#crossLink &quot;Model/entityTypes:property&quot;}}{{/crossLink}}.
+     @property entityTypeIds
+     @final
+     @type {Array of String}
+     */
+    get objectGUIDs() {
+        if (!this._objectGUIDs) {
+            this._objectGUIDs = Object.keys(this.guidObjects);
+        }
+        return this._objectGUIDs;
+    }
+
+    /**
+     Convenience array of entity type IDs in {{#crossLink &quot;Model/entityTypes:property&quot;}}{{/crossLink}}.
+     @property entityTypeIds
+     @final
+     @type {Array of String}
+     */
+    get entityTypeIds() {
+        if (!this._entityTypeIds) {
+            this._entityTypeIds = Object.keys(this.entityTypes);
+        }
+        return this._entityTypeIds;
+    }
+
+    /**
+     Convenience array of IDs in {{#crossLink &quot;Model/entities:property&quot;}}{{/crossLink}}.
+     @property entityIds
+     @final
+     @type {Array of String}
+     */
+    get entityIds() {
+        if (!this._entityIds) {
+            this._entityIds = Object.keys(this.entities);
+        }
+        return this._entityIds;
+    }
+
+    /**
+     * @deprecated
+     */
+    destroyAll() {
+        this.clear();
+    }
+
+    destroy() {
+        super.destroy();
+        this.clear();
+        this.scene._modelDestroyed(this);
+    }
+}
+
+componentClasses[type] = Model;
+
+export{Model};
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

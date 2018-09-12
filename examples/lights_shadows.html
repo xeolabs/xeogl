@@ -22,13 +22,9 @@
 
 <script>
 
-    //    var canvas = document.getElementById("myCanvas");
-    //
-    //    xeogl.scene = new xeogl.Scene({
-    //        canvas: canvas
-    //    });
+    var scene = xeogl.getDefaultScene();
 
-    xeogl.scene.clearLights();
+    scene.clearLights();
 
     new xeogl.DirLight({
         dir: [-0.6, -0.9, -0.4],
@@ -55,7 +51,7 @@
     //        });
 
 
-    //   xeogl.scene.camera.projection="ortho";
+    // scene.camera.projection="ortho";
 
     // Shadow casting object
 
@@ -153,10 +149,10 @@
 
     // Orbit camera
 
-    xeogl.scene.camera.orbitPitch(20);
+    scene.camera.orbitPitch(20);
 
-    xeogl.scene.on("tick", function () {
-        xeogl.scene.camera.orbitYaw(0.3);
+    scene.on("tick", function () {
+        scene.camera.orbitYaw(0.3);
         //  entity2.transform.angle += 0.2;
     });
 

@@ -173,8 +173,7 @@
  @submodule materials
  @constructor
  @extends Material
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this EdgeMaterial within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} The EdgeMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this EdgeMaterial.
@@ -185,157 +184,38 @@
 
  @param [cfg.preset] {String} Selects a preset EdgeMaterial configuration - see {{#crossLink "EdgeMaterial/preset:method"}}EdgeMaterial#preset(){{/crossLink}}.
  */
-(function () {
 
-    "use strict";
+import {Material} from './material.js';
+import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
 
-    xeogl.EdgeMaterial = xeogl.Material.extend({
+const PRESETS = {
+    "default": {
+        edgeColor: [0.0, 0.0, 0.0],
+        edgeAlpha: 1.0,
+        edgeWidth: 1
+    },
+    "defaultWhiteBG": {
+        edgeColor: [0.2, 0.2, 0.2],
+        edgeAlpha: 1.0,
+        edgeWidth: 1
+    },
+    "defaultLightBG": {
+        edgeColor: [0.2, 0.2, 0.2],
+        edgeAlpha: 1.0,
+        edgeWidth: 1
+    },
+    "defaultDarkBG": {
+        edgeColor: [0.5, 0.5, 0.5],
+        edgeAlpha: 1.0,
+        edgeWidth: 1
+    }
+};
 
-        type: "xeogl.EdgeMaterial",
 
-        _init: function (cfg) {
+const type = "xeogl.EdgeMaterial";
 
-            this._super(cfg);
-
-            this._state = new xeogl.renderer.State({
-                type: "EdgeMaterial",
-                edgeColor: null,
-                edgeAlpha: null,
-                edgeWidth: null
-            });
-
-            this._preset = "default";
-
-            if (cfg.preset) {
-                this.preset = cfg.preset;
-                if (cfg.edgeColor)  this.edgeColor = cfg.edgeColor;
-                if (cfg.edgeAlpha !== undefined) this.edgeAlpha = cfg.edgeAlpha;
-                if (cfg.edgeWidth !== undefined) this.edgeWidth = cfg.edgeWidth;
-            } else {
-                this.edgeColor = cfg.edgeColor;
-                this.edgeAlpha = cfg.edgeAlpha;
-                this.edgeWidth = cfg.edgeWidth;
-            }
-        },
-
-        _props: {
-
-            /**
-             RGB color of ghost edges.
-
-             @property edgeColor
-             @default [0.2, 0.2, 0.2]
-             @type Float32Array
-             */
-            edgeColor: {
-                set: function (value) {
-                    var edgeColor = this._state.edgeColor;
-                    if (!edgeColor) {
-                        edgeColor = this._state.edgeColor = new Float32Array(3);
-                    } else if (value && edgeColor[0] === value[0] && edgeColor[1] === value[1] && edgeColor[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        edgeColor[0] = value[0];
-                        edgeColor[1] = value[1];
-                        edgeColor[2] = value[2];
-                    } else {
-                        edgeColor[0] = 0.2;
-                        edgeColor[1] = 0.2;
-                        edgeColor[2] = 0.2;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edgeColor;
-                }
-            },
-
-            /**
-             Transparency of ghost edges.
-
-             A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
-             @property edgeAlpha
-             @default 1.0
-             @type Number
-             */
-            edgeAlpha: {
-                set: function (value) {
-                    value = (value !== undefined && value !== null) ? value : 1.0;
-                    if (this._state.edgeAlpha === value) {
-                        return;
-                    }
-                    this._state.edgeAlpha = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edgeAlpha;
-                }
-            },
-
-            /**
-             Width of ghost edges, in pixels.
-
-             @property edgeWidth
-             @default 1.0
-             @type Number
-             */
-            edgeWidth: {
-                set: function (value) {
-                    this._state.edgeWidth = value || 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edgeWidth;
-                }
-            },
-
-            /**
-             Selects a preset EdgeMaterial configuration.
-
-             Available presets are:
-
-             * "default" - grey wireframe with translucent fill, for light backgrounds.
-             * "defaultLightBG" - grey wireframe with grey translucent fill, for light backgrounds.
-             * "defaultDarkBG" - grey wireframe with grey translucent fill, for dark backgrounds.
-             * "vectorscope" - green wireframe with glowing vertices and black translucent fill.
-             * "battlezone" - green wireframe with black opaque fill, giving a solid hidden-lines-removed effect.
-             * "sepia" - light red-grey wireframe with light sepia translucent fill - easy on the eyes.
-             * "gamegrid" - light blue wireframe with dark blue translucent fill - reminiscent of Tron.
-             * "yellowHighlight" - light yellow translucent fill - highlights while allowing underlying detail to show through.
-
-             @property preset
-             @default "default"
-             @type String
-             */
-            preset: {
-                set: function (value) {
-                    value = value || "default";
-                    if (this._preset === value) {
-                        return;
-                    }
-                    var preset = xeogl.EdgeMaterial.presets[value];
-                    if (!preset) {
-                        this.error("unsupported preset: '" + value + "' - supported values are " + Object.keys(xeogl.EdgeMaterial.presets).join(", "));
-                        return;
-                    }
-                    this.edgeColor = preset.edgeColor;
-                    this.edgeAlpha = preset.edgeAlpha;
-                    this.edgeWidth = preset.edgeWidth;
-                    this._preset = value;
-                },
-                get: function () {
-                    return this._preset;
-                }
-            }
-        },
-
-        _destroy: function () {
-            this._super();
-            this._state.destroy();
-        }
-    });
+class EdgeMaterial extends Material {
 
     /**
      Available EdgeMaterial presets.
@@ -344,31 +224,167 @@
      @type {Object}
      @static
      */
-    xeogl.EdgeMaterial.presets = {
-
-        "default": {
-            edgeColor: [0.0, 0.0, 0.0],
-            edgeAlpha: 1.0,
-            edgeWidth: 1
-        },
-
-        "defaultWhiteBG": {
-            edgeColor: [0.2, 0.2, 0.2],
-            edgeAlpha: 1.0,
-            edgeWidth: 1
-        },
-
-        "defaultLightBG": {
-            edgeColor: [0.2, 0.2, 0.2],
-            edgeAlpha: 1.0,
-            edgeWidth: 1
-        },
-
-        "defaultDarkBG": {
-            edgeColor: [0.5, 0.5, 0.5],
-            edgeAlpha: 1.0,
-            edgeWidth: 1
-        }
+    static get presets() {
+        return PRESETS;
     };
 
-})();
+    /**
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
+
+        this._state = new State({
+            type: "EdgeMaterial",
+            edgeColor: null,
+            edgeAlpha: null,
+            edgeWidth: null
+        });
+
+        this._preset = "default";
+
+        if (cfg.preset) { // Apply preset then override with configs where provided
+            this.preset = cfg.preset;
+            if (cfg.edgeColor) {
+                this.edgeColor = cfg.edgeColor;
+            }
+            if (cfg.edgeAlpha !== undefined) {
+                this.edgeAlpha = cfg.edgeAlpha;
+            }
+            if (cfg.edgeWidth !== undefined) {
+                this.edgeWidth = cfg.edgeWidth;
+            }
+        } else {
+            this.edgeColor = cfg.edgeColor;
+            this.edgeAlpha = cfg.edgeAlpha;
+            this.edgeWidth = cfg.edgeWidth;
+        }
+    }
+
+
+    /**
+     RGB color of ghost edges.
+
+     @property edgeColor
+     @default [0.2, 0.2, 0.2]
+     @type Float32Array
+     */
+    set edgeColor(value) {
+        let edgeColor = this._state.edgeColor;
+        if (!edgeColor) {
+            edgeColor = this._state.edgeColor = new Float32Array(3);
+        } else if (value && edgeColor[0] === value[0] && edgeColor[1] === value[1] && edgeColor[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            edgeColor[0] = value[0];
+            edgeColor[1] = value[1];
+            edgeColor[2] = value[2];
+        } else {
+            edgeColor[0] = 0.2;
+            edgeColor[1] = 0.2;
+            edgeColor[2] = 0.2;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get edgeColor() {
+        return this._state.edgeColor;
+    }
+
+    /**
+     Transparency of ghost edges.
+
+     A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+
+     @property edgeAlpha
+     @default 1.0
+     @type Number
+     */
+    set edgeAlpha(value) {
+        value = (value !== undefined && value !== null) ? value : 1.0;
+        if (this._state.edgeAlpha === value) {
+            return;
+        }
+        this._state.edgeAlpha = value;
+        this._renderer.imageDirty();
+    }
+
+    get edgeAlpha() {
+        return this._state.edgeAlpha;
+    }
+
+    /**
+     Width of ghost edges, in pixels.
+
+     @property edgeWidth
+     @default 1.0
+     @type Number
+     */
+    set edgeWidth(value) {
+        this._state.edgeWidth = value || 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get edgeWidth() {
+        return this._state.edgeWidth;
+    }
+
+    /**
+     Selects a preset EdgeMaterial configuration.
+
+     Available presets are:
+
+     * "default" - grey wireframe with translucent fill, for light backgrounds.
+     * "defaultLightBG" - grey wireframe with grey translucent fill, for light backgrounds.
+     * "defaultDarkBG" - grey wireframe with grey translucent fill, for dark backgrounds.
+     * "vectorscope" - green wireframe with glowing vertices and black translucent fill.
+     * "battlezone" - green wireframe with black opaque fill, giving a solid hidden-lines-removed effect.
+     * "sepia" - light red-grey wireframe with light sepia translucent fill - easy on the eyes.
+     * "gamegrid" - light blue wireframe with dark blue translucent fill - reminiscent of Tron.
+     * "yellowHighlight" - light yellow translucent fill - highlights while allowing underlying detail to show through.
+
+     @property preset
+     @default "default"
+     @type String
+     */
+    set preset(value) {
+        value = value || "default";
+        if (this._preset === value) {
+            return;
+        }
+        const preset = PRESETS[value];
+        if (!preset) {
+            this.error("unsupported preset: '" + value + "' - supported values are " + Object.keys(PRESETS).join(", "));
+            return;
+        }
+        this.edgeColor = preset.edgeColor;
+        this.edgeAlpha = preset.edgeAlpha;
+        this.edgeWidth = preset.edgeWidth;
+        this._preset = value;
+    }
+
+    get preset() {
+        return this._preset;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+componentClasses[type] = EdgeMaterial;
+
+export {EdgeMaterial};

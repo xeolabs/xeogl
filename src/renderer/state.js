@@ -1,14 +1,21 @@
-(function () {
-    var ids = new xeogl.utils.Map({});
-    xeogl.renderer.State = function (cfg) {
+import {Map} from "../utils/map.js";
+
+const ids = new Map({});
+
+class State {
+
+    constructor(cfg) {
         this.id = ids.addItem({});
-        for (var key in cfg) {
+        for (const key in cfg) {
             if (cfg.hasOwnProperty(key)) {
                 this[key] = cfg[key];
             }
         }
-    };
-    xeogl.renderer.State.prototype.destroy = function () {
+    }
+
+    destroy() {
         ids.removeItem(this.id);
-    };
-})();
+    }
+}
+
+export{State};

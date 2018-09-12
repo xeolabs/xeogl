@@ -9,9 +9,6 @@
 
     <script src="js/skyboxes/skybox.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
-    <script src="libs/gl-matrix-min.js"></script>
-    <script src="js/zspace/zSpaceEffect_complete.js"></script>
-    <script src="js/zspace/zSpaceStylusControl.js"></script>
     <script src="js/utils/materialGallery.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
@@ -91,7 +88,7 @@
                 type: "xeogl.MetallicMaterial",
                 baseColor: [1.000, 0.766, 0.336],
                 baseColorMap: {
-                    src: "textures/diffuseAlpha/diffuseAlpha.jpg"
+                    src: "textures/diffuseAlpha/uvgrid.jpg"
                 },
                 metallic: 1.0,
                 roughness: 0.6
@@ -156,10 +153,11 @@
     // Animate the emissive map
 
     (function () {
-        var m = xeogl.scene.components["emissiveMaterial"];
+        var scene = xeogl.getDefaultScene();
+        var m = scene.components["emissiveMaterial"];
         var f = 0.4;
         var inc = 0.005;
-        xeogl.scene.on("tick", function () {
+        scene.on("tick", function () {
             if (f > 0.7 || f < 0.1) {
                 inc = -inc;
             }
@@ -172,10 +170,11 @@
     // Animate the texture scale
 
     (function () {
-        var m = xeogl.scene.components["textureScaleMaterial"];
+        var scene = xeogl.getDefaultScene();
+        var m = scene.components["textureScaleMaterial"];
         var s = 0.4;
         var inc = 0.001;
-        xeogl.scene.on("tick", function () {
+        scene.on("tick", function () {
             if (s > 0.6 || s < 0.4) {
                 inc = -inc;
             }

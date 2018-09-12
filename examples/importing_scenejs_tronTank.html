@@ -42,7 +42,7 @@
 <script>
 
     // Everything in this demo is within xeogl's default scene, which creates the canvas for us
-    var scene = xeogl.scene;
+    var scene = xeogl.getDefaultScene();
 
     (function () {
 
@@ -69,17 +69,17 @@
 
         // Finds a target
         function find(target) {
-            target = target.id ? target : xeogl.scene.components[target.id];
+            target = target.id ? target : scene.components[target.id];
             if (target && target.aabb) {
                 return target;
             }
-            return xeogl.scene;
+            return scene;
         }
     })
     (window);
 
     // Redefine default lights
-    xeogl.scene.clearLights();
+    scene.clearLights();
 
     new xeogl.DirLight({
         dir: [-0.5, -0.6, -0.0],
@@ -105,17 +105,17 @@
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
         ]
     });
-
-    //            scene.lights.reflectionMap = new xeogl.CubeTexture({
-    //                src: [
-    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-    //                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-    //                ]
-    //            });
+//
+//    new xeogl.ReflectionMap({
+//        src: [
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+//            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+//        ]
+//    });
 
     // Set initial camera position
     var camera = scene.camera;

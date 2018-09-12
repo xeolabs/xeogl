@@ -2,43 +2,48 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-xeogl.renderer.Shader = function (gl, type, source) {
+class Shader {
 
-    this.allocated = false;
-    this.compiled = false;
-    this.handle = gl.createShader(type);
+    constructor(gl, type, source) {
 
-    if (!this.handle) {
-        this.errors = [
-            "Failed to allocate"
-        ];
-        return;
-    }
+        this.allocated = false;
+        this.compiled = false;
+        this.handle = gl.createShader(type);
 
-    this.allocated = true;
+        if (!this.handle) {
+            this.errors = [
+                "Failed to allocate"
+            ];
+            return;
+        }
 
-    gl.shaderSource(this.handle, source);
-    gl.compileShader(this.handle);
+        this.allocated = true;
 
-    this.compiled = gl.getShaderParameter(this.handle, gl.COMPILE_STATUS);
+        gl.shaderSource(this.handle, source);
+        gl.compileShader(this.handle);
 
-    if (!this.compiled) {
+        this.compiled = gl.getShaderParameter(this.handle, gl.COMPILE_STATUS);
 
-        if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
+        if (!this.compiled) {
 
-            var lines = source.split("\n");
-            var numberedLines = [];
-            for (var i = 0; i < lines.length; i++) {
-                numberedLines.push((i + 1) + ": " + lines[i] + "\n");
+            if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
+
+                const lines = source.split("\n");
+                const numberedLines = [];
+                for (let i = 0; i < lines.length; i++) {
+                    numberedLines.push((i + 1) + ": " + lines[i] + "\n");
+                }
+                this.errors = [];
+                this.errors.push("");
+                this.errors.push(gl.getShaderInfoLog(this.handle));
+                this.errors = this.errors.concat(numberedLines.join(""));
             }
-            this.errors = [];
-            this.errors.push("");
-            this.errors.push(gl.getShaderInfoLog(this.handle));
-            this.errors = this.errors.concat(numberedLines.join(""));
         }
     }
-};
 
-xeogl.renderer.Shader.prototype.destroy = function () {
+    destroy() {
 
-};
+    }
+}
+
+export{Shader};

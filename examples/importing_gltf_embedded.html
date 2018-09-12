@@ -32,7 +32,8 @@
     // Camera animation and user control
     //-----------------------------------------------------------------------------------------------------
 
-    var camera = xeogl.scene.camera;
+    var scene = xeogl.getDefaultScene();
+    var camera = scene.camera;
 
     camera.eye = [184.21, 10.54, -7.03];
     camera.look = [159.20, 17.02, 3.21];
@@ -40,7 +41,7 @@
 
     var spinning = true;
 
-    xeogl.scene.on("tick", function () { // Slowly orbit the camera
+    scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
             camera.orbitYaw(-0.1);
         }

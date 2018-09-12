@@ -317,7 +317,7 @@
     edges: true
  });
  ````
- 
+
  ### Outlining
 
  Outline a Mesh by setting its {{#crossLink "Mesh/outlined:property"}}{{/crossLink}} property true. The Mesh's
@@ -505,7 +505,7 @@
  @module xeogl
  @submodule objects
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Mesh within xeogl's default {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} by default.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Mesh.
@@ -562,835 +562,821 @@
  The event parameters will be the hit result returned by the {{#crossLink "Scene/pick:method"}}Scene#pick(){{/crossLink}} method.
  @event picked
  */
-(function () {
-
-    "use strict";
-
-    xeogl.Mesh = xeogl.Object.extend({
-
-        type: "xeogl.Mesh",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.State({ // NOTE: Renderer gets modeling and normal matrices from xeogl.Object#matrix and xeogl.Object.#normalMatrix
-                visible: true,
-                culled: false,
-                pickable: null,
-                clippable: null,
-                colorize: null,
-                collidable: null,
-                castShadow: null,
-                receiveShadow: null,
-                outlined: null,
-                ghosted: false,
-                highlighted: false,
-                selected: false,
-                edges: false,
-                layer: null,
-                billboard: this._checkBillboard(cfg.billboard),
-                stationary: !!cfg.stationary,
-                hash: ""
-            });
-
-            this._drawRenderer = null;
-            this._emphasisFillRenderer = null;
-            this._emphasisEdgesRenderer = null;
-            this._emphasisVerticesRenderer = null;
-            this._pickMeshRenderer = null;
-            this._pickTriangleRenderer = null;
-
-            this._worldPositions = null;
-            this._worldPositionsDirty = true;
-            this._geometry = cfg.geometry ? this._checkComponent("xeogl.Geometry", cfg.geometry) : this.scene.geometry;
-            this._vertexBufs = this._geometry._getVertexBufs();
-            this._material = cfg.material ? this._checkComponent("xeogl.Material", cfg.material) : this.scene.material;
-            this._ghostMaterial = cfg.ghostMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.ghostMaterial) : this.scene.ghostMaterial;
-            this._outlineMaterial = cfg.outlineMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.outlineMaterial) : this.scene.outlineMaterial;
-            this._highlightMaterial = cfg.highlightMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.highlightMaterial) : this.scene.highlightMaterial;
-            this._selectedMaterial = cfg.selectedMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.selectedMaterial) : this.scene.selectedMaterial;
-            this._edgeMaterial = cfg.edgeMaterial ? this._checkComponent("xeogl.EdgeMaterial", cfg.edgeMaterial) : this.scene.edgeMaterial;
-
-            this._compile();
-
-            this._super(cfg); // Call xeogl.Object._init()
-
-            this.scene._meshCreated(this);
-        },
-
-        _checkBillboard: function (value) {
-            value = value || "none";
-            if (value !== "spherical" && value !== "cylindrical" && value !== "none") {
-                this.error("Unsupported value for 'billboard': " + value + " - accepted values are " +
-                    "'spherical', 'cylindrical' and 'none' - defaulting to 'none'.");
-                value = "none";
-            }
-            return value;
-        },
-
-        _compile: function () {
-            this._putRenderers();
-            this._makeHash();
-            this._drawRenderer = xeogl.renderer.DrawRenderer.get(this);
-            this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this);
-            this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this);
-            this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this);
-            this._pickMeshRenderer = xeogl.renderer.PickMeshRenderer.get(this);
-
-            this._renderer.meshListDirty();
-        },
-
-        _webglContextRestored: function() {
-            if (this._drawRenderer) {
-                this._drawRenderer.webglContextRestored();
-            }
-            if (this._emphasisFillRenderer) {
-                this._emphasisFillRenderer.webglContextRestored();
-            }
-            if (this._emphasisEdgesRenderer) {
-                this._emphasisEdgesRenderer.webglContextRestored();
-            }
-            if (this._emphasisVerticesRenderer) {
-                this._emphasisVerticesRenderer.webglContextRestored();
-            }
-            if (this._pickMeshRenderer) {
-                this._pickMeshRenderer.webglContextRestored();
-            }
-            if (this._pickTriangleRenderer) {
-                this._pickMeshRenderer.webglContextRestored();
-            }
-        },
-
-        _makeHash: function () {
-            var hash = [];
-            var state = this._state;
-            if (state.stationary) {
-                hash.push("/s");
-            }
-            if (state.billboard === "none") {
-                hash.push("/n");
-            } else if (state.billboard === "spherical") {
-                hash.push("/s");
-            } else if (state.billboard === "cylindrical") {
-                hash.push("/c");
-            }
-            if (state.receiveShadow) {
-                hash.push("/rs");
-            }
-            hash.push(";");
-            this._state.hash = hash.join("");
-        },
-
-        _buildMeshAABB: (function () {
-            var math = xeogl.math;
-            var obb = math.OBB3();
-            return function (worldMatrix, aabb) { // TODO: factor out into class member
-                math.transformOBB3(worldMatrix, this._geometry.obb, obb);
-                math.OBB3ToAABB3(obb, aabb);
-            };
-        })(),
-
-        _getSceneHash: function () {
-            return (this.scene.gammaInput ? "gi;" : ";") + (this.scene.gammaOutput ? "go" : "");
-        },
-
-        //--------------------- Rendering ------------------------------------------------------------------------------
-
-        _draw: function (frame) {
-            if (this._drawRenderer || (this._drawRenderer = xeogl.renderer.DrawRenderer.get(this))) {
-                this._drawRenderer.drawMesh(frame, this);
-            }
-        },
-
-        _drawGhostFill: function (frame) {
-            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
-                this._emphasisFillRenderer.drawMesh(frame, this, 0); // 0 == ghost
-            }
-        },
-
-        _drawGhostEdges: function (frame) {
-            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
-                this._emphasisEdgesRenderer.drawMesh(frame, this, 0); // 0 == ghost
-            }
-        },
-
-        _drawGhostVertices: function (frame) {
-            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
-                this._emphasisVerticesRenderer.drawMesh(frame, this, 0); // 0 == ghost
-            }
-        },
-
-        _drawHighlightFill: function (frame) {
-            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
-                this._emphasisFillRenderer.drawMesh(frame, this, 1); // 1 == highlight
-            }
-        },
-
-        _drawHighlightEdges: function (frame) {
-            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
-                this._emphasisEdgesRenderer.drawMesh(frame, this, 1); // 1 == highlight
-            }
-        },
-
-        _drawHighlightVertices: function (frame) {
-            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
-                this._emphasisVerticesRenderer.drawMesh(frame, this, 1); // 1 == highlight
-            }
-        },
-
-        _drawSelectedFill: function (frame) {
-            if (this._emphasisFillRenderer || (this._emphasisFillRenderer = xeogl.renderer.EmphasisFillRenderer.get(this))) {
-                this._emphasisFillRenderer.drawMesh(frame, this, 2); // 2 == selected
-            }
-        },
-
-        _drawSelectedEdges: function (frame) {
-            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
-                this._emphasisEdgesRenderer.drawMesh(frame, this, 2); // 2 == selected
-            }
-        },
-
-        _drawSelectedVertices: function (frame) {
-            if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = xeogl.renderer.EmphasisVerticesRenderer.get(this))) {
-                this._emphasisVerticesRenderer.drawMesh(frame, this, 2); // 2 == selected
-            }
-        },
-
-        _drawEdges: function (frame) {
-            if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = xeogl.renderer.EmphasisEdgesRenderer.get(this))) {
-                this._emphasisEdgesRenderer.drawMesh(frame, this, 3); // 3 == edges
-            }
-        },
-
-        _drawShadow: function (frame, light) {
-            if (this._shadowRenderer || (this._shadowRenderer = xeogl.renderer.ShadowRenderer.get(this))) {
-                this._shadowRenderer.drawMesh(frame, this, light);
-            }
-        },
-
-        _drawOutline: function (frame) {
-            if (this._shadowRenderer || (this._outlineRenderer = xeogl.renderer.OutlineRenderer.get(this))) {
-                this._outlineRenderer.drawMesh(frame, this);
-            }
-        },
-
-        _pickMesh: function (frame) {
-            if (this._pickMeshRenderer || (this._pickMeshRenderer = xeogl.renderer.PickMeshRenderer.get(this))) {
-                this._pickMeshRenderer.drawMesh(frame, this);
-            }
-        },
-
-        _pickTriangle: function (frame) {
-            if (this._pickTriangleRenderer || (this._pickTriangleRenderer = xeogl.renderer.PickTriangleRenderer.get(this))) {
-                this._pickTriangleRenderer.drawMesh(frame, this);
-            }
-        },
-
-        _pickVertex: function (frame) {
-            if (this._pickVertexRenderer || (this._pickVertexRenderer = xeogl.renderer.PickVertexRenderer.get(this))) {
-                this._pickVertexRenderer.drawMesh(frame, this);
-            }
-        },
-
-        _getOutlineRenderer: function () {
-            this._outlineRenderer = xeogl.renderer.OutlineRenderer.get(this);
-            if (this._outlineRenderer.errors) {
-                this.errors = (this.errors || []).concat(this._outlineRenderer.errors);
-                this.error(this._outlineRenderer.errors.join("\n"));
-                return false;
-            }
-            return true;
-        },
-
-        _putRenderers: function () {
-            if (this._drawRenderer) {
-                this._drawRenderer.put();
-                this._drawRenderer = null;
-            }
-            if (this._emphasisFillRenderer) {
-                this._emphasisFillRenderer.put();
-                this._emphasisFillRenderer = null;
-            }
-            if (this._emphasisEdgesRenderer) {
-                this._emphasisEdgesRenderer.put();
-                this._emphasisEdgesRenderer = null;
-            }
-            if (this._emphasisVerticesRenderer) {
-                this._emphasisVerticesRenderer.put();
-                this._emphasisVerticesRenderer = null;
-            }
-            if (this._outlineRenderer) {
-                this._outlineRenderer.put();
-                this._outlineRenderer = null;
-            }
-            if (this._shadowRenderer) {
-                this._shadowRenderer.put();
-                this._shadowRenderer = null;
-            }
-            if (this._pickMeshRenderer) {
-                this._pickMeshRenderer.put();
-                this._pickMeshRenderer = null;
-            }
-            if (this._pickTriangleRenderer) {
-                this._pickTriangleRenderer.put();
-                this._pickTriangleRenderer = null;
-            }
-            if (this._pickVertexRenderer) {
-                this._pickVertexRenderer.put();
-                this._pickVertexRenderer = null;
-            }
-        },
-
-        _props: {
-
-            /**
-             World-space 3D vertex positions.
-
-             These are internally generated on-demand and cached. To free the cached
-             vertex World positions when you're done with them, set this property to null or undefined.
-
-             @property worldPositions
-             @type Float32Array
-             @final
-             */
-            worldPositions: {
-                get: function () {
-                    if (this._worldPositionsDirty) {
-                        var positions = this._geometry.positions;
-                        if (!this._worldPositions) {
-                            this._worldPositions = new Float32Array(positions.length);
-                        }
-                        xeogl.math.transformPositions3(this.worldMatrix, positions, this._worldPositions);
-                        this._worldPositionsDirty = false;
-                    }
-                    return this._worldPositions;
-                },
-                set: function (value) {
-                    if (value = undefined || value === null) {
-                        this._worldPositions = null; // Release memory
-                        this._worldPositionsDirty = true;
-                    }
-                }
-            },
-
-            /**
-             Defines the shape of this Mesh.
-
-             @property geometry
-             @type Geometry
-             @final
-             */
-            geometry: {
-                get: function () {
-                    return this._geometry;
-                }
-            },
-
-            /**
-             Defines appearance when rendering normally, ie. when not ghosted, highlighted or selected.
-
-             @property material
-             @type Material
-             @final
-             */
-            material: {
-                get: function () {
-                    return this._material;
-                }
-            },
-
-            /**
-             Defines surface appearance when ghosted.
-
-             @property ghostMaterial
-             @type EmphasisMaterial
-             @final
-             */
-            ghostMaterial: {
-                get: function () {
-                    return this._ghostMaterial;
-                }
-            },
-
-            /**
-             Defines surface appearance when highlighted.
-
-             @property highlightMaterial
-             @type EmphasisMaterial
-             @final
-             */
-            highlightMaterial: {
-                get: function () {
-                    return this._highlightMaterial;
-                }
-            },
-
-            /**
-             Defines surface appearance when selected.
-
-             @property selectedMaterial
-             @type EmphasisMaterial
-             */
-            selectedMaterial: {
-                get: function () {
-                    return this._selectedMaterial;
-                }
-            },
-
-            /**
-             Defines surface appearance when edges are shown.
-
-             @property edgeMaterial
-             @type EdgeMaterial
-             */
-            edgeMaterial: {
-                get: function () {
-                    return this._edgeMaterial;
-                }
-            },
-
-            /**
-             Defines surface appearance when outlined.
-
-             @property outlineMaterial
-             @type OutlineMaterial
-             */
-            outlineMaterial: {
-                get: function () {
-                    return this._outlineMaterial;
-                }
-            },
-
-            /**
-             Indicates if visible.
-
-             The Mesh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
-             {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
-
-             Each visible Mesh is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
-             {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-             is set to a value.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-                set: function (visible) {
-                    visible = visible !== false;
-                    this._state.visible = visible;
-                    if (this._entityType) {
-                        this.scene._entityVisibilityUpdated(this, visible);
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.visible;
-                }
-            },
-
-            /**
-             Indicates if ghosted.
-
-             The ghosted appearance is configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
-
-             Each ghosted Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
-             {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-             is set to a value.
-
-             @property ghosted
-             @default false
-             @type Boolean
-             */
-            "ghosted,ghost": {
-                set: function (ghosted) {
-                    ghosted = !!ghosted;
-                    if (this._state.ghosted === ghosted) {
-                        return;
-                    }
-                    this._state.ghosted = ghosted;
-                    if (this._entityType) {
-                        this.scene._entityGhostedUpdated(this, ghosted);
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.ghosted;
-                }
-            },
-
-            /**
-             Indicates if highlighted.
-
-             The highlight appearance is configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
-
-             Each highlighted Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
-             {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-             is set to a value.
-
-             @property highlighted
-             @default false
-             @type Boolean
-             */
-            "highlight,highlighted": {
-                set: function (highlighted) {
-                    highlighted = !!highlighted;
-                    if (highlighted === this._state.highlighted) {
-                        return;
-                    }
-                    this._state.highlighted = highlighted;
-                    if (this._entityType) {
-                        this.scene._entityHighlightedUpdated(this, highlighted);
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.highlighted;
-                }
-            },
-
-            /**
-             Indicates if selected.
-
-             The selected appearance is configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
-
-             Each selected Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
-             {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
-             is set to a value.
-
-             @property selected
-             @default false
-             @type Boolean
-             */
-            selected: {
-                set: function (selected) {
-                    selected = !!selected;
-                    if (selected === this._state.selected) {
-                        return;
-                    }
-                    this._state.selected = selected;
-                    if (this._entityType) {
-                        this.scene._entitySelectedUpdated(this, selected);
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.selected;
-                }
-            },
-
-            /**
-             Indicates if edges are shown.
-
-             The edges appearance is configured by {{#crossLink "Mesh/edgeMaterial:property"}}edgeMaterial{{/crossLink}}.
-
-             @property edges
-             @default false
-             @type Boolean
-             */
-            edges: {
-                set: function (edges) {
-                    edges = !!edges;
-                    if (edges === this._state.edges) {
-                        return;
-                    }
-                    this._state.edges = edges;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edges;
-                }
-            },
-
-            /**
-             Indicates if culled from view.
-
-             The MEsh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
-             {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
-
-             @property culled
-             @default false
-             @type Boolean
-             */
-            culled: {
-                set: function (value) {
-                    this._state.culled = !!value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.culled;
-                }
-            },
-
-            /**
-             Indicates if pickable.
-
-             When false, the Mesh will never be picked by calls to the {{#crossLink "Scene/pick:method"}}Scene pick(){{/crossLink}} method, and picking will happen as "through" the Mesh, to attempt to pick whatever lies on the other side of it.
-
-             @property pickable
-             @default true
-             @type Boolean
-             */
-            pickable: {
-                set: function (value) {
-                    value = value !== false;
-                    if (this._state.pickable === value) {
-                        return;
-                    }
-                    this._state.pickable = value;
-                    // No need to trigger a render;
-                    // state is only used when picking
-                },
-                get: function () {
-                    return this._state.pickable;
-                }
-            },
-
-            /**
-             Indicates if clippable.
-
-             When false, the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}} will have no effect on the Mesh.
-
-             @property clippable
-             @default true
-             @type Boolean
-             */
-            clippable: {
-                set: function (value) {
-                    value = value !== false;
-                    if (this._state.clippable === value) {
-                        return;
-                    }
-                    this._state.clippable = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.clippable;
-                }
-            },
-
-            /**
-             Indicates if included in boundary calculations.
-
-             When false, this Mesh will not be included in the bounding boxes provided by parent components (
-
-             @property collidable
-             @default true
-             @type Boolean
-             */
-            collidable: {
-                set: function (value) {
-                    value = value !== false;
-                    if (value === this._state.collidable) {
-                        return;
-                    }
-                    this._state.collidable = value;
-                },
-                get: function () {
-                    return this._state.collidable;
-                }
-            },
-
-
-            /**
-             Indicates if casting shadows.
-
-             @property castShadow
-             @default true
-             @type Boolean
-             */
-            castShadow: {
-                set: function (value) {
-                    // value = value !== false;
-                    // if (value === this._state.castShadow) {
-                    //     return;
-                    // }
-                    // this._state.castShadow = value;
-                    // this._renderer.imageDirty(); // Re-render in next shadow map generation pass
-                },
-                get: function () {
-                    return this._state.castShadow;
-                }
-            },
-
-            /**
-             Indicates if receiving shadows.
-
-             @property receiveShadow
-             @default true
-             @type Boolean
-             */
-            receiveShadow: {
-                set: function (value) {
-                    // value = value !== false;
-                    // if (value === this._state.receiveShadow) {
-                    //     return;
-                    // }
-                    // this._state.receiveShadow = value;
-                    // this._state.hash = value ? "/mod/rs;" : "/mod;";
-                    // this.fire("dirty", this); // Now need to (re)compile objectRenderers to include/exclude shadow mapping
-                },
-                get: function () {
-                    return this._state.receiveShadow;
-                }
-            },
-
-            /**
-             Indicates if rendered with an outline.
-
-             The outline appearance is configured by {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
-
-             @property outlined
-             @default false
-             @type Boolean
-             */
-            "outlined,outline": {
-                set: function (value) {
-                    value = !!value;
-                    if (value === this._state.outlined) {
-                        return;
-                    }
-                    this._state.outlined = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.outlined;
-                }
-            },
-
-            /**
-             RGB colorize color, multiplies by the rendered fragment colors.
-
-             @property colorize
-             @default [1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            colorize: {
-                set: function (value) {
-                    var colorize = this._state.colorize;
-                    if (!colorize) {
-                        colorize = this._state.colorize = new Float32Array(4);
-                        colorize[3] = 1;
-                    }
-                    if (value) {
-                        colorize[0] = value[0];
-                        colorize[1] = value[1];
-                        colorize[2] = value[2];
-                    } else {
-                        colorize[0] = 1;
-                        colorize[1] = 1;
-                        colorize[2] = 1;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.colorize;
-                }
-            },
-
-            /**
-             Opacity factor, multiplies by the rendered fragment alpha.
-
-             This is a factor in range ````[0..1]````.
-
-             @property opacity
-             @default 1.0
-             @type Number
-             */
-            opacity: {
-                set: function (opacity) {
-                    var colorize = this._state.colorize;
-                    if (!colorize) {
-                        colorize = this._state.colorize = new Float32Array(4);
-                        colorize[0] = 1;
-                        colorize[1] = 1;
-                        colorize[2] = 1;
-                    }
-                    colorize[3] = opacity !== null && opacity !== undefined ? opacity : 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.colorize[3];
-                }
-            },
-
-            /**
-             The rendering order.
-
-             This can be set on multiple transparent Meshes, to make them render in a specific order
-             for correct alpha blending.
-
-             @property layer
-             @default 0
-             @type Number
-             */
-            layer: {
-                set: function (value) {
-                    // TODO: Only accept rendering layer in range [0...MAX_layer]
-                    value = value || 0;
-                    value = Math.round(value);
-                    if (value === this._state.layer) {
-                        return;
-                    }
-                    this._state.layer = value;
-                    this._renderer.needStateSort();
-                },
-                get: function () {
-                    return this._state.layer;
-                }
-            },
-
-            /**
-             Indicates if the position is stationary.
-
-             When true, will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
-             translations for this Mesh, while still allowing it to rotate. This is useful for skybox Meshes.
-
-             @property stationary
-             @default false
-             @type Boolean
-             @final
-             */
-            stationary: {
-                get: function () {
-                    return this._state.stationary;
-                }
-            },
-
-            /**
-             Indicates the billboarding behaviour.
-
-             Options are:
-
-             * **"none"** -  **(default)** - No billboarding.
-             * **"spherical"** - Mesh is billboarded to face the viewpoint, rotating both vertically and horizontally.
-             * **"cylindrical"** - Mesh is billboarded to face the viewpoint, rotating only about its vertically
-             axis. Use this mode for things like trees on a landscape.
-
-             @property billboard
-             @default "none"
-             @type String
-             @final
-             */
-            billboard: {
-                get: function () {
-                    return this._state.billboard;
-                }
-            }
-        },
-
-        _destroy: function () {
-            this._super(); // xeogl.Object
-            this._putRenderers();
-            this._renderer.meshListDirty();
-            this.scene._meshDestroyed(this);
-        }
-    });
-
-    xeogl.Mesh._compareState = function (a, b) {
+import {math} from '../math/math.js';
+import {xeoglObject} from './object.js';
+import {State} from '../renderer/state.js';
+import {DrawRenderer} from "../renderer/draw/drawRenderer.js";
+import {EmphasisFillRenderer} from "../renderer/emphasis/emphasisFillRenderer.js";
+import {EmphasisEdgesRenderer} from "../renderer/emphasis/emphasisEdgesRenderer.js";
+import {EmphasisVerticesRenderer} from "../renderer/emphasis/emphasisVerticesRenderer.js";
+import {ShadowRenderer} from "../renderer/shadow/shadowRenderer.js";
+import {OutlineRenderer} from "../renderer/outline/outlineRenderer.js";
+import {PickMeshRenderer} from "../renderer/pick/pickMeshRenderer.js";
+import {PickVertexRenderer} from "../renderer/pick/pickVertexRenderer.js";
+import {PickTriangleRenderer} from "../renderer/pick/pickTriangleRenderer.js";
+import {componentClasses} from "./../componentClasses.js";
+
+const obb = math.OBB3();
+
+const type = "xeogl.Mesh";
+
+class Mesh extends xeoglObject {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    static _compareState(a, b) {
         return (a._state.layer - b._state.layer)
             || (a._drawRenderer.id - b._drawRenderer.id) // Program state
             || (a._material._state.id - b._material._state.id) // Material state
             || (a._vertexBufs.id - b._vertexBufs.id)  // SHared vertex bufs
             || (a._geometry._state.id - b._geometry._state.id); // Geometry state
-    };
-})();
+    }
+
+    init(cfg) {
+
+        this._state = new State({ // NOTE: Renderer gets modeling and normal matrices from xeogl.Object#matrix and xeogl.Object.#normalMatrix
+            visible: true,
+            culled: false,
+            pickable: null,
+            clippable: null,
+            colorize: null,
+            collidable: null,
+            castShadow: null,
+            receiveShadow: null,
+            outlined: null,
+            ghosted: false,
+            highlighted: false,
+            selected: false,
+            edges: false,
+            layer: null,
+            billboard: this._checkBillboard(cfg.billboard),
+            stationary: !!cfg.stationary,
+            hash: ""
+        });
+
+        this._drawRenderer = null;
+        this._emphasisFillRenderer = null;
+        this._emphasisEdgesRenderer = null;
+        this._emphasisVerticesRenderer = null;
+        this._pickMeshRenderer = null;
+        this._pickTriangleRenderer = null;
+
+        this._worldPositions = null;
+        this._worldPositionsDirty = true;
+        this._geometry = cfg.geometry ? this._checkComponent("xeogl.Geometry", cfg.geometry) : this.scene.geometry;
+        this._vertexBufs = this._geometry._getVertexBufs();
+        this._material = cfg.material ? this._checkComponent("xeogl.Material", cfg.material) : this.scene.material;
+        this._ghostMaterial = cfg.ghostMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.ghostMaterial) : this.scene.ghostMaterial;
+        this._outlineMaterial = cfg.outlineMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.outlineMaterial) : this.scene.outlineMaterial;
+        this._highlightMaterial = cfg.highlightMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.highlightMaterial) : this.scene.highlightMaterial;
+        this._selectedMaterial = cfg.selectedMaterial ? this._checkComponent("xeogl.EmphasisMaterial", cfg.selectedMaterial) : this.scene.selectedMaterial;
+        this._edgeMaterial = cfg.edgeMaterial ? this._checkComponent("xeogl.EdgeMaterial", cfg.edgeMaterial) : this.scene.edgeMaterial;
+
+        this._compile();
+
+        super.init(cfg); // Call xeogl.Object._init()
+
+        this.scene._meshCreated(this);
+    }
+
+    _checkBillboard(value) {
+        value = value || "none";
+        if (value !== "spherical" && value !== "cylindrical" && value !== "none") {
+            this.error("Unsupported value for 'billboard': " + value + " - accepted values are " +
+                "'spherical', 'cylindrical' and 'none' - defaulting to 'none'.");
+            value = "none";
+        }
+        return value;
+    }
+
+    _compile() {
+        this._putRenderers();
+        this._makeHash();
+        this._drawRenderer = DrawRenderer.get(this);
+        this._emphasisFillRenderer = EmphasisFillRenderer.get(this);
+        this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this);
+        this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this);
+        this._pickMeshRenderer = PickMeshRenderer.get(this);
+
+        this._renderer.meshListDirty();
+    }
+
+    _webglContextRestored() {
+        if (this._drawRenderer) {
+            this._drawRenderer.webglContextRestored();
+        }
+        if (this._emphasisFillRenderer) {
+            this._emphasisFillRenderer.webglContextRestored();
+        }
+        if (this._emphasisEdgesRenderer) {
+            this._emphasisEdgesRenderer.webglContextRestored();
+        }
+        if (this._emphasisVerticesRenderer) {
+            this._emphasisVerticesRenderer.webglContextRestored();
+        }
+        if (this._pickMeshRenderer) {
+            this._pickMeshRenderer.webglContextRestored();
+        }
+        if (this._pickTriangleRenderer) {
+            this._pickMeshRenderer.webglContextRestored();
+        }
+    }
+
+    _makeHash() {
+        const hash = [];
+        const state = this._state;
+        if (state.stationary) {
+            hash.push("/s");
+        }
+        if (state.billboard === "none") {
+            hash.push("/n");
+        } else if (state.billboard === "spherical") {
+            hash.push("/s");
+        } else if (state.billboard === "cylindrical") {
+            hash.push("/c");
+        }
+        if (state.receiveShadow) {
+            hash.push("/rs");
+        }
+        hash.push(";");
+        this._state.hash = hash.join("");
+    }
+
+    _buildMeshAABB(worldMatrix, aabb) { // TODO: factor out into class member
+        math.transformOBB3(worldMatrix, this._geometry.obb, obb);
+        math.OBB3ToAABB3(obb, aabb);
+    }
+
+    _getSceneHash() {
+        return (this.scene.gammaInput ? "gi;" : ";") + (this.scene.gammaOutput ? "go" : "");
+    }
+
+    //--------------------- Rendering ------------------------------------------------------------------------------
+
+    _draw(frame) {
+        if (this._drawRenderer || (this._drawRenderer = DrawRenderer.get(this))) {
+            this._drawRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _drawGhostFill(frame) {
+        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
+            this._emphasisFillRenderer.drawMesh(frame, this, 0); // 0 == ghost
+        }
+    }
+
+    _drawGhostEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 0); // 0 == ghost
+        }
+    }
+
+    _drawGhostVertices(frame) {
+        if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this))) {
+            this._emphasisVerticesRenderer.drawMesh(frame, this, 0); // 0 == ghost
+        }
+    }
+
+    _drawHighlightFill(frame) {
+        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
+            this._emphasisFillRenderer.drawMesh(frame, this, 1); // 1 == highlight
+        }
+    }
+
+    _drawHighlightEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 1); // 1 == highlight
+        }
+    }
+
+    _drawHighlightVertices(frame) {
+        if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this))) {
+            this._emphasisVerticesRenderer.drawMesh(frame, this, 1); // 1 == highlight
+        }
+    }
+
+    _drawSelectedFill(frame) {
+        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
+            this._emphasisFillRenderer.drawMesh(frame, this, 2); // 2 == selected
+        }
+    }
+
+    _drawSelectedEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 2); // 2 == selected
+        }
+    }
+
+    _drawSelectedVertices(frame) {
+        if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this))) {
+            this._emphasisVerticesRenderer.drawMesh(frame, this, 2); // 2 == selected
+        }
+    }
+
+    _drawEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 3); // 3 == edges
+        }
+    }
+
+    _drawShadow(frame, light) {
+        if (this._shadowRenderer || (this._shadowRenderer = ShadowRenderer.get(this))) {
+            this._shadowRenderer.drawMesh(frame, this, light);
+        }
+    }
+
+    _drawOutline(frame) {
+        if (this._shadowRenderer || (this._outlineRenderer = OutlineRenderer.get(this))) {
+            this._outlineRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _pickMesh(frame) {
+        if (this._pickMeshRenderer || (this._pickMeshRenderer = PickMeshRenderer.get(this))) {
+            this._pickMeshRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _pickTriangle(frame) {
+        if (this._pickTriangleRenderer || (this._pickTriangleRenderer = PickTriangleRenderer.get(this))) {
+            this._pickTriangleRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _pickVertex(frame) {
+        if (this._pickVertexRenderer || (this._pickVertexRenderer = PickVertexRenderer.get(this))) {
+            this._pickVertexRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _getOutlineRenderer() {
+        this._outlineRenderer = OutlineRenderer.get(this);
+        if (this._outlineRenderer.errors) {
+            this.errors = (this.errors || []).concat(this._outlineRenderer.errors);
+            this.error(this._outlineRenderer.errors.join("\n"));
+            return false;
+        }
+        return true;
+    }
+
+    _putRenderers() {
+        if (this._drawRenderer) {
+            this._drawRenderer.put();
+            this._drawRenderer = null;
+        }
+        if (this._emphasisFillRenderer) {
+            this._emphasisFillRenderer.put();
+            this._emphasisFillRenderer = null;
+        }
+        if (this._emphasisEdgesRenderer) {
+            this._emphasisEdgesRenderer.put();
+            this._emphasisEdgesRenderer = null;
+        }
+        if (this._emphasisVerticesRenderer) {
+            this._emphasisVerticesRenderer.put();
+            this._emphasisVerticesRenderer = null;
+        }
+        if (this._outlineRenderer) {
+            this._outlineRenderer.put();
+            this._outlineRenderer = null;
+        }
+        if (this._shadowRenderer) {
+            this._shadowRenderer.put();
+            this._shadowRenderer = null;
+        }
+        if (this._pickMeshRenderer) {
+            this._pickMeshRenderer.put();
+            this._pickMeshRenderer = null;
+        }
+        if (this._pickTriangleRenderer) {
+            this._pickTriangleRenderer.put();
+            this._pickTriangleRenderer = null;
+        }
+        if (this._pickVertexRenderer) {
+            this._pickVertexRenderer.put();
+            this._pickVertexRenderer = null;
+        }
+    }
+
+    /**
+     World-space 3D vertex positions.
+
+     These are internally generated on-demand and cached. To free the cached
+     vertex World positions when you're done with them, set this property to null or undefined.
+
+     @property worldPositions
+     @type Float32Array
+     @final
+     */
+    get worldPositions() {
+        if (this._worldPositionsDirty) {
+            const positions = this._geometry.positions;
+            if (!this._worldPositions) {
+                this._worldPositions = new Float32Array(positions.length);
+            }
+            math.transformPositions3(this.worldMatrix, positions, this._worldPositions);
+            this._worldPositionsDirty = false;
+        }
+        return this._worldPositions;
+    }
+
+    set worldPositions(value) {
+        if (value = undefined || value === null) {
+            this._worldPositions = null; // Release memory
+            this._worldPositionsDirty = true;
+        }
+    }
+
+    /**
+     Defines the shape of this Mesh.
+
+     @property geometry
+     @type Geometry
+     @final
+     */
+    get geometry() {
+        return this._geometry;
+    }
+
+    /**
+     Defines appearance when rendering normally, ie. when not ghosted, highlighted or selected.
+
+     @property material
+     @type Material
+     @final
+     */
+    get material() {
+        return this._material;
+    }
+
+    /**
+     Defines surface appearance when ghosted.
+
+     @property ghostMaterial
+     @type EmphasisMaterial
+     @final
+     */
+    get ghostMaterial() {
+        return this._ghostMaterial;
+    }
+
+    /**
+     Defines surface appearance when highlighted.
+
+     @property highlightMaterial
+     @type EmphasisMaterial
+     @final
+     */
+    get highlightMaterial() {
+        return this._highlightMaterial;
+    }
+
+    /**
+     Defines surface appearance when selected.
+
+     @property selectedMaterial
+     @type EmphasisMaterial
+     */
+    get selectedMaterial() {
+        return this._selectedMaterial;
+    }
+
+    /**
+     Defines surface appearance when edges are shown.
+
+     @property edgeMaterial
+     @type EdgeMaterial
+     */
+    get edgeMaterial() {
+        return this._edgeMaterial;
+    }
+
+    /**
+     Defines surface appearance when outlined.
+
+     @property outlineMaterial
+     @type OutlineMaterial
+     */
+    get outlineMaterial() {
+        return this._outlineMaterial;
+    }
+
+    /**
+     Indicates if visible.
+
+     The Mesh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
+     {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
+
+     Each visible Mesh is registered in the {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/visibleEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is set to a value.
+
+     @property visible
+     @default true
+     @type Boolean
+     */
+    set visible(visible) {
+        visible = visible !== false;
+        this._state.visible = visible;
+        if (this._entityType) {
+            this.scene._entityVisibilityUpdated(this, visible);
+        }
+        this._renderer.imageDirty();
+    }
+
+    get visible() {
+        return this._state.visible;
+    }
+
+    /**
+     Indicates if ghosted.
+
+     The ghosted appearance is configured by {{#crossLink "Mesh/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+
+     Each ghosted Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/ghostedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is set to a value.
+
+     @property ghosted
+     @default false
+     @type Boolean
+     */
+    set ghosted(ghosted) {
+        ghosted = !!ghosted;
+        if (this._state.ghosted === ghosted) {
+            return;
+        }
+        this._state.ghosted = ghosted;
+        if (this._entityType) {
+            this.scene._entityGhostedUpdated(this, ghosted);
+        }
+        this._renderer.imageDirty();
+    }
+
+    get ghosted() {
+        return this._state.ghosted;
+    }
+
+    /**
+     Indicates if highlighted.
+
+     The highlight appearance is configured by {{#crossLink "Mesh/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+
+     Each highlighted Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/highlightedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is set to a value.
+
+     @property highlighted
+     @default false
+     @type Boolean
+     */
+    set highlighted(highlighted) {
+        highlighted = !!highlighted;
+        if (highlighted === this._state.highlighted) {
+            return;
+        }
+        this._state.highlighted = highlighted;
+        if (this._entityType) {
+            this.scene._entityHighlightedUpdated(this, highlighted);
+        }
+        this._renderer.imageDirty();
+    }
+
+    get highlighted() {
+        return this._state.highlighted;
+    }
+
+    /**
+     Indicates if selected.
+
+     The selected appearance is configured by {{#crossLink "Mesh/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+
+     Each selected Mesh is registered in its {{#crossLink "Scene"}}{{/crossLink}}'s
+     {{#crossLink "Scene/selectedEntities:property"}}{{/crossLink}} map when its {{#crossLink "Object/entityType:property"}}{{/crossLink}}
+     is set to a value.
+
+     @property selected
+     @default false
+     @type Boolean
+     */
+    set selected(selected) {
+        selected = !!selected;
+        if (selected === this._state.selected) {
+            return;
+        }
+        this._state.selected = selected;
+        if (this._entityType) {
+            this.scene._entitySelectedUpdated(this, selected);
+        }
+        this._renderer.imageDirty();
+    }
+
+    get selected() {
+        return this._state.selected;
+    }
+
+    /**
+     Indicates if edges are shown.
+
+     The edges appearance is configured by {{#crossLink "Mesh/edgeMaterial:property"}}edgeMaterial{{/crossLink}}.
+
+     @property edges
+     @default false
+     @type Boolean
+     */
+    set edges(edges) {
+        edges = !!edges;
+        if (edges === this._state.edges) {
+            return;
+        }
+        this._state.edges = edges;
+        this._renderer.imageDirty();
+    }
+
+    get edges() {
+        return this._state.edges;
+    }
+
+    /**
+     Indicates if culled from view.
+
+     The MEsh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
+     {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
+
+     @property culled
+     @default false
+     @type Boolean
+     */
+    set culled(value) {
+        this._state.culled = !!value;
+        this._renderer.imageDirty();
+    }
+
+    get culled() {
+        return this._state.culled;
+    }
+
+    /**
+     Indicates if pickable.
+
+     When false, the Mesh will never be picked by calls to the {{#crossLink "Scene/pick:method"}}Scene pick(){{/crossLink}} method, and picking will happen as "through" the Mesh, to attempt to pick whatever lies on the other side of it.
+
+     @property pickable
+     @default true
+     @type Boolean
+     */
+    set pickable(value) {
+        value = value !== false;
+        if (this._state.pickable === value) {
+            return;
+        }
+        this._state.pickable = value;
+        // No need to trigger a render;
+        // state is only used when picking
+    }
+
+    get pickable() {
+        return this._state.pickable;
+    }
+
+    /**
+     Indicates if clippable.
+
+     When false, the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}} will have no effect on the Mesh.
+
+     @property clippable
+     @default true
+     @type Boolean
+     */
+    set clippable(value) {
+        value = value !== false;
+        if (this._state.clippable === value) {
+            return;
+        }
+        this._state.clippable = value;
+        this._renderer.imageDirty();
+    }
+
+    get clippable() {
+        return this._state.clippable;
+    }
+
+    /**
+     Indicates if included in boundary calculations.
+
+     When false, this Mesh will not be included in the bounding boxes provided by parent components (
+
+     @property collidable
+     @default true
+     @type Boolean
+     */
+    set collidable(value) {
+        value = value !== false;
+        if (value === this._state.collidable) {
+            return;
+        }
+        this._state.collidable = value;
+    }
+
+    get collidable() {
+        return this._state.collidable;
+    }
+
+    /**
+     Indicates if casting shadows.
+
+     @property castShadow
+     @default true
+     @type Boolean
+     */
+    set castShadow(value) {
+        // value = value !== false;
+        // if (value === this._state.castShadow) {
+        //     return;
+        // }
+        // this._state.castShadow = value;
+        // this._renderer.imageDirty(); // Re-render in next shadow map generation pass
+    }
+
+    get castShadow() {
+        return this._state.castShadow;
+    }
+
+    /**
+     Indicates if receiving shadows.
+
+     @property receiveShadow
+     @default true
+     @type Boolean
+     */
+    set receiveShadow(value) {
+        // value = value !== false;
+        // if (value === this._state.receiveShadow) {
+        //     return;
+        // }
+        // this._state.receiveShadow = value;
+        // this._state.hash = value ? "/mod/rs;" : "/mod;";
+        // this.fire("dirty", this); // Now need to (re)compile objectRenderers to include/exclude shadow mapping
+    }
+
+    get receiveShadow() {
+        return this._state.receiveShadow;
+    }
+
+    /**
+     Indicates if rendered with an outline.
+
+     The outline appearance is configured by {{#crossLink "Mesh/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
+
+     @property outlined
+     @default false
+     @type Boolean
+     */
+    set outlined(value) {
+        value = !!value;
+        if (value === this._state.outlined) {
+            return;
+        }
+        this._state.outlined = value;
+        this._renderer.imageDirty();
+    }
+
+    get outlined() {
+        return this._state.outlined;
+    }
+
+    /**
+     RGB colorize color, multiplies by the rendered fragment colors.
+
+     @property colorize
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set colorize(value) {
+        let colorize = this._state.colorize;
+        if (!colorize) {
+            colorize = this._state.colorize = new Float32Array(4);
+            colorize[3] = 1;
+        }
+        if (value) {
+            colorize[0] = value[0];
+            colorize[1] = value[1];
+            colorize[2] = value[2];
+        } else {
+            colorize[0] = 1;
+            colorize[1] = 1;
+            colorize[2] = 1;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get colorize() {
+        return this._state.colorize;
+    }
+
+    /**
+     Opacity factor, multiplies by the rendered fragment alpha.
+
+     This is a factor in range ````[0..1]````.
+
+     @property opacity
+     @default 1.0
+     @type Number
+     */
+    set opacity(opacity) {
+        let colorize = this._state.colorize;
+        if (!colorize) {
+            colorize = this._state.colorize = new Float32Array(4);
+            colorize[0] = 1;
+            colorize[1] = 1;
+            colorize[2] = 1;
+        }
+        colorize[3] = opacity !== null && opacity !== undefined ? opacity : 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get opacity() {
+        return this._state.colorize[3];
+    }
+
+    /**
+     The rendering order.
+
+     This can be set on multiple transparent Meshes, to make them render in a specific order
+     for correct alpha blending.
+
+     @property layer
+     @default 0
+     @type Number
+     */
+    set layer(value) {
+        // TODO: Only accept rendering layer in range [0...MAX_layer]
+        value = value || 0;
+        value = Math.round(value);
+        if (value === this._state.layer) {
+            return;
+        }
+        this._state.layer = value;
+        this._renderer.needStateSort();
+    }
+
+    get layer() {
+        return this._state.layer;
+    }
+
+    /**
+     Indicates if the position is stationary.
+
+     When true, will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
+     translations for this Mesh, while still allowing it to rotate. This is useful for skybox Meshes.
+
+     @property stationary
+     @default false
+     @type Boolean
+     @final
+     */
+    get stationary() {
+        return this._state.stationary;
+    }
+
+    /**
+     Indicates the billboarding behaviour.
+
+     Options are:
+
+     * **"none"** -  **(default)** - No billboarding.
+     * **"spherical"** - Mesh is billboarded to face the viewpoint, rotating both vertically and horizontally.
+     * **"cylindrical"** - Mesh is billboarded to face the viewpoint, rotating only about its vertically
+     axis. Use this mode for things like trees on a landscape.
+
+     @property billboard
+     @default "none"
+     @type String
+     @final
+     */
+    get billboard() {
+        return this._state.billboard;
+    }
+
+    destroy() {
+        super.destroy(); // xeogl.Object
+        this._putRenderers();
+        this._renderer.meshListDirty();
+        this.scene._meshDestroyed(this);
+    }
+}
+
+componentClasses[type] = Mesh;
+
+export {Mesh};

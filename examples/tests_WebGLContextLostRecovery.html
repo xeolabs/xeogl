@@ -30,9 +30,11 @@
     // Load glTF model
     //-----------------------------------------------------------------------------------------------------
 
-    xeogl.scene = new xeogl.Scene({ // Override the default Scene
+    var scene = new xeogl.Scene({ // Override the default Scene
         simulateWebGLContextLost: true
     });
+
+    xeogl.setDefaultScene(scene);
 
     var model = new xeogl.GLTFModel({
         id: "house",
@@ -47,7 +49,6 @@
     // Set up camera
     //-----------------------------------------------------------------------------------------------------
 
-    var scene = model.scene;
     var camera = scene.camera;
 
     camera.eye = [-1.7671842575073242, 2.231440782546997, -4.35687780380249];

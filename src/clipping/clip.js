@@ -63,8 +63,7 @@
  @module xeogl
  @submodule clipping
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Clip in the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Clip configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  You only need to supply an ID if you need to be able to find the Clip by ID within the {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -74,109 +73,123 @@
  @param [cfg.dir=[0,0 -1]] {Array of Number} Vector perpendicular to the plane surface, indicating its orientation.
  @extends Component
  */
-(function () {
+import {Component} from '../component.js';
+import {State} from '../renderer/state.js';
+import {componentClasses} from "./../componentClasses.js";
 
-    "use strict";
+const type = "xeogl.Clip";
 
-    xeogl.Clip = xeogl.Component.extend({
+class Clip extends Component {
 
-        type: "xeogl.Clip",
+    /**
+     JavaScript class name for this Component.
 
-        _init: function (cfg) {
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
-            this._state = new xeogl.renderer.State({
-                active: true,
-                pos: new Float32Array(3),
-                dir: new Float32Array(3)
-            });
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            this.active = cfg.active;
-            this.pos = cfg.pos;
-            this.dir = cfg.dir;
+    init(cfg) {
 
-            this.scene._clipCreated(this);
-        },
+        super.init(cfg);
 
-        _props: {
+        this._state = new State({
+            active: true,
+            pos: new Float32Array(3),
+            dir: new Float32Array(3)
+        });
 
-            /**
-             Indicates whether this Clip is active or not.
+        this.active = cfg.active;
+        this.pos = cfg.pos;
+        this.dir = cfg.dir;
 
-             @property active
-             @default true
-             @type Boolean
-             */
-            active: {
-                set: function (value) {
-                    this._state.active = value !== false;
-                    this._renderer.imageDirty();
-                    /**
-                     Fired whenever this Clip's {{#crossLink "Clip/active:property"}}{{/crossLink}} property changes.
+        this.scene._clipCreated(this);
+    }
 
-                     @event active
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("active", this._state.active);
-                },
-                get: function () {
-                    return this._state.active;
-                }
-            },
+    /**
+     Indicates whether this Clip is active or not.
 
-            /**
-             The World-space position of this Clip's plane.
+     @property active
+     @default true
+     @type Boolean
+     */
+    set active(value) {
+        this._state.active = value !== false;
+        this._renderer.imageDirty();
+        /**
+         Fired whenever this Clip's {{#crossLink "Clip/active:property"}}{{/crossLink}} property changes.
 
-             @property pos
-             @default [0, 0, 0]
-             @type Float32Array
-             */
-            pos: {
-                set: function (value) {
-                    this._state.pos.set(value || [0, 0, 0]);
-                    this._renderer.imageDirty();
-                    /**
-                     Fired whenever this Clip's {{#crossLink "Clip/pos:property"}}{{/crossLink}} property changes.
+         @event active
+         @param value {Boolean} The property's new value
+         */
+        this.fire("active", this._state.active);
+    }
 
-                     @event pos
-                     @param value Float32Array The property's new value
-                     */
-                    this.fire("pos", this._state.pos);
-                },
-                get: function () {
-                    return this._state.pos;
-                }
-            },
+    get active() {
+        return this._state.active;
+    }
 
-            /**
-             Vector indicating the orientation of this Clip plane.
+    /**
+     The World-space position of this Clip's plane.
 
-             The vector originates at {{#crossLink "Clip/pos:property"}}{{/crossLink}}. Elements on the
-             same side of the vector are clipped.
+     @property pos
+     @default [0, 0, 0]
+     @type Float32Array
+     */
+    set pos(value) {
+        this._state.pos.set(value || [0, 0, 0]);
+        this._renderer.imageDirty();
+        /**
+         Fired whenever this Clip's {{#crossLink "Clip/pos:property"}}{{/crossLink}} property changes.
 
-             @property dir
-             @default [0, 0, -1]
-             @type Float32Array
-             */
-            dir: {
-                set: function (value) {
-                    this._state.dir.set(value || [0, 0, -1]);
-                    this._renderer.imageDirty();
-                    /**
-                     Fired whenever this Clip's {{#crossLink "Clip/dir:property"}}{{/crossLink}} property changes.
+         @event pos
+         @param value Float32Array The property's new value
+         */
+        this.fire("pos", this._state.pos);
+    }
 
-                     @event dir
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("dir", this._state.dir);
-                },
-                get: function () {
-                    return this._state.dir;
-                }
-            }
-        },
+    get pos() {
+        return this._state.pos;
+    }
 
-        _destroy: function () {
-            this.scene._clipDestroyed(this);
-        }
-    });
-})();
+    /**
+     Vector indicating the orientation of this Clip plane.
+
+     The vector originates at {{#crossLink "Clip/pos:property"}}{{/crossLink}}. Elements on the
+     same side of the vector are clipped.
+
+     @property dir
+     @default [0, 0, -1]
+     @type Float32Array
+     */
+    set dir(value) {
+        this._state.dir.set(value || [0, 0, -1]);
+        this._renderer.imageDirty();
+        /**
+         Fired whenever this Clip's {{#crossLink "Clip/dir:property"}}{{/crossLink}} property changes.
+
+         @event dir
+         @param value {Float32Array} The property's new value
+         */
+        this.fire("dir", this._state.dir);
+    }
+
+    get dir() {
+        return this._state.dir;
+    }
+
+    destroy() {
+        this._state.destroy();
+        this.scene._clipDestroyed(this);
+        super.destroy();
+    }
+}
+
+componentClasses[type] = Clip;
+
+export{Clip};

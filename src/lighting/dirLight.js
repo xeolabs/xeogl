@@ -61,8 +61,7 @@
  @module xeogl
  @submodule lighting
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this DirLight within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} The DirLight configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DirLight.
@@ -74,164 +73,175 @@
  @param [cfg.shadow=false] {Boolean} Flag which indicates if this DirLight casts a shadow.
  @extends Component
  */
-(function () {
+import {Component} from '../component.js';
+import {State} from '../renderer/state.js';
+import {RenderBuffer} from '../renderer/renderBuffer.js';
+import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
-    "use strict";
+const type = "xeogl.DirLight";
 
-    var math = xeogl.math;
+class DirLight extends Component {
 
-    xeogl.DirLight = xeogl.Component.extend({
+    /**
+     JavaScript class name for this Component.
 
-        type: "xeogl.DirLight",
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
-        _init: function (cfg) {
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-            var self = this;
+    init(cfg) {
 
-            this._shadowRenderBuf = null;
-            this._shadowViewMatrix = null;
-            this._shadowProjMatrix = null;
-            this._shadowViewMatrixDirty = true;
-            this._shadowProjMatrixDirty = true;
+        super.init(cfg);
 
-            this._state = new xeogl.renderer.State({
-                type: "dir",
-                dir: xeogl.math.vec3([1.0, 1.0, 1.0]),
-                color: xeogl.math.vec3([0.7, 0.7, 0.8]),
-                intensity: 1.0,
-                space: cfg.space || "view",
-                shadow: false,
-                shadowDirty: true,
+        const self = this;
 
-                getShadowViewMatrix: (function () {
-                    var look = math.vec3();
-                    var up = math.vec3([0, 1, 0]);
-                    return function () {
-                        if (self._shadowViewMatrixDirty) {
-                            if (!self._shadowViewMatrix) {
-                                self._shadowViewMatrix = math.identityMat4();
-                            }
-                            var dir = self._state.dir;
-                            math.lookAtMat4v([-dir[0], -dir[1], -dir[2]], [0, 0, 0], up, self._shadowViewMatrix);
-                            self._shadowViewMatrixDirty = false;
+        this._shadowRenderBuf = null;
+        this._shadowViewMatrix = null;
+        this._shadowProjMatrix = null;
+        this._shadowViewMatrixDirty = true;
+        this._shadowProjMatrixDirty = true;
+
+        this._state = new State({
+            type: "dir",
+            dir: math.vec3([1.0, 1.0, 1.0]),
+            color: math.vec3([0.7, 0.7, 0.8]),
+            intensity: 1.0,
+            space: cfg.space || "view",
+            shadow: false,
+            shadowDirty: true,
+
+            getShadowViewMatrix: (function () {
+                const look = math.vec3();
+                const up = math.vec3([0, 1, 0]);
+                return function () {
+                    if (self._shadowViewMatrixDirty) {
+                        if (!self._shadowViewMatrix) {
+                            self._shadowViewMatrix = math.identityMat4();
                         }
-                        return self._shadowViewMatrix;
-                    };
-                })(),
-
-                getShadowProjMatrix: function () {
-                    if (self._shadowProjMatrixDirty) { // TODO: Set when canvas resizes
-                        if (!self._shadowProjMatrix) {
-                            self._shadowProjMatrix = math.identityMat4();
-                        }
-                        xeogl.math.orthoMat4c(-10, 10, -10, 10, 0, 1000.0, self._shadowProjMatrix);
-                        self._shadowProjMatrixDirty = false;
+                        const dir = self._state.dir;
+                        math.lookAtMat4v([-dir[0], -dir[1], -dir[2]], [0, 0, 0], up, self._shadowViewMatrix);
+                        self._shadowViewMatrixDirty = false;
                     }
-                    return self._shadowProjMatrix;
-                },
+                    return self._shadowViewMatrix;
+                };
+            })(),
 
-                getShadowRenderBuf: function () {
-                    if (!self._shadowRenderBuf) {
-                        self._shadowRenderBuf = new xeogl.renderer.RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
+            getShadowProjMatrix: function () {
+                if (self._shadowProjMatrixDirty) { // TODO: Set when canvas resizes
+                    if (!self._shadowProjMatrix) {
+                        self._shadowProjMatrix = math.identityMat4();
                     }
-                    return self._shadowRenderBuf;
+                    math.orthoMat4c(-10, 10, -10, 10, 0, 1000.0, self._shadowProjMatrix);
+                    self._shadowProjMatrixDirty = false;
                 }
-            });
-
-            this.dir = cfg.dir;
-            this.color = cfg.color;
-            this.intensity = cfg.intensity;
-            this.shadow = cfg.shadow;
-            this.scene._lightCreated(this);
-        },
-
-        _props: {
-
-            /**
-             The direction in which the light is shining.
-
-             @property dir
-             @default [1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            dir: {
-                set: function (value) {
-                    this._state.dir.set(value || [1.0, 1.0, 1.0]);
-                    this._shadowViewMatrixDirty = true;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.dir;
-                }
+                return self._shadowProjMatrix;
             },
 
-            /**
-             The color of this DirLight.
-
-             @property color
-             @default [0.7, 0.7, 0.8]
-             @type Float32Array
-             */
-            color: {
-                set: function (value) {
-                    this._state.color.set(value || [0.7, 0.7, 0.8]);
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.color;
+            getShadowRenderBuf: function () {
+                if (!self._shadowRenderBuf) {
+                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
                 }
-            },
-
-            /**
-             The intensity of this DirLight.
-
-             Fires a {{#crossLink "DirLight/intensity:event"}}{{/crossLink}} event on change.
-
-             @property intensity
-             @default 1.0
-             @type Number
-             */
-            intensity: {
-                set: function (value) {
-                    value = value !== undefined ? value : 1.0;
-                    this._state.intensity = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.intensity;
-                }
-            },
-
-            /**
-             Flag which indicates if this DirLight casts a shadow.
-
-             @property shadow
-             @default false
-             @type Boolean
-             */
-            shadow: {
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.shadow === value) {
-                        return;
-                    }
-                    this._state.shadow = value;
-                    this._shadowViewMatrixDirty = true;
-                    this._renderer.imageDirty();
-                },
-
-                get: function () {
-                    return this._state.shadow;
-                }
+                return self._shadowRenderBuf;
             }
-        },
+        });
 
-        _destroy: function () {
-            if (this._shadowRenderBuf) {
-                this._shadowRenderBuf.destroy();
-            }
-            this.scene._lightDestroyed(this);
+        this.dir = cfg.dir;
+        this.color = cfg.color;
+        this.intensity = cfg.intensity;
+        this.shadow = cfg.shadow;
+        this.scene._lightCreated(this);
+    }
+
+    /**
+     The direction in which the light is shining.
+
+     @property dir
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set dir(value) {
+        this._state.dir.set(value || [1.0, 1.0, 1.0]);
+        this._shadowViewMatrixDirty = true;
+        this._renderer.imageDirty();
+    }
+
+    get dir() {
+        return this._state.dir;
+    }
+
+    /**
+     The color of this DirLight.
+
+     @property color
+     @default [0.7, 0.7, 0.8]
+     @type Float32Array
+     */
+    set color(value) {
+        this._state.color.set(value || [0.7, 0.7, 0.8]);
+        this._renderer.imageDirty();
+    }
+
+    get color() {
+        return this._state.color;
+    }
+
+    /**
+     The intensity of this DirLight.
+
+     Fires a {{#crossLink "DirLight/intensity:event"}}{{/crossLink}} event on change.
+
+     @property intensity
+     @default 1.0
+     @type Number
+     */
+    set intensity(value) {
+        value = value !== undefined ? value : 1.0;
+        this._state.intensity = value;
+        this._renderer.imageDirty();
+    }
+
+    get intensity() {
+        return this._state.intensity;
+    }
+
+    /**
+     Flag which indicates if this DirLight casts a shadow.
+
+     @property shadow
+     @default false
+     @type Boolean
+     */
+    set shadow(value) {
+        value = !!value;
+        if (this._state.shadow === value) {
+            return;
         }
-    });
+        this._state.shadow = value;
+        this._shadowViewMatrixDirty = true;
+        this._renderer.imageDirty();
+    }
 
-})();
+    get shadow() {
+        return this._state.shadow;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+        if (this._shadowRenderBuf) {
+            this._shadowRenderBuf.destroy();
+        }
+        this.scene._lightDestroyed(this);
+    }
+}
+
+componentClasses[type] = DirLight;
+
+export {DirLight};

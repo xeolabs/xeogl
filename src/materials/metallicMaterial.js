@@ -219,8 +219,7 @@
  @constructor
  @extends Material
 
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this MetallicMaterial within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
 
  @param [cfg] {*} The MetallicMaterial configuration.
 
@@ -297,591 +296,578 @@
  @param [cfg.pointSize=1] {Number} Scalar that controls the size of points for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "points".
 
  */
-(function () {
 
-    "use strict";
-
-    xeogl.MetallicMaterial = xeogl.Material.extend({
-
-        type: "xeogl.MetallicMaterial",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this._state = new xeogl.renderer.State({
-                type: "MetallicMaterial",
-                baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
-                emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
-                metallic: null,
-                roughness: null,
-                specularF0: null,
-                alpha: null,
-                alphaMode: null, // "opaque"
-                alphaCutoff: null,
-                lineWidth: null,
-                pointSize: null,
-                backfaces: null,
-                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-                hash: null
-            });
-
-            this.baseColor = cfg.baseColor;
-            this.metallic = cfg.metallic;
-            this.roughness = cfg.roughness;
-            this.specularF0 = cfg.specularF0;
-            this.emissive = cfg.emissive;
-            this.alpha = cfg.alpha;
-
-            if (cfg.baseColorMap) {
-                this._baseColorMap = this._checkComponent("xeogl.Texture", cfg.baseColorMap);
-            }
-            if (cfg.metallicMap) {
-                this._metallicMap = this._checkComponent("xeogl.Texture", cfg.metallicMap);
-
-            }
-            if (cfg.roughnessMap) {
-                this._roughnessMap = this._checkComponent("xeogl.Texture", cfg.roughnessMap);
-            }
-            if (cfg.metallicRoughnessMap) {
-                this._metallicRoughnessMap = this._checkComponent("xeogl.Texture", cfg.metallicRoughnessMap);
-            }
-            if (cfg.emissiveMap) {
-                this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
-            }
-            if (cfg.occlusionMap) {
-                this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
-            }
-            if (cfg.alphaMap) {
-                this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
-            }
-            if (cfg.normalMap) {
-                this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
-            }
-
-            this.alphaMode = cfg.alphaMode;
-            this.alphaCutoff = cfg.alphaCutoff;
-            this.backfaces = cfg.backfaces;
-            this.frontface = cfg.frontface;
-            this.lineWidth = cfg.lineWidth;
-            this.pointSize = cfg.pointSize;
-
-            this._makeHash();
-        },
-
-        _makeHash: function () {
-            var state = this._state;
-            var hash = ["/met"];
-            if (this._baseColorMap) {
-                hash.push("/bm");
-                if (this._baseColorMap._state.hasMatrix) {
-                    hash.push("/mat");
-                }
-                hash.push("/" + this._baseColorMap._state.encoding);
-            }
-            if (this._metallicMap) {
-                hash.push("/mm");
-                if (this._metallicMap._state.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._roughnessMap) {
-                hash.push("/rm");
-                if (this._roughnessMap._state.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._metallicRoughnessMap) {
-                hash.push("/mrm");
-                if (this._metallicRoughnessMap._state.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._emissiveMap) {
-                hash.push("/em");
-                if (this._emissiveMap._state.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._occlusionMap) {
-                hash.push("/ocm");
-                if (this._occlusionMap._state.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._alphaMap) {
-                hash.push("/am");
-                if (this._alphaMap._state.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            if (this._normalMap) {
-                hash.push("/nm");
-                if (this._normalMap._state.hasMatrix) {
-                    hash.push("/mat");
-                }
-            }
-            hash.push(";");
-            state.hash = hash.join("");
-        },
-
-        _props: {
-
-            /**
-             RGB diffuse color.
-
-             Multiplies by the RGB components of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}.
-
-             @property baseColor
-             @default [1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            baseColor: {
-                set: function (value) {
-                    var baseColor = this._state.baseColor;
-                    if (!baseColor) {
-                        baseColor = this._state.baseColor = new Float32Array(3);
-                    } else if (value && baseColor[0] === value[0] && baseColor[1] === value[1] && baseColor[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        baseColor[0] = value[0];
-                        baseColor[1] = value[1];
-                        baseColor[2] = value[2];
-                    } else {
-                        baseColor[0] = 1;
-                        baseColor[1] = 1;
-                        baseColor[2] = 1;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.baseColor;
-                }
-            },
-
-            /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for alpha.
-
-             The RGB components multiply by the {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property,
-             while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
-
-             @property baseColorMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            baseColorMap: {
-                get: function () {
-                    return this._baseColorMap;
-                }
-            },
-
-            /**
-             Factor in the range [0..1] indicating how metallic this MetallicMaterial is.
-
-             1 is metal, 0 is non-metal.
-
-             Multiplies by the *R* component of {{#crossLink "MetallicMaterial/metallicMap:property"}}{{/crossLink}}
-             and the *A* component of {{#crossLink "MetallicMaterial/metalRoughnessMap:property"}}{{/crossLink}}.
-
-             @property metallic
-             @default 1.0
-             @type Number
-             */
-            metallic: {
-                set: function (value) {
-                    value = (value !== undefined && value !== null) ? value : 1.0;
-                    if (this._state.metallic === value) {
-                        return;
-                    }
-                    this._state.metallic = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.metallic;
-                }
-            },
-
-            /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's metallic factor in its *R* component.
-
-             The *R* component multiplies by the {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} property.
-
-             @property metallicMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            metallicMap: {
-                get: function () {
-                    return this._attached.metallicMap;
-                }
-            },
-
-            /**
-             Factor in the range [0..1] indicating the roughness of this MetallicMaterial.
-
-             0 is fully smooth, 1 is fully rough.
-
-             Multiplies by the *R* component of {{#crossLink "MetallicMaterial/roughnessMap:property"}}{{/crossLink}}.
-
-             @property roughness
-             @default 1.0
-             @type Number
-             */
-            roughness: {
-                set: function (value) {
-                    value = (value !== undefined && value !== null) ? value : 1.0;
-                    if (this._state.roughness === value) {
-                        return;
-                    }
-                    this._state.roughness = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.roughness;
-                }
-            },
-
-            /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's roughness factor in its *R* component.
-
-             The *R* component multiplies by the {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} property.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
-
-             @property roughnessMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            roughnessMap: {
-                get: function () {
-                    return this._attached.roughnessMap;
-                }
-            },
-
-            /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's metalness in its *R* component and roughness in its *G* component.
-
-             Its *B* component multiplies by the {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} property, while
-             its *G* component multiplies by the {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} property.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
-
-             @property metallicRoughnessMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            metallicRoughnessMap: {
-                get: function () {
-                    return this._attached.metallicRoughnessMap;
-                }
-            },
-
-            /**
-             Factor in the range [0..1] indicating specular Fresnel value.
-
-             @property specularF0
-             @default 0.0
-             @type Number
-             */
-            specularF0: {
-                set: function (value) {
-                    value = (value !== undefined && value !== null) ? value : 0.0;
-                    if (this._state.specularF0 === value) {
-                        return;
-                    }
-                    this._state.specularF0 = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.specularF0;
-                }
-            },
-
-            /**
-             RGB emissive color.
-
-             Multiplies by {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}}.
-
-             @property emissive
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            emissive: {
-                set: function (value) {
-                    var emissive = this._state.emissive;
-                    if (!emissive) {
-                        emissive = this._state.emissive = new Float32Array(3);
-                    } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
-                        return;
-                    }
-                    if (value) {
-                        emissive[0] = value[0];
-                        emissive[1] = value[1];
-                        emissive[2] = value[2];
-                    } else {
-                        emissive[0] = 0;
-                        emissive[1] = 0;
-                        emissive[2] = 0;
-                    }
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.emissive;
-                }
-            },
-
-            /**
-             RGB emissive map.
-
-             Multiplies by {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}}.
-
-             @property emissiveMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            emissiveMap: {
-                get: function () {
-                    return this._attached.emissiveMap;
-                }
-            },
-
-            /**
-             RGB ambient occlusion map.
-
-             Within objectRenderers, multiplies by the specular and diffuse light reflected by surfaces.
-
-             @property occlusionMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            occlusionMap: {
-                get: function () {
-                    return this._attached.occlusionMap;
-                }
-            },
-
-            /**
-             Factor in the range [0..1] indicating the alpha value.
-
-             Multiplies by the *R* component of {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and
-             the *A* component, if present, of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}.
-
-             The value of {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} indicates how alpha is
-             interpreted when rendering.
-
-             @property alpha
-             @default 1.0
-             @type Number
-             */
-            alpha: {
-                set: function (value) {
-                    value = (value !== undefined && value !== null) ? value : 1.0;
-                    if (this._state.alpha === value) {
-                        return;
-                    }
-                    this._state.alpha = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.alpha;
-                }
-            },
-
-            /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's alpha in its *R* component.
-
-             The *R* component multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
-
-             @property alphaMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            alphaMap: {
-                get: function () {
-                    return this._attached.alphaMap;
-                }
-            },
-
-            /**
-             RGB tangent-space normal map {{#crossLink "Texture"}}{{/crossLink}}.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
-
-             @property normalMap
-             @default undefined
-             @type {Texture}
-             @final
-             */
-            normalMap: {
-                get: function () {
-                    return this._attached.normalMap;
-                }
-            },
-
-            /**
-             The alpha rendering mode.
-
-             This specifies how alpha is interpreted. Alpha is the combined result of the
-             {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
-             {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
-
-             * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
-             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha and {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}}.
-             * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
-
-             @property alphaMode
-             @default "opaque"
-             @type {String}
-             */
-            alphaMode: (function () {
-                var modes = {"opaque": 0, "mask": 1, "blend": 2};
-                var modeNames = ["opaque", "mask", "blend"];
-                return {
-                    set: function (alphaMode) {
-                        alphaMode = alphaMode || "opaque";
-                        var value = modes[alphaMode];
-                        if (value === undefined) {
-                            this.error("Unsupported value for 'alphaMode': " + alphaMode + " defaulting to 'opaque'");
-                            value = "opaque";
-                        }
-                        if (this._state.alphaMode === value) {
-                            return;
-                        }
-                        this._state.alphaMode = value;
-                        this._renderer.imageDirty();
-                    },
-                    get: function () {
-                        return modeNames[this._state.alphaMode];
-                    }
-                };
-            })(),
-
-            /**
-             The alpha cutoff value.
-
-             Specifies the cutoff threshold when {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}}
-             equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
-             opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
-             material as fully transparent. This value is ignored for other modes.
-
-             Alpha is the combined result of the
-             {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
-             {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
-
-             @property alphaCutoff
-             @default 0.5
-             @type {Number}
-             */
-            alphaCutoff: {
-                set: function (alphaCutoff) {
-                    if (alphaCutoff === null || alphaCutoff === undefined) {
-                        alphaCutoff = 0.5;
-                    }
-                    if (this._state.alphaCutoff === alphaCutoff) {
-                        return;
-                    }
-                    this._state.alphaCutoff = alphaCutoff;
-                },
-                get: function () {
-                    return this._state.alphaCutoff;
-                }
-            },
-
-            /**
-             Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             @property backfaces
-             @default false
-             @type Boolean
-             */
-            backfaces: {
-                set: function (value) {
-                    value = !!value;
-                    if (this._state.backfaces === value) {
-                        return;
-                    }
-                    this._state.backfaces = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.backfaces;
-                }
-            },
-
-            /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
-
-             @property frontface
-             @default "ccw"
-             @type String
-             */
-            frontface: {
-                set: function (value) {
-                    value = value !== "cw";
-                    if (this._state.frontface === value) {
-                        return;
-                    }
-                    this._state.frontface = value;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.frontface ? "ccw" : "cw";
-                }
-            },
-
-            /**
-             The MetallicMaterial's line width.
-
-             @property lineWidth
-             @default 1.0
-             @type Number
-             */
-            lineWidth: {
-                set: function (value) {
-                    this._state.lineWidth = value || 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.lineWidth;
-                }
-            },
-
-            /**
-             The MetallicMaterial's point size.
-
-             @property pointSize
-             @default 1.0
-             @type Number
-             */
-            pointSize: {
-                set: function (value) {
-                    this._state.pointSize = value || 1.0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.pointSize;
-                }
-            }
-        },
-
-        _destroy: function () {
-            this._super();
-            this._state.destroy();
+import {Material} from './material.js';
+import {State} from '../renderer/state.js';
+import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const modes = {"opaque": 0, "mask": 1, "blend": 2};
+const modeNames = ["opaque", "mask", "blend"];
+const type = "xeogl.MetallicMaterial";
+
+ class MetallicMaterial extends Material {
+
+    /**
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+
+        super.init(cfg);
+
+        this._state = new State({
+            type: "MetallicMaterial",
+            baseColor: math.vec4([1.0, 1.0, 1.0]),
+            emissive: math.vec4([0.0, 0.0, 0.0]),
+            metallic: null,
+            roughness: null,
+            specularF0: null,
+            alpha: null,
+            alphaMode: null, // "opaque"
+            alphaCutoff: null,
+            lineWidth: null,
+            pointSize: null,
+            backfaces: null,
+            frontface: null, // Boolean for speed; true == "ccw", false == "cw"
+            hash: null
+        });
+
+        this.baseColor = cfg.baseColor;
+        this.metallic = cfg.metallic;
+        this.roughness = cfg.roughness;
+        this.specularF0 = cfg.specularF0;
+        this.emissive = cfg.emissive;
+        this.alpha = cfg.alpha;
+
+        if (cfg.baseColorMap) {
+            this._baseColorMap = this._checkComponent("xeogl.Texture", cfg.baseColorMap);
         }
-    });
+        if (cfg.metallicMap) {
+            this._metallicMap = this._checkComponent("xeogl.Texture", cfg.metallicMap);
 
-})();
+        }
+        if (cfg.roughnessMap) {
+            this._roughnessMap = this._checkComponent("xeogl.Texture", cfg.roughnessMap);
+        }
+        if (cfg.metallicRoughnessMap) {
+            this._metallicRoughnessMap = this._checkComponent("xeogl.Texture", cfg.metallicRoughnessMap);
+        }
+        if (cfg.emissiveMap) {
+            this._emissiveMap = this._checkComponent("xeogl.Texture", cfg.emissiveMap);
+        }
+        if (cfg.occlusionMap) {
+            this._occlusionMap = this._checkComponent("xeogl.Texture", cfg.occlusionMap);
+        }
+        if (cfg.alphaMap) {
+            this._alphaMap = this._checkComponent("xeogl.Texture", cfg.alphaMap);
+        }
+        if (cfg.normalMap) {
+            this._normalMap = this._checkComponent("xeogl.Texture", cfg.normalMap);
+        }
+
+        this.alphaMode = cfg.alphaMode;
+        this.alphaCutoff = cfg.alphaCutoff;
+        this.backfaces = cfg.backfaces;
+        this.frontface = cfg.frontface;
+        this.lineWidth = cfg.lineWidth;
+        this.pointSize = cfg.pointSize;
+
+        this._makeHash();
+    }
+
+    _makeHash() {
+        const state = this._state;
+        const hash = ["/met"];
+        if (this._baseColorMap) {
+            hash.push("/bm");
+            if (this._baseColorMap._state.hasMatrix) {
+                hash.push("/mat");
+            }
+            hash.push("/" + this._baseColorMap._state.encoding);
+        }
+        if (this._metallicMap) {
+            hash.push("/mm");
+            if (this._metallicMap._state.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._roughnessMap) {
+            hash.push("/rm");
+            if (this._roughnessMap._state.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._metallicRoughnessMap) {
+            hash.push("/mrm");
+            if (this._metallicRoughnessMap._state.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._emissiveMap) {
+            hash.push("/em");
+            if (this._emissiveMap._state.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._occlusionMap) {
+            hash.push("/ocm");
+            if (this._occlusionMap._state.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._alphaMap) {
+            hash.push("/am");
+            if (this._alphaMap._state.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        if (this._normalMap) {
+            hash.push("/nm");
+            if (this._normalMap._state.hasMatrix) {
+                hash.push("/mat");
+            }
+        }
+        hash.push(";");
+        state.hash = hash.join("");
+    }
+
+
+    /**
+     RGB diffuse color.
+
+     Multiplies by the RGB components of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}.
+
+     @property baseColor
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set baseColor(value) {
+        let baseColor = this._state.baseColor;
+        if (!baseColor) {
+            baseColor = this._state.baseColor = new Float32Array(3);
+        } else if (value && baseColor[0] === value[0] && baseColor[1] === value[1] && baseColor[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            baseColor[0] = value[0];
+            baseColor[1] = value[1];
+            baseColor[2] = value[2];
+        } else {
+            baseColor[0] = 1;
+            baseColor[1] = 1;
+            baseColor[2] = 1;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get baseColor() {
+        return this._state.baseColor;
+    }
+
+
+    /**
+     RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for alpha.
+
+     The RGB components multiply by the {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property,
+     while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
+
+     @property baseColorMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get baseColorMap() {
+        return this._baseColorMap;
+    }
+
+    /**
+     Factor in the range [0..1] indicating how metallic this MetallicMaterial is.
+
+     1 is metal, 0 is non-metal.
+
+     Multiplies by the *R* component of {{#crossLink "MetallicMaterial/metallicMap:property"}}{{/crossLink}}
+     and the *A* component of {{#crossLink "MetallicMaterial/metalRoughnessMap:property"}}{{/crossLink}}.
+
+     @property metallic
+     @default 1.0
+     @type Number
+     */
+    set metallic(value) {
+        value = (value !== undefined && value !== null) ? value : 1.0;
+        if (this._state.metallic === value) {
+            return;
+        }
+        this._state.metallic = value;
+        this._renderer.imageDirty();
+    }
+
+    get metallic() {
+        return this._state.metallic;
+    }
+
+    /**
+     RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's metallic factor in its *R* component.
+
+     The *R* component multiplies by the {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} property.
+
+     @property metallicMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get metallicMap() {
+        return this._attached.metallicMap;
+    }
+
+    /**
+     Factor in the range [0..1] indicating the roughness of this MetallicMaterial.
+
+     0 is fully smooth, 1 is fully rough.
+
+     Multiplies by the *R* component of {{#crossLink "MetallicMaterial/roughnessMap:property"}}{{/crossLink}}.
+
+     @property roughness
+     @default 1.0
+     @type Number
+     */
+    set roughness(value) {
+        value = (value !== undefined && value !== null) ? value : 1.0;
+        if (this._state.roughness === value) {
+            return;
+        }
+        this._state.roughness = value;
+        this._renderer.imageDirty();
+    }
+
+    get roughness() {
+        return this._state.roughness;
+    }
+
+    /**
+     RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's roughness factor in its *R* component.
+
+     The *R* component multiplies by the {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} property.
+
+     Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+     @property roughnessMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get roughnessMap() {
+        return this._attached.roughnessMap;
+    }
+
+    /**
+     RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's metalness in its *R* component and roughness in its *G* component.
+
+     Its *B* component multiplies by the {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} property, while
+     its *G* component multiplies by the {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} property.
+
+     Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+     @property metallicRoughnessMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get metallicRoughnessMap() {
+        return this._attached.metallicRoughnessMap;
+    }
+
+    /**
+     Factor in the range [0..1] indicating specular Fresnel value.
+
+     @property specularF0
+     @default 0.0
+     @type Number
+     */
+    set specularF0(value) {
+        value = (value !== undefined && value !== null) ? value : 0.0;
+        if (this._state.specularF0 === value) {
+            return;
+        }
+        this._state.specularF0 = value;
+        this._renderer.imageDirty();
+    }
+
+    get specularF0() {
+        return this._state.specularF0;
+    }
+
+    /**
+     RGB emissive color.
+
+     Multiplies by {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}}.
+
+     @property emissive
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set emissive(value) {
+        let emissive = this._state.emissive;
+        if (!emissive) {
+            emissive = this._state.emissive = new Float32Array(3);
+        } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
+            return;
+        }
+        if (value) {
+            emissive[0] = value[0];
+            emissive[1] = value[1];
+            emissive[2] = value[2];
+        } else {
+            emissive[0] = 0;
+            emissive[1] = 0;
+            emissive[2] = 0;
+        }
+        this._renderer.imageDirty();
+    }
+
+    get emissive() {
+        return this._state.emissive;
+    }
+
+    /**
+     RGB emissive map.
+
+     Multiplies by {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}}.
+
+     @property emissiveMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get emissiveMap() {
+        return this._attached.emissiveMap;
+    }
+
+    /**
+     RGB ambient occlusion map.
+
+     Within objectRenderers, multiplies by the specular and diffuse light reflected by surfaces.
+
+     @property occlusionMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get occlusionMap() {
+        return this._attached.occlusionMap;
+    }
+
+    /**
+     Factor in the range [0..1] indicating the alpha value.
+
+     Multiplies by the *R* component of {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and
+     the *A* component, if present, of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}.
+
+     The value of {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} indicates how alpha is
+     interpreted when rendering.
+
+     @property alpha
+     @default 1.0
+     @type Number
+     */
+    set alpha(value) {
+        value = (value !== undefined && value !== null) ? value : 1.0;
+        if (this._state.alpha === value) {
+            return;
+        }
+        this._state.alpha = value;
+        this._renderer.imageDirty();
+    }
+
+    get alpha() {
+        return this._state.alpha;
+    }
+
+    /**
+     RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's alpha in its *R* component.
+
+     The *R* component multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
+
+     @property alphaMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get alphaMap() {
+        return this._attached.alphaMap;
+    }
+
+    /**
+     RGB tangent-space normal map {{#crossLink "Texture"}}{{/crossLink}}.
+
+     Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+     @property normalMap
+     @default undefined
+     @type {Texture}
+     @final
+     */
+    get normalMap() {
+        return this._attached.normalMap;
+    }
+
+    /**
+     The alpha rendering mode.
+
+     This specifies how alpha is interpreted. Alpha is the combined result of the
+     {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
+     {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+     * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
+     * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha and {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}}.
+     * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
+
+     @property alphaMode
+     @default "opaque"
+     @type {String}
+     */
+
+    set alphaMode(alphaMode) {
+        alphaMode = alphaMode || "opaque";
+        let value = modes[alphaMode];
+        if (value === undefined) {
+            this.error("Unsupported value for 'alphaMode': " + alphaMode + " defaulting to 'opaque'");
+            value = "opaque";
+        }
+        if (this._state.alphaMode === value) {
+            return;
+        }
+        this._state.alphaMode = value;
+        this._renderer.imageDirty();
+    }
+
+    get alphaMode() {
+        return modeNames[this._state.alphaMode];
+    }
+
+    /**
+     The alpha cutoff value.
+
+     Specifies the cutoff threshold when {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}}
+     equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
+     opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+     material as fully transparent. This value is ignored for other modes.
+
+     Alpha is the combined result of the
+     {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
+     {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+     @property alphaCutoff
+     @default 0.5
+     @type {Number}
+     */
+    set alphaCutoff(alphaCutoff) {
+        if (alphaCutoff === null || alphaCutoff === undefined) {
+            alphaCutoff = 0.5;
+        }
+        if (this._state.alphaCutoff === alphaCutoff) {
+            return;
+        }
+        this._state.alphaCutoff = alphaCutoff;
+    }
+
+    get alphaCutoff() {
+        return this._state.alphaCutoff;
+    }
+
+    /**
+     Whether backfaces are visible on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+     the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     @property backfaces
+     @default false
+     @type Boolean
+     */
+    set backfaces(value) {
+        value = !!value;
+        if (this._state.backfaces === value) {
+            return;
+        }
+        this._state.backfaces = value;
+        this._renderer.imageDirty();
+    }
+
+    get backfaces() {
+        return this._state.backfaces;
+    }
+
+    /**
+     Indicates the winding direction of front faces on attached {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+     the {{#crossLink "Mesh"}}Meshes{{/crossLink}}.
+
+     @property frontface
+     @default "ccw"
+     @type String
+     */
+    set frontface(value) {
+        value = value !== "cw";
+        if (this._state.frontface === value) {
+            return;
+        }
+        this._state.frontface = value;
+        this._renderer.imageDirty();
+    }
+
+    get frontface() {
+        return this._state.frontface ? "ccw" : "cw";
+    }
+
+    /**
+     The MetallicMaterial's line width.
+
+     @property lineWidth
+     @default 1.0
+     @type Number
+     */
+    set lineWidth(value) {
+        this._state.lineWidth = value || 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get lineWidth() {
+        return this._state.lineWidth;
+    }
+
+    /**
+     The MetallicMaterial's point size.
+
+     @property pointSize
+     @default 1.0
+     @type Number
+     */
+    set pointSize(value) {
+        this._state.pointSize = value || 1.0;
+        this._renderer.imageDirty();
+    }
+
+    get pointSize() {
+        return this._state.pointSize;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+componentClasses[type] = MetallicMaterial;
+
+export{MetallicMaterial};

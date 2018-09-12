@@ -53,9 +53,15 @@
  @submodule geometry
  @extends Geometry
  */
-xeogl.PathGeometry = xeogl.Geometry.extend({
 
-    type: "xeogl.PathGeometry",
+import {Geometry} from './geometry.js';
+import {componentClasses} from "./../componentClasses.js";
+
+const type = "xeogl.PathGeometry";
+
+const PathGeometry = Geometry.extend({
+
+    type: type,
 
     // Constructor
 
@@ -75,19 +81,19 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
      */
     _update: function () {
 
-        var path = this._attached.path;
+        const path = this._attached.path;
 
         if (!path) {
             return;
         }
 
-        var i;
-        var len;
+        let i;
+        let len;
 
-        var points = path.getPoints(this._divisions);
+        const points = path.getPoints(this._divisions);
 
-        var positions = [];
-        var point;
+        const positions = [];
+        let point;
 
         for (i = 0, len = points.length; i < len; i++) {
 
@@ -98,7 +104,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             positions.push(point[2]);
         }
 
-        var indices = [];
+        const indices = [];
 
         for (i = 0, len = points.length - 1; i < len; i++) {
             indices.push(i);
@@ -167,3 +173,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         }
     }
 });
+
+componentClasses[type] = PathGeometry;
+
+export{PathGeometry};

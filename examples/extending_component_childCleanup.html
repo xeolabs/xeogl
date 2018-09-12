@@ -25,18 +25,18 @@
 
     // Define the ColoredTorus component class
 
-    xeogl.ColoredTorus = xeogl.Component.extend({
+    class ColoredTorus extends xeogl.Component {
 
-        type: "xeogl.ColoredTorus",
+        init(cfg) {
 
-        _init: function (cfg) {
+            super.init(cfg);
 
             // Note how each component is instantiated with a reference
             // to this ColoredTorus, This means they will be automatically
             // destroyed when this ColoredTorus is destroyed.
 
             this._torus = new xeogl.Mesh(this, {
-                geometry: new xeogl.TorusGeometry(this, { radius: 2, tube:.6 }),
+                geometry: new xeogl.TorusGeometry(this, {radius: 2, tube: .6}),
                 material: new xeogl.MetallicMaterial(this, {
                     baseColor: [1.0, 0.5, 0.5],
                     roughness: 0.4,
@@ -45,32 +45,31 @@
             });
 
             this.color = cfg.color;
-        },
-
-        _props: {
-
-            // The color of this ColoredTorus.
-
-            color: {
-
-                set: function (color) {
-                    this._torus.material.baseColor = color || [0.5, 0.5, 0.5];
-                },
-
-                get: function () {
-                    return this._torus.material.baseColor;
-                }
-            }
-        },
-
-        _destroy: function () {
-            // Nothing to do here anymore!
         }
-    });
+
+        // The color of this ColoredTorus.
+
+        set color(color) {
+            this._torus.material.baseColor = color || [0.5, 0.5, 0.5];
+
+            // Fire change events for the color property
+            this.fire("color", this._torus.material.baseColor);
+        }
+
+        get color() {
+            return this._torus.material.baseColor;
+        }
+
+        destroy() {
+            super.destroy();
+            // Nothing to do here anymore!
+            // Don't even need this method here.
+        }
+    }
 
     // Instantiate a ColoredTorus (in the default xeogl.Scene)
 
-    var coloredTorus = new xeogl.ColoredTorus({
+    var coloredTorus = new ColoredTorus({
         color: [0.3, 1.0, 0.3]
     });
 

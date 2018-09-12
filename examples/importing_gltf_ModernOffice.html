@@ -13,30 +13,28 @@
     <script src="js/animation/cameraPath.js"></script>
     <script src="js/animation/cameraPathAnimation.js"></script>
 
-    <script src="js/libs/dat.gui.min.js"></script>
-
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
-<div id="info">
-    <h1>oldschool 80's fly-through using <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, <a
-            href="../docs/classes/CameraPathAnimation.html" target="_parent">CameraPathAnimation</a> and <a
-            href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a></h1>
-    <h1>big model loading - be patient!</h1>
-    <pre id="log">model: Modern Office - [<a
-            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/modern_office/AUTHOR'
-            target="_parent">model info</a>]</pre>
-</div>
-
-<div id="dat-gui-container">
-</div>
+<!--<div id="info">-->
+    <!--<h1>oldschool 80's fly-through using <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, <a-->
+            <!--href="../docs/classes/CameraPathAnimation.html" target="_parent">CameraPathAnimation</a> and <a-->
+            <!--href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a></h1>-->
+    <!--<h1>big model loading - be patient!</h1>-->
+    <!--<pre id="log">model: Modern Office - [<a-->
+            <!--href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/modern_office/AUTHOR'-->
+            <!--target="_parent">model info</a>]</pre>-->
+<!--</div>-->
 
 <script>
 
-    xeogl.scene = new xeogl.Scene({
+    var scene = new xeogl.Scene({
         transparent: true // Faster - less pixels to render
     });
+
+
+    xeogl.setDefaultScene(scene);
 
     var model = new xeogl.GLTFModel({
         id: "office",
@@ -49,7 +47,6 @@
 
     });
 
-    var scene = model.scene;
     var camera = scene.camera;
 
     // Customize lights for default scene

@@ -5,17 +5,13 @@
 
  ## Overview
 
- * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} loaded from a glTF file.
- * Contains child {{#crossLink "Object"}}Objects{{/crossLink}} that represent the glTF scene node hierarchy.
- * Can store geometry in quantized form for reduced memory use.
- * Can auto-convert the glTF's materials to {{#crossLink "LambertMaterial"}}LambertMaterials{{/crossLink}} for faster rendering.
-
- GLTFModel inherits these capabilities from its {{#crossLink "Group"}}{{/crossLink}} base class:
-
- * Allows you to access and manipulate the {{#crossLink "Meshes"}}{{/crossLink}} within it.
- * Can be transformed as a unit within World-space.
- * Can be a child within a parent {{#crossLink "Group"}}{{/crossLink}}.
- * Provides its World-space axis-aligned and object-aligned boundaries.
+ * Extends {{#crossLink "Model"}}{{/crossLink}}, which extends {{#crossLink "Group"}}{{/crossLink}}, which extends {{#crossLink "Object"}}{{/crossLink}}.
+ * Plugs into the scene graph and contains child {{#crossLink "Objects"}}{{/crossLink}} that represent its glTF model's scene node elements.
+ * Can be configured with a handleNode callback to customize the way child Objects are created from glTF scene nodes.
+ * Provides its dynamic World-space axis-aligned bounding box (AABB).
+ * May be transformed, shown, hidden, ghosted, highlighted etc. as a unit.
+ * May be configured to compress and batch geometries.
+ * May be configured to convert materials to {{#crossLink "LambertMaterial"}}{{/crossLink}} for faster rendering.
 
  ## Supported glTF 2.0 features
 
@@ -93,7 +89,8 @@
  Our GLTFModel will now be registered by ID on its  {{#crossLink "Scene"}}{{/crossLink}}, so we can now find it like this:
 
  ````javascript
- model = xeogl.scene.models["gearbox"];
+ var scene = xeogl.getDefaultScene();
+ model = scene.models["gearbox"];
  ````
 
  That's assuming that we've created the GLTFModel in the default Scene, which we're doing in these examples.
@@ -101,7 +98,7 @@
  We can also get all the GLTFModels in a Scene, using the Scene's {{#crossLink "Scene/types:property"}}{{/crossLink}} map:
 
  ````javascript
- var gltfModels = xeogl.scene.types["xeogl.GLTFModel"];
+ var gltfModels = scene.types["xeogl.GLTFModel"];
 
  model = gltfModels["myModel"];
  ````
@@ -346,206 +343,184 @@
 
  @extends Model
  */
-(function () {
+{
+    xeogl.GLTFModel = class xeoglGLTFModel extends xeogl.Model {
 
-    "use strict";
+        init(cfg) {
 
-    xeogl.GLTFModel = xeogl.Model.extend({
-
-        type: "xeogl.GLTFModel",
-
-        _init: function (cfg) {
-
-            this._super(cfg); // Call xeogl.Model._init()
+            super.init(cfg); // Call xeogl.Model._init()
 
             this._src = null;
             this._options = {
                 ignoreMaterials: !!cfg.ignoreMaterials,
-                combineGeometry: cfg.combineGeometry !== true,
-                quantizeGeometry: cfg.quantizeGeometry !== true,
+                combineGeometry: cfg.combineGeometry !== false,
+                quantizeGeometry: cfg.quantizeGeometry !== false,
                 edgeThreshold: cfg.edgeThreshold || 20,
                 lambertMaterials: !!cfg.lambertMaterials,
                 handleNode: cfg.handleNode
             };
             this.loaded = cfg.loaded;
             this.src = cfg.src;
-        },
+        }
 
-        _props: {
 
-            /**
-             Array of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel.
+        /**
+         Array of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel.
 
-             @property children
-             @final
-             @type Array
-             */
+         @property children
+         @final
+         @type Array
+         */
 
-            /**
-             Map of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel, mapped to their IDs.
+        /**
+         Map of all the root {{#crossLink "Object"}}Objects{{/crossLink}} in this GLTFModel, mapped to their IDs.
 
-             @property childMap
-             @final
-             @type {*}
-             */
+         @property childMap
+         @final
+         @type {*}
+         */
 
-            /**
-             Indicates whether this GLTFModel is loaded or not.
+        /**
+         Indicates whether this GLTFModel is loaded or not.
 
-             @property loaded
-             @default true
-             @type Boolean
-             */
-            loaded: {
-                set: function (value) {
-                    value = value !== false;
-                    if (this._loaded === value) {
-                        return;
-                    }
-                    this._loaded = value;
-                    this.clear();
-                    if (this._loaded) {
-                        if (this._src) {
-                            xeogl.GLTFModel.load(this, this._src, this._options);
-                        }
-                    }
-                },
-                get: function () {
-                    return this._loaded;
-                }
-            },
-
-            /**
-             Path to a glTF file.
-
-             You can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from
-             the new file (after first destroying any components loaded from a previous file path).
-
-             Fires a {{#crossLink "GLTFModel/loaded:event"}}{{/crossLink}} event when the glTF has loaded.
-
-             @property src
-             @type String
-             */
-            src: {
-                set: function (value) {
-                    if (!value) {
-                        this.clear();
-                        this._src = null;
-                        return;
-                    }
-                    if (!xeogl._isString(value)) {
-                        this.error("Value for 'src' should be a string");
-                        return;
-                    }
-                    if (value === this._src) { // Already loaded this GLTFModel
-                        /**
-                         Fired whenever this GLTFModel has finished loading components from the glTF file
-                         specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
-                         @event loaded
-                         */
-                        this.fire("loaded", true, true);
-                        return;
-                    }
-                    this.clear();
-                    this._src = value;
-                    if (this._loaded) {
-                        xeogl.GLTFModel.load(this, this._src, this._options);
-                    }
-                },
-                get: function () {
-                    return this._src;
+         @property loaded
+         @default true
+         @type Boolean
+         */
+        set loaded(value) {
+            value = value !== false;
+            if (this._loaded === value) {
+                return;
+            }
+            this._loaded = value;
+            this.clear();
+            if (this._loaded) {
+                if (this._src) {
+                    xeogl.GLTFModel.load(this, this._src, this._options);
                 }
             }
         }
-    });
 
-    /**
-     * Loads glTF from a URL into a {{#crossLink "Model"}}{{/crossLink}}.
-     *
-     * @method load
-     * @static
-     * @param {Model} model Model to load into.
-     * @param {String} src Path to glTF file.
-     * @param {Object} options Loading options.
-     * @param {Function} [ok] Completion callback.
-     * @param {Function} [error] Error callback.
-     */
-    xeogl.GLTFModel.load = function (model, src, options, ok, error) {
+        get loaded() {
+            return this._loaded;
+        }
 
-        var spinner = model.scene.canvas.spinner;
-        spinner.processes++;
+        /**
+         Path to a glTF file.
 
-        loadGLTF(model, src, options, function () {
+         You can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from
+         the new file (after first destroying any components loaded from a previous file path).
 
-                spinner.processes--;
+         Fires a {{#crossLink "GLTFModel/loaded:event"}}{{/crossLink}} event when the glTF has loaded.
 
-                xeogl.scheduleTask(function () {
-                    model.fire("loaded", true, true);
-                });
-
-                if (ok) {
-                    ok();
-                }
-            },
-            function (msg) {
-
-                spinner.processes--;
-
-                model.error(msg);
-
-                if (error) {
-                    error(msg);
-                }
-
+         @property src
+         @type String
+         */
+        set src(value) {
+            if (!value) {
+                this.clear();
+                this._src = null;
+                return;
+            }
+            if (!xeogl._isString(value)) {
+                this.error("Value for 'src' should be a string");
+                return;
+            }
+            if (value === this._src) { // Already loaded this GLTFModel
                 /**
-                 Fired whenever this GLTFModel fails to load the glTF file
+                 Fired whenever this GLTFModel has finished loading components from the glTF file
                  specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
-                 @event error
-                 @param msg {String} Description of the error
+                 @event loaded
                  */
-                model.fire("error", msg);
-            });
+                this.fire("loaded", true, true);
+                return;
+            }
+            this.clear();
+            this._src = value;
+            if (this._loaded) {
+                xeogl.GLTFModel.load(this, this._src, this._options);
+            }
+        }
+
+        get src() {
+            return this._src;
+        }
+
+        /**
+         * Loads glTF from a URL into a {{#crossLink "Model"}}{{/crossLink}}.
+         *
+         * @method load
+         * @static
+         * @param {Model} model Model to load into.
+         * @param {String} src Path to glTF file.
+         * @param {Object} options Loading options.
+         * @param {Function} [ok] Completion callback.
+         * @param {Function} [error] Error callback.
+         */
+        static load(model, src, options, ok, error) {
+            var spinner = model.scene.canvas.spinner;
+            spinner.processes++;
+            loadGLTF(model, src, options, function () {
+                    spinner.processes--;
+                    xeogl.scheduleTask(function () {
+                        model.fire("loaded", true, true);
+                    });
+                    if (ok) {
+                        ok();
+                    }
+                },
+                function (msg) {
+                    spinner.processes--;
+                    model.error(msg);
+                    if (error) {
+                        error(msg);
+                    }
+                    /**
+                     Fired whenever this GLTFModel fails to load the glTF file
+                     specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
+                     @event error
+                     @param msg {String} Description of the error
+                     */
+                    model.fire("error", msg);
+                });
+        }
+
+        /**
+         * Parses glTF JSON into a {{#crossLink "Model"}}{{/crossLink}}.
+         *
+         * @method parse
+         * @static
+         * @param {Model} model Model to parse into.
+         * @param {Object} gltf The glTF JSON.
+         * @param {Object} [options] Parsing options
+         * @param {String} [options.basePath] Base path path to find external resources on, if any.
+         * @param {String} [options.loadBuffer] Callback to load buffer files.
+         */
+        static parse(model, gltf, options, ok, error) {
+            options = options || {};
+            var spinner = model.scene.canvas.spinner;
+            spinner.processes++;
+            parseGLTF(gltf, "", options, model, function () {
+                    spinner.processes--;
+                    model.fire("loaded", true, true);
+                    if (ok) {
+                        ok();
+                    }
+                },
+                function (msg) {
+                    spinner.processes--;
+                    model.error(msg);
+                    model.fire("error", msg);
+                    if (error) {
+                        error(msg);
+                    }
+                });
+        }
     };
 
-
-    /**
-     * Parses glTF JSON into a {{#crossLink "Model"}}{{/crossLink}}.
-     *
-     * @method parse
-     * @static
-     * @param {Model} model Model to parse into.
-     * @param {Object} gltf The glTF JSON.
-     * @param {Object} [options] Parsing options
-     * @param {String} [options.basePath] Base path path to find external resources on, if any.
-     * @param {String} [options.loadBuffer] Callback to load buffer files.
-     */
-    xeogl.GLTFModel.parse = function (model, gltf, options, ok, error) {
-
-        options = options || {};
-
-        var spinner = model.scene.canvas.spinner;
-        spinner.processes++;
-
-        parseGLTF(gltf, "", options, model, function () {
-                spinner.processes--;
-                model.fire("loaded", true, true);
-                if (ok) {
-                    ok();
-                }
-            },
-            function (msg) {
-                spinner.processes--;
-                model.error(msg);
-                model.fire("error", msg);
-                if (error) {
-                    error(msg);
-                }
-            });
-    };
-
-    //--------------------------------------------------------------------------------------------
-    // Loads glTF V2.0
-    //--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+// Loads glTF V2.0
+//--------------------------------------------------------------------------------------------
 
     var loadGLTF = (function () {
 
@@ -1610,5 +1585,4 @@
         }
 
     })();
-
-})();
+}

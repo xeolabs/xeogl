@@ -1,14 +1,13 @@
-/*
- * <%= pkg.title %> V<%= pkg.version %>
- *
- * <%= pkg.description %>
- * <%= pkg.homepage %>
- *
- * Built on <%= grunt.template.today("yyyy-mm-dd") %>
- *
- * <%= pkg.license %>
- * Copyright <%= grunt.template.today("yyyy") %>, <%= pkg.author.name %>
- * http://xeolabs.com/
- *
- */
+<%= pkg.title %> V<%= pkg.version %>
+
+<%= pkg.description %>
+<%= pkg.homepage %>
+
+Built on <%= moment().format('YYYY-MM-DD') %>
+
+<%= pkg.license %>
+Copyright <%= moment().format("YYYY") %>, <%= pkg.author.name %>
+http://xeolabs.com/
+
+
 

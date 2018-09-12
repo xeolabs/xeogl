@@ -55,14 +55,14 @@
 
     // Note that preserveDrawingBuffer incurs a performance penalty, and is false by default.
 
-    xeogl.scene = new xeogl.Scene({
+    var scene = new xeogl.Scene({
         canvas: "myCanvas",
         contextAttr: {
             preserveDrawingBuffer: true
         }
     });
 
-    var scene = xeogl.scene;
+    xeogl.setDefaultScene(scene);
 
     // Create some spheres
     var sphereGeometry = new xeogl.SphereGeometry({

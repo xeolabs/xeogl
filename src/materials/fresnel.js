@@ -44,8 +44,7 @@
  @module xeogl
  @submodule materials
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Fresnel.
@@ -56,122 +55,134 @@
  @param [cfg.power=0] {Number} The power.
  @extends Component
  */
-(function () {
 
-    "use strict";
+import {Component} from '../component.js';
+import {State} from '../renderer/state.js';
+import {math} from '../math/math.js';
+import {componentClasses} from "./../componentClasses.js";
 
-    xeogl.Fresnel = xeogl.Component.extend({
+const type = "xeogl.Fresnel";
 
-        type: "xeogl.Fresnel",
+class Fresnel extends Component {
 
-        _init: function (cfg) {
+    /**
+     JavaScript class name for this Component.
 
-            this._state = new xeogl.renderer.State({
-                edgeColor: xeogl.math.vec3([0, 0, 0]),
-                centerColor: xeogl.math.vec3([1, 1, 1]),
-                edgeBias: 0,
-                centerBias: 1,
-                power: 1
-            });
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
 
-            this.edgeColor = cfg.edgeColor;
-            this.centerColor = cfg.centerColor;
-            this.edgeBias = cfg.edgeBias;
-            this.centerBias = cfg.centerBias;
-            this.power = cfg.power;
-        },
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
 
-        _props: {
+    init(cfg) {
 
-            /**
-             This Fresnel's edge color.
+        super.init(cfg);
 
-             @property edgeColor
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            edgeColor: {
-                set: function (value) {
-                    this._state.edgeColor.set(value || [0.0, 0.0, 0.0]);
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edgeColor;
-                }
-            },
+        this._state = new State({
+            edgeColor: math.vec3([0, 0, 0]),
+            centerColor: math.vec3([1, 1, 1]),
+            edgeBias: 0,
+            centerBias: 1,
+            power: 1
+        });
 
-            /**
-             This Fresnel's center color.
+        this.edgeColor = cfg.edgeColor;
+        this.centerColor = cfg.centerColor;
+        this.edgeBias = cfg.edgeBias;
+        this.centerBias = cfg.centerBias;
+        this.power = cfg.power;
+    }
 
-             @property centerColor
-             @default [1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            centerColor: {
-                set: function (value) {
-                    this._state.centerColor.set(value || [1.0, 1.0, 1.0]);
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.centerColor;
-                }
-            },
+    /**
+     This Fresnel's edge color.
 
-            /**
-             * Indicates this Fresnel's edge bias.
-             *
-             * @property edgeBias
-             * @default 0
-             * @type Number
-             */
-            edgeBias: {
-                set: function (value) {
-                    this._state.edgeBias = value || 0;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.edgeBias;
-                }
-            },
+     @property edgeColor
+     @default [0.0, 0.0, 0.0]
+     @type Float32Array
+     */
+    set edgeColor(value) {
+        this._state.edgeColor.set(value || [0.0, 0.0, 0.0]);
+        this._renderer.imageDirty();
+    }
 
-            /**
-             * Indicates this Fresnel's center bias.
-             *
-             * @property centerBias
-             * @default 1
-             * @type Number
-             */
-            centerBias: {
-                set: function (value) {
-                    this._state.centerBias = (value !== undefined && value !== null) ? value : 1;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.centerBias;
-                }
-            },
+    get edgeColor() {
+        return this._state.edgeColor;
+    }
 
-            /**
-             * Indicates this Fresnel's power.
-             *
-             * @property power
-             * @default 1
-             * @type Number
-             */
-            power: {
-                set: function (value) {
-                    this._state.power = (value !== undefined && value !== null) ? value : 1;
-                    this._renderer.imageDirty();
-                },
-                get: function () {
-                    return this._state.power;
-                }
-            }
-        },
+    /**
+     This Fresnel's center color.
 
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
+     @property centerColor
+     @default [1.0, 1.0, 1.0]
+     @type Float32Array
+     */
+    set  centerColor(value) {
+        this._state.centerColor.set(value || [1.0, 1.0, 1.0]);
+        this._renderer.imageDirty();
+    }
 
-})();
+    get centerColor() {
+        return this._state.centerColor;
+    }
+
+    /**
+     * Indicates this Fresnel's edge bias.
+     *
+     * @property edgeBias
+     * @default 0
+     * @type Number
+     */
+    set edgeBias(value) {
+        this._state.edgeBias = value || 0;
+        this._renderer.imageDirty();
+    }
+
+    get edgeBias() {
+        return this._state.edgeBias;
+    }
+
+    /**
+     * Indicates this Fresnel's center bias.
+     *
+     * @property centerBias
+     * @default 1
+     * @type Number
+     */
+    set centerBias(value) {
+        this._state.centerBias = (value !== undefined && value !== null) ? value : 1;
+        this._renderer.imageDirty();
+    }
+
+    get centerBias() {
+        return this._state.centerBias;
+    }
+
+    /**
+     * Indicates this Fresnel's power.
+     *
+     * @property power
+     * @default 1
+     * @type Number
+     */
+    set power(value) {
+        this._state.power = (value !== undefined && value !== null) ? value : 1;
+        this._renderer.imageDirty();
+    }
+
+    get power() {
+        return this._state.power;
+    }
+
+    destroy() {
+        super.destroy();
+        this._state.destroy();
+    }
+}
+
+componentClasses[type] = Fresnel;
+
+export{Fresnel};

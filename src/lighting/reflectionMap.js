@@ -20,8 +20,7 @@
  @module xeogl
  @submodule lighting
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ReflectionMap in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [owner] {Component} Owner component. When destroyed, the owner will destroy this component as well. Creates this component within the default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID for this ReflectionMap, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ReflectionMap.
@@ -30,21 +29,38 @@
  @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "ReflectionMap/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
-(function () {
+import {CubeTexture} from './cubeTexture.js';
+import {componentClasses} from "./../componentClasses.js";
 
-    "use strict";
+const type = "xeogl.ReflectionMap";
 
-    xeogl.ReflectionMap = xeogl.CubeTexture.extend({
-        type: "xeogl.ReflectionMap",
-        _init: function (cfg) {
-            this._super(cfg);
-            this.scene._lightsState.addReflectionMap(this._state);
-            this.scene._reflectionMapCreated(this);
-        },
+class ReflectionMap extends CubeTexture {
 
-        _destroy: function () {
-            this._super();
-            this.scene._reflectionMapDestroyed(this);
-        }
-    });
-})();
+    /**
+     JavaScript class name for this Component.
+
+     For example: "xeogl.AmbientLight", "xeogl.MetallicMaterial" etc.
+
+     @property type
+     @type String
+     @final
+     */
+    get type() {
+        return type;
+    }
+
+    init(cfg) {
+        super.init(cfg);
+        this.scene._lightsState.addReflectionMap(this._state);
+        this.scene._reflectionMapCreated(this);
+    }
+
+    destroy() {
+        super.destroy();
+        this.scene._reflectionMapDestroyed(this);
+    }
+}
+
+componentClasses[type] = ReflectionMap;
+
+export{ReflectionMap};

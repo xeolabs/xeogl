@@ -51,9 +51,11 @@
 <script>
 
     // Eagerly create the default scene so we can bind it to our canvas
-    xeogl.scene = new xeogl.Scene({
+    var scene = new xeogl.Scene({
         canvas: "myCanvas"
     });
+
+    xeogl.setDefaultScene(scene);
 
     // Torus mesh
     var torus = new xeogl.Mesh({
@@ -72,8 +74,6 @@
             })
         })
     });
-
-    var scene = torus.scene;
 
     // Set initial camera position
     scene.camera.eye = [0, 0, -4];
