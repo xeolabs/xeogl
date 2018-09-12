@@ -95,6 +95,7 @@
 
             var canvas = document.createElement("canvas");
 
+
             if (!canvas) {
                 return info;
             }
@@ -13957,7 +13958,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this._destroy();
             }
 
-            this.scene._removeComponent(this);
+            if(this.scene.components)//modified!!!!!!!!!!!!!!###############################################################
+            {this.scene._removeComponent(this);}//only call if scene.components is not null (as this is used by the 
+            //_removeComponent function - I'm not sure if everything is destroyed correctly, but it prevents the clear function
+            //from crashing
 
             // Memory leak avoidance
             this._attached = {};
@@ -14916,6 +14920,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         },
 
         _removeComponent: function (c) {
+
             delete this.components[c.id];
             var types = this.types[c.type];
             if (types) {
@@ -21083,7 +21088,7 @@ xeogl.Group = xeogl.Object.extend({
             style.float = "left";
             style.left = "0";
             style.top = "0";
-            style.position = "absolute";
+            style.position = "fixed";//modified!!! set position at canvas, body and menu container to fixed to avoid scrolling out when annotation is out of canvas bounds #################################################################
             style.opacity = "1.0";
             style["z-index"] = "-10000";
 
@@ -22006,6 +22011,13 @@ xeogl.Group = xeogl.Object.extend({
  the {{#crossLink "Camera"}}{{/crossLink}} towards the hoveredd point on the Mesh's surface.
  @param [cfg.panToPivot=false] {Boolean} TODO.
  @param [cfg.inertia=0.5] {Number} A factor in range [0..1] indicating how much the camera keeps moving after you finish panning or rotating it.
+ @param [cfg.userZoomFactor=1] {Double} user-set zoom factor that is multiplied with the standard value - that means setting it to 0.5 will
+ lead to a zoom 50% slower, setting it to 2 will make it twice as fast...
+ @param [cfg.userPanFactor=1] {Double} user-set pan factor that is multiplied with the standard value - that means setting it to 0.5 will
+ lead to a zoom 50% slower, setting it to 2 will make it twice as fast...
+ @param [cfg.userRotateFactor=1] {Double} user-set rotation factor that is multiplied with the standard value - that means setting it to 0.5 will
+ lead to a zoom 50% slower, setting it to 2 will make it twice as fast...
+
  @author xeolabs / http://xeolabs.com
  @author DerSchmale / http://www.derschmale.com
  @extends Component
@@ -22013,7 +22025,6 @@ xeogl.Group = xeogl.Object.extend({
 (function () {
 
     "use strict";
-
 
     xeogl.CameraControl = xeogl.Component.extend({
 
@@ -22196,9 +22207,15 @@ xeogl.Group = xeogl.Object.extend({
             this.panToPointer = cfg.panToPointer;
             this.panToPivot = cfg.panToPivot;
             this.inertia = cfg.inertia;
+            this.userZoomFactor=cfg.userZoomFactor?cfg.userZoomFactor:1.0;
+            this.userPanFactor=cfg.userPanFactor?cfg.userPanFactor:1.0;
+            this.userRotateFactor=cfg.userRotateFactor?cfg.userRotateFactor:1.0;
+
 
             this._initEvents(); // Set up all the mouse/touch/kb handlers
         },
+
+
 
         _props: {
 
@@ -22295,6 +22312,47 @@ xeogl.Group = xeogl.Object.extend({
                 }
             },
 
+            /**modified!!!!! added a zoom, pan and rotation factor that the user can modify
+
+            @property userZoomFactor
+            @default 1.0
+            @type float
+            */
+           userZoomFactor: {
+               set: function (value) {
+                    this._userZoomFactor = value === undefined ? 1.0 : value;
+               },
+               get: function () {
+                   return this._userZoomFactor;
+               }
+           },
+           /**
+           @property userPanFactor
+           @default 1.0
+           @type float
+           */
+          userPanFactor: {
+              set: function (value) {
+                   this._userPanFactor = value === undefined ? 1.0 : value;
+              },
+              get: function () {
+                  return this._userPanFactor;
+              }
+          },
+          /**
+          @property userRotateFactor
+          @default 1.0
+          @type float
+          */
+         userRotateFactor: {
+             set: function (value) {
+                  this._userRotateFactor = value === undefined ? 1.0 : value;
+             },
+             get: function () {
+                 return this._userRotateFactor;
+             }
+         },
+
             /**
              Indicates whether this CameraControl is in "walking" mode.
 
@@ -22386,20 +22444,20 @@ xeogl.Group = xeogl.Object.extend({
             var scene = this.scene;
             var input = scene.input;
             var camera = scene.camera;
-            var math = xeogl.math;
+            var math = xeogl.math;    
             var canvas = this.scene.canvas.canvas;
             var over = false;
             var mouseHoverDelay = 500;
-            var mouseOrbitRate = 0.4;
-            var mousePanRate = 0.4;
-            var mouseZoomRate = 0.8;
+            var mouseOrbitRate = 0.3;//0.4;
+            var mousePanRate = 0.2;//0.4;
+            var mouseZoomRate = 0.2;//0.8;//0.8;
             var mouseWheelPanRate = 0.4;
             var keyboardOrbitRate = .02;
             var keyboardPanRate = .02;
             var keyboardZoomRate = .02;
-            var touchRotateRate = 0.3;
-            var touchPanRate = 0.2;
-            var touchZoomRate = 0.05;
+            var touchRotateRate = 0.12;//0.3;
+            var touchPanRate = 0.05;//0.2;
+            var touchZoomRate = 0.01;//0.05;
 
             canvas.oncontextmenu = function (e) {
                 e.preventDefault();
@@ -22949,8 +23007,8 @@ xeogl.Group = xeogl.Object.extend({
                         }
                         var x = mousePos[0];
                         var y = mousePos[1];
-                        xDelta += (x - lastX) * mouseOrbitRate;
-                        yDelta += (y - lastY) * mouseOrbitRate;
+                        xDelta += (x - lastX) * mouseOrbitRate*self._userRotateFactor;
+                        yDelta += (y - lastY) * mouseOrbitRate*self._userRotateFactor;
                         lastX = x;
                         lastY = y;
                     });
@@ -22969,15 +23027,15 @@ xeogl.Group = xeogl.Object.extend({
 
                             // Panning
 
-                            panVx = xDelta * mousePanRate;
-                            panVy = yDelta * mousePanRate;
+                            panVx = xDelta * mousePanRate*self._userPanFactor;
+                            panVy = yDelta * mousePanRate*self._userPanFactor;
 
                         } else {
 
                             // Orbiting
 
-                            rotateVy = -xDelta * mouseOrbitRate;
-                            rotateVx = yDelta * mouseOrbitRate;
+                            rotateVy = -xDelta * mouseOrbitRate*self._userRotateFactor;
+                            rotateVx = yDelta * mouseOrbitRate*self._userRotateFactor;
                         }
 
                         xDelta = 0;
@@ -22998,7 +23056,7 @@ xeogl.Group = xeogl.Object.extend({
                             return;
                         }
                         var d = delta / Math.abs(delta);
-                        vZoom = -d * getZoomRate() * mouseZoomRate;
+                        vZoom = -d * getZoomRate() * mouseZoomRate*self._userZoomFactor;
                         e.preventDefault();
                     });
 
@@ -23017,9 +23075,9 @@ xeogl.Group = xeogl.Object.extend({
                             var skey = input.keyDown[input.KEY_SUBTRACT];
                             if (wkey || skey) {
                                 if (skey) {
-                                    vZoom = elapsed * getZoomRate() * keyboardZoomRate;
+                                    vZoom = elapsed * getZoomRate() * keyboardZoomRate*self._userZoomFactor;
                                 } else if (wkey) {
-                                    vZoom = -elapsed * getZoomRate() * keyboardZoomRate;
+                                    vZoom = -elapsed * getZoomRate() * keyboardZoomRate*self._userZoomFactor;
                                 }
                             }
                         }
@@ -23058,19 +23116,19 @@ xeogl.Group = xeogl.Object.extend({
                             }
                             if (front || back || left || right || up || down) {
                                 if (down) {
-                                    panVy += elapsed * keyboardPanRate;
+                                    panVy += elapsed * keyboardPanRate*self._userPanFactor;
                                 } else if (up) {
-                                    panVy -= -elapsed * keyboardPanRate;
+                                    panVy -= -elapsed * keyboardPanRate*self._userPanFactor;
                                 }
                                 if (right) {
-                                    panVx += -elapsed * keyboardPanRate;
+                                    panVx += -elapsed * keyboardPanRate*self._userPanFactor;
                                 } else if (left) {
-                                    panVx = elapsed * keyboardPanRate;
+                                    panVx = elapsed * keyboardPanRate*self._userPanFactor;
                                 }
                                 if (back) {
-                                    panVz = elapsed * keyboardPanRate;
+                                    panVz = elapsed * keyboardPanRate*self._userPanFactor;
                                 } else if (front) {
-                                    panVz = -elapsed * keyboardPanRate;
+                                    panVz = -elapsed * keyboardPanRate*self._userPanFactor;
                                 }
                             }
                             //          }
@@ -23115,6 +23173,9 @@ xeogl.Group = xeogl.Object.extend({
                     }
 
                     canvas.addEventListener("touchstart", function (event) {
+
+                        //alert("touchStart");
+                        
                         if (!self._active) {
                             return;
                         }
@@ -23147,20 +23208,29 @@ xeogl.Group = xeogl.Object.extend({
                     }, {passive: true});
 
                     canvas.addEventListener("touchmove", function (event) {
+                        //alert("touchMove");
                         if (!self._active) {
                             return;
                         }
                         var touches = event.touches;
 
-                        if (numTouches === 1) {
+                        if(!touches[1]&&numTouches===2||!touches[0]&&numTouches===2)//modified!!!!!###############################
+                        {//obviously it is possible that numTouches===2, but one of the touches is undefined
+                            // - this check avoids error messages. Was not a fatal error, nothing crashed, just errors printed
+                            //therefore probably less a fix than a simple supression of errors...
+                            event.stopPropagation();
+                            return;
+                        }    
 
+                        if (numTouches === 1) {
+ 
                             var touch0 = touches[0];
 
                             if (checkMode(MODE_ROTATE)) {
                                 var deltaX = touch0.pageX - lastTouches[0][0];
                                 var deltaY = touch0.pageY - lastTouches[0][1];
-                                var rotateX = deltaX * touchRotateRate;
-                                var rotateY = deltaY * touchRotateRate;
+                                var rotateX = deltaX * touchRotateRate*self._userRotateFactor;
+                                var rotateY = deltaY * touchRotateRate*self._userRotateFactor;
                                 rotateVx = rotateY;
                                 rotateVy = -rotateX;
                             }
@@ -23177,18 +23247,25 @@ xeogl.Group = xeogl.Object.extend({
 
                             if (panning && checkMode(MODE_PAN)) {
                                 math.subVec2([touch0.pageX, touch0.pageY], lastTouches[0], touch0Vec);
-                                panVx = touch0Vec[0] * touchPanRate;
-                                panVy = touch0Vec[1] * touchPanRate;
+                                panVx = touch0Vec[0] * touchPanRate*self._userPanFactor;
+                                panVy = touch0Vec[1] * touchPanRate*self._userPanFactor;
                             }
 
                             if (!panning && checkMode(MODE_ZOOM)) {
                                 var d1 = math.distVec2([touch0.pageX, touch0.pageY], [touch1.pageX, touch1.pageY]);
                                 var d2 = math.distVec2(lastTouches[0], lastTouches[1]);
-                                vZoom = (d2 - d1) * getZoomRate() * touchZoomRate;
+                                vZoom = (d2 - d1) * getZoomRate() * touchZoomRate *self._userZoomFactor;
                             }
                         }
 
                         for (var i = 0; i < numTouches; ++i) {
+
+                            if(!touches[i])//modified!!! same as above
+                            {
+                                event.stopPropagation();
+                                return;
+                            }
+
                             lastTouches[i][0] = touches[i].pageX;
                             lastTouches[i][1] = touches[i].pageY;
                         }
@@ -23216,16 +23293,16 @@ xeogl.Group = xeogl.Object.extend({
                         var down = input.keyDown[input.KEY_DOWN_ARROW];
                         if (left || right || up || down) {
                             if (right) {
-                                rotateVy += -elapsed * keyboardOrbitRate;
+                                rotateVy += -elapsed * keyboardOrbitRate*self._userRotateFactor;
 
                             } else if (left) {
-                                rotateVy += elapsed * keyboardOrbitRate;
+                                rotateVy += elapsed * keyboardOrbitRate*self._userRotateFactor;
                             }
                             if (down) {
-                                rotateVx += elapsed * keyboardOrbitRate;
+                                rotateVx += elapsed * keyboardOrbitRate*self._userRotateFactor;
 
                             } else if (up) {
-                                rotateVx += -elapsed * keyboardOrbitRate;
+                                rotateVx += -elapsed * keyboardOrbitRate*self._userRotateFactor;
                             }
                         }
                     });
@@ -23254,9 +23331,9 @@ xeogl.Group = xeogl.Object.extend({
                         }
                         if (rotateRight || rotateLeft) {
                             if (rotateLeft) {
-                                rotateVy += elapsed * keyboardOrbitRate;
+                                rotateVy += elapsed * keyboardOrbitRate*self._userRotateFactor;
                             } else if (rotateRight) {
-                                rotateVy += -elapsed * keyboardOrbitRate;
+                                rotateVy += -elapsed * keyboardOrbitRate*self._userRotateFactor;
                             }
                         }
                     });
@@ -27104,6 +27181,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     case 2:// Middle/both buttons
                         self.mouseDownMiddle = true;
+                        self.fire("mousewheeldown", e, true);//modified!!!! I want a mousewheel clicked event
+                        //mousedown offers, as implemented, only coordinates but no information which key (left,
+                        //right, middle) is used. Suboptimal implementation, but I don't want to modify it 
+                        //directly since I don't know if some other code depends on it
                         break;
 
                     case 3:// Right button
@@ -27130,6 +27211,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     e.preventDefault();
                 }
             });
+
 
             document.addEventListener("mouseup", this._mouseUpListener = function (e) {
 
