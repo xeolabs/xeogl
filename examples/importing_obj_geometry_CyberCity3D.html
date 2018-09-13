@@ -51,7 +51,8 @@
                 fill: true,
                 fillColor: [0, 0, 0],
                 fillAlpha: 0.7
-            })
+            }),
+            edges : true
         });
 
         // Mesh below the "water" creating a fake reflection,
@@ -65,7 +66,8 @@
             collidable: false,
             pickable: false,
             scale: [0.01, -0.01, 0.01],
-            position: [0, -2.328, 0]
+            position: [0, -2.328, 0],
+            edges: true
         });
 
         // The water
