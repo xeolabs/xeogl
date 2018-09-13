@@ -248,6 +248,8 @@ const Renderer = function ( scene, options) {
 
         return function (params) {
 
+            var opaqueOnly = !!params.opaqueOnly;
+
             if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {  // In case context lost/recovered
                 gl.getExtension("OES_element_index_uint");
             }
@@ -341,21 +343,27 @@ const Renderer = function ( scene, options) {
                     const ghostMaterialState = mesh._ghostMaterial._state;
                     if (ghostMaterialState.edges) {
                         if (ghostMaterialState.edgeAlpha < 1.0) {
-                            transparentGhostEdgesMeshes[numTransparentGhostEdgesMeshes++] = mesh;
+                            if (!opaqueOnly) {
+                                transparentGhostEdgesMeshes[numTransparentGhostEdgesMeshes++] = mesh;
+                            }
                         } else {
                             opaqueGhostEdgesMeshes[numOpaqueGhostEdgesMeshes++] = mesh;
                         }
                     }
                     if (ghostMaterialState.vertices) {
                         if (ghostMaterialState.vertexAlpha < 1.0) {
-                            transparentGhostVerticesMeshes[numTransparentGhostVerticesMeshes++] = mesh;
+                            if (!opaqueOnly) {
+                                transparentGhostVerticesMeshes[numTransparentGhostVerticesMeshes++] = mesh;
+                            }
                         } else {
                             opaqueGhostVerticesMeshes[numOpaqueGhostVerticesMeshes++] = mesh;
                         }
                     }
                     if (ghostMaterialState.fill) {
                         if (ghostMaterialState.fillAlpha < 1.0) {
-                            transparentGhostFillMeshes[numTransparentGhostFillMeshes++] = mesh;
+                            if (!opaqueOnly) {
+                                transparentGhostFillMeshes[numTransparentGhostFillMeshes++] = mesh;
+                            }
                         } else {
                             opaqueGhostFillMeshes[numOpaqueGhostFillMeshes++] = mesh;
                         }
@@ -367,7 +375,9 @@ const Renderer = function ( scene, options) {
 
                     transparent = materialState.alphaMode === 2 /* blend */ || meshState.xray || meshState.colorize[3] < 1;
                     if (transparent) {
-                        transparentMeshes[numTransparentMeshes++] = mesh;
+                        if (!opaqueOnly) {
+                            transparentMeshes[numTransparentMeshes++] = mesh;
+                        }
                     } else {
                         if (meshState.outlined) {
                             outlinedMeshes[numOutlinedMeshes++] = mesh;
@@ -381,21 +391,27 @@ const Renderer = function ( scene, options) {
                     const selectedMaterialState = mesh._selectedMaterial._state;
                     if (selectedMaterialState.edges) {
                         if (selectedMaterialState.edgeAlpha < 1.0) {
-                            transparentSelectedEdgesMeshes[numTransparentSelectedEdgesMeshes++] = mesh;
+                            if (!opaqueOnly) {
+                                transparentSelectedEdgesMeshes[numTransparentSelectedEdgesMeshes++] = mesh;
+                            }
                         } else {
                             opaqueSelectedEdgesMeshes[numOpaqueSelectedEdgesMeshes++] = mesh;
                         }
                     }
                     if (selectedMaterialState.vertices) {
                         if (selectedMaterialState.vertexAlpha < 1.0) {
-                            transparentSelectedVerticesMeshes[numTransparentSelectedVerticesMeshes++] = mesh;
+                            if (!opaqueOnly) {
+                                transparentSelectedVerticesMeshes[numTransparentSelectedVerticesMeshes++] = mesh;
+                            }
                         } else {
                             opaqueSelectedVerticesMeshes[numOpaqueSelectedVerticesMeshes++] = mesh;
                         }
                     }
                     if (selectedMaterialState.fill) {
                         if (selectedMaterialState.fillAlpha < 1.0) {
-                            transparentSelectedFillMeshes[numTransparentSelectedFillMeshes++] = mesh;
+                            if (!opaqueOnly) {
+                                transparentSelectedFillMeshes[numTransparentSelectedFillMeshes++] = mesh;
+                            }
                         } else {
                             opaqueSelectedFillMeshes[numOpaqueSelectedFillMeshes++] = mesh;
                         }
@@ -409,7 +425,9 @@ const Renderer = function ( scene, options) {
                     const highlightMaterialState = mesh._highlightMaterial._state;
                     if (highlightMaterialState.edges) {
                         if (highlightMaterialState.edgeAlpha < 1.0) {
-                            transparentHighlightEdgesMeshes[numTransparentHighlightEdgesMeshes++] = mesh;
+                            if (!opaqueOnly) {
+                                transparentHighlightEdgesMeshes[numTransparentHighlightEdgesMeshes++] = mesh;
+                            }
                         } else {
                             opaqueHighlightEdgesMeshes[numOpaqueHighlightEdgesMeshes++] = mesh;
                         }
@@ -436,7 +454,9 @@ const Renderer = function ( scene, options) {
                 if (meshState.edges) {
                     const edgeMaterial = mesh._edgeMaterial._state;
                     if (edgeMaterial.edgeAlpha < 1.0) {
-                        transparentEdgesMeshes[numTransparentEdgesMeshes++] = mesh;
+                        if (!opaqueOnly) {
+                            transparentEdgesMeshes[numTransparentEdgesMeshes++] = mesh;
+                        }
                     } else {
                         opaqueEdgesMeshes[numOpaqueEdgesMeshes++] = mesh;
                     }
