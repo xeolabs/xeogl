@@ -17,24 +17,32 @@
 
 <body>
 
-<div id="info" style="padding-left: 15px;">
-    <h1><a href="../docs/classes/AnnotationStory.html"
-           target="_parent">AnnotationStory</a> demo
-    </h1>
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - anatomical model with occlusion-culled
+        <a href="../docs/classes/Annotation.html" target="_parent">Annotations</a></h1>
+    <pre id="log">model by: <a
+            href='https://sketchfab.com/cderolin' target="_parent">https://sketchfab.com/cderolin</a></pre>
 </div>
 
 <script>
 
-    //---------------------------------------------------
     // Load the model
-    //---------------------------------------------------
-
-    // https://sketchfab.com/models/4829e2c6226b4c0b86a09c5304048c7a
-
     var model = new xeogl.GLTFModel({
+        id: "nerves",
         src: "models/gltf/nerves/scene.gltf",
         entities: true,
-        edgeThreshold: 10
+        edgeThreshold: 10,
+        handleNode: (function () {
+            var objectCount = 0;
+            return function (nodeInfo, actions) {
+                if (nodeInfo.mesh !== undefined) { // Node has a mesh
+                    actions.createObject = {
+                        id: "nerves." + objectCount++
+                    };
+                }
+                return true;
+            };
+        })()
     });
 
     var scene = model.scene;
@@ -44,12 +52,6 @@
 
     scene.clearLights();
 
-    //    new xeogl.AmbientLight({
-    //        id: "ambientLight",
-    //        color: [1.0, 0.95, 0.95],
-    //        intensity: 1.0
-    //    });
-    //
     new xeogl.DirLight({
         id: "keyLight",
         dir: [-0.4, -0.0, -1.0],
@@ -57,15 +59,7 @@
         intensity: 1.3,
         space: "view"
     });
-    //
-    //    new xeogl.DirLight({
-    //        id: "fillLight",
-    //        dir: [0.5, 0.8, -0.4],
-    //        color: [0.4, 0.4, 1.0],
-    //        intensity: 0.4,
-    //        space: "view"
-    //    });
-    //
+
     new xeogl.DirLight({
         id: "rimLight",
         dir: [0.3, 0.0, 0.5],
@@ -87,131 +81,156 @@
 
     model.on("loaded", function () {
         (new xeogl.CameraFlightAnimation()).flyTo(model);
+
         scene.on("tick", function () { // Slowly orbit the camera
             if (spinning) {
-                //    camera.orbitYaw(-0.7);
+                camera.orbitYaw(-0.7);
             }
         });
 
-
         new xeogl.Annotation({
-            "primIndex": 10701,
+            "primIndex": 3456,
             "bary": [
-                0.39854,
-                0.01132,
-                0.59014
+                0.03941,
+                0.60109,
+                0.3595
             ],
-            "offset": 0.2,
-            "occludable": false,
+            "offset": 0.4,
+            "occludable": true,
             "glyph": "2",
-            "title": "Annotation 2",
-            "desc": "Foo",
+            "title": "Radius",
+            "desc": "Extends from the lateral side of the elbow to the thumb side of the wrist and runs parallel to the ulna.",
             "eye": [
-                50.64533,
-                1.18247,
-                -42.73478
+                52.59337,
+                1.17978,
+                -18.85859
             ],
             "look": [
-                51.7571,
-                0.36053,
-                -51.04353
+                51.1564,
+                -0.8895,
+                -51.02177
             ],
             "up": [
-                0.01294,
-                0.99523,
-                -0.09672
+                -0.00286,
+                0.99794,
+                -0.06408
             ],
             "pinShown": true,
             "labelShown": true,
-            "mesh": "_44"
+            "mesh": "nerves.6"
         });
 
         new xeogl.Annotation({
-            "primIndex": 20883,
+            "primIndex": 29277,
             "bary": [
-                0.35149,
-                0.22252,
-                0.42599
+                -0.2808,
+                0.85901,
+                0.42179
             ],
-            "offset": 0.2,
-            "occludable": false,
-            "glyph": "2",
-            "title": "Annotation 2",
-            "desc": "Foo",
+            "offset": 0.4,
+            "occludable": true,
+            "glyph": "3",
+            "title": "Ulna",
+            "desc": "Stretches from the elbow to the smallest finger, and when in anatomical position, is found on the medial side of the forearm.",
             "eye": [
-                47.37959,
-                -3.24611,
-                -50.8873
+                20.96316,
+                -2.3122,
+                -62.29834
             ],
             "look": [
-                49.70179,
-                -3.3168,
-                -52.74637
+                51.1564,
+                -0.8895,
+                -51.02177
             ],
             "up": [
-                0.01855,
-                0.99972,
-                -0.01485
+                -0.04131,
+                0.99903,
+                -0.01543
             ],
             "pinShown": true,
             "labelShown": true,
-            "mesh": "_44"
+            "mesh": "nerves.6"
         });
+
+        new xeogl.Annotation({
+            "primIndex": 76974,
+            "bary": [
+                0.62723,
+                0.11043,
+                0.26233
+            ],
+            "offset": 0.4,
+            "occludable": true,
+            "glyph": "2",
+            "title": "Extensor Retinaculum",
+            "desc": " Thickened part of the antebrachial fascia that holds the tendons of the extensor muscles in place.",
+            "eye": [
+                51.1564,
+                -0.8895,
+                -83.28345
+            ],
+            "look": [
+                51.1564,
+                -0.8895,
+                -51.02177
+            ],
+            "up": [
+                0,
+                1,
+                0
+            ],
+            "pinShown": true,
+            "labelShown": true,
+            "mesh": "nerves.5"
+        })
     });
 
     new xeogl.CameraControl(); // User camera control
 
 
-    //
-    new xeogl.ReflectionMap({
-        src: [
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-        ],
-        encoding: "sRGB"
-    });
+    const createAnnotationsOnClick = false;
 
+    if (createAnnotationsOnClick) {
 
-    var i = 0;
+        var i = 0;
 
-    scene.input.on("mouseclicked", function (coords) {
+        scene.input.on("mouseclicked", function (coords) {
 
-        var hit = self.scene.pick({
-            canvasPos: coords,
-            pickSurface: true
-        });
-
-        if (hit) {
-
-            var mesh = hit.mesh;
-            var camera = mesh.scene.camera;
-
-            i++;
-            var num = i + 1;
-            var glyph = "" + num;
-
-
-            var annotation = new xeogl.Annotation({
-                mesh: hit.mesh.id,
-                primIndex: hit.primIndex,
-                bary: hit.bary,
-                glyph: glyph,
-                title: "Annotation " + num,
-                desc: "Foo",
-                eye: camera.eye,
-                look: camera.look,
-                up: camera.up,
-                pinShown: true,
-                labelShown: true
+            var hit = self.scene.pick({
+                canvasPos: coords,
+                pickSurface: true,
+                excludeMeshes: ["nerves.8", "nerves.7", "nerves.1", "nerves.6"]
             });
 
-            console.log(JSON.stringify(annotation.getJSON(), null, "\t"));
-        }
-    });
+            if (hit) {
+
+                var mesh = hit.mesh;
+                var camera = mesh.scene.camera;
+
+                i++;
+                var num = i + 1;
+                var glyph = "" + num;
+
+
+                var annotation = new xeogl.Annotation({
+                    mesh: hit.mesh.id,
+                    primIndex: hit.primIndex,
+                    bary: hit.bary,
+                    glyph: glyph,
+                    title: "Annotation " + num,
+                    desc: "Foo",
+                    eye: camera.eye,
+                    look: camera.look,
+                    up: camera.up,
+                    pinShown: true,
+                    labelShown: true
+                });
+
+                console.log(JSON.stringify(annotation.getJSON(), null, "\t"));
+            }
+        });
+    }
+
 
 </script>
 </body>
