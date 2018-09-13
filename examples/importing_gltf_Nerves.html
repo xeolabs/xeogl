@@ -32,23 +32,23 @@
         src: "models/gltf/nerves/scene.gltf",
         entities: true,
         edgeThreshold: 10,
-        handleNode: (function () {
+        handleNode: (function () { // Callback fired for each glTF scene node
             var objectCount = 0;
             return function (nodeInfo, actions) {
-                if (nodeInfo.mesh !== undefined) { // Node has a mesh
-                    actions.createObject = {
+                if (nodeInfo.mesh !== undefined) { // glTF node has a mesh
+                    actions.createObject = { // Create a xeogl.Object for this glTF scene node
                         id: "nerves." + objectCount++
                     };
                 }
-                return true;
+                return true; // Descend into this glTF scene nde
             };
         })()
     });
 
     var scene = model.scene;
 
-    scene.gammaInput = true;
-    scene.gammaOutput = true;
+    scene.gammaInput = false;
+    scene.gammaOutput = false;
 
     scene.clearLights();
 
@@ -68,9 +68,6 @@
         space: "view"
     });
 
-    scene.gammaInput = false;
-    scene.gammaOutput = false;
-
     var camera = scene.camera;
 
     camera.eye = [0, 0, -3.0];
@@ -80,6 +77,7 @@
     var spinning = true;
 
     model.on("loaded", function () {
+
         (new xeogl.CameraFlightAnimation()).flyTo(model);
 
         scene.on("tick", function () { // Slowly orbit the camera
@@ -90,31 +88,15 @@
 
         new xeogl.Annotation({
             "primIndex": 3456,
-            "bary": [
-                0.03941,
-                0.60109,
-                0.3595
-            ],
+            "bary": [0.03941, 0.60109, 0.3595],
             "offset": 0.4,
             "occludable": true,
             "glyph": "2",
             "title": "Radius",
             "desc": "Extends from the lateral side of the elbow to the thumb side of the wrist and runs parallel to the ulna.",
-            "eye": [
-                52.59337,
-                1.17978,
-                -18.85859
-            ],
-            "look": [
-                51.1564,
-                -0.8895,
-                -51.02177
-            ],
-            "up": [
-                -0.00286,
-                0.99794,
-                -0.06408
-            ],
+            "eye": [52.59337, 1.17978, -18.85859],
+            "look": [51.1564, -0.8895, -51.02177],
+            "up": [-0.00286, 0.99794, -0.06408],
             "pinShown": true,
             "labelShown": true,
             "mesh": "nerves.6"
@@ -122,31 +104,15 @@
 
         new xeogl.Annotation({
             "primIndex": 29277,
-            "bary": [
-                -0.2808,
-                0.85901,
-                0.42179
-            ],
+            "bary": [-0.2808, 0.85901, 0.42179],
             "offset": 0.4,
             "occludable": true,
             "glyph": "3",
             "title": "Ulna",
             "desc": "Stretches from the elbow to the smallest finger, and when in anatomical position, is found on the medial side of the forearm.",
-            "eye": [
-                20.96316,
-                -2.3122,
-                -62.29834
-            ],
-            "look": [
-                51.1564,
-                -0.8895,
-                -51.02177
-            ],
-            "up": [
-                -0.04131,
-                0.99903,
-                -0.01543
-            ],
+            "eye": [20.96316, -2.3122, -62.29834],
+            "look": [51.1564, -0.8895, -51.02177],
+            "up": [-0.04131, 0.99903, -0.01543],
             "pinShown": true,
             "labelShown": true,
             "mesh": "nerves.6"
@@ -154,31 +120,15 @@
 
         new xeogl.Annotation({
             "primIndex": 76974,
-            "bary": [
-                0.62723,
-                0.11043,
-                0.26233
-            ],
+            "bary": [0.62723, 0.11043, 0.26233],
             "offset": 0.4,
             "occludable": true,
             "glyph": "2",
             "title": "Extensor Retinaculum",
             "desc": " Thickened part of the antebrachial fascia that holds the tendons of the extensor muscles in place.",
-            "eye": [
-                51.1564,
-                -0.8895,
-                -83.28345
-            ],
-            "look": [
-                51.1564,
-                -0.8895,
-                -51.02177
-            ],
-            "up": [
-                0,
-                1,
-                0
-            ],
+            "eye": [51.1564, -0.8895, -83.28345],
+            "look": [51.1564, -0.8895, -51.02177],
+            "up": [0, 1, 0],
             "pinShown": true,
             "labelShown": true,
             "mesh": "nerves.5"
@@ -186,7 +136,6 @@
     });
 
     new xeogl.CameraControl(); // User camera control
-
 
     const createAnnotationsOnClick = false;
 
