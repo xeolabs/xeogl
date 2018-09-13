@@ -1,5 +1,5 @@
 /**
- An **Annotation** is a labeled {{#crossLink "Pin"}}{{/crossLink}} that's attached to the surface of an {{#crossLink "Mesh"}}{{/crossLink}}.
+ An **Annotation** is a labeled {{#crossLink "Pin"}}{{/crossLink}} that's attached to the surface of a {{#crossLink "Mesh"}}{{/crossLink}}.
 
  <a href="../../examples/#annotations_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a>
 
