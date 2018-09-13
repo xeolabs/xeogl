@@ -2,7 +2,23 @@
   "name": "xeogl",
   "title": "xeogl",
   "version": "0.9.0",
-  "description": "A WebGL-based 3D visualization engine from xeoLabs",
+  "description": "WebGL-based 3D visualization library",
+  "main": "build/xeogl.js",
+  "module": "build/xeogl.module.js",
+  "jsnext:main": "build/xeogl.module.js",
+  "files": [
+    "package.json",
+    "LICENSE",
+    "README.md",
+    "build/xeogl.js",
+    "build/xeogl.module.js",
+    "src",
+    "examples/js"
+  ],
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
   "homepage": "http://xeogl.org/",
   "keywords": [
     "xeogl",
@@ -17,6 +33,9 @@
     "email": "lindsay.kay@xeolabs.com"
   },
   "license": "MIT License",
+  "bugs": {
+    "url": "https://github.com/xeolabs/xeogl/issues"
+  },
   "repository": {
     "type": "git",
     "url": "http://github.com/xeolabs/xeogl.git"
