@@ -380,7 +380,7 @@ teapotMesh.ghosted = true;
 var phongMaterials = scene.types["xeogl.PhongMaterial"];
 var teapotMaterial = phongMaterials["myMaterial"];
 teapotMaterial.diffuse = [0,1,0]; // Change to green</code></pre>
-<p>See Object, <a href="../classes/Group.html" class="crosslink">Group</a> and <a href="../classes/Model.html" class="crosslink">Model</a>
+<p>See <a href="../classes/Object.html" class="crosslink">Object</a>, <a href="../classes/Group.html" class="crosslink">Group</a> and <a href="../classes/Model.html" class="crosslink">Model</a>
 for how to create and access more sophisticated content.</p>
 <h3 id="controlling-the-camera">Controlling the camera</h3>
 <p>Use the Scene&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to control the current viewpoint and projection:</p>
@@ -485,11 +485,11 @@ if (hit) {
 <pre class="code prettyprint"><code class="lang-javascript">scene.on("boundary", function() {
     var aabb = scene.aabb;
 });</code></pre>
-<p>Getting the AABB of the Object with the given IDs:</p>
+<p>Getting the AABB of the <a href="../classes/Object.html" class="crosslink">Objects</a> with the given IDs:</p>
 <pre class="code prettyprint"><code class="lang-JavaScript">scene.getAABB(); // Gets collective boundary of all Mesh Objects in the scene
 scene.getAABB("saw"); // Gets boundary of an Object
 scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of two Objects</code></pre>
-<p>See <a href="../classes/Scene.html#method_getAABB" class="crosslink">Scene#getAABB()</a> and Object for more info on querying and tracking boundaries.</p>
+<p>See <a href="../classes/Scene.html#method_getAABB" class="crosslink">Scene#getAABB()</a> and <a href="../classes/Object.html" class="crosslink">Object</a> for more info on querying and tracking boundaries.</p>
 <h3 id="managing-the-viewport">Managing the viewport</h3>
 <p>The Scene&#39;s <a href="../classes/Viewport.html" class="crosslink">Viewport</a> component manages the WebGL viewport:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var viewport = scene.viewport
@@ -626,7 +626,7 @@ leave that enabled:</p>
                 <li class="param">
                     
                         <code class="param-name optional">[cfg]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -2064,7 +2064,7 @@ any subsequent notifications on the event as they are made.</p>
                 <li class="param">
                     
                         <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                     
 
                     
@@ -2164,7 +2164,7 @@ any subsequent notifications on the event as they are made.</p>
     </div>
 
     <div class="description">
-        <p>Returns the collective axis-aligned bounding box of the Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Returns the collective axis-aligned bounding box of the <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 <p>When no arguments are given, returns the total boundary of all objects in the scene.</p>
 <p>Only <a href="../classes/Mesh.html" class="crosslink">Meshes</a> with <a href="../classes/Mesh.html#property_collidable" class="crosslink">collidable</a>
 set <code>true</code> are included in the boundary.</p>
@@ -2193,7 +2193,7 @@ scene.getAABB(["saw#0.1", "surface", "support"]); // Get collective boundary an 
                     
 
                     <div class="param-description">
-                        <p>{Array} Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>{Array} Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -2748,7 +2748,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -2898,7 +2898,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -3346,7 +3346,7 @@ since the last render.</p>
     </div>
 
     <div class="description">
-        <p>Colorizes a batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Colorizes a batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 
     </div>
 
@@ -3365,7 +3365,7 @@ since the last render.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -3375,7 +3375,7 @@ since the last render.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[colorize=(1,1,1)]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -3465,7 +3465,7 @@ since the last render.</p>
     </div>
 
     <div class="description">
-        <p>Shows or hides wireeframe edges for batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Shows or hides wireeframe edges for batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 
     </div>
 
@@ -3484,7 +3484,7 @@ since the last render.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -3520,7 +3520,7 @@ since the last render.</p>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True if any Object changed edges state, else false if all updates were redundant and not applied.</p>
+                    <p>True if any <a href="../classes/Object.html" class="crosslink">Objects</a> changed edges state, else false if all updates were redundant and not applied.</p>
 
                 
             </div>
@@ -3597,7 +3597,7 @@ since the last render.</p>
     </div>
 
     <div class="description">
-        <p>Ghosts or un-ghosts a batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Ghosts or un-ghosts a batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 <p>Each Object indicates its ghosted status in its <a href="../classes/Object.html#property_ghosted" class="crosslink">ghosted</a> property.</p>
 <p>Each ghosted Object is registered in the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
 <a href="../classes/Scene.html#property_ghostedEntities" class="crosslink">ghostedEntities</a> map when its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
@@ -3620,7 +3620,7 @@ is assigned a value.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -3656,7 +3656,7 @@ is assigned a value.</p>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True if any Object changed ghosted state, else false if all updates were redundant and not applied.</p>
+                    <p>True if any <a href="../classes/Object.html" class="crosslink">Objects</a> changed ghosted state, else false if all updates were redundant and not applied.</p>
 
                 
             </div>
@@ -3733,7 +3733,7 @@ is assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Highlights or de-highlights a batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Highlights or de-highlights a batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 <p>Each Object indicates its highlight status in its <a href="../classes/Object.html#property_highlighted" class="crosslink">highlighted</a> property.</p>
 <p>Each highlighted Object is registered in the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
 <a href="../classes/Scene.html#property_highlightedEntities" class="crosslink">highlightedEntities</a> map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
@@ -3756,7 +3756,7 @@ is assigned a value.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -3792,7 +3792,7 @@ is assigned a value.</p>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True if any Object changed highlighted state, else false if all updates were redundant and not applied.</p>
+                    <p>True if any <a href="../classes/Object.html" class="crosslink">Objects</a> changed highlighted state, else false if all updates were redundant and not applied.</p>
 
                 
             </div>
@@ -3865,7 +3865,7 @@ is assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Updates opacities of a batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Updates opacities of a batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 
     </div>
 
@@ -3884,7 +3884,7 @@ is assigned a value.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -3894,7 +3894,7 @@ is assigned a value.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[opacity=1]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -3984,7 +3984,7 @@ is assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Shows or hides an outline around a batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Shows or hides an outline around a batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 <p>Each Object indicates its outlined status in its <a href="../classes/Object.html#property_outlined" class="crosslink">outlined</a> property.</p>
 <p>Each outlined Object is registered in the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
 Scene/outlinedEntities:property map when its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
@@ -4007,7 +4007,7 @@ is assigned a value.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -4043,7 +4043,7 @@ is assigned a value.</p>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True if any Object changed outlined state, else false if all updates were redundant and not applied.</p>
+                    <p>True if any <a href="../classes/Object.html" class="crosslink">Objects</a> changed outlined state, else false if all updates were redundant and not applied.</p>
 
                 
             </div>
@@ -4120,7 +4120,7 @@ is assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Sets a batch of Object pickable or unpickable, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Sets a batch of <a href="../classes/Object.html" class="crosslink">Objects</a> pickable or unpickable, specified by their IDs, GUIDs and/or entity types.</p>
 <p>Picking is done via calls to <a href="../classes/Scene.html#method_pick" class="crosslink">Scene#pick()</a>.</p>
 
     </div>
@@ -4140,7 +4140,7 @@ is assigned a value.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -4176,7 +4176,7 @@ is assigned a value.</p>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True if any Object changed pickable state, else false if all updates were redundant and not applied.</p>
+                    <p>True if any <a href="../classes/Object.html" class="crosslink">Objects</a> changed pickable state, else false if all updates were redundant and not applied.</p>
 
                 
             </div>
@@ -4253,7 +4253,7 @@ is assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Selects or de-selects a batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Selects or de-selects a batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 <p>Each Object indicates its selected status in its <a href="../classes/Object.html#property_selected" class="crosslink">selected</a> property.</p>
 <p>Each selected Object is registered in the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
 <a href="../classes/Scene.html#property_selectedEntities" class="crosslink">selectedEntities</a> map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
@@ -4276,7 +4276,7 @@ is assigned a value.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -4312,7 +4312,7 @@ is assigned a value.</p>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True if any Object changed selection state, else false if all updates were redundant and not applied.</p>
+                    <p>True if any <a href="../classes/Object.html" class="crosslink">Objects</a> changed selection state, else false if all updates were redundant and not applied.</p>
 
                 
             </div>
@@ -4389,7 +4389,7 @@ is assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Culls or unculls a batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Culls or unculls a batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 <p>Each Object indicates its culled status in its Object/visibility:property property.</p>
 
     </div>
@@ -4409,7 +4409,7 @@ is assigned a value.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -4445,7 +4445,7 @@ is assigned a value.</p>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True if any Object changed culled state, else false if all updates were redundant and not applied.</p>
+                    <p>True if any <a href="../classes/Object.html" class="crosslink">Objects</a> changed culled state, else false if all updates were redundant and not applied.</p>
 
                 
             </div>
@@ -4522,7 +4522,7 @@ is assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Shows or hides a batch of Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Shows or hides a batch of <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 <p>Each Object indicates its visibility status in its Object/visibility:property property.</p>
 <p>Each visible Object is registered in the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
 <a href="../classes/Scene.html#property_visibleEntities" class="crosslink">visibleEntities</a> map while its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a>
@@ -4545,7 +4545,7 @@ is assigned a value.</p>
                     
 
                     <div class="param-description">
-                        <p>Array of  Object IDs, GUIDs or entity types.</p>
+                        <p>Array of  <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -4581,7 +4581,7 @@ is assigned a value.</p>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True if any Object changed visibility, else false if all updates were redundant and not applied.</p>
+                    <p>True if any <a href="../classes/Object.html" class="crosslink">Objects</a> changed visibility, else false if all updates were redundant and not applied.</p>
 
                 
             </div>
@@ -4746,7 +4746,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     </div>
 
     <div class="description">
-        <p>Iterates with a callback over Object, specified by their IDs, GUIDs and/or entity types.</p>
+        <p>Iterates with a callback over <a href="../classes/Object.html" class="crosslink">Objects</a>, specified by their IDs, GUIDs and/or entity types.</p>
 
     </div>
 
@@ -4765,7 +4765,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
 
                     <div class="param-description">
-                        <p>One or more Object IDs, GUIDs or entity types.</p>
+                        <p>One or more <a href="../classes/Object.html" class="crosslink">Object</a> IDs, GUIDs or entity types.</p>
 
                     </div>
 
@@ -5269,7 +5269,7 @@ other properties initialised to their default values.</p>
     </div>
 
     <div class="description">
-        <p>Object in this Scene that have entity types, mapped to their IDs.</p>
+        <p><a href="../classes/Object.html" class="crosslink">Objects</a> in this Scene that have entity types, mapped to their IDs.</p>
 <p>Each Object is registered in this map when its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a> is
 assigned a value.</p>
 
@@ -5459,7 +5459,7 @@ assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>For each entity type, a map of IDs to Object of that entity type.</p>
+        <p>For each entity type, a map of IDs to <a href="../classes/Object.html" class="crosslink">Objects</a> of that entity type.</p>
 <p>Each Object is registered in this map when its <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a> is
 assigned a value.</p>
 
@@ -5699,7 +5699,7 @@ assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Ghosted entity Object within this Scene, mapped to their IDs.</p>
+        <p>Ghosted entity <a href="../classes/Object.html" class="crosslink">Objects</a> within this Scene, mapped to their IDs.</p>
 <p>Each Object is registered in this map when its <a href="../classes/Object.html#property_ghosted" class="crosslink">ghosted</a> property is true and its
 <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a> is assigned a value.</p>
 
@@ -5847,7 +5847,7 @@ other properties initialised to their default values.</p>
     </div>
 
     <div class="description">
-        <p>Object in this Scene that have GUIDs, mapped to their GUIDs.</p>
+        <p><a href="../classes/Object.html" class="crosslink">Objects</a> in this Scene that have GUIDs, mapped to their GUIDs.</p>
 <p>Each Object is registered in this map when its <a href="../classes/Object.html#property_guid" class="crosslink">guid</a> is
 assigned a value.</p>
 
@@ -5896,7 +5896,7 @@ assigned a value.</p>
     </div>
 
     <div class="description">
-        <p>Highlighted entity Object within this Scene, mapped to their IDs.</p>
+        <p>Highlighted entity <a href="../classes/Object.html" class="crosslink">Objects</a> within this Scene, mapped to their IDs.</p>
 <p>Each Object is registered in this map when its <a href="../classes/Object.html#property_highlighted" class="crosslink">highlighted</a> property is true and its
 <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a> is assigned a value.</p>
 
@@ -6343,7 +6343,7 @@ other properties initialised to their default values.</p>
                 
                     <div id="property_metadata" class="property item inherited">
     <h3 class="name"><code>metadata</code></h3>
-    <span class="type">Object</span>
+    <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
 
     
 
@@ -6510,7 +6510,7 @@ other properties initialised to their default values.</p>
     </div>
 
     <div class="description">
-        <p>The Object in this Scene, mapped to their IDs.</p>
+        <p>The <a href="../classes/Object.html" class="crosslink">Objects</a> in this Scene, mapped to their IDs.</p>
 
     </div>
 
@@ -6703,7 +6703,7 @@ other properties initialised to their default values.</p>
     </div>
 
     <div class="description">
-        <p>The root Object in this Scene, mapped to their IDs.</p>
+        <p>The root <a href="../classes/Object.html" class="crosslink">Objects</a> in this Scene, mapped to their IDs.</p>
 
     </div>
 
@@ -6794,7 +6794,7 @@ other properties initialised to their default values.</p>
     </div>
 
     <div class="description">
-        <p>Selected entity Object within this Scene, mapped to their IDs.</p>
+        <p>Selected entity <a href="../classes/Object.html" class="crosslink">Objects</a> within this Scene, mapped to their IDs.</p>
 <p>Each Object is registered in this map when its <a href="../classes/Object.html#property_selected" class="crosslink">selected</a> property is true and its
 <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a> is assigned a value.</p>
 
@@ -7228,7 +7228,7 @@ IDs to <a href="../classes/Component.html" class="crosslink">Components</a> inst
     </div>
 
     <div class="description">
-        <p>Visible entity Object within this Scene, mapped to their IDs.</p>
+        <p>Visible entity <a href="../classes/Object.html" class="crosslink">Objects</a> within this Scene, mapped to their IDs.</p>
 <p>Each Object is registered in this map when its <a href="../classes/Object.html#property_visible" class="crosslink">visible</a> property is true and its
 <a href="../classes/Object.html#property_entityType" class="crosslink">entityType</a> is assigned a value.</p>
 

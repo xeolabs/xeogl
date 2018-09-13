@@ -433,8 +433,8 @@ find those Objects within their Scene using their GUIDs, like this:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var redLeg = scene.guidObjects["5782d454-9f06-4d71-aff1-78c597eacbfb"];
 var greenLeg = scene.guidObjects["c37e421f-5440-4ce1-9b4c-9bd06d8ab5ed"];</code></pre>
 <h3 id="updating-objects">Updating Objects</h3>
-<p>As mentioned earlier, property updates on a <a href="../classes/Group.html" class="crosslink">Group</a> Object will apply recursively to all
-sub-Objects within it, eventually updating the <a href="../classes/Mesh.html" class="crosslink">Mesh</a> Object at the leaves.</p>
+<p>As mentioned earlier, property updates on a <a href="../classes/Group.html" class="crosslink">Group</a> <a href="../classes/Object.html" class="crosslink">Object</a> will apply recursively to all
+sub-Objects within it, eventually updating the <a href="../classes/Mesh.html" class="crosslink">Mesh</a> <a href="../classes/Object.html" class="crosslink">Objects</a> at the leaves.</p>
 <p>These properties, defined in Object, are:</p>
 <ul>
 <li><a href="../classes/Object.html#property_visible" class="crosslink">visible</a></li>
@@ -471,7 +471,7 @@ the table Group, has updated the collective boundary of the whole table.</p>
 <p>Just for fun, let&#39;s fit the view to the table top:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var cameraFlight = new xeogl.CameraFlightAnimation(); // Fit the boundary in view
 cameraFlight.flyTo(tableTopMesh.aabb);</code></pre>
-<p>Those boundaries will automatically update whenever we add or remove child Object or <a href="../classes/Mesh.html" class="crosslink">Meshes</a>, or update child <a href="../classes/Mesh.html" class="crosslink">Meshes</a>&#39; <a href="../classes/Geometry.html" class="crosslink">Geometries</a>
+<p>Those boundaries will automatically update whenever we add or remove child <a href="../classes/Object.html" class="crosslink">Objects</a> or <a href="../classes/Mesh.html" class="crosslink">Meshes</a>, or update child <a href="../classes/Mesh.html" class="crosslink">Meshes</a>&#39; <a href="../classes/Geometry.html" class="crosslink">Geometries</a>
 or modeling transforms.</p>
 <p>Let&#39;s follow the table top wherever it goes:</p>
 <pre class="code prettyprint"><code class="lang-javascript">tableTopMesh.on("boundary", function() {
@@ -874,7 +874,7 @@ entities non-hierarchical.</p>
                             <li class="param">
                                 
                                     <code class="param-name optional">[parent]</code>
-                                    <span class="type">Object</span>
+                                    <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
@@ -2064,7 +2064,7 @@ any subsequent notifications on the event as they are made.</p>
                 <li class="param">
                     
                         <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                     
 
                     
@@ -2628,7 +2628,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -2778,7 +2778,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -2871,7 +2871,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 <li class="param">
                     
                         <code class="param-name">object</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                     
 
                     
@@ -4129,7 +4129,7 @@ axis-aligned volume, ie. <code>[xmin, ymin,zmin,xmax,ymax, zmax]</code>.</p>
     </div>
 
     <div class="description">
-        <p>IDs of child Object.</p>
+        <p>IDs of child <a href="../classes/Object.html" class="crosslink">Objects</a>.</p>
 
     </div>
 
@@ -4176,7 +4176,7 @@ axis-aligned volume, ie. <code>[xmin, ymin,zmin,xmax,ymax, zmax]</code>.</p>
     </div>
 
     <div class="description">
-        <p>Child Object mapped to their IDs.</p>
+        <p>Child <a href="../classes/Object.html" class="crosslink">Objects</a> mapped to their IDs.</p>
 
     </div>
 
@@ -4223,7 +4223,7 @@ axis-aligned volume, ie. <code>[xmin, ymin,zmin,xmax,ymax, zmax]</code>.</p>
     </div>
 
     <div class="description">
-        <p>Array of child Object.</p>
+        <p>Array of child <a href="../classes/Object.html" class="crosslink">Objects</a>.</p>
 
     </div>
 
@@ -4807,7 +4807,7 @@ is set to a value.</p>
                 
                     <div id="property_metadata" class="property item inherited">
     <h3 class="name"><code>metadata</code></h3>
-    <span class="type">Object</span>
+    <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
 
     
 
@@ -4927,7 +4927,7 @@ is set to a value.</p>
     </div>
 
     <div class="description">
-        <p>Number of child Object.</p>
+        <p>Number of child <a href="../classes/Object.html" class="crosslink">Objects</a>.</p>
 
     </div>
 

@@ -287,7 +287,7 @@
 
     
         <div class="extends">
-            Extends Object
+            Extends <a href="../classes/Object.html" class="crosslink">Object</a>
         </div>
     
 
@@ -310,7 +310,7 @@
 
 
 <div class="box intro">
-    <p>A <strong>Mesh</strong> is an Object that represents a drawable 3D primitive.</p>
+    <p>A <strong>Mesh</strong> is an <a href="../classes/Object.html" class="crosslink">Object</a> that represents a drawable 3D primitive.</p>
 <h2 id="overview">Overview</h2>
 <ul>
 <li>A Mesh represents a WebGL draw call.</li>
@@ -326,7 +326,7 @@ component instances are provided by the <a href="../classes/Scene.html" class="c
 <li>For best performance, reuse as many of the same component instances among your Meshes as possible.</li>
 <li>Use <a href="../classes/Group.html" class="crosslink">Group</a> components to organize Meshes into hierarchies, if required.</li>
 </ul>
-<p>This page covers functionality specific to the Mesh component, while Object covers generic
+<p>This page covers functionality specific to the Mesh component, while <a href="../classes/Object.html" class="crosslink">Object</a> covers generic
 functionality inherited from the base class.</p>
 <h2 id="usage">Usage</h2>
 <ul>
@@ -363,10 +363,10 @@ mesh.scene.material.diffuse  = [1.0, 0.0, 0.0];    // ...as this one.</code></pr
     })
 });</code></pre>
 <h3 id="creating-hierarchies">Creating hierarchies</h3>
-<p>In xeogl we represent an object hierarchy as a tree of Object in which
+<p>In xeogl we represent an object hierarchy as a tree of <a href="../classes/Object.html" class="crosslink">Objects</a> in which
 the leaf Objects are Meshes. In an Object tree, an operation on an Object is recursively applied to sub-Objects, down
 to the Meshes at the leaves.</p>
-<p>See Object for information on organizing Meshes hierarchically.</p>
+<p>See <a href="../classes/Object.html" class="crosslink">Object</a> for information on organizing Meshes hierarchically.</p>
 <h3 id="controlling-visibility">Controlling visibility</h3>
 <p>Show or hide a Mesh by setting its <a href="../classes/Mesh.html#property_visible" class="crosslink">visible</a> property:</p>
 <pre class="code prettyprint"><code class="lang-javascript">mesh.visible = false; // Hide
@@ -428,7 +428,7 @@ a Material, it will automatically get its <a href="../classes/Scene.html" class=
 });</code></pre>
 <h3 id="transforming">Transforming</h3>
 <p>A Mesh can be positioned within the World-space coordinate system.</p>
-<p>See Object.</p>
+<p>See <a href="../classes/Object.html" class="crosslink">Object</a>.</p>
 <h3 id="ghosting">Ghosting</h3>
 <p>Ghost a Mesh by setting its <a href="../classes/Mesh.html#property_ghosted" class="crosslink">ghosted</a> property true. The Mesh&#39;s
 <a href="../classes/Mesh.html#property_ghostMaterial" class="crosslink">ghostMaterial</a> property holds the <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a>
@@ -574,7 +574,7 @@ Mesh&#39;s <a href="../classes/Object.html#property_worldMatrix" class="crosslin
     var obb = mesh.obb;
 });</code></pre>
 <p>The <a href="../classes/Scene.html" class="crosslink">Scene</a> also has a <a href="../classes/Scene.html#method_getAABB" class="crosslink">Scene#getAABB()</a>, which returns
-the collective World-space AABBs of the Object with the given IDs:</p>
+the collective World-space AABBs of the <a href="../classes/Object.html" class="crosslink">Objects</a> with the given IDs:</p>
 <pre class="code prettyprint"><code class="lang-JavaScript">var scene = mesh.scene;
 
 scene.getAABB(); // Gets collective boundary of all meshes in the scene
@@ -591,7 +591,7 @@ their <a href="../classes/Mesh.html#property_collidable" class="crosslink">colli
 <pre class="code prettyprint"><code class="lang-javascript">mesh.collidable = false; // Exclude mesh from calculation of its Scene/Model boundary
 mesh.collidable = true; // Include mesh in calculation of its Scene/Model boundary</code></pre>
 <p>Setting this false is useful when a Mesh represents some element, such as a control gizmo, that you don&#39;t want to
-contribute to the  <a href="../classes/Scene.html" class="crosslink">Scene</a> or parent Object&#39;s AABB. It
+contribute to the  <a href="../classes/Scene.html" class="crosslink">Scene</a> or parent <a href="../classes/Object.html" class="crosslink">Object</a>&#39;s AABB. It
 also helps performance, since boundaries will not need dynamically re-calculated whenever the Mesh&#39;s boundary changes after
 a <a href="../classes/Object.html#property_worldMatrix" class="crosslink">worldMatrix</a> or <a href="../classes/Camera.html" class="crosslink">Camera</a> update.</p>
 <h4 id="examples">Examples</h4>
@@ -801,7 +801,7 @@ that can make it behave as a billboard.</p>
                                 
 
                                 <div class="param-description">
-                                    <p>Optional entity classification when using within a semantic data model. See the Object documentation for usage.</p>
+                                    <p>Optional entity classification when using within a semantic data model. See the <a href="../classes/Object.html" class="crosslink">Object</a> documentation for usage.</p>
 
                                 </div>
 
@@ -811,7 +811,7 @@ that can make it behave as a billboard.</p>
                             <li class="param">
                                 
                                     <code class="param-name optional">[parent]</code>
-                                    <span class="type">Object</span>
+                                    <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
@@ -1122,7 +1122,7 @@ parent {{#crossLink "Scene"}}Scene{{/crossLink}}&#39;s default instance, {{#cros
                                 
 
                                 <div class="param-description">
-                                    <p>Whether this Mesh is included in boundary calculations. When false, the bounding boxes of the containing <a href="../classes/Scene.html" class="crosslink">Scene</a> and parent Object, <a href="../classes/Group.html" class="crosslink">Group</a> or <a href="../classes/Model.html" class="crosslink">Model</a> will not be calculated to enclose this Mesh.</p>
+                                    <p>Whether this Mesh is included in boundary calculations. When false, the bounding boxes of the containing <a href="../classes/Scene.html" class="crosslink">Scene</a> and parent <a href="../classes/Object.html" class="crosslink">Object</a>, <a href="../classes/Group.html" class="crosslink">Group</a> or <a href="../classes/Model.html" class="crosslink">Model</a> will not be calculated to enclose this Mesh.</p>
 
                                 </div>
 
@@ -2217,7 +2217,7 @@ any subsequent notifications on the event as they are made.</p>
                 <li class="param">
                     
                         <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                     
 
                     
@@ -2781,7 +2781,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -2931,7 +2931,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -3021,7 +3021,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 <li class="param">
                     
                         <code class="param-name">object</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                     
 
                     
@@ -4032,7 +4032,7 @@ axis. Use this mode for things like trees on a landscape.</li>
     </div>
 
     <div class="description">
-        <p>IDs of child Object.</p>
+        <p>IDs of child <a href="../classes/Object.html" class="crosslink">Objects</a>.</p>
 
     </div>
 
@@ -4076,7 +4076,7 @@ axis. Use this mode for things like trees on a landscape.</li>
     </div>
 
     <div class="description">
-        <p>Child Object mapped to their IDs.</p>
+        <p>Child <a href="../classes/Object.html" class="crosslink">Objects</a> mapped to their IDs.</p>
 
     </div>
 
@@ -4120,7 +4120,7 @@ axis. Use this mode for things like trees on a landscape.</li>
     </div>
 
     <div class="description">
-        <p>Array of child Object.</p>
+        <p>Array of child <a href="../classes/Object.html" class="crosslink">Objects</a>.</p>
 
     </div>
 
@@ -4981,7 +4981,7 @@ for correct alpha blending.</p>
                 
                     <div id="property_metadata" class="property item inherited">
     <h3 class="name"><code>metadata</code></h3>
-    <span class="type">Object</span>
+    <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
 
     
 
@@ -5098,7 +5098,7 @@ for correct alpha blending.</p>
     </div>
 
     <div class="description">
-        <p>Number of child Object.</p>
+        <p>Number of child <a href="../classes/Object.html" class="crosslink">Objects</a>.</p>
 
     </div>
 
