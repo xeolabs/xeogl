@@ -9,44 +9,24 @@ class ShadowShaderSource {
     }
 }
 
-function hasTextures(mesh) {
-    if (!mesh._geometry._state.uv) {
-        return false;
-    }
-    const materialState = mesh._material._state;
-    return materialState.alphaMap;
-}
-
 function buildVertex(mesh) {
-
-    let i;
-    let len;
-    const lights = scene.lights.lights;
-    let light;
+    const scene = mesh.scene;
+    const clipping = scene._clipsState.clips.length > 0;
+    const quantizedGeometry = !!mesh._geometry._state.quantized;
     const billboard = mesh._state.billboard;
-
+    const stationary = mesh._state.stationary;
     const src = [];
-
     src.push("// Shadow drawing vertex shader");
-
     src.push("attribute vec3 position;");
-
     src.push("uniform mat4 modelMatrix;");
     src.push("uniform mat4 viewMatrix;");
     src.push("uniform mat4 projMatrix;");
-
-    if (cfg.quantizedGeometry) {
+    if (quantizedGeometry) {
         src.push("uniform mat4 positionsDecodeMatrix;");
     }
-
-    if (cfg.clipping) {
+    if (clipping) {
         src.push("varying vec4 vWorldPosition;");
     }
-
-    if (mesh._geometry._state.primitiveName === "points") {
-        src.push("uniform float pointSize;");
-    }
-
     if (billboard === "spherical" || billboard === "cylindrical") {
         src.push("void billboard(inout mat4 mat) {");
         src.push("   mat[0][0] = 1.0;");
@@ -62,73 +42,44 @@ function buildVertex(mesh) {
         src.push("   mat[2][2] =1.0;");
         src.push("}");
     }
-
     src.push("void main(void) {");
-
     src.push("vec4 localPosition = vec4(position, 1.0); ");
     src.push("vec4 worldPosition;");
-
-    if (cfg.quantizedGeometry) {
+    if (quantizedGeometry) {
         src.push("localPosition = positionsDecodeMatrix * localPosition;");
     }
-
     src.push("mat4 viewMatrix2 = viewMatrix;");
     src.push("mat4 modelMatrix2 = modelMatrix;");
-
-    if (mesh._state.stationary) {
+    if (stationary) {
         src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
     }
-
     if (billboard === "spherical" || billboard === "cylindrical") {
-
         src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
         src.push("billboard(modelMatrix2);");
         src.push("billboard(viewMatrix2);");
-        src.push("billboard(modelViewMatrix);");
-
-        if (cfg.normals) {
-            src.push("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
-            src.push("billboard(modelNormalMatrix2);");
-            src.push("billboard(viewNormalMatrix2);");
-            src.push("billboard(modelViewNormalMatrix);");
-        }
-
-        src.push("worldPosition = modelMatrix2 * localPosition;");
-        src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
-    } else {
-        src.push("worldPosition = modelMatrix2 * localPosition;");
-        src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
     }
-
-    if (cfg.clipping) {
+    src.push("worldPosition = modelMatrix2 * localPosition;");
+    src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
+    if (clipping) {
         src.push("vWorldPosition = worldPosition;");
     }
-
-    if (mesh._geometry._state.primitiveName === "points") {
-        src.push("gl_PointSize = pointSize;");
-    }
-
     src.push("   gl_Position = projMatrix * viewPosition;");
-
     src.push("}");
-
     return src;
 }
 
 function buildFragment(mesh) {
-
-    let i;
+    const scene = mesh.scene;
+    const gl = scene.canvas.gl;
+    const clipsState = scene._clipsState;
+    const clipping = clipsState.clips.length > 0;
     const src = [];
-
     src.push("// Shadow fragment shader");
-
     src.push("precision " + getFragmentFloatPrecision(gl) + " float;");
-
-    if (cfg.clipping) {
-        src.push("varying vec4 vWorldPosition;");
+    if (clipping) {
         src.push("uniform bool clippable;");
-        for (i = 0; i < scene.clips.clips.length; i++) {
+        src.push("varying vec4 vWorldPosition;");
+        for (var i = 0; i < clipsState.clips.length; i++) {
             src.push("uniform bool clipActive" + i + ";");
             src.push("uniform vec3 clipPos" + i + ";");
             src.push("uniform vec3 clipDir" + i + ";");
@@ -141,31 +92,18 @@ function buildFragment(mesh) {
     src.push("  comp -= comp.gbaa * bitMask;");
     src.push("  return comp;");
     src.push("}");
+
     src.push("void main(void) {");
-    if (cfg.clipping) {
+    if (clipping) {
         src.push("if (clippable) {");
         src.push("  float dist = 0.0;");
-        for (i = 0; i < scene.clips.clips.length; i++) {
+        for (var i = 0; i < clipsState.clips.length; i++) {
             src.push("if (clipActive" + i + ") {");
             src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
             src.push("}");
         }
         src.push("  if (dist > 0.0) { discard; }");
-        if (cfg.solid) {
-            src.push("  if (gl_FrontFacing == false) {");
-            src.push("     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);");
-            src.push("     return;");
-            src.push("  }");
-        }
         src.push("}");
-    }
-    if (mesh._geometry._state.primitiveName === "points") {
-        src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
-        src.push("float r = dot(cxy, cxy);");
-        src.push("if (r > 1.0) {");
-        src.push("   discard;");
-        src.push("}");
-
     }
     src.push("gl_FragColor = packDepth(gl_FragCoord.z);");
     src.push("}");

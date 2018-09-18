@@ -626,6 +626,7 @@ class Mesh extends xeoglObject {
         });
 
         this._drawRenderer = null;
+        this._shadowRenderer = null;
         this._emphasisFillRenderer = null;
         this._emphasisEdgesRenderer = null;
         this._emphasisVerticesRenderer = null;
@@ -664,6 +665,7 @@ class Mesh extends xeoglObject {
         this._putRenderers();
         this._makeHash();
         this._drawRenderer = DrawRenderer.get(this);
+        this._shadowRenderer = ShadowRenderer.get(this);
         this._emphasisFillRenderer = EmphasisFillRenderer.get(this);
         this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this);
         this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this);
@@ -675,6 +677,9 @@ class Mesh extends xeoglObject {
     _webglContextRestored() {
         if (this._drawRenderer) {
             this._drawRenderer.webglContextRestored();
+        }
+        if (this._shadowRenderer) {
+            this._shadowRenderer.webglContextRestored();
         }
         if (this._emphasisFillRenderer) {
             this._emphasisFillRenderer.webglContextRestored();
@@ -835,6 +840,10 @@ class Mesh extends xeoglObject {
             this._drawRenderer.put();
             this._drawRenderer = null;
         }
+        if (this._shadowRenderer) {
+            this._shadowRenderer.put();
+            this._shadowRenderer = null;
+        }
         if (this._emphasisFillRenderer) {
             this._emphasisFillRenderer.put();
             this._emphasisFillRenderer = null;
@@ -850,10 +859,6 @@ class Mesh extends xeoglObject {
         if (this._outlineRenderer) {
             this._outlineRenderer.put();
             this._outlineRenderer = null;
-        }
-        if (this._shadowRenderer) {
-            this._shadowRenderer.put();
-            this._shadowRenderer = null;
         }
         if (this._pickMeshRenderer) {
             this._pickMeshRenderer.put();
@@ -993,6 +998,9 @@ class Mesh extends xeoglObject {
             this.scene._entityVisibilityUpdated(this, visible);
         }
         this._renderer.imageDirty();
+        if (this._state.castShadow) {
+            this._renderer.shadowsDirty();
+        }
     }
 
     get visible() {
@@ -1166,6 +1174,9 @@ class Mesh extends xeoglObject {
         }
         this._state.clippable = value;
         this._renderer.imageDirty();
+        if (this._state.castShadow) {
+            this._renderer.shadowsDirty();
+        }
     }
 
     get clippable() {
@@ -1201,12 +1212,12 @@ class Mesh extends xeoglObject {
      @type Boolean
      */
     set castShadow(value) {
-        // value = value !== false;
-        // if (value === this._state.castShadow) {
-        //     return;
-        // }
-        // this._state.castShadow = value;
-        // this._renderer.imageDirty(); // Re-render in next shadow map generation pass
+        value = value !== false;
+        if (value === this._state.castShadow) {
+            return;
+        }
+        this._state.castShadow = value;
+        this._renderer.shadowsDirty();
     }
 
     get castShadow() {
@@ -1221,6 +1232,7 @@ class Mesh extends xeoglObject {
      @type Boolean
      */
     set receiveShadow(value) {
+        this._state.receiveShadow = false; // Disables shadows for now
         // value = value !== false;
         // if (value === this._state.receiveShadow) {
         //     return;
@@ -1374,6 +1386,9 @@ class Mesh extends xeoglObject {
         this._putRenderers();
         this._renderer.meshListDirty();
         this.scene._meshDestroyed(this);
+        if (this._state.castShadow) {
+            this._renderer.shadowsDirty();
+        }
     }
 }
 

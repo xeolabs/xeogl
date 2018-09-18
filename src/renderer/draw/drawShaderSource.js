@@ -310,7 +310,6 @@ function buildVertexDraw(mesh) {
     const meshState = mesh._state;
     const clipsState = scene._clipsState;
     const geometryState = mesh._geometry._state;
-    const materialState = mesh._material._state;
     const lightsState = scene._lightsState;
     let i;
     let len;
@@ -407,13 +406,13 @@ function buildVertexDraw(mesh) {
     }
     if (receiveShadow) {
         src.push("const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);");
-        // for (i = 0, len = lights.length; i < len; i++) { // Light sources
-        //     if (lights[i].shadow) {
-        //         src.push("uniform mat4 shadowViewMatrix" + i + ";");
-        //         src.push("uniform mat4 shadowProjMatrix" + i + ";");
-        //         src.push("varying vec4 vShadowPosFromLight" + i + ";");
-        //     }
-        // }
+        for (i = 0, len = lightsState.lights.length; i < len; i++) { // Light sources
+            if (lightsState.lights[i].shadow) {
+                src.push("uniform mat4 shadowViewMatrix" + i + ";");
+                src.push("uniform mat4 shadowProjMatrix" + i + ";");
+                src.push("varying vec4 vShadowPosFromLight" + i + ";");
+            }
+        }
     }
     src.push("void main(void) {");
     src.push("vec4 localPosition = vec4(position, 1.0); ");
@@ -538,7 +537,7 @@ function buildFragmentDraw(mesh) {
     let light;
     const src = [];
 
-    src.push("// Fragment vertex shader");
+    src.push("// Drawing fragment shader");
 
     if (normals && material._normalMap) {
         src.push("#extension GL_OES_standard_derivatives : enable");
@@ -1395,7 +1394,7 @@ function buildFragmentDraw(mesh) {
         //     src.push("float lightDepth2 = clamp(length(lightPos)/40.0, 0.0, 1.0);");
         //     src.push("float illuminated = VSM(sLightDepth, lightUV, lightDepth2);");
         //
-        src.push("float shadowAcneRemover = 0.0007;");
+        src.push("float shadowAcneRemover = 0.007;");
         src.push("vec3 fragmentDepth;");
         src.push("float texelSize = 1.0 / 1024.0;");
         src.push("float amountInLight = 0.0;");
@@ -1447,7 +1446,9 @@ function buildFragmentDraw(mesh) {
                 src.push("  }");
                 src.push("}");
 
-                src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a * (shadow / 49.0));");
+                src.push("shadow = shadow / 9.0;");
+
+                src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a * shadow);"); // a is intensity
                 //
                 // }
                 //
@@ -1465,11 +1466,10 @@ function buildFragmentDraw(mesh) {
                 //     src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a * shadow);");
                 // }
             } else {
-                src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a );");
+                src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a );"); // a is intensity
             }
 
             src.push("light.direction = viewLightDir;");
-
 
             if (phongMaterial) {
                 src.push("computePhongLighting(light, geometry, material, reflectedLight);");
@@ -1495,7 +1495,7 @@ function buildFragmentDraw(mesh) {
             src.push("vec3 outgoingLight =  ((occlusion * (( reflectedLight.diffuse + reflectedLight.specular)))) + emissiveColor;");
 
         } else {
-            src.push("vec3 outgoingLight = (occlusion * (reflectedLight.diffuse)) + (shadow * occlusion * reflectedLight.specular) + emissiveColor;");
+            src.push("vec3 outgoingLight = (occlusion * (reflectedLight.diffuse)) + (occlusion * reflectedLight.specular) + emissiveColor;");
         }
 
     }
