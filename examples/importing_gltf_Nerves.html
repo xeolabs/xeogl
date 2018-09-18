@@ -30,8 +30,6 @@
     var model = new xeogl.GLTFModel({
         id: "nerves",
         src: "models/gltf/nerves/scene.gltf",
-        entities: true,
-        edgeThreshold: 10,
         handleNode: (function () { // Callback fired for each glTF scene node
             var objectCount = 0;
             return function (nodeInfo, actions) {
