@@ -296,44 +296,24 @@ class ShadowShaderSource {
     }
 }
 
-function hasTextures(mesh) {
-    if (!mesh._geometry._state.uv) {
-        return false;
-    }
-    const materialState = mesh._material._state;
-    return materialState.alphaMap;
-}
-
 function buildVertex(mesh) {
-
-    let i;
-    let len;
-    const lights = scene.lights.lights;
-    let light;
+    const scene = mesh.scene;
+    const clipping = scene._clipsState.clips.length &gt; 0;
+    const quantizedGeometry = !!mesh._geometry._state.quantized;
     const billboard = mesh._state.billboard;
-
+    const stationary = mesh._state.stationary;
     const src = [];
-
     src.push(&quot;// Shadow drawing vertex shader&quot;);
-
     src.push(&quot;attribute vec3 position;&quot;);
-
     src.push(&quot;uniform mat4 modelMatrix;&quot;);
     src.push(&quot;uniform mat4 viewMatrix;&quot;);
     src.push(&quot;uniform mat4 projMatrix;&quot;);
-
-    if (cfg.quantizedGeometry) {
+    if (quantizedGeometry) {
         src.push(&quot;uniform mat4 positionsDecodeMatrix;&quot;);
     }
-
-    if (cfg.clipping) {
+    if (clipping) {
         src.push(&quot;varying vec4 vWorldPosition;&quot;);
     }
-
-    if (mesh._geometry._state.primitiveName === &quot;points&quot;) {
-        src.push(&quot;uniform float pointSize;&quot;);
-    }
-
     if (billboard === &quot;spherical&quot; || billboard === &quot;cylindrical&quot;) {
         src.push(&quot;void billboard(inout mat4 mat) {&quot;);
         src.push(&quot;   mat[0][0] = 1.0;&quot;);
@@ -349,73 +329,44 @@ function buildVertex(mesh) {
         src.push(&quot;   mat[2][2] =1.0;&quot;);
         src.push(&quot;}&quot;);
     }
-
     src.push(&quot;void main(void) {&quot;);
-
     src.push(&quot;vec4 localPosition = vec4(position, 1.0); &quot;);
     src.push(&quot;vec4 worldPosition;&quot;);
-
-    if (cfg.quantizedGeometry) {
+    if (quantizedGeometry) {
         src.push(&quot;localPosition = positionsDecodeMatrix * localPosition;&quot;);
     }
-
     src.push(&quot;mat4 viewMatrix2 = viewMatrix;&quot;);
     src.push(&quot;mat4 modelMatrix2 = modelMatrix;&quot;);
-
-    if (mesh._state.stationary) {
+    if (stationary) {
         src.push(&quot;viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;&quot;)
     }
-
     if (billboard === &quot;spherical&quot; || billboard === &quot;cylindrical&quot;) {
-
         src.push(&quot;mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;&quot;);
         src.push(&quot;billboard(modelMatrix2);&quot;);
         src.push(&quot;billboard(viewMatrix2);&quot;);
-        src.push(&quot;billboard(modelViewMatrix);&quot;);
-
-        if (cfg.normals) {
-            src.push(&quot;mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;&quot;);
-            src.push(&quot;billboard(modelNormalMatrix2);&quot;);
-            src.push(&quot;billboard(viewNormalMatrix2);&quot;);
-            src.push(&quot;billboard(modelViewNormalMatrix);&quot;);
-        }
-
-        src.push(&quot;worldPosition = modelMatrix2 * localPosition;&quot;);
-        src.push(&quot;vec4 viewPosition = modelViewMatrix * localPosition;&quot;);
-
-    } else {
-        src.push(&quot;worldPosition = modelMatrix2 * localPosition;&quot;);
-        src.push(&quot;vec4 viewPosition  = viewMatrix2 * worldPosition; &quot;);
     }
-
-    if (cfg.clipping) {
+    src.push(&quot;worldPosition = modelMatrix2 * localPosition;&quot;);
+    src.push(&quot;vec4 viewPosition  = viewMatrix2 * worldPosition; &quot;);
+    if (clipping) {
         src.push(&quot;vWorldPosition = worldPosition;&quot;);
     }
-
-    if (mesh._geometry._state.primitiveName === &quot;points&quot;) {
-        src.push(&quot;gl_PointSize = pointSize;&quot;);
-    }
-
     src.push(&quot;   gl_Position = projMatrix * viewPosition;&quot;);
-
     src.push(&quot;}&quot;);
-
     return src;
 }
 
 function buildFragment(mesh) {
-
-    let i;
+    const scene = mesh.scene;
+    const gl = scene.canvas.gl;
+    const clipsState = scene._clipsState;
+    const clipping = clipsState.clips.length &gt; 0;
     const src = [];
-
     src.push(&quot;// Shadow fragment shader&quot;);
-
     src.push(&quot;precision &quot; + getFragmentFloatPrecision(gl) + &quot; float;&quot;);
-
-    if (cfg.clipping) {
-        src.push(&quot;varying vec4 vWorldPosition;&quot;);
+    if (clipping) {
         src.push(&quot;uniform bool clippable;&quot;);
-        for (i = 0; i &lt; scene.clips.clips.length; i++) {
+        src.push(&quot;varying vec4 vWorldPosition;&quot;);
+        for (var i = 0; i &lt; clipsState.clips.length; i++) {
             src.push(&quot;uniform bool clipActive&quot; + i + &quot;;&quot;);
             src.push(&quot;uniform vec3 clipPos&quot; + i + &quot;;&quot;);
             src.push(&quot;uniform vec3 clipDir&quot; + i + &quot;;&quot;);
@@ -428,31 +379,18 @@ function buildFragment(mesh) {
     src.push(&quot;  comp -= comp.gbaa * bitMask;&quot;);
     src.push(&quot;  return comp;&quot;);
     src.push(&quot;}&quot;);
+
     src.push(&quot;void main(void) {&quot;);
-    if (cfg.clipping) {
+    if (clipping) {
         src.push(&quot;if (clippable) {&quot;);
         src.push(&quot;  float dist = 0.0;&quot;);
-        for (i = 0; i &lt; scene.clips.clips.length; i++) {
+        for (var i = 0; i &lt; clipsState.clips.length; i++) {
             src.push(&quot;if (clipActive&quot; + i + &quot;) {&quot;);
             src.push(&quot;   dist += clamp(dot(-clipDir&quot; + i + &quot;.xyz, vWorldPosition.xyz - clipPos&quot; + i + &quot;.xyz), 0.0, 1000.0);&quot;);
             src.push(&quot;}&quot;);
         }
         src.push(&quot;  if (dist &gt; 0.0) { discard; }&quot;);
-        if (cfg.solid) {
-            src.push(&quot;  if (gl_FrontFacing == false) {&quot;);
-            src.push(&quot;     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);&quot;);
-            src.push(&quot;     return;&quot;);
-            src.push(&quot;  }&quot;);
-        }
         src.push(&quot;}&quot;);
-    }
-    if (mesh._geometry._state.primitiveName === &quot;points&quot;) {
-        src.push(&quot;vec2 cxy = 2.0 * gl_PointCoord - 1.0;&quot;);
-        src.push(&quot;float r = dot(cxy, cxy);&quot;);
-        src.push(&quot;if (r &gt; 1.0) {&quot;);
-        src.push(&quot;   discard;&quot;);
-        src.push(&quot;}&quot;);
-
     }
     src.push(&quot;gl_FragColor = packDepth(gl_FragCoord.z);&quot;);
     src.push(&quot;}&quot;);

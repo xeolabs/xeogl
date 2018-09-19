@@ -597,7 +597,6 @@ function buildVertexDraw(mesh) {
     const meshState = mesh._state;
     const clipsState = scene._clipsState;
     const geometryState = mesh._geometry._state;
-    const materialState = mesh._material._state;
     const lightsState = scene._lightsState;
     let i;
     let len;
@@ -694,13 +693,13 @@ function buildVertexDraw(mesh) {
     }
     if (receiveShadow) {
         src.push(&quot;const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);&quot;);
-        // for (i = 0, len = lights.length; i &lt; len; i++) { // Light sources
-        //     if (lights[i].shadow) {
-        //         src.push(&quot;uniform mat4 shadowViewMatrix&quot; + i + &quot;;&quot;);
-        //         src.push(&quot;uniform mat4 shadowProjMatrix&quot; + i + &quot;;&quot;);
-        //         src.push(&quot;varying vec4 vShadowPosFromLight&quot; + i + &quot;;&quot;);
-        //     }
-        // }
+        for (i = 0, len = lightsState.lights.length; i &lt; len; i++) { // Light sources
+            if (lightsState.lights[i].shadow) {
+                src.push(&quot;uniform mat4 shadowViewMatrix&quot; + i + &quot;;&quot;);
+                src.push(&quot;uniform mat4 shadowProjMatrix&quot; + i + &quot;;&quot;);
+                src.push(&quot;varying vec4 vShadowPosFromLight&quot; + i + &quot;;&quot;);
+            }
+        }
     }
     src.push(&quot;void main(void) {&quot;);
     src.push(&quot;vec4 localPosition = vec4(position, 1.0); &quot;);
@@ -825,7 +824,7 @@ function buildFragmentDraw(mesh) {
     let light;
     const src = [];
 
-    src.push(&quot;// Fragment vertex shader&quot;);
+    src.push(&quot;// Drawing fragment shader&quot;);
 
     if (normals &amp;&amp; material._normalMap) {
         src.push(&quot;#extension GL_OES_standard_derivatives : enable&quot;);
@@ -1682,7 +1681,7 @@ function buildFragmentDraw(mesh) {
         //     src.push(&quot;float lightDepth2 = clamp(length(lightPos)/40.0, 0.0, 1.0);&quot;);
         //     src.push(&quot;float illuminated = VSM(sLightDepth, lightUV, lightDepth2);&quot;);
         //
-        src.push(&quot;float shadowAcneRemover = 0.0007;&quot;);
+        src.push(&quot;float shadowAcneRemover = 0.007;&quot;);
         src.push(&quot;vec3 fragmentDepth;&quot;);
         src.push(&quot;float texelSize = 1.0 / 1024.0;&quot;);
         src.push(&quot;float amountInLight = 0.0;&quot;);
@@ -1734,7 +1733,9 @@ function buildFragmentDraw(mesh) {
                 src.push(&quot;  }&quot;);
                 src.push(&quot;}&quot;);
 
-                src.push(&quot;light.color =  lightColor&quot; + i + &quot;.rgb * (lightColor&quot; + i + &quot;.a * (shadow / 49.0));&quot;);
+                src.push(&quot;shadow = shadow / 9.0;&quot;);
+
+                src.push(&quot;light.color =  lightColor&quot; + i + &quot;.rgb * (lightColor&quot; + i + &quot;.a * shadow);&quot;); // a is intensity
                 //
                 // }
                 //
@@ -1752,11 +1753,10 @@ function buildFragmentDraw(mesh) {
                 //     src.push(&quot;light.color =  lightColor&quot; + i + &quot;.rgb * (lightColor&quot; + i + &quot;.a * shadow);&quot;);
                 // }
             } else {
-                src.push(&quot;light.color =  lightColor&quot; + i + &quot;.rgb * (lightColor&quot; + i + &quot;.a );&quot;);
+                src.push(&quot;light.color =  lightColor&quot; + i + &quot;.rgb * (lightColor&quot; + i + &quot;.a );&quot;); // a is intensity
             }
 
             src.push(&quot;light.direction = viewLightDir;&quot;);
-
 
             if (phongMaterial) {
                 src.push(&quot;computePhongLighting(light, geometry, material, reflectedLight);&quot;);
@@ -1782,7 +1782,7 @@ function buildFragmentDraw(mesh) {
             src.push(&quot;vec3 outgoingLight =  ((occlusion * (( reflectedLight.diffuse + reflectedLight.specular)))) + emissiveColor;&quot;);
 
         } else {
-            src.push(&quot;vec3 outgoingLight = (occlusion * (reflectedLight.diffuse)) + (shadow * occlusion * reflectedLight.specular) + emissiveColor;&quot;);
+            src.push(&quot;vec3 outgoingLight = (occlusion * (reflectedLight.diffuse)) + (occlusion * reflectedLight.specular) + emissiveColor;&quot;);
         }
 
     }

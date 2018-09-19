@@ -425,7 +425,7 @@ class DirLight extends Component {
                     if (!self._shadowProjMatrix) {
                         self._shadowProjMatrix = math.identityMat4();
                     }
-                    math.orthoMat4c(-10, 10, -10, 10, 0, 1000.0, self._shadowProjMatrix);
+                    math.orthoMat4c(-10, 10, -10, 10, 0, 500.0, self._shadowProjMatrix);
                     self._shadowProjMatrixDirty = false;
                 }
                 return self._shadowProjMatrix;
@@ -433,7 +433,7 @@ class DirLight extends Component {
 
             getShadowRenderBuf: function () {
                 if (!self._shadowRenderBuf) {
-                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
+                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl, { size: [1024, 1024]});
                 }
                 return self._shadowRenderBuf;
             }
@@ -456,7 +456,7 @@ class DirLight extends Component {
     set dir(value) {
         this._state.dir.set(value || [1.0, 1.0, 1.0]);
         this._shadowViewMatrixDirty = true;
-        this._renderer.imageDirty();
+        this._renderer.shadowsDirty();
     }
 
     get dir() {
@@ -512,7 +512,7 @@ class DirLight extends Component {
         }
         this._state.shadow = value;
         this._shadowViewMatrixDirty = true;
-        this._renderer.imageDirty();
+        this._renderer.shadowsDirty();
     }
 
     get shadow() {
@@ -526,6 +526,7 @@ class DirLight extends Component {
             this._shadowRenderBuf.destroy();
         }
         this.scene._lightDestroyed(this);
+        this._renderer.shadowsDirty();
     }
 }
 

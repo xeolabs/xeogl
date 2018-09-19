@@ -4,7 +4,7 @@
  * WebGL-based 3D visualization library
  * http://xeogl.org/
  *
- * Built on 2018-09-13
+ * Built on 2018-09-19
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -5221,17 +5221,15 @@ const componentClasses = {
 
  TODO
 
- All xeogl components extend the Component base type. Each component
+ All xeogl components are (at least indirect) subclasses of the Component base type.
 
- For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
- extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
- then this property will have the value:
+ For most components, you can get the name of its class via its {{#crossLink "Component/type:property"}}{{/crossLink}} property:
 
- ````json
- ["xeogl.Component", "xeogl.Transform"]
+ ````javascript
+ var type = theMaterial.type; // "xeogl.PhongMaterial"
  ````
 
- TODO
+ You can also test if a component implements or extends a given component class, like so:
 
  ````javascript
  // Evaluates true:
@@ -5503,27 +5501,6 @@ class Component {
 
     init() { // No-op
 
-    }
-
-    /**
-     An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.
-
-     For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
-     extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
-     then this property will have the value:
-
-     ````json
-     ["xeogl.Component", "xeogl.Transform"]
-     ````
-
-     Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
-
-     @property superTypes
-     @type {Array of String}
-     @final
-     */
-    superTypes() {
-        return []
     }
 
     _addedToModel(model) { // Called by xeogl.Model.add()
@@ -7581,12 +7558,6 @@ class RenderBuffer {
                 gl.deleteRenderbuffer(this.buffer.renderbuf);
             }
         }
-
-        // width = 1024;
-        // height = 1024;
-
-        // width = 1024;
-        // height = 1024;
 
         const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -12423,7 +12394,6 @@ function buildVertexDraw(mesh) {
     const meshState = mesh._state;
     const clipsState = scene._clipsState;
     const geometryState = mesh._geometry._state;
-    const materialState = mesh._material._state;
     const lightsState = scene._lightsState;
     let i;
     let len;
@@ -12520,13 +12490,13 @@ function buildVertexDraw(mesh) {
     }
     if (receiveShadow) {
         src.push("const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);");
-        // for (i = 0, len = lights.length; i < len; i++) { // Light sources
-        //     if (lights[i].shadow) {
-        //         src.push("uniform mat4 shadowViewMatrix" + i + ";");
-        //         src.push("uniform mat4 shadowProjMatrix" + i + ";");
-        //         src.push("varying vec4 vShadowPosFromLight" + i + ";");
-        //     }
-        // }
+        for (i = 0, len = lightsState.lights.length; i < len; i++) { // Light sources
+            if (lightsState.lights[i].shadow) {
+                src.push("uniform mat4 shadowViewMatrix" + i + ";");
+                src.push("uniform mat4 shadowProjMatrix" + i + ";");
+                src.push("varying vec4 vShadowPosFromLight" + i + ";");
+            }
+        }
     }
     src.push("void main(void) {");
     src.push("vec4 localPosition = vec4(position, 1.0); ");
@@ -12651,7 +12621,7 @@ function buildFragmentDraw(mesh) {
     let light;
     const src = [];
 
-    src.push("// Fragment vertex shader");
+    src.push("// Drawing fragment shader");
 
     if (normals && material._normalMap) {
         src.push("#extension GL_OES_standard_derivatives : enable");
@@ -13508,7 +13478,7 @@ function buildFragmentDraw(mesh) {
         //     src.push("float lightDepth2 = clamp(length(lightPos)/40.0, 0.0, 1.0);");
         //     src.push("float illuminated = VSM(sLightDepth, lightUV, lightDepth2);");
         //
-        src.push("float shadowAcneRemover = 0.0007;");
+        src.push("float shadowAcneRemover = 0.007;");
         src.push("vec3 fragmentDepth;");
         src.push("float texelSize = 1.0 / 1024.0;");
         src.push("float amountInLight = 0.0;");
@@ -13559,7 +13529,9 @@ function buildFragmentDraw(mesh) {
                 src.push("  }");
                 src.push("}");
 
-                src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a * (shadow / 49.0));");
+                src.push("shadow = shadow / 9.0;");
+
+                src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a * shadow);"); // a is intensity
                 //
                 // }
                 //
@@ -13577,11 +13549,10 @@ function buildFragmentDraw(mesh) {
                 //     src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a * shadow);");
                 // }
             } else {
-                src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a );");
+                src.push("light.color =  lightColor" + i + ".rgb * (lightColor" + i + ".a );"); // a is intensity
             }
 
             src.push("light.direction = viewLightDir;");
-
 
             if (phongMaterial) {
                 src.push("computePhongLighting(light, geometry, material, reflectedLight);");
@@ -13599,7 +13570,7 @@ function buildFragmentDraw(mesh) {
             src.push("vec3 outgoingLight =  ((occlusion * (( reflectedLight.diffuse + reflectedLight.specular)))) + emissiveColor;");
 
         } else {
-            src.push("vec3 outgoingLight = (occlusion * (reflectedLight.diffuse)) + (shadow * occlusion * reflectedLight.specular) + emissiveColor;");
+            src.push("vec3 outgoingLight = (occlusion * (reflectedLight.diffuse)) + (occlusion * reflectedLight.specular) + emissiveColor;");
         }
 
     }
@@ -16092,32 +16063,23 @@ class ShadowShaderSource {
 }
 
 function buildVertex$3(mesh) {
-
-    const lights = scene.lights.lights;
+    const scene = mesh.scene;
+    const clipping = scene._clipsState.clips.length > 0;
+    const quantizedGeometry = !!mesh._geometry._state.quantized;
     const billboard = mesh._state.billboard;
-
+    const stationary = mesh._state.stationary;
     const src = [];
-
     src.push("// Shadow drawing vertex shader");
-
     src.push("attribute vec3 position;");
-
     src.push("uniform mat4 modelMatrix;");
     src.push("uniform mat4 viewMatrix;");
     src.push("uniform mat4 projMatrix;");
-
-    if (cfg.quantizedGeometry) {
+    if (quantizedGeometry) {
         src.push("uniform mat4 positionsDecodeMatrix;");
     }
-
-    if (cfg.clipping) {
+    if (clipping) {
         src.push("varying vec4 vWorldPosition;");
     }
-
-    if (mesh._geometry._state.primitiveName === "points") {
-        src.push("uniform float pointSize;");
-    }
-
     if (billboard === "spherical" || billboard === "cylindrical") {
         src.push("void billboard(inout mat4 mat) {");
         src.push("   mat[0][0] = 1.0;");
@@ -16133,73 +16095,44 @@ function buildVertex$3(mesh) {
         src.push("   mat[2][2] =1.0;");
         src.push("}");
     }
-
     src.push("void main(void) {");
-
     src.push("vec4 localPosition = vec4(position, 1.0); ");
     src.push("vec4 worldPosition;");
-
-    if (cfg.quantizedGeometry) {
+    if (quantizedGeometry) {
         src.push("localPosition = positionsDecodeMatrix * localPosition;");
     }
-
     src.push("mat4 viewMatrix2 = viewMatrix;");
     src.push("mat4 modelMatrix2 = modelMatrix;");
-
-    if (mesh._state.stationary) {
+    if (stationary) {
         src.push("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;");
     }
-
     if (billboard === "spherical" || billboard === "cylindrical") {
-
         src.push("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
         src.push("billboard(modelMatrix2);");
         src.push("billboard(viewMatrix2);");
-        src.push("billboard(modelViewMatrix);");
-
-        if (cfg.normals) {
-            src.push("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
-            src.push("billboard(modelNormalMatrix2);");
-            src.push("billboard(viewNormalMatrix2);");
-            src.push("billboard(modelViewNormalMatrix);");
-        }
-
-        src.push("worldPosition = modelMatrix2 * localPosition;");
-        src.push("vec4 viewPosition = modelViewMatrix * localPosition;");
-
-    } else {
-        src.push("worldPosition = modelMatrix2 * localPosition;");
-        src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
     }
-
-    if (cfg.clipping) {
+    src.push("worldPosition = modelMatrix2 * localPosition;");
+    src.push("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
+    if (clipping) {
         src.push("vWorldPosition = worldPosition;");
     }
-
-    if (mesh._geometry._state.primitiveName === "points") {
-        src.push("gl_PointSize = pointSize;");
-    }
-
     src.push("   gl_Position = projMatrix * viewPosition;");
-
     src.push("}");
-
     return src;
 }
 
 function buildFragment$3(mesh) {
-
-    let i;
+    const scene = mesh.scene;
+    const gl = scene.canvas.gl;
+    const clipsState = scene._clipsState;
+    const clipping = clipsState.clips.length > 0;
     const src = [];
-
     src.push("// Shadow fragment shader");
-
     src.push("precision " + getFragmentFloatPrecision$1(gl) + " float;");
-
-    if (cfg.clipping) {
-        src.push("varying vec4 vWorldPosition;");
+    if (clipping) {
         src.push("uniform bool clippable;");
-        for (i = 0; i < scene.clips.clips.length; i++) {
+        src.push("varying vec4 vWorldPosition;");
+        for (var i = 0; i < clipsState.clips.length; i++) {
             src.push("uniform bool clipActive" + i + ";");
             src.push("uniform vec3 clipPos" + i + ";");
             src.push("uniform vec3 clipDir" + i + ";");
@@ -16212,31 +16145,18 @@ function buildFragment$3(mesh) {
     src.push("  comp -= comp.gbaa * bitMask;");
     src.push("  return comp;");
     src.push("}");
+
     src.push("void main(void) {");
-    if (cfg.clipping) {
+    if (clipping) {
         src.push("if (clippable) {");
         src.push("  float dist = 0.0;");
-        for (i = 0; i < scene.clips.clips.length; i++) {
+        for (var i = 0; i < clipsState.clips.length; i++) {
             src.push("if (clipActive" + i + ") {");
             src.push("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
             src.push("}");
         }
         src.push("  if (dist > 0.0) { discard; }");
-        if (cfg.solid) {
-            src.push("  if (gl_FrontFacing == false) {");
-            src.push("     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);");
-            src.push("     return;");
-            src.push("  }");
-        }
         src.push("}");
-    }
-    if (mesh._geometry._state.primitiveName === "points") {
-        src.push("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
-        src.push("float r = dot(cxy, cxy);");
-        src.push("if (r > 1.0) {");
-        src.push("   discard;");
-        src.push("}");
-
     }
     src.push("gl_FragColor = packDepth(gl_FragCoord.z);");
     src.push("}");
@@ -16263,90 +16183,41 @@ function getFragmentFloatPrecision$1(gl) {
 const ShadowRenderer = function (hash, mesh) {
     this._hash = hash;
     this._shaderSource = new ShadowShaderSource(mesh);
-    this._program = new Program(mesh.scene.canvas.gl, this._shaderSource);
-    this._scene = scene;
+    this._scene = mesh.scene;
     this._useCount = 0;
-    if (this._program.errors) {
-        this.errors = this._program.errors;
-        return;
-    }
-    const program = this._program;
-    this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
-    this._uModelMatrix = program.getLocation("modelMatrix");
-    this._uViewMatrix = program.getLocation("viewMatrix");
-    this._uProjMatrix = program.getLocation("projMatrix");
-    this._uClips = {};
-    const clips = mesh.scene._clipsState.clips;
-    for (let i = 0, len = clips.length; i < len; i++) {
-        this._uClips.push({
-            active: program.getLocation("clipActive" + i),
-            pos: program.getLocation("clipPos" + i),
-            dir: program.getLocation("clipDir" + i)
-        });
-    }
-    this._aPosition = program.getAttribute("position");
-    this._uClippable = program.getLocation("clippable");
-    this._lastMaterialId = null;
-    this._lastVertexBufsId = null;
-    this._lastGeometryId = null;
+    this._allocate(mesh);
 };
 
 const renderers$2 = {};
 
 ShadowRenderer.get = function (mesh) {
+    const scene = mesh.scene;
     const hash = [
-        mesh.scene.canvas.canvas.id,
-        mesh.scene._clipsState.getHash(),
+        scene.canvas.canvas.id,
+        scene._clipsState.getHash(),
         mesh._geometry._state.hash,
         mesh._state.hash].join(";");
     let renderer = renderers$2[hash];
     if (!renderer) {
         renderer = new ShadowRenderer(hash, mesh);
+        if (renderer.errors) {
+            console.log(renderer.errors.join("\n"));
+            return null;
+        }
         renderers$2[hash] = renderer;
+        stats.memory.programs++;
     }
     renderer._useCount++;
     return renderer;
 };
 
 ShadowRenderer.prototype.put = function () {
-    if (--this._useCount) {
-        this._program.destroy();
-        delete renderers$2[this._hash];
-    }
-};
-
-ShadowRenderer.prototype._bindProgram = function (frame) {
-    const scene = this._scene;
-    const gl = scene.canvas.gl;
-    const clipsState = scene._clipsState;
-    this._program.bind();
-    frame.useProgram++;
-    this._lastLightId = null;
-    this._lastMaterialId = null;
-    this._lastVertexBufsId = null;
-    this._lastGeometryId = null;
-    if (clipsState.clips.length > 0) {
-        let clipUniforms;
-        let uClipActive;
-        let clip;
-        let uClipPos;
-        let uClipDir;
-        for (let i = 0, len = this._uClips.length; i < len; i++) {
-            clipUniforms = this._uClips[i];
-            uClipActive = clipUniforms.active;
-            clip = clipsState.clips[i];
-            if (uClipActive) {
-                gl.uniform1i(uClipActive, clip.active);
-            }
-            uClipPos = clipUniforms.pos;
-            if (uClipPos) {
-                gl.uniform3fv(clipUniforms.pos, clip.pos);
-            }
-            uClipDir = clipUniforms.dir;
-            if (uClipDir) {
-                gl.uniform3fv(clipUniforms.dir, clip.dir);
-            }
+    if (--this._useCount === 0) {
+        if (this._program) {
+            this._program.destroy();
         }
+        delete renderers$2[this._hash];
+        stats.memory.programs--;
     }
 };
 
@@ -16354,11 +16225,14 @@ ShadowRenderer.prototype.webglContextRestored = function () {
     this._program = null;
 };
 
+
 ShadowRenderer.prototype.drawMesh = function (frame, mesh, light) {
+    if (!this._program) {
+        this._allocate(mesh);
+    }
     const scene = this._scene;
     const gl = scene.canvas.gl;
     const materialState = mesh._material._state;
-    const meshState = mesh._state;
     const geometryState = mesh._geometry._state;
     if (frame.lastProgramId !== this._program.id) {
         frame.lastProgramId = this._program.id;
@@ -16401,9 +16275,6 @@ ShadowRenderer.prototype.drawMesh = function (frame, mesh, light) {
         this._lastMaterialId = materialState.id;
     }
     gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
-    if (this._uClippable) {
-        gl.uniform1i(this._uClippable, mesh._state.clippable);
-    }
     if (geometryState.combined) {
         const vertexBufs = mesh.vertexBufs;
         if (vertexBufs.id !== this._lastVertexBufsId) {
@@ -16413,6 +16284,9 @@ ShadowRenderer.prototype.drawMesh = function (frame, mesh, light) {
             }
             this._lastVertexBufsId = vertexBufs.id;
         }
+    }
+    if (this._uClippable) {
+        gl.uniform1i(this._uClippable, mesh._state.clippable);
     }
     if (geometryState.id !== this._lastGeometryId) {
         if (this._uPositionsDecodeMatrix) {
@@ -16449,6 +16323,75 @@ ShadowRenderer.prototype.drawMesh = function (frame, mesh, light) {
         } else if (geometryState.positions) {
             gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
             frame.drawArrays++;
+        }
+    }
+};
+
+ShadowRenderer.prototype._allocate = function (mesh) {
+    const scene = mesh.scene;
+    const gl = scene.canvas.gl;
+    this._program = new Program(gl, this._shaderSource);
+    this._scene = scene;
+    this._useCount = 0;
+    if (this._program.errors) {
+        this.errors = this._program.errors;
+        return;
+    }
+    const program = this._program;
+    this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
+    this._uModelMatrix = program.getLocation("modelMatrix");
+    this._uViewMatrix = program.getLocation("viewMatrix");
+    this._uProjMatrix = program.getLocation("projMatrix");
+    this._uClips = {};
+    const clips = scene._clipsState.clips;
+    for (let i = 0, len = clips.length; i < len; i++) {
+        this._uClips.push({
+            active: program.getLocation("clipActive" + i),
+            pos: program.getLocation("clipPos" + i),
+            dir: program.getLocation("clipDir" + i)
+        });
+    }
+    this._aPosition = program.getAttribute("position");
+    this._uClippable = program.getLocation("clippable");
+    this._lastMaterialId = null;
+    this._lastVertexBufsId = null;
+    this._lastGeometryId = null;
+};
+
+ShadowRenderer.prototype._bindProgram = function (frame) {
+    if (!this._program) {
+        this._allocate(mesh);
+    }
+    const scene = this._scene;
+    const gl = scene.canvas.gl;
+    const clipsState = scene._clipsState;
+    this._program.bind();
+    frame.useProgram++;
+    this._lastLightId = null;
+    this._lastMaterialId = null;
+    this._lastVertexBufsId = null;
+    this._lastGeometryId = null;
+    if (clipsState.clips.length > 0) {
+        let clipUniforms;
+        let uClipActive;
+        let clip;
+        let uClipPos;
+        let uClipDir;
+        for (let i = 0, len = this._uClips.length; i < len; i++) {
+            clipUniforms = this._uClips[i];
+            uClipActive = clipUniforms.active;
+            clip = clipsState.clips[i];
+            if (uClipActive) {
+                gl.uniform1i(uClipActive, clip.active);
+            }
+            uClipPos = clipUniforms.pos;
+            if (uClipPos) {
+                gl.uniform3fv(clipUniforms.pos, clip.pos);
+            }
+            uClipDir = clipUniforms.dir;
+            if (uClipDir) {
+                gl.uniform3fv(clipUniforms.dir, clip.dir);
+            }
         }
     }
 };
@@ -16964,7 +16907,6 @@ PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
     const scene = this._scene;
     const gl = scene.canvas.gl;
     const materialState = mesh._material._state;
-    const meshState = mesh._state;
     const geometryState = mesh._geometry._state;
     if (frame.lastProgramId !== this._program.id) {
         frame.lastProgramId = this._program.id;
@@ -18204,6 +18146,7 @@ class Mesh extends xeoglObject {
         });
 
         this._drawRenderer = null;
+        this._shadowRenderer = null;
         this._emphasisFillRenderer = null;
         this._emphasisEdgesRenderer = null;
         this._emphasisVerticesRenderer = null;
@@ -18242,6 +18185,7 @@ class Mesh extends xeoglObject {
         this._putRenderers();
         this._makeHash();
         this._drawRenderer = DrawRenderer.get(this);
+        this._shadowRenderer = ShadowRenderer.get(this);
         this._emphasisFillRenderer = EmphasisFillRenderer.get(this);
         this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this);
         this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this);
@@ -18253,6 +18197,9 @@ class Mesh extends xeoglObject {
     _webglContextRestored() {
         if (this._drawRenderer) {
             this._drawRenderer.webglContextRestored();
+        }
+        if (this._shadowRenderer) {
+            this._shadowRenderer.webglContextRestored();
         }
         if (this._emphasisFillRenderer) {
             this._emphasisFillRenderer.webglContextRestored();
@@ -18413,6 +18360,10 @@ class Mesh extends xeoglObject {
             this._drawRenderer.put();
             this._drawRenderer = null;
         }
+        if (this._shadowRenderer) {
+            this._shadowRenderer.put();
+            this._shadowRenderer = null;
+        }
         if (this._emphasisFillRenderer) {
             this._emphasisFillRenderer.put();
             this._emphasisFillRenderer = null;
@@ -18428,10 +18379,6 @@ class Mesh extends xeoglObject {
         if (this._outlineRenderer) {
             this._outlineRenderer.put();
             this._outlineRenderer = null;
-        }
-        if (this._shadowRenderer) {
-            this._shadowRenderer.put();
-            this._shadowRenderer = null;
         }
         if (this._pickMeshRenderer) {
             this._pickMeshRenderer.put();
@@ -18571,6 +18518,9 @@ class Mesh extends xeoglObject {
             this.scene._entityVisibilityUpdated(this, visible);
         }
         this._renderer.imageDirty();
+        if (this._state.castShadow) {
+            this._renderer.shadowsDirty();
+        }
     }
 
     get visible() {
@@ -18744,6 +18694,9 @@ class Mesh extends xeoglObject {
         }
         this._state.clippable = value;
         this._renderer.imageDirty();
+        if (this._state.castShadow) {
+            this._renderer.shadowsDirty();
+        }
     }
 
     get clippable() {
@@ -18779,12 +18732,12 @@ class Mesh extends xeoglObject {
      @type Boolean
      */
     set castShadow(value) {
-        // value = value !== false;
-        // if (value === this._state.castShadow) {
-        //     return;
-        // }
-        // this._state.castShadow = value;
-        // this._renderer.imageDirty(); // Re-render in next shadow map generation pass
+        value = value !== false;
+        if (value === this._state.castShadow) {
+            return;
+        }
+        this._state.castShadow = value;
+        this._renderer.shadowsDirty();
     }
 
     get castShadow() {
@@ -18799,6 +18752,7 @@ class Mesh extends xeoglObject {
      @type Boolean
      */
     set receiveShadow(value) {
+        this._state.receiveShadow = false; // Disables shadows for now
         // value = value !== false;
         // if (value === this._state.receiveShadow) {
         //     return;
@@ -18952,6 +18906,9 @@ class Mesh extends xeoglObject {
         this._putRenderers();
         this._renderer.meshListDirty();
         this.scene._meshDestroyed(this);
+        if (this._state.castShadow) {
+            this._renderer.shadowsDirty();
+        }
     }
 }
 
@@ -19073,9 +19030,10 @@ const Renderer = function ( scene, options) {
             stateSortDirty = false;
             imageDirty = true;
         }
-        //  if (shadowsDirty) {
-        //    drawShadowMaps();
-        // shadowsDirty = false;
+        // if (shadowsDirty) {
+        //     drawShadowMaps();
+        //     shadowsDirty = false;
+        //     imageDirty = true;
         // }
     }
 
@@ -24058,7 +24016,7 @@ class DirLight extends Component {
                     if (!self._shadowProjMatrix) {
                         self._shadowProjMatrix = math.identityMat4();
                     }
-                    math.orthoMat4c(-10, 10, -10, 10, 0, 1000.0, self._shadowProjMatrix);
+                    math.orthoMat4c(-10, 10, -10, 10, 0, 500.0, self._shadowProjMatrix);
                     self._shadowProjMatrixDirty = false;
                 }
                 return self._shadowProjMatrix;
@@ -24066,7 +24024,7 @@ class DirLight extends Component {
 
             getShadowRenderBuf: function () {
                 if (!self._shadowRenderBuf) {
-                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
+                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl, { size: [1024, 1024]});
                 }
                 return self._shadowRenderBuf;
             }
@@ -24089,7 +24047,7 @@ class DirLight extends Component {
     set dir(value) {
         this._state.dir.set(value || [1.0, 1.0, 1.0]);
         this._shadowViewMatrixDirty = true;
-        this._renderer.imageDirty();
+        this._renderer.shadowsDirty();
     }
 
     get dir() {
@@ -24145,7 +24103,7 @@ class DirLight extends Component {
         }
         this._state.shadow = value;
         this._shadowViewMatrixDirty = true;
-        this._renderer.imageDirty();
+        this._renderer.shadowsDirty();
     }
 
     get shadow() {
@@ -24159,6 +24117,7 @@ class DirLight extends Component {
             this._shadowRenderBuf.destroy();
         }
         this.scene._lightDestroyed(this);
+        this._renderer.shadowsDirty();
     }
 }
 
@@ -32293,7 +32252,6 @@ class AmbientLight extends Component {
 
     destroy() {
         super.destroy();
-        this._state.destroy();
     }
 }
 
@@ -32451,7 +32409,7 @@ class PointLight extends Component {
 
             getShadowRenderBuf: function () {
                 if (!self._shadowRenderBuf) {
-                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
+                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl, {size: [1024, 1024]});
                 }
                 return self._shadowRenderBuf;
             }
