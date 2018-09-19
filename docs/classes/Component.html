@@ -352,12 +352,10 @@ var phongMaterials = theScene.types["xeogl.PhongMaterial"];
 var theMaterial = phongMaterials["myMaterial"];</code></pre>
 <h3 id="component-inheritance">Component inheritance</h3>
 <p>TODO</p>
-<p>All xeogl components extend the Component base type. Each component</p>
-<p>For example, if this component is a Rotate, which
-extends Transform, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
-then this property will have the value:</p>
-<pre class="code prettyprint"><code class="lang-json">["xeogl.Component", "xeogl.Transform"]</code></pre>
-<p>TODO</p>
+<p>All xeogl components are (at least indirect) subclasses of the Component base type.</p>
+<p>For most components, you can get the name of its class via its <a href="../classes/Component.html#property_type" class="crosslink">type</a> property:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var type = theMaterial.type; // "xeogl.PhongMaterial"</code></pre>
+<p>You can also test if a component implements or extends a given component class, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Evaluates true:
 var isComponent = theMaterial.isType("xeogl.Component");
 
@@ -766,13 +764,6 @@ material.error("Aw, snap!");</code></pre>
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_superTypes">superTypes</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
                                 <a href="#property_type">type</a>
 
                                 
@@ -855,7 +846,7 @@ material.error("Aw, snap!");</code></pre>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l919"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:919</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l896"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:896</code></a>
         
         </p>
 
@@ -956,7 +947,7 @@ material.error("Aw, snap!");</code></pre>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l1028"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:1028</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l1005"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:1005</code></a>
         
         </p>
 
@@ -1028,7 +1019,7 @@ defaults that this component overrode on them.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l606"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:606</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l583"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:583</code></a>
         
         </p>
 
@@ -1135,7 +1126,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l430"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:430</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l407"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:407</code></a>
         
         </p>
 
@@ -1266,7 +1257,7 @@ any subsequent notifications on the event as they are made.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l557"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:557</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l534"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:534</code></a>
         
         </p>
 
@@ -1376,7 +1367,7 @@ any subsequent notifications on the event as they are made.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l394"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:394</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l371"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:371</code></a>
         
         </p>
 
@@ -1390,7 +1381,7 @@ any subsequent notifications on the event as they are made.</p>
         <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
 <p>The type may be given as either a string or a component constructor.</p>
 <p>This method works by walking up the inheritance type chain, which this component provides in
-property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
+property Component/superTypes:property, returning true as soon as one of the type strings in
 the chain matches the given type, of false if none match.</p>
 <h4 id="examples-">Examples:</h4>
 <pre class="code prettyprint"><code class="lang-javascript">var myRotate = new xeogl.Rotate({ ... });
@@ -1495,7 +1486,7 @@ myRotate.isType(xeogl.Mesh); // Returns false, because xeogl.Rotate does not (ev
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l568"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:568</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l545"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:545</code></a>
         
         </p>
 
@@ -1590,7 +1581,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l511"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:511</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l488"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:488</code></a>
         
         </p>
 
@@ -1699,7 +1690,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l469"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:469</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l446"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:446</code></a>
         
         </p>
 
@@ -1851,7 +1842,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l536"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:536</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l513"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:513</code></a>
         
         </p>
 
@@ -1978,7 +1969,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l589"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:589</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l566"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:566</code></a>
         
         </p>
 
@@ -2061,7 +2052,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l318"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:318</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l316"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:316</code></a>
         
         </p>
 
@@ -2108,7 +2099,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l309"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:309</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l307"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:307</code></a>
         
         </p>
 
@@ -2153,7 +2144,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l301"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:301</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l299"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:299</code></a>
         
         </p>
 
@@ -2200,7 +2191,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l381"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:381</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l358"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:358</code></a>
         
         </p>
 
@@ -2248,7 +2239,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l252"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:252</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l250"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:250</code></a>
         
         </p>
 
@@ -2259,58 +2250,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
     <div class="description">
         <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_superTypes" class="property item">
-    <h3 class="name"><code>superTypes</code></h3>
-    <span class="type">Array of String</span>
-
-    
-
-    
-
-    
-        <span class="flag final">final</span>
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l352"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:352</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>An array of strings that indicates the chain of super-types within this component&#39;s inheritance hierarchy.</p>
-<p>For example, if this component is a Rotate, which
-extends Transform, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
-then this property will have the value:</p>
-<pre class="code prettyprint"><code class="lang-json">["xeogl.Component", "xeogl.Transform"]</code></pre>
-<p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
 
     </div>
 
@@ -2347,7 +2286,7 @@ then this property will have the value:</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l230"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:230</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l228"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:228</code></a>
         
         </p>
 
@@ -2403,7 +2342,7 @@ then this property will have the value:</p>
             
         
         
-        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l1096"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:1096</code></a>
+        <a href="../files/_home_lindsay_xeolabs_xeogl-next_xeogl_src_component.js.html#l1073"><code>&#x2F;home&#x2F;lindsay&#x2F;xeolabs&#x2F;xeogl-next&#x2F;xeogl&#x2F;src&#x2F;component.js:1073</code></a>
         
         </p>
 

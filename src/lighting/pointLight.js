@@ -156,7 +156,7 @@ class PointLight extends Component {
 
             getShadowRenderBuf: function () {
                 if (!self._shadowRenderBuf) {
-                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
+                    self._shadowRenderBuf = new RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl, {size: [1024, 1024]});
                 }
                 return self._shadowRenderBuf;
             }

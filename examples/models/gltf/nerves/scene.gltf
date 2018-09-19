@@ -1142,7 +1142,10 @@
     },
     {
       "mesh": 0,
-      "name": "mat6"
+      "name": "nerves",
+      "info": {
+            "type":"nerves"
+      }
     },
     {
       "children": [
@@ -1173,19 +1176,31 @@
     },
     {
       "mesh": 1,
-      "name": "mat5"
+      "name": "muscles5",
+      "info": {
+          "type":"muscle"
+      }
     },
     {
       "mesh": 2,
-      "name": "mat5"
+      "name": "muscles4",
+      "info": {
+          "type":"muscle"
+      }
     },
     {
       "mesh": 3,
-      "name": "mat5"
+      "name": "muscles3",
+      "info": {
+          "type":"muscle"
+      }
     },
     {
       "mesh": 4,
-      "name": "mat5"
+      "name": "muscles2",
+      "info": {
+        "type": "muscle"
+      }
     },
     {
       "children": [
@@ -1213,7 +1228,10 @@
     },
     {
       "mesh": 5,
-      "name": "mat4"
+      "name": "extensorRetinaculum",
+      "info": {
+          "type":"muscle"
+      }
     },
     {
       "children": [
@@ -1241,7 +1259,10 @@
     },
     {
       "mesh": 6,
-      "name": "mat3"
+      "name": "bones",
+            "info": {
+              "type": "bone"
+            }
     },
     {
       "children": [
@@ -1269,7 +1290,10 @@
     },
     {
       "mesh": 7,
-      "name": "mat2"
+      "name": "muscles",
+      "info": {
+         "type": "muscle"
+      }
     },
     {
       "children": [
@@ -1297,7 +1321,10 @@
     },
     {
       "mesh": 8,
-      "name": "mat1"
+      "name": "flexorDigitorumSuperficialis",
+      "info": {
+            "type":"muscle"
+      }
     },
     {
       "children": [

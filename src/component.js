@@ -59,17 +59,15 @@
 
  TODO
 
- All xeogl components extend the Component base type. Each component
+ All xeogl components are (at least indirect) subclasses of the Component base type.
 
- For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
- extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
- then this property will have the value:
+ For most components, you can get the name of its class via its {{#crossLink "Component/type:property"}}{{/crossLink}} property:
 
- ````json
- ["xeogl.Component", "xeogl.Transform"]
+ ````javascript
+ var type = theMaterial.type; // "xeogl.PhongMaterial"
  ````
 
- TODO
+ You can also test if a component implements or extends a given component class, like so:
 
  ````javascript
  // Evaluates true:
@@ -347,27 +345,6 @@ class Component {
 
     init() { // No-op
 
-    }
-
-    /**
-     An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.
-
-     For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
-     extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
-     then this property will have the value:
-
-     ````json
-     ["xeogl.Component", "xeogl.Transform"]
-     ````
-
-     Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
-
-     @property superTypes
-     @type {Array of String}
-     @final
-     */
-    superTypes() {
-        return []
     }
 
     _addedToModel(model) { // Called by xeogl.Model.add()

@@ -126,7 +126,6 @@ class AmbientLight extends Component {
 
     destroy() {
         super.destroy();
-        this._state.destroy();
     }
 }
 

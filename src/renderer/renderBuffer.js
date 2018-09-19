@@ -62,12 +62,6 @@ class RenderBuffer {
             }
         }
 
-        // width = 1024;
-        // height = 1024;
-
-        // width = 1024;
-        // height = 1024;
-
         const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);

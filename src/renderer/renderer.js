@@ -128,9 +128,10 @@ const Renderer = function ( scene, options) {
             stateSortDirty = false;
             imageDirty = true;
         }
-        //  if (shadowsDirty) {
-        //    drawShadowMaps();
-        // shadowsDirty = false;
+        // if (shadowsDirty) {
+        //     drawShadowMaps();
+        //     shadowsDirty = false;
+        //     imageDirty = true;
         // }
     }
 
@@ -152,17 +153,17 @@ const Renderer = function ( scene, options) {
     }
 
     function drawShadowMaps() {
-        // var lights = self.lights.lights;
-        // var light;
-        // var i;
-        // var len;
-        // for (i = 0, len = lights.length; i < len; i++) {
-        //     light = lights[i];
-        //     if (!light.shadow) {
-        //         continue;
-        //     }
-        //     drawShadowMap(light);
-        // }
+        var lights = scene._lightsState.lights;
+        var light;
+        var i;
+        var len;
+        for (i = 0, len = lights.length; i < len; i++) {
+            light = lights[i];
+            if (!light.shadow) {
+                continue;
+            }
+            drawShadowMap(light);
+        }
     }
 
     function drawShadowMap(light) {
@@ -208,7 +209,7 @@ const Renderer = function ( scene, options) {
             if (mesh._material._state.alpha === 0) {
                 continue;
             }
-            mesh.drawShadow(frame, light);
+            mesh._drawShadow(frame, light);
         }
 
         renderBuf.unbind();

@@ -347,7 +347,6 @@ PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
     const scene = this._scene;
     const gl = scene.canvas.gl;
     const materialState = mesh._material._state;
-    const meshState = mesh._state;
     const geometryState = mesh._geometry._state;
     if (frame.lastProgramId !== this._program.id) {
         frame.lastProgramId = this._program.id;

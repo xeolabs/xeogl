@@ -8,7 +8,7 @@
     <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
-    <script src="js/geometry/objGeometry.js"></script>
+    <script src="js/geometry/objGeometryLoader.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -26,13 +26,13 @@
 
     scene.clearLights();
 
-    new xeogl.DirLight({
-        dir: [-0.6, -0.9, -0.4],
-        color: [0.8, 1.0, 1.0],
-        intensity: 1.0,
-        shadow: true,
-        space: "world"
-    });
+//    new xeogl.DirLight({
+//        dir: [-0.6, -0.9, -0.4],
+//        color: [0.8, 1.0, 1.0],
+//        intensity: 1.0,
+//        shadow: true,
+//        space: "world"
+//    });
 
     new xeogl.DirLight({
         dir: [0.6, -0.9, -0.6],
@@ -41,17 +41,6 @@
         shadow: true,
         space: "world"
     });
-
-    //        new xeogl.DirLight({
-    //            dir: [-0.9, -0.9, 0.9],
-    //            color: [1.0, 1.0, 1.3],
-    //            intensity: 1.0,
-    //            shadow: true,
-    //            space: "world"
-    //        });
-
-
-    // scene.camera.projection="ortho";
 
     // Shadow casting object
 
@@ -93,34 +82,35 @@
         XcastShadow: true
     });
 
-    new xeogl.Mesh({
-        geometry: new xeogl.OBJGeometry({
-            src: "models/obj/raptor/raptor.obj"
-        }),
-        material: new xeogl.PhongMaterial({
-            diffuseMap: new xeogl.Texture({
-                src: "models/obj/raptor/raptor.jpg"
+    xeogl.loadOBJGeometry(scene, "models/obj/raptor/raptor.obj", function (geometry) {
+        new xeogl.Mesh({
+            geometry: geometry,
+            material: new xeogl.PhongMaterial({
+                diffuseMap: new xeogl.Texture({
+                    src: "models/obj/raptor/raptor.jpg"
+                }),
+                specularFresnel: new xeogl.Fresnel({
+                    edgeBias: 0.2,
+                    centerBias: 0.8,
+                    power: 0.2,
+                    edgeColor: [0.4, 0.4, 0.4],
+                    centerColor: [0.0, 0.0, 0.0]
+                }),
+                emissive: [1, 1, 1],
+                emissiveFresnel: new xeogl.Fresnel({
+                    edgeBias: 0.3,
+                    centerBias: 0.8,
+                    edgeColor: [0.3, 0.3, 0.3],
+                    centerColor: [0.0, 0.0, 0.0],
+                    power: 0.7
+                })
             }),
-            specularFresnel: new xeogl.Fresnel({
-                edgeBias: 0.2,
-                centerBias: 0.8,
-                power: 0.2,
-                edgeColor: [0.4, 0.4, 0.4],
-                centerColor: [0.0, 0.0, 0.0]
-            }),
-            emissive: [1, 1, 1],
-            emissiveFresnel: new xeogl.Fresnel({
-                edgeBias: 0.3,
-                centerBias: 0.8,
-                edgeColor: [0.3, 0.3, 0.3],
-                centerColor: [0.0, 0.0, 0.0],
-                power: 0.7
-            })
-        }),
-        position: [0.1, 0.1, 0.1],
-        rotation: [0, 120, 0],
-        receiveShadow: true,
-        castShadow: true
+            position: [0.1, 0.1, 0.1],
+            scale: [0.1, 0.1, 0.1],
+            rotation: [0, 120, 0],
+            receiveShadow: true,
+            castShadow: true
+        });
     });
 
     // Ground plane
