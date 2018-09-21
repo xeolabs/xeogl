@@ -20,10 +20,9 @@ Find out more in our [Getting Started](https://github.com/xeolabs/xeogl/wiki/Get
 var model = new xeogl.GLTFModel({
     id: "office",
     src: "models/gltf/office/scene.gltf",
-    transform: new xeogl.Scale({
-            xyz: [.01, .01, .01]
-        })
-    });
+    scale: [.01, .01, .01],
+    position: [100, 0, 0]
+});
     
 var camera = model.scene.camera;
     
