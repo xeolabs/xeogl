@@ -1,5 +1,5 @@
 import {State} from '../renderer/state.js';
-import {ArrayBuffer} from '../renderer/arrayBuffer.js';
+import {ArrayBuf} from '../webgl/arrayBuf.js';
 import {stats} from './../stats.js';
 import {WEBGL_INFO} from './../webglInfo.js';
 
@@ -263,7 +263,7 @@ class SceneVertexBufs {
                 // Update indices buffer, lazy-create first if necessary
 
                 if (!geometry.indicesBufCombined) {
-                    geometry.indicesBufCombined = new ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, indices, indices.length, 1, gl.STATIC_DRAW);
+                    geometry.indicesBufCombined = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, indices, indices.length, 1, gl.STATIC_DRAW);
                 } else {
                     geometry.indicesBufCombined.setData(indices);
                 }
@@ -285,25 +285,25 @@ class SceneVertexBufs {
         let array;
         if (this.positions) {
             array = this.quantized ? new Uint16Array(this.positions) : new Float32Array(this.positions);
-            vertexBufs.positionsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
+            vertexBufs.positionsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
             memoryStats.positions += vertexBufs.positionsBuf.numItems;
             this.positions = [];
         }
         if (this.normals) {
             array = this.quantized ? new Int8Array(this.normals) : new Float32Array(this.normals);
-            vertexBufs.normalsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
+            vertexBufs.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
             memoryStats.normals += vertexBufs.normalsBuf.numItems;
             this.normals = [];
         }
         if (this.colors) {
             array = new Float32Array(this.colors);
-            vertexBufs.colorsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 4, gl.STATIC_DRAW);
+            vertexBufs.colorsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, array, array.length, 4, gl.STATIC_DRAW);
             memoryStats.colors += vertexBufs.colorsBuf.numItems;
             this.colors = [];
         }
         if (this.uv) {
             array = this.quantized ? new Uint16Array(this.uv) : new Float32Array(this.uv);
-            vertexBufs.uvBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 2, gl.STATIC_DRAW);
+            vertexBufs.uvBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, array, array.length, 2, gl.STATIC_DRAW);
             memoryStats.uvs += vertexBufs.uvBuf.numItems;
             this.uv = [];
         }

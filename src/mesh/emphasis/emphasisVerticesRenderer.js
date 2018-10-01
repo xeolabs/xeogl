@@ -2,36 +2,34 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-import {PickMeshShaderSource} from "./pickMeshShaderSource.js";
-import {Program} from "../program.js";
+import {Map} from "../../utils/map.js";
+import {EmphasisVerticesShaderSource} from "./emphasisVerticesShaderSource.js";
+import {Program} from "../../webgl/program.js";
 import {stats} from "../../stats.js";
 
-// No ID, because there is exactly one PickMeshRenderer per scene
+const ids = new Map({});
 
-const PickMeshRenderer = function (hash, mesh) {
+const EmphasisVerticesRenderer = function (hash, mesh) {
+    this.id = ids.addItem({});
     this._hash = hash;
-    this._shaderSource = new PickMeshShaderSource(mesh);
     this._scene = mesh.scene;
-    this._useCount = 0;
+    this._shaderSource = new EmphasisVerticesShaderSource(mesh);
     this._allocate(mesh);
 };
 
 const renderers = {};
 
-PickMeshRenderer.get = function (mesh) {
+EmphasisVerticesRenderer.get = function (mesh) {
     const hash = [
-        mesh.scene.canvas.canvas.id,
+        mesh.scene.id,
+        mesh.scene.gammaOutput ? "go" : "",
         mesh.scene._clipsState.getHash(),
-        mesh._geometry._state.hash,
+        mesh._geometry._state.quantized ? "cp" : "",
         mesh._state.hash
     ].join(";");
     let renderer = renderers[hash];
     if (!renderer) {
-        renderer = new PickMeshRenderer(hash, mesh);
-        if (renderer.errors) {
-            console.log(renderer.errors.join("\n"));
-            return null;
-        }
+        renderer = new EmphasisVerticesRenderer(hash, mesh);
         renderers[hash] = renderer;
         stats.memory.programs++;
     }
@@ -39,8 +37,10 @@ PickMeshRenderer.get = function (mesh) {
     return renderer;
 };
 
-PickMeshRenderer.prototype.put = function () {
+EmphasisVerticesRenderer.prototype.put = function () {
     if (--this._useCount === 0) {
+        this._scene.off(this._onWebglcontextrestored);
+        ids.removeItem(this.id);
         if (this._program) {
             this._program.destroy();
         }
@@ -49,21 +49,22 @@ PickMeshRenderer.prototype.put = function () {
     }
 };
 
-PickMeshRenderer.prototype.webglContextRestored = function () {
+EmphasisVerticesRenderer.prototype.webglContextRestored = function () {
     this._program = null;
 };
 
-PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
+EmphasisVerticesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
     if (!this._program) {
         this._allocate(mesh);
     }
     const scene = this._scene;
     const gl = scene.canvas.gl;
-    const materialState = mesh._material._state;
+    const materialState = mode === 0 ? mesh._ghostMaterial._state : (mode === 1 ? mesh._highlightMaterial._state : mesh._selectedMaterial._state);
+    const meshState = mesh._state;
     const geometryState = mesh._geometry._state;
     if (frame.lastProgramId !== this._program.id) {
         frame.lastProgramId = this._program.id;
-        this._bindProgram(frame);
+        this._bindProgram(frame, mesh);
     }
     if (materialState.id !== this._lastMaterialId) {
         const backfaces = materialState.backfaces;
@@ -75,25 +76,23 @@ PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
             }
             frame.backfaces = backfaces;
         }
-        const frontface = materialState.frontface;
-        if (frame.frontface !== frontface) {
-            if (frontface) {
-                gl.frontFace(gl.CCW);
-            } else {
-                gl.frontFace(gl.CW);
-            }
-            frame.frontface = frontface;
+        if (this._uVertexSize) { // TODO: cache
+            gl.uniform1f(this._uVertexSize, materialState.vertexSize);
         }
-        if (frame.lineWidth !== materialState.lineWidth) {
-            gl.lineWidth(materialState.lineWidth);
-            frame.lineWidth = materialState.lineWidth;
-        }
-        if (this._uPointSize) {
-            gl.uniform1i(this._uPointSize, materialState.pointSize);
+        if (this._uVertexColor) {
+            const vertexColor = materialState.vertexColor;
+            const vertexAlpha = materialState.vertexAlpha;
+            gl.uniform4f(this._uVertexColor, vertexColor[0], vertexColor[1], vertexColor[2], vertexAlpha);
         }
         this._lastMaterialId = materialState.id;
     }
     gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, mesh.worldMatrix);
+    if (this._uModelNormalMatrix) {
+        gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, mesh.worldNormalMatrix);
+    }
+    if (this._uClippable) {
+        gl.uniform1i(this._uClippable, meshState.clippable);
+    }
     if (geometryState.combined) {
         const vertexBufs = mesh._geometry._getVertexBufs();
         if (vertexBufs.id !== this._lastVertexBufsId) {
@@ -104,16 +103,12 @@ PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
             this._lastVertexBufsId = vertexBufs.id;
         }
     }
-    // Mesh state
-    if (this._uClippable) {
-        gl.uniform1i(this._uClippable, mesh._state.clippable);
-    }
     // Bind VBOs
     if (geometryState.id !== this._lastGeometryId) {
         if (this._uPositionsDecodeMatrix) {
             gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
         }
-        if (geometryState.combined) { // VBOs were bound by the preceding VertexBufs chunk
+        if (geometryState.combined) { // VBOs were bound by the VertexBufs logic above
             if (geometryState.indicesBufCombined) {
                 geometryState.indicesBufCombined.bind();
                 frame.bindArray++;
@@ -126,38 +121,39 @@ PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
             if (geometryState.indicesBuf) {
                 geometryState.indicesBuf.bind();
                 frame.bindArray++;
+                // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
+                // frame.drawElements++;
+            } else if (geometryState.positions) {
+                // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
+                //  frame.drawArrays++;
             }
         }
         this._lastGeometryId = geometryState.id;
     }
-    // Mesh-indexed color
-    const a = frame.pickmeshIndex >> 24 & 0xFF;
-    const b = frame.pickmeshIndex >> 16 & 0xFF;
-    const g = frame.pickmeshIndex >> 8 & 0xFF;
-    const r = frame.pickmeshIndex & 0xFF;
-    frame.pickmeshIndex++;
-    gl.uniform4f(this._uPickColor, r / 255, g / 255, b / 255, a / 255);
     // Draw (indices bound in prev step)
     if (geometryState.combined) {
         if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
-            gl.drawElements(geometryState.primitive, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
+            gl.drawElements(gl.POINTS, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
             frame.drawElements++;
         } else {
             // TODO: drawArrays() with VertexBufs positions
         }
     } else {
         if (geometryState.indicesBuf) {
-            gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
+            gl.drawElements(gl.POINTS, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
             frame.drawElements++;
         } else if (geometryState.positions) {
-            gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
+            gl.drawArrays(gl.POINTS, 0, geometryState.positions.numItems);
+            frame.drawArrays++;
         }
     }
 };
 
-PickMeshRenderer.prototype._allocate = function (mesh) {
+EmphasisVerticesRenderer.prototype._allocate = function (mesh) {
+    const clipsState = mesh.scene._clipsState;
     const gl = mesh.scene.canvas.gl;
     this._program = new Program(gl, this._shaderSource);
+    this._useCount = 0;
     if (this._program.errors) {
         this.errors = this._program.errors;
         return;
@@ -168,39 +164,40 @@ PickMeshRenderer.prototype._allocate = function (mesh) {
     this._uViewMatrix = program.getLocation("viewMatrix");
     this._uProjMatrix = program.getLocation("projMatrix");
     this._uClips = [];
-    const clips = mesh.scene._clipsState.clips;
-    for (let i = 0, len = clips.length; i < len; i++) {
+    for (let i = 0, len = clipsState.clips.length; i < len; i++) {
         this._uClips.push({
             active: program.getLocation("clipActive" + i),
             pos: program.getLocation("clipPos" + i),
             dir: program.getLocation("clipDir" + i)
         });
     }
+    this._uVertexColor = program.getLocation("vertexColor");
+    this._uVertexSize = program.getLocation("vertexSize");
     this._aPosition = program.getAttribute("position");
     this._uClippable = program.getLocation("clippable");
-    this._uPickColor = program.getLocation("pickColor");
+    this._uGammaFactor = program.getLocation("gammaFactor");
     this._lastMaterialId = null;
     this._lastVertexBufsId = null;
     this._lastGeometryId = null;
 };
 
-PickMeshRenderer.prototype._bindProgram = function (frame) {
-    if (!this._program) {
-        this._allocate(mesh);
-    }
+EmphasisVerticesRenderer.prototype._bindProgram = function (frame, mesh) {
     const scene = this._scene;
     const gl = scene.canvas.gl;
     const clipsState = scene._clipsState;
+    const program = this._program;
     const camera = scene.camera;
     const cameraState = camera._state;
-    this._program.bind();
+    program.bind();
     frame.useProgram++;
+    frame.textureUnit = 0;
     this._lastMaterialId = null;
     this._lastVertexBufsId = null;
     this._lastGeometryId = null;
-    gl.uniformMatrix4fv(this._uViewMatrix, false, frame.pickViewMatrix || cameraState.matrix);
-    gl.uniformMatrix4fv(this._uProjMatrix, false, frame.pickProjMatrix || camera.project._state.matrix);
+    gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
+    gl.uniformMatrix4fv(this._uProjMatrix, false, camera.project._state.matrix);
     if (clipsState.clips.length > 0) {
+        const clips = clipsState.clips;
         let clipUniforms;
         let uClipActive;
         let clip;
@@ -209,7 +206,7 @@ PickMeshRenderer.prototype._bindProgram = function (frame) {
         for (let i = 0, len = this._uClips.length; i < len; i++) {
             clipUniforms = this._uClips[i];
             uClipActive = clipUniforms.active;
-            clip = clipsState.clips[i];
+            clip = clips[i];
             if (uClipActive) {
                 gl.uniform1i(uClipActive, clip.active);
             }
@@ -223,6 +220,9 @@ PickMeshRenderer.prototype._bindProgram = function (frame) {
             }
         }
     }
+    if (this._uGammaFactor) {
+        gl.uniform1f(this._uGammaFactor, scene.gammaFactor);
+    }
 };
 
-export{PickMeshRenderer};
+export{EmphasisVerticesRenderer};

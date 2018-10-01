@@ -4,7 +4,7 @@
 
 import {Map} from "../../utils/map.js";
 import {OutlineShaderSource} from "./outlineShaderSource.js";
-import {Program} from "../program.js";
+import {Program} from "../../webgl/program.js";
 import {stats} from "../../stats.js";
 
 const ids = new Map({});

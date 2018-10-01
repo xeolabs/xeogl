@@ -563,17 +563,17 @@
  @event picked
  */
 import {math} from '../math/math.js';
-import {xeoglObject} from './object.js';
+import {xeoglObject} from './../objects/object.js';
 import {State} from '../renderer/state.js';
-import {DrawRenderer} from "../renderer/draw/drawRenderer.js";
-import {EmphasisFillRenderer} from "../renderer/emphasis/emphasisFillRenderer.js";
-import {EmphasisEdgesRenderer} from "../renderer/emphasis/emphasisEdgesRenderer.js";
-import {EmphasisVerticesRenderer} from "../renderer/emphasis/emphasisVerticesRenderer.js";
-import {ShadowRenderer} from "../renderer/shadow/shadowRenderer.js";
-import {OutlineRenderer} from "../renderer/outline/outlineRenderer.js";
-import {PickMeshRenderer} from "../renderer/pick/pickMeshRenderer.js";
-import {PickVertexRenderer} from "../renderer/pick/pickVertexRenderer.js";
-import {PickTriangleRenderer} from "../renderer/pick/pickTriangleRenderer.js";
+import {DrawRenderer} from "./draw/drawRenderer.js";
+import {EmphasisFillRenderer} from "./emphasis/emphasisFillRenderer.js";
+import {EmphasisEdgesRenderer} from "./emphasis/emphasisEdgesRenderer.js";
+import {EmphasisVerticesRenderer} from "./emphasis/emphasisVerticesRenderer.js";
+import {ShadowRenderer} from "./shadow/shadowRenderer.js";
+import {OutlineRenderer} from "./outline/outlineRenderer.js";
+import {PickMeshRenderer} from "./pick/pickMeshRenderer.js";
+import {PickVertexRenderer} from "./pick/pickVertexRenderer.js";
+import {PickTriangleRenderer} from "./pick/pickTriangleRenderer.js";
 import {componentClasses} from "./../componentClasses.js";
 
 const obb = math.OBB3();

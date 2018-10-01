@@ -3,33 +3,34 @@
  */
 
 import {Map} from "../../utils/map.js";
-import {EmphasisVerticesShaderSource} from "./emphasisVerticesShaderSource.js";
-import {Program} from "../program.js";
-import {stats} from "../../stats.js";
+import {EmphasisEdgesShaderSource} from "./emphasisEdgesShaderSource.js";
+import {Program} from "../../webgl/program.js";
+import {stats} from './../../stats.js';
 
 const ids = new Map({});
 
-const EmphasisVerticesRenderer = function (hash, mesh) {
+const EmphasisEdgesRenderer = function (hash, mesh) {
     this.id = ids.addItem({});
     this._hash = hash;
     this._scene = mesh.scene;
-    this._shaderSource = new EmphasisVerticesShaderSource(mesh);
+    this._useCount = 0;
+    this._shaderSource = new EmphasisEdgesShaderSource(mesh);
     this._allocate(mesh);
 };
 
 const renderers = {};
 
-EmphasisVerticesRenderer.get = function (mesh) {
+EmphasisEdgesRenderer.get = function (mesh) {
     const hash = [
         mesh.scene.id,
-        mesh.scene.gammaOutput ? "go" : "",
+        mesh.scene.gammaOutput ? "go" : "", // Gamma input not needed
         mesh.scene._clipsState.getHash(),
         mesh._geometry._state.quantized ? "cp" : "",
         mesh._state.hash
     ].join(";");
     let renderer = renderers[hash];
     if (!renderer) {
-        renderer = new EmphasisVerticesRenderer(hash, mesh);
+        renderer = new EmphasisEdgesRenderer(hash, mesh);
         renderers[hash] = renderer;
         stats.memory.programs++;
     }
@@ -37,9 +38,8 @@ EmphasisVerticesRenderer.get = function (mesh) {
     return renderer;
 };
 
-EmphasisVerticesRenderer.prototype.put = function () {
+EmphasisEdgesRenderer.prototype.put = function () {
     if (--this._useCount === 0) {
-        this._scene.off(this._onWebglcontextrestored);
         ids.removeItem(this.id);
         if (this._program) {
             this._program.destroy();
@@ -49,22 +49,38 @@ EmphasisVerticesRenderer.prototype.put = function () {
     }
 };
 
-EmphasisVerticesRenderer.prototype.webglContextRestored = function () {
+EmphasisEdgesRenderer.prototype.webglContextRestored = function () {
     this._program = null;
 };
 
-EmphasisVerticesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
+EmphasisEdgesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
     if (!this._program) {
         this._allocate(mesh);
     }
     const scene = this._scene;
     const gl = scene.canvas.gl;
-    const materialState = mode === 0 ? mesh._ghostMaterial._state : (mode === 1 ? mesh._highlightMaterial._state : mesh._selectedMaterial._state);
+    let materialState;
     const meshState = mesh._state;
-    const geometryState = mesh._geometry._state;
+    const geometry = mesh._geometry;
+    const geometryState = geometry._state;
     if (frame.lastProgramId !== this._program.id) {
         frame.lastProgramId = this._program.id;
-        this._bindProgram(frame, mesh);
+        this._bindProgram(frame);
+    }
+    switch (mode) {
+        case 0:
+            materialState = mesh._ghostMaterial._state;
+            break;
+        case 1:
+            materialState = mesh._highlightMaterial._state;
+            break;
+        case 2:
+            materialState = mesh._selectedMaterial._state;
+            break;
+        case 3:
+        default:
+            materialState = mesh._edgeMaterial._state;
+            break;
     }
     if (materialState.id !== this._lastMaterialId) {
         const backfaces = materialState.backfaces;
@@ -76,13 +92,14 @@ EmphasisVerticesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
             }
             frame.backfaces = backfaces;
         }
-        if (this._uVertexSize) { // TODO: cache
-            gl.uniform1f(this._uVertexSize, materialState.vertexSize);
+        if (frame.lineWidth !== materialState.edgeWidth) {
+            gl.lineWidth(materialState.edgeWidth);
+            frame.lineWidth = materialState.edgeWidth;
         }
-        if (this._uVertexColor) {
-            const vertexColor = materialState.vertexColor;
-            const vertexAlpha = materialState.vertexAlpha;
-            gl.uniform4f(this._uVertexColor, vertexColor[0], vertexColor[1], vertexColor[2], vertexAlpha);
+        if (this._uEdgeColor) {
+            const edgeColor = materialState.edgeColor;
+            const edgeAlpha = materialState.edgeAlpha;
+            gl.uniform4f(this._uEdgeColor, edgeColor[0], edgeColor[1], edgeColor[2], edgeAlpha);
         }
         this._lastMaterialId = materialState.id;
     }
@@ -104,56 +121,36 @@ EmphasisVerticesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
         }
     }
     // Bind VBOs
-    if (geometryState.id !== this._lastGeometryId) {
-        if (this._uPositionsDecodeMatrix) {
-            gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
-        }
-        if (geometryState.combined) { // VBOs were bound by the VertexBufs logic above
-            if (geometryState.indicesBufCombined) {
-                geometryState.indicesBufCombined.bind();
-                frame.bindArray++;
-            }
-        } else {
-            if (this._aPosition) {
-                this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
-                frame.bindArray++;
-            }
-            if (geometryState.indicesBuf) {
-                geometryState.indicesBuf.bind();
-                frame.bindArray++;
-                // gl.drawElements(geometryState.primitive, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
-                // frame.drawElements++;
-            } else if (geometryState.positions) {
-                // gl.drawArrays(gl.TRIANGLES, 0, geometryState.positions.numItems);
-                //  frame.drawArrays++;
-            }
-        }
-        this._lastGeometryId = geometryState.id;
+    let indicesBuf;
+    if (geometryState.primitive === gl.TRIANGLES) {
+        indicesBuf = geometry._getEdgesIndices();
+    } else if (geometryState.primitive === gl.LINES) {
+        indicesBuf = geometryState.indicesBuf;
     }
-    // Draw (indices bound in prev step)
-    if (geometryState.combined) {
-        if (geometryState.indicesBufCombined) { // Geometry indices into portion of uber-array
-            gl.drawElements(gl.POINTS, geometryState.indicesBufCombined.numItems, geometryState.indicesBufCombined.itemType, 0);
-            frame.drawElements++;
-        } else {
-            // TODO: drawArrays() with VertexBufs positions
+    if (indicesBuf) {
+        if (geometryState.id !== this._lastGeometryId) {
+            if (this._uPositionsDecodeMatrix) {
+                gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometryState.positionsDecodeMatrix);
+            }
+            if (!geometryState.combined) { // VBOs were bound by the VertexBufs logic above
+                if (this._aPosition) {
+                    this._aPosition.bindArrayBuffer(geometryState.positionsBuf, geometryState.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    frame.bindArray++;
+                }
+            }
+            indicesBuf.bind();
+            frame.bindArray++;
+            this._lastGeometryId = geometryState.id;
         }
-    } else {
-        if (geometryState.indicesBuf) {
-            gl.drawElements(gl.POINTS, geometryState.indicesBuf.numItems, geometryState.indicesBuf.itemType, 0);
-            frame.drawElements++;
-        } else if (geometryState.positions) {
-            gl.drawArrays(gl.POINTS, 0, geometryState.positions.numItems);
-            frame.drawArrays++;
-        }
+        gl.drawElements(gl.LINES, indicesBuf.numItems, indicesBuf.itemType, 0);
+        frame.drawElements++;
     }
 };
 
-EmphasisVerticesRenderer.prototype._allocate = function (mesh) {
-    const clipsState = mesh.scene._clipsState;
+EmphasisEdgesRenderer.prototype._allocate = function (mesh) {
     const gl = mesh.scene.canvas.gl;
+    const clipsState = mesh.scene._clipsState;
     this._program = new Program(gl, this._shaderSource);
-    this._useCount = 0;
     if (this._program.errors) {
         this.errors = this._program.errors;
         return;
@@ -171,8 +168,7 @@ EmphasisVerticesRenderer.prototype._allocate = function (mesh) {
             dir: program.getLocation("clipDir" + i)
         });
     }
-    this._uVertexColor = program.getLocation("vertexColor");
-    this._uVertexSize = program.getLocation("vertexSize");
+    this._uEdgeColor = program.getLocation("edgeColor");
     this._aPosition = program.getAttribute("position");
     this._uClippable = program.getLocation("clippable");
     this._uGammaFactor = program.getLocation("gammaFactor");
@@ -181,16 +177,15 @@ EmphasisVerticesRenderer.prototype._allocate = function (mesh) {
     this._lastGeometryId = null;
 };
 
-EmphasisVerticesRenderer.prototype._bindProgram = function (frame, mesh) {
+EmphasisEdgesRenderer.prototype._bindProgram = function (frame) {
+    const program = this._program;
     const scene = this._scene;
     const gl = scene.canvas.gl;
     const clipsState = scene._clipsState;
-    const program = this._program;
     const camera = scene.camera;
     const cameraState = camera._state;
     program.bind();
     frame.useProgram++;
-    frame.textureUnit = 0;
     this._lastMaterialId = null;
     this._lastVertexBufsId = null;
     this._lastGeometryId = null;
@@ -225,4 +220,4 @@ EmphasisVerticesRenderer.prototype._bindProgram = function (frame, mesh) {
     }
 };
 
-export{EmphasisVerticesRenderer};
+export {EmphasisEdgesRenderer};

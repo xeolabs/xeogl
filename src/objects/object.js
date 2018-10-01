@@ -604,7 +604,7 @@
 
 import {utils} from '../utils.js';
 import {Component} from '../component.js';
-import {Mesh} from './mesh.js';
+import {Mesh} from './../mesh/mesh.js';
 import {AABBGeometry} from '../geometry/aabbGeometry.js';
 import {PhongMaterial} from '../materials/phongMaterial.js';
 import {math} from '../math/math.js';
@@ -1240,7 +1240,6 @@ class xeoglObject extends Component {
      * @type {Float32Array}
      */
     set matrix(value) {
-
         if (!this.__localMatrix) {
             this.__localMatrix = math.identityMat4();
         }

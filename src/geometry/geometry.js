@@ -94,7 +94,7 @@
 
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
-import {ArrayBuffer} from '../renderer/arrayBuffer.js';
+import {ArrayBuf} from '../webgl/arrayBuf.js';
 import {getSceneVertexBufs} from './sceneVertexBufs.js';
 import {math} from '../math/math.js';
 import {stats} from './../stats.js';
@@ -252,7 +252,7 @@ class Geometry extends Component {
         }
 
         if (state.indices) {
-            state.indicesBuf = new ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, state.indices, state.indices.length, 1, gl.STATIC_DRAW);
+            state.indicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, state.indices, state.indices.length, 1, gl.STATIC_DRAW);
             memoryStats.indices += state.indicesBuf.numItems;
         }
 
@@ -274,7 +274,7 @@ class Geometry extends Component {
         const state = this._state;
         const gl = this.scene.canvas.gl;
         if (state.indices) {
-            state.indicesBuf = new ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, state.indices, state.indices.length, 1, gl.STATIC_DRAW);
+            state.indicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, state.indices, state.indices.length, 1, gl.STATIC_DRAW);
             memoryStats.indices += state.indicesBuf.numItems;
         }
         if (state.combined) {
@@ -283,19 +283,19 @@ class Geometry extends Component {
             }
         } else {
             if (state.positions) {
-                state.positionsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, state.positions, state.positions.length, 3, gl.STATIC_DRAW);
+                state.positionsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, state.positions, state.positions.length, 3, gl.STATIC_DRAW);
                 memoryStats.positions += state.positionsBuf.numItems;
             }
             if (state.normals) {
-                state.normalsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, state.normals, state.normals.length, 3, gl.STATIC_DRAW);
+                state.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, state.normals, state.normals.length, 3, gl.STATIC_DRAW);
                 memoryStats.normals += state.normalsBuf.numItems;
             }
             if (state.colors) {
-                state.colorsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, state.colors, state.colors.length, 4, gl.STATIC_DRAW);
+                state.colorsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, state.colors, state.colors.length, 4, gl.STATIC_DRAW);
                 memoryStats.colors += state.colorsBuf.numItems;
             }
             if (state.uv) {
-                state.uvBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, state.uv, state.uv.length, 2, gl.STATIC_DRAW);
+                state.uvBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, state.uv, state.uv.length, 2, gl.STATIC_DRAW);
                 memoryStats.uvs += state.uvBuf.numItems;
             }
         }
@@ -358,7 +358,7 @@ class Geometry extends Component {
                 edgesIndices[i] += indicesOffset;
             }
         }
-        this._edgesIndicesBuf = new ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, edgesIndices, edgesIndices.length, 1, gl.STATIC_DRAW);
+        this._edgesIndicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, edgesIndices, edgesIndices.length, 1, gl.STATIC_DRAW);
         memoryStats.indices += this._edgesIndicesBuf.numItems;
     }
 
@@ -371,8 +371,8 @@ class Geometry extends Component {
         const arrays = math.buildPickTriangles(state.positions, state.indices, state.quantized);
         const positions = arrays.positions;
         const colors = arrays.colors;
-        this._pickTrianglePositionsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, positions, positions.length, 3, gl.STATIC_DRAW);
-        this._pickTriangleColorsBuf = new ArrayBuffer(gl, gl.ARRAY_BUFFER, colors, colors.length, 4, gl.STATIC_DRAW, true);
+        this._pickTrianglePositionsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, positions, positions.length, 3, gl.STATIC_DRAW);
+        this._pickTriangleColorsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, colors, colors.length, 4, gl.STATIC_DRAW, true);
         memoryStats.positions += this._pickTrianglePositionsBuf.numItems;
         memoryStats.colors += this._pickTriangleColorsBuf.numItems;
     }
@@ -386,8 +386,8 @@ class Geometry extends Component {
         // var arrays = math.buildPickVertices(state.positions, state.indices, state.quantized);
         // var pickVertexPositions = arrays.positions;
         // var pickColors = arrays.colors;
-        // this._pickVertexPositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickVertexPositions, pickVertexPositions.length, 3, gl.STATIC_DRAW);
-        // this._pickVertexColorsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, gl.STATIC_DRAW, true);
+        // this._pickVertexPositionsBuf = new xeogl.renderer.ArrayBuf(gl, gl.ARRAY_BUFFER, pickVertexPositions, pickVertexPositions.length, 3, gl.STATIC_DRAW);
+        // this._pickVertexColorsBuf = new xeogl.renderer.ArrayBuf(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, gl.STATIC_DRAW, true);
         // memoryStats.positions += this._pickVertexPositionsBuf.numItems;
         // memoryStats.colors += this._pickVertexColorsBuf.numItems;
     }
@@ -740,6 +740,18 @@ class Geometry extends Component {
         const state = this._state;
         if (state.indicesBuf) {
             state.indicesBuf.destroy();
+        }
+        if (state.positionsBuf) {
+            state.positionsBuf.destroy();
+        }
+        if (state.normalsBuf) {
+            state.normalsBuf.destroy();
+        }
+        if (state.uvBuf) {
+            state.uvBuf.destroy();
+        }
+        if (state.colorsBuf) {
+            state.colorsBuf.destroy();
         }
         if (this._edgesIndicesBuf) {
             this._edgesIndicesBuf.destroy();

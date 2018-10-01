@@ -91,7 +91,7 @@ import {math} from '../math/math.js';
 import {utils} from '../utils.js';
 import {tasks} from '../tasks.js';
 import {Component} from '../component.js';
-import {Mesh} from '../objects/mesh.js';
+import {Mesh} from '../mesh/mesh.js';
 import {AABBGeometry} from '../geometry/aabbGeometry.js';
 import {PhongMaterial} from '../materials/phongMaterial.js';
 import {componentClasses} from "./../componentClasses.js";

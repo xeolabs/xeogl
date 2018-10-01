@@ -4,7 +4,7 @@
 
 import {Map} from "../../utils/map.js";
 import {DrawShaderSource} from "./drawShaderSource.js";
-import {Program} from "../program.js";
+import {Program} from "../../webgl/program.js";
 import {stats} from './../../stats.js';
 import {WEBGL_INFO} from './../../webglInfo.js';
 

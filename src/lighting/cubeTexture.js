@@ -20,7 +20,7 @@
  */
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
-import {Texture2D} from '../renderer/texture2d.js';
+import {Texture2D} from '../webgl/texture2d.js';
 import {stats} from './../stats.js';
 import {componentClasses} from "./../componentClasses.js";
 

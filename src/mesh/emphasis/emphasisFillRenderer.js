@@ -4,7 +4,7 @@
 
 import {Map} from "../../utils/map.js";
 import {EmphasisFillShaderSource} from "./emphasisFillShaderSource.js";
-import {Program} from "../program.js";
+import {Program} from "../../webgl/program.js";
 import {stats} from './../../stats.js';
 
 const ids = new Map({});

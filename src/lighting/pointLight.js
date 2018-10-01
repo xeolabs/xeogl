@@ -85,7 +85,7 @@
  */
 import {Component} from '../component.js';
 import {State} from '../renderer/state.js';
-import {RenderBuffer} from '../renderer/renderBuffer.js';
+import {RenderBuffer} from '../webgl/renderBuffer.js';
 import {math} from '../math/math.js';
 import {componentClasses} from "./../componentClasses.js";
 

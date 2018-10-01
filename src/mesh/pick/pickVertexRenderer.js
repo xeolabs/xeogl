@@ -3,7 +3,7 @@
  */
 
 import {PickVertexShaderSource} from "./pickVertexShaderSource.js";
-import {Program} from "../program.js";
+import {Program} from "../../webgl/program.js";
 import {stats} from "../../stats.js";
 
 const PickVertexRenderer = function (hash, mesh) {

@@ -2,7 +2,7 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-class ArrayBuffer {
+class ArrayBuf {
 
     constructor(gl, type, data, numItems, itemSize, usage) {
 
@@ -113,4 +113,4 @@ class ArrayBuffer {
     }
 }
 
-export{ArrayBuffer};
+export{ArrayBuf};

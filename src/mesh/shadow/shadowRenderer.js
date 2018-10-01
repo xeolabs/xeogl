@@ -3,7 +3,7 @@
  */
 
 import {ShadowShaderSource} from "./shadowShaderSource.js";
-import {Program} from "../program.js";
+import {Program} from "../../webgl/program.js";
 import {stats} from "../../stats.js";
 
 const ShadowRenderer = function (hash, mesh) {
