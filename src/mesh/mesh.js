@@ -1186,7 +1186,7 @@ class Mesh extends xeoglObject {
     /**
      Indicates if included in boundary calculations.
 
-     When false, this Mesh will not be included in the bounding boxes provided by parent components (
+     When false, this Mesh will not be included in the bounding boxes provided by parent components.
 
      @property collidable
      @default true
