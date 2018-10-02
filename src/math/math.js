@@ -2284,9 +2284,14 @@ const math = {
      * @static
      */
     transformPoint3(m, p, dest = math.vec3()) {
-        dest[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
-        dest[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
-        dest[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
+
+        const x = p[0];
+        const y = p[1];
+        const z = p[2];
+
+        dest[0] = (m[0] * x) + (m[4] * y) + (m[8] * z) + m[12];
+        dest[1] = (m[1] * x) + (m[5] * y) + (m[9] * z) + m[13];
+        dest[2] = (m[2] * x) + (m[6] * y) + (m[10] * z) + m[14];
 
         return dest;
     },
@@ -3685,30 +3690,65 @@ const math = {
      */
     expandAABB3Point3(aabb, p) {
 
-        if (aabb[0] < p[0]) {
+        if (aabb[0] > p[0]) {
             aabb[0] = p[0];
         }
 
-        if (aabb[1] < p[1]) {
+        if (aabb[1] > p[1]) {
             aabb[1] = p[1];
         }
 
-        if (aabb[2] < p[2]) {
+        if (aabb[2] > p[2]) {
             aabb[2] = p[2];
         }
 
-        if (aabb[3] > p[0]) {
+        if (aabb[3] < p[0]) {
             aabb[3] = p[0];
         }
 
-        if (aabb[4] > p[1]) {
+        if (aabb[4] < p[1]) {
             aabb[4] = p[1];
         }
 
-        if (aabb[5] > p[2]) {
+        if (aabb[5] < p[2]) {
             aabb[5] = p[2];
         }
 
+        return aabb;
+    },
+
+    /**
+     * Expands an axis-aligned 3D boundary to enclose the given points, if needed.
+     *
+     * @private
+     */
+    expandAABB3Points3(aabb, positions) {
+        var x;
+        var y;
+        var z;
+        for (var i = 0, len = positions.length / 3; i < len; i++) {
+            x = positions[i];
+            y = positions[i + 1];
+            z = positions[i + 2];
+            if (aabb[0] > x) {
+                aabb[0] = x;
+            }
+            if (aabb[1] > y) {
+                aabb[1] = y;
+            }
+            if (aabb[2] > z) {
+                aabb[2] = z;
+            }
+            if (aabb[3] < x) {
+                aabb[3] = x;
+            }
+            if (aabb[4] < y) {
+                aabb[4] = y;
+            }
+            if (aabb[5] < z) {
+                aabb[5] = z;
+            }
+        }
         return aabb;
     },
 
