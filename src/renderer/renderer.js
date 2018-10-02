@@ -3,15 +3,17 @@
  */
 
 import {Frame} from './frame.js';
-import {RenderBuffer} from './renderBuffer.js';
+import {RenderBuffer} from '../webgl/renderBuffer.js';
 import {math} from '../math/math.js';
 import {stats} from './../stats.js';
 import {WEBGL_INFO} from './../webglInfo.js';
-import {Mesh} from '../objects/mesh.js';
+import {Mesh} from '../mesh/mesh.js';
 
 const Renderer = function ( scene, options) {
 
     "use strict";
+
+    var self = this;
 
     options = options || {};
 
@@ -40,6 +42,8 @@ const Renderer = function ( scene, options) {
 
     const bindOutputFrameBuffer = null;
     const unbindOutputFrameBuffer = null;
+
+    this.drawables = {};
 
     this.meshListDirty = function () {
         meshListDirty = true;
@@ -109,7 +113,7 @@ const Renderer = function ( scene, options) {
     this.render = function (params) {
         params = params || {};
         update();
-        if (imageDirty || this.imageForceDirty || params.force) {
+       if (imageDirty || this.imageForceDirty || params.force) {
             drawMeshes(params);
             stats.frame.frameCount++;
             imageDirty = false;
@@ -146,10 +150,6 @@ const Renderer = function ( scene, options) {
             meshList[i] = null; // Release memory
         }
         meshList.length = meshListLen;
-    }
-
-    function stateSort() {
-        meshList.sort(Mesh._compareState);
     }
 
     function drawShadowMaps() {
@@ -324,7 +324,7 @@ const Renderer = function ( scene, options) {
 
             numTransparentMeshes = 0;
 
-            // Build draw lists
+            // Render meshes
 
             for (i = 0, len = meshListLen; i < len; i++) {
 
@@ -462,6 +462,12 @@ const Renderer = function ( scene, options) {
                         opaqueEdgesMeshes[numOpaqueEdgesMeshes++] = mesh;
                     }
                 }
+            }
+
+            // Render opaque Drawables
+
+            for (var drawableId in self.drawables) { // OPTIMIZE
+                self.drawables[drawableId]._draw(frame);
             }
 
             // Render opaque outlined meshes
