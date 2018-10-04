@@ -662,16 +662,18 @@ class Mesh extends xeoglObject {
     }
 
     _compile() {
-        this._putRenderers();
-        this._makeHash();
-        this._drawRenderer = DrawRenderer.get(this);
-        this._shadowRenderer = ShadowRenderer.get(this);
-        this._emphasisFillRenderer = EmphasisFillRenderer.get(this);
-        this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this);
-        this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this);
-        this._pickMeshRenderer = PickMeshRenderer.get(this);
-
-        this._renderer.meshListDirty();
+        var hash = this._makeHash();
+        if (this._state.hash !== hash) {
+            this._state.hash = hash;
+            this._putRenderers();
+            this._drawRenderer = DrawRenderer.get(this);
+            this._shadowRenderer = ShadowRenderer.get(this);
+            this._emphasisFillRenderer = EmphasisFillRenderer.get(this);
+            this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this);
+            this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this);
+            this._pickMeshRenderer = PickMeshRenderer.get(this);
+            this._renderer.meshListDirty();
+        }
     }
 
     _webglContextRestored() {
@@ -715,7 +717,7 @@ class Mesh extends xeoglObject {
             hash.push("/rs");
         }
         hash.push(";");
-        this._state.hash = hash.join("");
+        return hash.join("");
     }
 
     _buildMeshAABB(worldMatrix, aabb) { // TODO: factor out into class member
