@@ -629,7 +629,10 @@ class Scene extends Component {
          */
         this.meshes = {};
 
-        this._needRecompileMeshes = false;
+        this._collidables = {}; // Components that contribute to the Scene AABB
+        this._compilables = {}; // Components that require shader compilation
+
+        this._needRecompile = false;
 
         /**
          For each {{#crossLink "Component"}}{{/crossLink}} type, a map of
@@ -1032,25 +1035,25 @@ class Scene extends Component {
     _clipCreated(clip) {
         this.clips[clip.id] = clip;
         this.scene._clipsState.addClip(clip._state);
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     _lightCreated(light) {
         this.lights[light.id] = light;
         this.scene._lightsState.addLight(light._state);
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     _lightMapCreated(lightMap) {
         this.lightMaps[lightMap.id] = lightMap;
         this.scene._lightsState.addLightMap(lightMap._state);
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     _reflectionMapCreated(reflectionMap) {
         this.reflectionMaps[reflectionMap.id] = reflectionMap;
         this.scene._lightsState.addReflectionMap(reflectionMap._state);
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     _objectCreated(object) {
@@ -1067,6 +1070,8 @@ class Scene extends Component {
 
     _meshCreated(mesh) {
         this.meshes[mesh.id] = mesh;
+        this._collidables[mesh.id] = mesh;
+        this._compilables[mesh.id] = mesh;
         stats.components.meshes++;
     }
 
@@ -1075,28 +1080,33 @@ class Scene extends Component {
         stats.components.models++;
     }
 
+    _bigModelCreated(bigModel) {
+        this._collidables[bigModel.id] = bigModel;
+        this._compilables[bigModel.id] = bigModel;
+    }
+
     _clipDestroyed(clip) {
         delete this.clips[clip.id];
         this.scene._clipsState.removeClip(clip._state);
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     _lightDestroyed(light) {
         delete this.lights[light.id];
         this.scene._lightsState.removeLight(light._state);
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     _lightMapDestroyed(lightMap) {
         delete this.lightMaps[lightMap.id];
         this.scene._lightsState.removeLightMap(lightMap._state);
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     _reflectionMapDestroyed(reflectionMap) {
         delete this.reflectionMaps[reflectionMap.id];
         this.scene._lightsState.removeReflectionMap(reflectionMap._state);
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     _objectDestroyed(object) {
@@ -1114,12 +1124,19 @@ class Scene extends Component {
     _meshDestroyed(mesh) {
         stats.components.meshes--;
         delete this.meshes[mesh.id];
+        delete this._collidables[mesh.id];
+        delete this._compilables[mesh.id];
         stats.components.meshes--;
     }
 
     _modelDestroyed(model) {
         this.models[model.id] = model;
         stats.components.models++;
+    }
+
+    _bigModelDestroyed(bigModel) {
+        delete this._collidables[bigModel.id];
+        delete this._compilables[bigModel.id];
     }
 
     _entityTypeAssigned(object, newEntityType) {
@@ -1228,9 +1245,9 @@ class Scene extends Component {
         };
 
 
-        if (this._needRecompileMeshes) {
-            this._recompileMeshes();
-            this._needRecompileMeshes = false;
+        if (this._needRecompile) {
+            this._recompile();
+            this._needRecompile = false;
         }
 
         if (this.loading > 0 || this.canvas.spinner.processes > 0) {
@@ -1281,10 +1298,10 @@ class Scene extends Component {
         this._saveAmbientColor();
     }
 
-    _recompileMeshes() {
-        for (const id in this.meshes) {
-            if (this.meshes.hasOwnProperty(id)) {
-                this.meshes[id]._compile();
+    _recompile() {
+        for (const id in this._compilables) {
+            if (this._compilables.hasOwnProperty(id)) {
+                this._compilables[id]._compile();
             }
         }
     }
@@ -1485,7 +1502,7 @@ class Scene extends Component {
             return;
         }
         this._renderer.gammaInput = value;
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     get gammaInput() {
@@ -1505,7 +1522,7 @@ class Scene extends Component {
             return;
         }
         this._renderer.gammaOutput = value;
-        this._needRecompileMeshes = true;
+        this._needRecompile = true;
     }
 
     get gammaOutput() {
@@ -1743,15 +1760,15 @@ class Scene extends Component {
             let ymax = -math.MAX_DOUBLE;
             let zmax = -math.MAX_DOUBLE;
             let aabb;
-            const meshes = this.meshes;
-            let mesh;
-            for (const meshId in meshes) {
-                if (meshes.hasOwnProperty(meshId)) {
-                    mesh = meshes[meshId];
-                    if (!mesh.collidable) {
+            const collidables = this._collidables;
+            let collidable;
+            for (const collidableId in collidables) {
+                if (collidables.hasOwnProperty(collidableId)) {
+                    collidable = collidables[collidableId];
+                    if (collidable.collidable === false) {
                         continue;
                     }
-                    aabb = mesh.aabb;
+                    aabb = collidable.aabb;
                     if (aabb[0] < xmin) {
                         xmin = aabb[0];
                     }
