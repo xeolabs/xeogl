@@ -287,6 +287,7 @@ class Component {
                 this.scene = core.getDefaultScene();
                 owner = this.scene;
             }
+            this._owner = owner;
             this._renderer = this.scene._renderer;
         }
 
@@ -352,6 +353,21 @@ class Component {
 
     _removedFromModel(model) { // Called by xeogl.Model.remove()
         this._model = null;
+    }
+
+    /**
+     The {{#crossLink "Component"}}{{/crossLink}} that owns the lifecycle of this Component, if any.
+
+     When that component is destroyed, this component will be automatically destroyed also.
+
+     Will be null if this Component has no owner.
+
+     @property owner
+     @final
+     @type Component
+     */
+    get owner() {
+        return this._owner;
     }
 
     /**
