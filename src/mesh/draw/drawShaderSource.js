@@ -104,7 +104,11 @@ function buildVertexLambert(mesh) {
     src.push("uniform vec4 lightAmbient;");
     src.push("uniform vec4 materialColor;");
     if (geometryState.normals) {
-        src.push("attribute vec3 normal;");
+        if (quantizedGeometry) {
+            src.push("attribute vec2 normal;");
+        } else {
+            src.push("attribute vec3 normal;");
+        }
         src.push("uniform mat4 modelNormalMatrix;");
         src.push("uniform mat4 viewNormalMatrix;");
         for (i = 0, len = lightsState.lights.length; i < len; i++) {
@@ -342,7 +346,11 @@ function buildVertexDraw(mesh) {
         src.push("varying    vec3 vWorldNormal;");
     }
     if (normals) {
-        src.push("attribute  vec3 normal;");
+        if (quantizedGeometry) {
+            src.push("attribute vec2 normal;");
+        } else {
+            src.push("attribute vec3 normal;");
+        }
         src.push("uniform    mat4 modelNormalMatrix;");
         src.push("uniform    mat4 viewNormalMatrix;");
         src.push("varying    vec3 vViewNormal;");
