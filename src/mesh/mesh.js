@@ -720,13 +720,9 @@ class Mesh extends xeoglObject {
         return hash.join("");
     }
 
-    _buildMeshAABB(worldMatrix, aabb) { // TODO: factor out into class member
+    _buildAABB(worldMatrix, aabb) {
         math.transformOBB3(worldMatrix, this._geometry.obb, obb);
         math.OBB3ToAABB3(obb, aabb);
-    }
-
-    _getSceneHash() {
-        return (this.scene.gammaInput ? "gi;" : ";") + (this.scene.gammaOutput ? "go" : "");
     }
 
     //--------------------- Rendering ------------------------------------------------------------------------------

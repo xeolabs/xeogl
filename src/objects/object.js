@@ -787,8 +787,8 @@ class xeoglObject extends Component {
         if (!this._aabb) {
             this._aabb = math.AABB3();
         }
-        if (this._buildMeshAABB) {
-            this._buildMeshAABB(this.worldMatrix, this._aabb); // Geometry
+        if (this._buildAABB) {
+            this._buildAABB(this.worldMatrix, this._aabb); // Mesh or BigModel
         } else { // Object | Group | Model
             math.collapseAABB3(this._aabb);
             let object;
