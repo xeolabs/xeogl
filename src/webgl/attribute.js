@@ -9,13 +9,18 @@ class Attribute {
         this.location = location;
     }
 
-    bindArrayBuffer(buffer, type) {
+    bindArrayBuffer(buffer, type, normalized) {
         if (!buffer) {
             return;
         }
         buffer.bind();
         this._gl.enableVertexAttribArray(this.location);
-        this._gl.vertexAttribPointer(this.location, type === this._gl.BYTE ? 2 : buffer.itemSize, type || this._gl.FLOAT, type === this._gl.BYTE, 0, 0);
+        this._gl.vertexAttribPointer(
+            this.location,
+            type === this._gl.BYTE ? 2 : buffer.itemSize,
+            type || this._gl.FLOAT,
+            normalized, // Not normalized
+            0, 0);
     }
 }
 
