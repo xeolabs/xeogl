@@ -86,9 +86,9 @@ class Program {
             this.errors.push("");
             this.errors.push(gl.getProgramInfoLog(this.handle));
             this.errors.push("\nVertex shader:\n");
-            this.errors = this.errors.concat(shaderSource.vertex);
+            this.errors = this.errors.concat(this.source.vertex);
             this.errors.push("\nFragment shader:\n");
-            this.errors = this.errors.concat(shaderSource.fragment);
+            this.errors = this.errors.concat(this.source.fragment);
             return;
         }
         const numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
