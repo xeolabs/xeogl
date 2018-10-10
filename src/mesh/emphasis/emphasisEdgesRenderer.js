@@ -123,7 +123,7 @@ EmphasisEdgesRenderer.prototype.drawMesh = function (frame, mesh, mode) {
     // Bind VBOs
     let indicesBuf;
     if (geometryState.primitive === gl.TRIANGLES) {
-        indicesBuf = geometry._getEdgesIndices();
+        indicesBuf = geometry._getEdgeIndices();
     } else if (geometryState.primitive === gl.LINES) {
         indicesBuf = geometryState.indicesBuf;
     }

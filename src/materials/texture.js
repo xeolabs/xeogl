@@ -131,7 +131,7 @@ class Texture extends Component {
             matrix: math.identityMat4(),   // Float32Array
             hasMatrix: (cfg.translate && (cfg.translate[0] !== 0 || cfg.translate[1] !== 0)) || (!!cfg.rotate) || (cfg.scale && (cfg.scale[0] !== 0 || cfg.scale[1] !== 0)),
             minFilter: this._checkMinFilter(cfg.minFilter),
-            magFilter: this._checkMagFilter(cfg.minFilter),
+            magFilter: this._checkMagFilter(cfg.magFilter),
             wrapS: this._checkWrapS(cfg.wrapS),
             wrapT: this._checkWrapT(cfg.wrapT),
             flipY: this._checkFlipY(cfg.flipY),

@@ -290,8 +290,13 @@ class SceneVertexBufs {
             this.positions = [];
         }
         if (this.normals) {
-            array = this.quantized ? new Int8Array(this.normals) : new Float32Array(this.normals);
-            vertexBufs.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
+            if (this.quantized) {
+                array = new Int8Array(this.normals);
+                vertexBufs.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, array, array.length, 2, gl.STATIC_DRAW);
+            } else {
+                array = new Float32Array(this.normals);
+                vertexBufs.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
+            }
             memoryStats.normals += vertexBufs.normalsBuf.numItems;
             this.normals = [];
         }

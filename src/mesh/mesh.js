@@ -207,17 +207,13 @@
         diffuse: [0.2, 0.2, 1.0]
     }),
     ghostMaterial: new xeogl.EmphasisMaterial({
+        fill: true,
+        fillColor: [0, 0, 0],
+        fillAlpha: 0.7,
         edges: true,
         edgeColor: [0.2, 1.0, 0.2],
         edgeAlpha: 1.0,
-        edgeWidth: 2,
-        vertices: true,
-        vertexColor: [0.6, 1.0, 0.6],
-        vertexAlpha: 1.0,
-        vertexSize: 8,
-        fill: true,
-        fillColor: [0, 0, 0],
-        fillAlpha: 0.7
+        edgeWidth: 2
     }),
     ghosted: true
  });
@@ -568,7 +564,6 @@ import {State} from '../renderer/state.js';
 import {DrawRenderer} from "./draw/drawRenderer.js";
 import {EmphasisFillRenderer} from "./emphasis/emphasisFillRenderer.js";
 import {EmphasisEdgesRenderer} from "./emphasis/emphasisEdgesRenderer.js";
-import {EmphasisVerticesRenderer} from "./emphasis/emphasisVerticesRenderer.js";
 import {ShadowRenderer} from "./shadow/shadowRenderer.js";
 import {OutlineRenderer} from "./outline/outlineRenderer.js";
 import {PickMeshRenderer} from "./pick/pickMeshRenderer.js";
@@ -629,7 +624,6 @@ class Mesh extends xeoglObject {
         this._shadowRenderer = null;
         this._emphasisFillRenderer = null;
         this._emphasisEdgesRenderer = null;
-        this._emphasisVerticesRenderer = null;
         this._pickMeshRenderer = null;
         this._pickTriangleRenderer = null;
 
@@ -649,6 +643,8 @@ class Mesh extends xeoglObject {
         super.init(cfg); // Call xeogl.Object._init()
 
         this.scene._meshCreated(this);
+
+        this._renderer.addDrawable(this._state.id, this);  // State ID is smaller than Mesh ID
     }
 
     _checkBillboard(value) {
@@ -670,7 +666,6 @@ class Mesh extends xeoglObject {
             this._shadowRenderer = ShadowRenderer.get(this);
             this._emphasisFillRenderer = EmphasisFillRenderer.get(this);
             this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this);
-            this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this);
             this._pickMeshRenderer = PickMeshRenderer.get(this);
             this._renderer.meshListDirty();
         }
@@ -688,9 +683,6 @@ class Mesh extends xeoglObject {
         }
         if (this._emphasisEdgesRenderer) {
             this._emphasisEdgesRenderer.webglContextRestored();
-        }
-        if (this._emphasisVerticesRenderer) {
-            this._emphasisVerticesRenderer.webglContextRestored();
         }
         if (this._pickMeshRenderer) {
             this._pickMeshRenderer.webglContextRestored();
@@ -725,152 +717,6 @@ class Mesh extends xeoglObject {
         math.OBB3ToAABB3(obb, aabb);
     }
 
-    //--------------------- Rendering ------------------------------------------------------------------------------
-
-    _draw(frame) {
-        if (this._drawRenderer || (this._drawRenderer = DrawRenderer.get(this))) {
-            this._drawRenderer.drawMesh(frame, this);
-        }
-    }
-
-    _drawGhostFill(frame) {
-        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
-            this._emphasisFillRenderer.drawMesh(frame, this, 0); // 0 == ghost
-        }
-    }
-
-    _drawGhostEdges(frame) {
-        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
-            this._emphasisEdgesRenderer.drawMesh(frame, this, 0); // 0 == ghost
-        }
-    }
-
-    _drawGhostVertices(frame) {
-        if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this))) {
-            this._emphasisVerticesRenderer.drawMesh(frame, this, 0); // 0 == ghost
-        }
-    }
-
-    _drawHighlightFill(frame) {
-        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
-            this._emphasisFillRenderer.drawMesh(frame, this, 1); // 1 == highlight
-        }
-    }
-
-    _drawHighlightEdges(frame) {
-        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
-            this._emphasisEdgesRenderer.drawMesh(frame, this, 1); // 1 == highlight
-        }
-    }
-
-    _drawHighlightVertices(frame) {
-        if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this))) {
-            this._emphasisVerticesRenderer.drawMesh(frame, this, 1); // 1 == highlight
-        }
-    }
-
-    _drawSelectedFill(frame) {
-        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
-            this._emphasisFillRenderer.drawMesh(frame, this, 2); // 2 == selected
-        }
-    }
-
-    _drawSelectedEdges(frame) {
-        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
-            this._emphasisEdgesRenderer.drawMesh(frame, this, 2); // 2 == selected
-        }
-    }
-
-    _drawSelectedVertices(frame) {
-        if (this._emphasisVerticesRenderer || (this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this))) {
-            this._emphasisVerticesRenderer.drawMesh(frame, this, 2); // 2 == selected
-        }
-    }
-
-    _drawEdges(frame) {
-        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
-            this._emphasisEdgesRenderer.drawMesh(frame, this, 3); // 3 == edges
-        }
-    }
-
-    _drawShadow(frame, light) {
-        if (this._shadowRenderer || (this._shadowRenderer = ShadowRenderer.get(this))) {
-            this._shadowRenderer.drawMesh(frame, this, light);
-        }
-    }
-
-    _drawOutline(frame) {
-        if (this._shadowRenderer || (this._outlineRenderer = OutlineRenderer.get(this))) {
-            this._outlineRenderer.drawMesh(frame, this);
-        }
-    }
-
-    _pickMesh(frame) {
-        if (this._pickMeshRenderer || (this._pickMeshRenderer = PickMeshRenderer.get(this))) {
-            this._pickMeshRenderer.drawMesh(frame, this);
-        }
-    }
-
-    _pickTriangle(frame) {
-        if (this._pickTriangleRenderer || (this._pickTriangleRenderer = PickTriangleRenderer.get(this))) {
-            this._pickTriangleRenderer.drawMesh(frame, this);
-        }
-    }
-
-    _pickVertex(frame) {
-        if (this._pickVertexRenderer || (this._pickVertexRenderer = PickVertexRenderer.get(this))) {
-            this._pickVertexRenderer.drawMesh(frame, this);
-        }
-    }
-
-    _getOutlineRenderer() {
-        this._outlineRenderer = OutlineRenderer.get(this);
-        if (this._outlineRenderer.errors) {
-            this.errors = (this.errors || []).concat(this._outlineRenderer.errors);
-            this.error(this._outlineRenderer.errors.join("\n"));
-            return false;
-        }
-        return true;
-    }
-
-    _putRenderers() {
-        if (this._drawRenderer) {
-            this._drawRenderer.put();
-            this._drawRenderer = null;
-        }
-        if (this._shadowRenderer) {
-            this._shadowRenderer.put();
-            this._shadowRenderer = null;
-        }
-        if (this._emphasisFillRenderer) {
-            this._emphasisFillRenderer.put();
-            this._emphasisFillRenderer = null;
-        }
-        if (this._emphasisEdgesRenderer) {
-            this._emphasisEdgesRenderer.put();
-            this._emphasisEdgesRenderer = null;
-        }
-        if (this._emphasisVerticesRenderer) {
-            this._emphasisVerticesRenderer.put();
-            this._emphasisVerticesRenderer = null;
-        }
-        if (this._outlineRenderer) {
-            this._outlineRenderer.put();
-            this._outlineRenderer = null;
-        }
-        if (this._pickMeshRenderer) {
-            this._pickMeshRenderer.put();
-            this._pickMeshRenderer = null;
-        }
-        if (this._pickTriangleRenderer) {
-            this._pickTriangleRenderer.put();
-            this._pickTriangleRenderer = null;
-        }
-        if (this._pickVertexRenderer) {
-            this._pickVertexRenderer.put();
-            this._pickVertexRenderer = null;
-        }
-    }
 
     /**
      World-space 3D vertex positions.
@@ -1321,6 +1167,14 @@ class Mesh extends xeoglObject {
     }
 
     /**
+      Returns whether or not this Mesh is transparent.
+      @returns {boolean}
+     */
+    get transparent() {
+        return this._material.alphaMode === 2 /* blend */ || this._state.colorize[3] < 1
+    }
+
+    /**
      The rendering order.
 
      This can be set on multiple transparent Meshes, to make them render in a specific order
@@ -1379,9 +1233,155 @@ class Mesh extends xeoglObject {
         return this._state.billboard;
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // Renderer hooks - private and used only by Renderer
+    //------------------------------------------------------------------------------------------------------------------
+
+    get _getStateSortable() {
+        return true;
+    }
+
+    _getOpaque() {
+        return this._material.alphaMode !== 2 /* blend */ || this._state.colorize[3] === 1
+    }
+
+    _getTransparent() {
+        return this._material.alphaMode === 2 /* blend */ || this._state.colorize[3] < 1
+    }
+
+    _drawOpaque(frame) {
+        if (this._drawRenderer || (this._drawRenderer = DrawRenderer.get(this))) {
+            this._drawRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _drawTransparent(frame) {
+        if (this._drawRenderer || (this._drawRenderer = DrawRenderer.get(this))) {
+            this._drawRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _drawGhostedFill(frame) {
+        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
+            this._emphasisFillRenderer.drawMesh(frame, this, 0); // 0 == ghost
+        }
+    }
+
+    _drawGhostedEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 0); // 0 == ghost
+        }
+    }
+
+    _drawHighlightedFill(frame) {
+        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
+            this._emphasisFillRenderer.drawMesh(frame, this, 1); // 1 == highlight
+        }
+    }
+
+    _drawHighlightedEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 1); // 1 == highlight
+        }
+    }
+
+    _drawSelectedFill(frame) {
+        if (this._emphasisFillRenderer || (this._emphasisFillRenderer = EmphasisFillRenderer.get(this))) {
+            this._emphasisFillRenderer.drawMesh(frame, this, 2); // 2 == selected
+        }
+    }
+
+    _drawSelectedEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 2); // 2 == selected
+        }
+    }
+
+    _drawEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 3); // 3 == edges
+        }
+    }
+
+    _drawShadow(frame, light) {
+        if (this._shadowRenderer || (this._shadowRenderer = ShadowRenderer.get(this))) {
+            this._shadowRenderer.drawMesh(frame, this, light);
+        }
+    }
+
+    _drawOutline(frame) {
+        if (this._shadowRenderer || (this._outlineRenderer = OutlineRenderer.get(this))) {
+            this._outlineRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _pickMesh(frame) {
+        if (this._pickMeshRenderer || (this._pickMeshRenderer = PickMeshRenderer.get(this))) {
+            this._pickMeshRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _pickTriangle(frame) {
+        if (this._pickTriangleRenderer || (this._pickTriangleRenderer = PickTriangleRenderer.get(this))) {
+            this._pickTriangleRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _pickVertex(frame) {
+        if (this._pickVertexRenderer || (this._pickVertexRenderer = PickVertexRenderer.get(this))) {
+            this._pickVertexRenderer.drawMesh(frame, this);
+        }
+    }
+
+    _getOutlineRenderer() {
+        this._outlineRenderer = OutlineRenderer.get(this);
+        if (this._outlineRenderer.errors) {
+            this.errors = (this.errors || []).concat(this._outlineRenderer.errors);
+            this.error(this._outlineRenderer.errors.join("\n"));
+            return false;
+        }
+        return true;
+    }
+
+    _putRenderers() {
+        if (this._drawRenderer) {
+            this._drawRenderer.put();
+            this._drawRenderer = null;
+        }
+        if (this._shadowRenderer) {
+            this._shadowRenderer.put();
+            this._shadowRenderer = null;
+        }
+        if (this._emphasisFillRenderer) {
+            this._emphasisFillRenderer.put();
+            this._emphasisFillRenderer = null;
+        }
+        if (this._emphasisEdgesRenderer) {
+            this._emphasisEdgesRenderer.put();
+            this._emphasisEdgesRenderer = null;
+        }
+        if (this._outlineRenderer) {
+            this._outlineRenderer.put();
+            this._outlineRenderer = null;
+        }
+        if (this._pickMeshRenderer) {
+            this._pickMeshRenderer.put();
+            this._pickMeshRenderer = null;
+        }
+        if (this._pickTriangleRenderer) {
+            this._pickTriangleRenderer.put();
+            this._pickTriangleRenderer = null;
+        }
+        if (this._pickVertexRenderer) {
+            this._pickVertexRenderer.put();
+            this._pickVertexRenderer = null;
+        }
+    }
+
     destroy() {
         super.destroy(); // xeogl.Object
         this._putRenderers();
+        this._renderer.removeDrawable(this._state.id); // State ID is smaller than Mesh ID
         this._renderer.meshListDirty();
         this.scene._meshDestroyed(this);
         if (this._state.castShadow) {

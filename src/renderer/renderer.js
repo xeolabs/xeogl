@@ -9,7 +9,7 @@ import {stats} from './../stats.js';
 import {WEBGL_INFO} from './../webglInfo.js';
 import {Mesh} from '../mesh/mesh.js';
 
-const Renderer = function ( scene, options) {
+const Renderer = function (scene, options) {
 
     "use strict";
 
@@ -22,13 +22,13 @@ const Renderer = function ( scene, options) {
     const gl = scene.canvas.gl;
     const shadowLightMeshes = {};
     const canvasTransparent = options.transparent === true;
-    const meshList = [];
-    let meshListLen = 0;
+    const drawableListSorted = [];
+    let drawableListSortedLen = 0;
     const meshPickList = [];
     let meshPickListLen = 0;
     const shadowMeshLists = {};
 
-    let meshListDirty = true;
+    let drawableListDirty = true;
     let stateSortDirty = true;
     let imageDirty = true;
     let shadowsDirty = true;
@@ -43,10 +43,11 @@ const Renderer = function ( scene, options) {
     const bindOutputFrameBuffer = null;
     const unbindOutputFrameBuffer = null;
 
-    this.drawables = {};
+    const drawables = {};
+    const drawablesUnsorted = {};
 
     this.meshListDirty = function () {
-        meshListDirty = true;
+        drawableListDirty = true;
         stateSortDirty = true;
     };
 
@@ -83,6 +84,21 @@ const Renderer = function ( scene, options) {
         imageDirty = true;
     };
 
+    this.addDrawable = function (id, drawable) { //
+        if (drawable._getStateSortable) {
+            drawables[id] = drawable;
+        } else {
+            drawablesUnsorted[id] = drawable;
+        }
+        drawableListDirty = true;
+    };
+
+    this.removeDrawable = function (id) {
+        delete drawables[id];
+        delete drawablesUnsorted[id];
+        drawableListDirty = true;
+    };
+
     /**
      * Clears the canvas.
      * @param params
@@ -113,8 +129,8 @@ const Renderer = function ( scene, options) {
     this.render = function (params) {
         params = params || {};
         update();
-       if (imageDirty || this.imageForceDirty || params.force) {
-            drawMeshes(params);
+        if (imageDirty || this.imageForceDirty || params.force) {
+            render(params);
             stats.frame.frameCount++;
             imageDirty = false;
             this.imageForceDirty = false;
@@ -122,13 +138,14 @@ const Renderer = function ( scene, options) {
     };
 
     function update() {
-        if (meshListDirty) {
-            buildMeshList();
-            meshListDirty = false;
+        if (drawableListDirty) {
+            buildDrawableList();
+            drawableListDirty = false;
             stateSortDirty = true;
         }
         if (stateSortDirty) {
-            meshList.sort(Mesh._compareState);
+            sortDrawableList();
+            appendDrawableList();
             stateSortDirty = false;
             imageDirty = true;
         }
@@ -139,17 +156,29 @@ const Renderer = function ( scene, options) {
         // }
     }
 
-    function buildMeshList() {
-        meshListLen = 0;
-        for (const meshId in scene.meshes) {
-            if (scene.meshes.hasOwnProperty(meshId)) {
-                meshList[meshListLen++] = scene.meshes[meshId];
+    function buildDrawableList() {
+        drawableListSortedLen = 0;
+        for (const id in drawables) {
+            if (drawables.hasOwnProperty(id)) {
+                drawableListSorted[drawableListSortedLen++] = drawables[id];
             }
         }
-        for (let i = meshListLen, len = meshList.length; i < len; i++) {
-            meshList[i] = null; // Release memory
+    }
+
+    function sortDrawableList() {
+        drawableListSorted.sort(Mesh._compareState);
+    }
+
+    function appendDrawableList() {
+        for (const id in self.drawablesUnsorted) {
+            if (self.drawablesUnsorted.hasOwnProperty(id)) {
+                drawableListSorted[drawableListSortedLen++] = self.drawablesUnsorted[id];
+            }
         }
-        meshList.length = meshListLen;
+        for (let i = drawableListSortedLen, len = drawableListSorted.length; i < len; i++) {
+            drawableListSorted[i] = null; // Release memory
+        }
+        drawableListSorted.length = drawableListSortedLen;
     }
 
     function drawShadowMaps() {
@@ -199,53 +228,47 @@ const Renderer = function ( scene, options) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         let i;
-        let mesh;
+        let drawable;
 
-        for (i = 0; i < meshListLen; i++) {
-            mesh = meshList[i];
-            if (!mesh._state.visible || !mesh._state.castShadow) {
+        for (i = 0; i < drawableListSortedLen; i++) {
+            drawable = drawableListSorted[i];
+            if (!drawable.visible || !drawable.castShadow) {
                 continue; // For now, culled meshes still cast shadows because they are just out of view
             }
-            if (mesh._material._state.alpha === 0) {
-                continue;
-            }
-            mesh._drawShadow(frame, light);
+            // if (drawable._material._state.alpha === 0) {
+            //     continue;
+            // }
+            //    drawable._drawShadow(frame, light);
         }
 
         renderBuf.unbind();
     }
 
-    var drawMeshes = (function () {
+    var render = (function () {
 
-        const opaqueGhostFillMeshes = [];
-        const opaqueGhostVerticesMeshes = [];
-        const opaqueGhostEdgesMeshes = [];
-        const transparentGhostFillMeshes = [];
-        const transparentGhostVerticesMeshes = [];
-        const transparentGhostEdgesMeshes = [];
+        const drawTransparentBin = [];
 
-        const opaqueHighlightFillMeshes = [];
-        const opaqueHighlightVerticesMeshes = [];
-        const opaqueHighlightEdgesMeshes = [];
-        const transparentHighlightFillMeshes = [];
-        const transparentHighlightVerticesMeshes = [];
-        const transparentHighlightEdgesMeshes = [];
+        const ghostOpaqueBin = [];
+        const ghostEdgesOpaqueBin = [];
+        const ghostFillTransparentBin = [];
+        const ghostEdgesTransparentBin = [];
 
-        const opaqueSelectedFillMeshes = [];
-        const opaqueSelectedVerticesMeshes = [];
-        const opaqueSelectedEdgesMeshes = [];
-        const transparentSelectedFillMeshes = [];
-        const transparentSelectedVerticesMeshes = [];
-        const transparentSelectedEdgesMeshes = [];
+        const highlightFillOpaqueBin = [];
+        const highlightEdgesOpaqueBin = [];
+        const highlightFillTransparentBin = [];
+        const highlightEdgesTransparentBin = [];
 
-        const opaqueEdgesMeshes = [];
-        const transparentEdgesMeshes = [];
+        const selectedFillOpaqueBin = [];
+        const selectedEdgesOpaqueBin = [];
+        const selectedFillTransparentBin = [];
+        const selectedEdgesTransparentBin = [];
 
-        const outlinedMeshes = [];
-        const highlightMeshes = [];
-        const selectedMeshes = [];
-        const transparentMeshes = [];
-        let numTransparentMeshes = 0;
+        const edgesOpaqueBin = [];
+        const edgesTransparentBin = [];
+
+        const outlinedOpaqueBin = [];
+
+        let drawTransparentBinLen = 0;
 
         return function (params) {
 
@@ -254,6 +277,7 @@ const Renderer = function ( scene, options) {
             if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {  // In case context lost/recovered
                 gl.getExtension("OES_element_index_uint");
             }
+
             if (WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping w/o precomputed tangents
                 gl.getExtension("OES_standard_derivatives");
             }
@@ -279,10 +303,7 @@ const Renderer = function ( scene, options) {
 
             let i;
             let len;
-            let mesh;
-            let meshState;
-            let materialState;
-            let transparent;
+            let drawable;
 
             const startTime = Date.now();
 
@@ -294,430 +315,257 @@ const Renderer = function ( scene, options) {
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
 
-            let numOpaqueGhostFillMeshes = 0;
-            let numOpaqueGhostVerticesMeshes = 0;
-            let numOpaqueGhostEdgesMeshes = 0;
-            let numTransparentGhostFillMeshes = 0;
-            let numTransparentGhostVerticesMeshes = 0;
-            let numTransparentGhostEdgesMeshes = 0;
+            let ghostFillOpaqueBinLen = 0;
+            let ghostEdgesOpaqueBinLen = 0;
+            let ghostFillTransparentBinLen = 0;
+            let ghostEdgesTransparentBinLen = 0;
 
-            let numOutlinedMeshes = 0;
-            let numHighlightMeshes = 0;
-            let numSelectedMeshes = 0;
+            let outlinedOpaqueBinLen = 0;
 
-            let numOpaqueHighlightFillMeshes = 0;
-            let numOpaqueHighlightVerticesMeshes = 0;
-            let numOpaqueHighlightEdgesMeshes = 0;
-            let numTransparentHighlightFillMeshes = 0;
-            let numTransparentHighlightVerticesMeshes = 0;
-            let numTransparentHighlightEdgesMeshes = 0;
+            let highlightFillOpaqueBinLen = 0;
+            let highlightEdgesOpaqueBinLen = 0;
+            let highlightFillTransparentBinLen = 0;
+            let highlightEdgesTransparentBinLen = 0;
 
-            let numOpaqueSelectedFillMeshes = 0;
-            let numOpaqueSelectedVerticesMeshes = 0;
-            let numOpaqueSelectedEdgesMeshes = 0;
-            let numTransparentSelectedFillMeshes = 0;
-            let numTransparentSelectedVerticesMeshes = 0;
-            let numTransparentSelectedEdgesMeshes = 0;
+            let selectedFillOpaqueBinLen = 0;
+            let selectedEdgesOpaqueBinLen = 0;
+            let selectedFillTransparentBinLen = 0;
+            let selectedEdgesTransparentBinLen = 0;
 
-            let numOpaqueEdgesMeshes = 0;
-            let numTransparentEdgesMeshes = 0;
+            let edgesOpaqueBinLen = 0;
+            let edgesTransparentBinLen = 0;
 
-            numTransparentMeshes = 0;
+            drawTransparentBinLen = 0;
 
-            // Render meshes
-
-            for (i = 0, len = meshListLen; i < len; i++) {
-
-                mesh = meshList[i];
-                meshState = mesh._state;
-                materialState = mesh._material._state;
-
-                if (meshState.culled === true || meshState.visible === false) {
+            for (i = 0, len = drawableListSortedLen; i < len; i++) {
+                drawable = drawableListSorted[i];
+                if (drawable.culled === true || drawable.visible === false) {
                     continue;
                 }
-
-                if (materialState.alpha === 0) {
-                    continue;
-                }
-
-                if (meshState.ghosted) {
-                    const ghostMaterialState = mesh._ghostMaterial._state;
-                    if (ghostMaterialState.edges) {
-                        if (ghostMaterialState.edgeAlpha < 1.0) {
+                if (drawable.ghosted) {
+                    const ghostMaterial = drawable.ghostMaterial._state;
+                    if (ghostMaterial.fill) {
+                        if (ghostMaterial.fillAlpha < 1.0) {
                             if (!opaqueOnly) {
-                                transparentGhostEdgesMeshes[numTransparentGhostEdgesMeshes++] = mesh;
+                                ghostFillTransparentBin[ghostFillTransparentBinLen++] = drawable;
                             }
                         } else {
-                            opaqueGhostEdgesMeshes[numOpaqueGhostEdgesMeshes++] = mesh;
+                            ghostOpaqueBin[ghostFillOpaqueBinLen++] = drawable;
                         }
                     }
-                    if (ghostMaterialState.vertices) {
-                        if (ghostMaterialState.vertexAlpha < 1.0) {
+                    if (ghostMaterial.edges) {
+                        if (ghostMaterial.edgeAlpha < 1.0) {
                             if (!opaqueOnly) {
-                                transparentGhostVerticesMeshes[numTransparentGhostVerticesMeshes++] = mesh;
+                                ghostEdgesTransparentBin[ghostEdgesTransparentBinLen++] = drawable;
                             }
                         } else {
-                            opaqueGhostVerticesMeshes[numOpaqueGhostVerticesMeshes++] = mesh;
+                            ghostEdgesOpaqueBin[ghostEdgesOpaqueBinLen++] = drawable;
                         }
                     }
-                    if (ghostMaterialState.fill) {
-                        if (ghostMaterialState.fillAlpha < 1.0) {
-                            if (!opaqueOnly) {
-                                transparentGhostFillMeshes[numTransparentGhostFillMeshes++] = mesh;
-                            }
-                        } else {
-                            opaqueGhostFillMeshes[numOpaqueGhostFillMeshes++] = mesh;
-                        }
-                    }
-
-                } else {
-
-                    // Normal render
-
-                    transparent = materialState.alphaMode === 2 /* blend */ || meshState.xray || meshState.colorize[3] < 1;
-                    if (transparent) {
+                } else { // Normal render - mutually exclusive with ghosted
+                    if (drawable._getTransparent()) {
                         if (!opaqueOnly) {
-                            transparentMeshes[numTransparentMeshes++] = mesh;
+                            drawTransparentBin[drawTransparentBinLen++] = drawable;
                         }
                     } else {
-                        if (meshState.outlined) {
-                            outlinedMeshes[numOutlinedMeshes++] = mesh;
+                        if (drawable.outlined) {
+                            outlinedOpaqueBin[outlinedOpaqueBinLen++] = drawable;
                         } else {
-                            mesh._draw(frame);
+                            drawable._drawOpaque(frame);
                         }
                     }
                 }
-
-                if (meshState.selected) {
-                    const selectedMaterialState = mesh._selectedMaterial._state;
-                    if (selectedMaterialState.edges) {
-                        if (selectedMaterialState.edgeAlpha < 1.0) {
-                            if (!opaqueOnly) {
-                                transparentSelectedEdgesMeshes[numTransparentSelectedEdgesMeshes++] = mesh;
-                            }
+                if (drawable.highlighted) {
+                    const highlightMaterialState = drawable.highlightMaterial._state;
+                    if (highlightMaterialState.fill) {
+                        if (highlightMaterialState.fillAlpha < 1.0) {
+                            highlightFillTransparentBin[highlightFillTransparentBinLen++] = drawable;
                         } else {
-                            opaqueSelectedEdgesMeshes[numOpaqueSelectedEdgesMeshes++] = mesh;
+                            highlightFillOpaqueBin[highlightFillOpaqueBinLen++] = drawable;
                         }
                     }
-                    if (selectedMaterialState.vertices) {
-                        if (selectedMaterialState.vertexAlpha < 1.0) {
-                            if (!opaqueOnly) {
-                                transparentSelectedVerticesMeshes[numTransparentSelectedVerticesMeshes++] = mesh;
-                            }
-                        } else {
-                            opaqueSelectedVerticesMeshes[numOpaqueSelectedVerticesMeshes++] = mesh;
-                        }
-                    }
-                    if (selectedMaterialState.fill) {
-                        if (selectedMaterialState.fillAlpha < 1.0) {
-                            if (!opaqueOnly) {
-                                transparentSelectedFillMeshes[numTransparentSelectedFillMeshes++] = mesh;
-                            }
-                        } else {
-                            opaqueSelectedFillMeshes[numOpaqueSelectedFillMeshes++] = mesh;
-                        }
-                    }
-                    if (meshState.selected) {
-                        selectedMeshes[numSelectedMeshes++] = mesh;
-                    }
-                }
-
-                if (meshState.highlighted) {
-                    const highlightMaterialState = mesh._highlightMaterial._state;
                     if (highlightMaterialState.edges) {
                         if (highlightMaterialState.edgeAlpha < 1.0) {
                             if (!opaqueOnly) {
-                                transparentHighlightEdgesMeshes[numTransparentHighlightEdgesMeshes++] = mesh;
+                                highlightEdgesTransparentBin[highlightEdgesTransparentBinLen++] = drawable;
                             }
                         } else {
-                            opaqueHighlightEdgesMeshes[numOpaqueHighlightEdgesMeshes++] = mesh;
+                            highlightEdgesOpaqueBin[highlightEdgesOpaqueBinLen++] = drawable;
                         }
-                    }
-                    if (highlightMaterialState.vertices) {
-                        if (highlightMaterialState.vertexAlpha < 1.0) {
-                            transparentHighlightVerticesMeshes[numTransparentHighlightVerticesMeshes++] = mesh;
-                        } else {
-                            opaqueHighlightVerticesMeshes[numOpaqueHighlightVerticesMeshes++] = mesh;
-                        }
-                    }
-                    if (highlightMaterialState.fill) {
-                        if (highlightMaterialState.fillAlpha < 1.0) {
-                            transparentHighlightFillMeshes[numTransparentHighlightFillMeshes++] = mesh;
-                        } else {
-                            opaqueHighlightFillMeshes[numOpaqueHighlightFillMeshes++] = mesh;
-                        }
-                    }
-                    if (meshState.highlighted) {
-                        highlightMeshes[numHighlightMeshes++] = mesh;
                     }
                 }
-
-                if (meshState.edges) {
-                    const edgeMaterial = mesh._edgeMaterial._state;
+                if (drawable.selected) {
+                    const selectedMaterial = drawable.selectedMaterial._state;
+                    if (selectedMaterial.fill) {
+                        if (selectedMaterial.fillAlpha < 1.0) {
+                            if (!opaqueOnly) {
+                                selectedFillTransparentBin[selectedFillTransparentBinLen++] = drawable;
+                            }
+                        } else {
+                            selectedFillOpaqueBin[selectedFillOpaqueBinLen++] = drawable;
+                        }
+                    }
+                    if (selectedMaterial.edges) {
+                        if (selectedMaterial.edgeAlpha < 1.0) {
+                            if (!opaqueOnly) {
+                                selectedEdgesTransparentBin[selectedEdgesTransparentBinLen++] = drawable;
+                            }
+                        } else {
+                            selectedEdgesOpaqueBin[selectedEdgesOpaqueBinLen++] = drawable;
+                        }
+                    }
+                }
+                if (drawable.edges) {
+                    const edgeMaterial = drawable.edgeMaterial._state;
                     if (edgeMaterial.edgeAlpha < 1.0) {
                         if (!opaqueOnly) {
-                            transparentEdgesMeshes[numTransparentEdgesMeshes++] = mesh;
+                            edgesTransparentBin[edgesTransparentBinLen++] = drawable;
                         }
                     } else {
-                        opaqueEdgesMeshes[numOpaqueEdgesMeshes++] = mesh;
+                        edgesOpaqueBin[edgesOpaqueBinLen++] = drawable;
                     }
                 }
             }
 
-            // Render opaque Drawables
-
-            for (var drawableId in self.drawables) { // OPTIMIZE
-                self.drawables[drawableId]._draw(frame);
-            }
-
-            // Render opaque outlined meshes
-
-            if (numOutlinedMeshes > 0) {
-
-                // Render meshes
-
+            if (outlinedOpaqueBinLen > 0) {
                 gl.enable(gl.STENCIL_TEST);
                 gl.stencilFunc(gl.ALWAYS, 1, 1);
                 gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
                 gl.stencilMask(1);
                 gl.clearStencil(0);
                 gl.clear(gl.STENCIL_BUFFER_BIT);
-
-                for (i = 0; i < numOutlinedMeshes; i++) {
-                    outlinedMeshes[i]._draw(frame);
+                for (i = 0; i < outlinedOpaqueBinLen; i++) {
+                    outlinedOpaqueBin[i]._drawOpaque(frame);
                 }
-
-                // Render outlines
-
                 gl.stencilFunc(gl.EQUAL, 0, 1);
                 gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
                 gl.stencilMask(0x00);
                 gl.disable(gl.CULL_FACE); // Need both faces for better corners with face-aligned normals
-
-                for (i = 0; i < numOutlinedMeshes; i++) {
-                    outlinedMeshes[i]._drawOutline(frame);
+                for (i = 0; i < outlinedOpaqueBinLen; i++) {
+                    outlinedOpaqueBin[i]._drawOutline(frame);
                 }
-
                 gl.disable(gl.STENCIL_TEST);
             }
 
-            // Render opaque edges meshes
-
-            if (numOpaqueEdgesMeshes > 0) {
-                for (i = 0; i < numOpaqueEdgesMeshes; i++) {
-                    opaqueEdgesMeshes[i]._drawEdges(frame);
+            if (edgesOpaqueBinLen > 0) {
+                for (i = 0; i < edgesOpaqueBinLen; i++) {
+                    edgesOpaqueBin[i]._drawEdges(frame);
                 }
             }
-
-            // Render opaque ghosted meshes
-
-            if (numOpaqueGhostFillMeshes > 0) {
-                for (i = 0; i < numOpaqueGhostFillMeshes; i++) {
-                    opaqueGhostFillMeshes[i]._drawGhostFill(frame);
+            if (ghostFillOpaqueBinLen > 0) {
+                for (i = 0; i < ghostFillOpaqueBinLen; i++) {
+                    ghostOpaqueBin[i]._drawGhostedFill(frame);
                 }
             }
-
-            if (numOpaqueGhostEdgesMeshes > 0) {
-                for (i = 0; i < numOpaqueGhostEdgesMeshes; i++) {
-                    opaqueGhostEdgesMeshes[i]._drawGhostEdges(frame);
-                }
-            }
-
-            if (numOpaqueGhostVerticesMeshes > 0) {
-                for (i = 0; i < numOpaqueGhostVerticesMeshes; i++) {
-                    opaqueGhostVerticesMeshes[i]._drawGhostVertices(frame);
+            if (ghostEdgesOpaqueBinLen > 0) {
+                for (i = 0; i < ghostEdgesOpaqueBinLen; i++) {
+                    ghostEdgesOpaqueBin[i]._drawGhostedEdges(frame);
                 }
             }
 
             const transparentDepthMask = true;
 
-            if (numTransparentGhostFillMeshes > 0 || numTransparentGhostEdgesMeshes > 0 || numTransparentGhostVerticesMeshes > 0 || numTransparentMeshes > 0) {
-
-                // Draw transparent meshes
-
+            if (ghostFillTransparentBinLen > 0 || ghostEdgesTransparentBinLen > 0 || drawTransparentBinLen > 0) {
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
-
-                if (blendOneMinusSrcAlpha) {
-
-                    // Makes glTF windows appear correct
-
-                    // Without premultiplied alpha:
+                if (blendOneMinusSrcAlpha) { // Makes glTF windows appear correct
                     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-                    // Premultiplied alpha:
-                    //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 } else {
-
                     gl.blendEquation(gl.FUNC_ADD);
                     gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 }
-
                 frame.backfaces = false;
-
                 if (!transparentDepthMask) {
                     gl.depthMask(false);
                 }
-
-                // Render transparent ghosted meshes
-
-                if (numTransparentGhostVerticesMeshes > 0) {
-                    for (i = 0; i < numTransparentGhostVerticesMeshes; i++) {
-                        transparentGhostVerticesMeshes[i]._drawGhostVertices(frame);
+                if (ghostFillTransparentBinLen > 0) {
+                    for (i = 0; i < ghostFillTransparentBinLen; i++) {
+                        ghostFillTransparentBin[i]._drawGhostedFill(frame);
                     }
                 }
-
-                if (numTransparentGhostEdgesMeshes > 0) {
-                    for (i = 0; i < numTransparentGhostEdgesMeshes; i++) {
-                        transparentGhostEdgesMeshes[i]._drawGhostEdges(frame);
+                if (ghostEdgesTransparentBinLen > 0) {
+                    for (i = 0; i < ghostEdgesTransparentBinLen; i++) {
+                        ghostEdgesTransparentBin[i]._drawGhostedEdges(frame);
                     }
                 }
-
-                if (numTransparentGhostFillMeshes > 0) {
-                    for (i = 0; i < numTransparentGhostFillMeshes; i++) {
-                        transparentGhostFillMeshes[i]._drawGhostFill(frame);
-                    }
-                }
-
-                numOutlinedMeshes = 0;
-
-                for (i = 0; i < numTransparentMeshes; i++) {
-                    mesh = transparentMeshes[i];
-                    if (mesh._state.outlined) {
-                        outlinedMeshes[numOutlinedMeshes++] = mesh; // Build outlined list
+                outlinedOpaqueBinLen = 0;
+                for (i = 0; i < drawTransparentBinLen; i++) {
+                    drawable = drawTransparentBin[i];
+                    if (drawable._state.outlined) {
+                        outlinedOpaqueBin[outlinedOpaqueBinLen++] = drawable; // Build outlined list
                         continue;
                     }
-
-                    mesh._draw(frame);
+                    drawable._drawOpaque(frame);
                 }
-
-                // Transparent outlined meshes are not supported yet
-
                 gl.disable(gl.BLEND);
             }
 
-            // Highlighting
-
-            if (numOpaqueHighlightFillMeshes > 0 || numOpaqueHighlightEdgesMeshes > 0 || numOpaqueHighlightVerticesMeshes > 0) {
-
-                // Render opaque highlighted meshes
-
+            if (highlightFillOpaqueBinLen > 0 || highlightEdgesOpaqueBinLen > 0) {
                 frame.lastProgramId = null;
                 gl.clear(gl.DEPTH_BUFFER_BIT);
-
-                if (numOpaqueHighlightVerticesMeshes > 0) {
-                    for (i = 0; i < numOpaqueHighlightVerticesMeshes; i++) {
-                        opaqueHighlightVerticesMeshes[i]._drawHighlightVertices(frame);
+                if (highlightFillOpaqueBinLen > 0) {
+                    for (i = 0; i < highlightFillOpaqueBinLen; i++) {
+                        highlightFillOpaqueBin[i]._drawHighlightedFill(frame);
                     }
                 }
-
-                if (numOpaqueHighlightEdgesMeshes > 0) {
-                    for (i = 0; i < numOpaqueHighlightEdgesMeshes; i++) {
-                        opaqueHighlightEdgesMeshes[i]._drawHighlightEdges(frame);
-                    }
-                }
-
-                if (numOpaqueHighlightFillMeshes > 0) {
-                    for (i = 0; i < numOpaqueHighlightFillMeshes; i++) {
-                        opaqueHighlightFillMeshes[i]._drawHighlightFill(frame);
+                if (highlightEdgesOpaqueBinLen > 0) {
+                    for (i = 0; i < highlightEdgesOpaqueBinLen; i++) {
+                        highlightEdgesOpaqueBin[i]._drawHighlightedEdges(frame);
                     }
                 }
             }
 
-            if (numTransparentHighlightFillMeshes > 0 || numTransparentHighlightEdgesMeshes > 0 || numTransparentHighlightVerticesMeshes > 0) {
-
-                // Render transparent highlighted meshes
-
+            if (highlightFillTransparentBinLen > 0 || highlightEdgesTransparentBinLen > 0 || highlightFillOpaqueBinLen > 0) {
                 frame.lastProgramId = null;
-
                 gl.clear(gl.DEPTH_BUFFER_BIT);
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-                //          gl.disable(gl.DEPTH_TEST);
-
-                if (numTransparentHighlightVerticesMeshes > 0) {
-                    for (i = 0; i < numTransparentHighlightVerticesMeshes; i++) {
-                        transparentHighlightVerticesMeshes[i]._drawHighlightVertices(frame);
+                if (highlightFillTransparentBinLen > 0) {
+                    for (i = 0; i < highlightFillTransparentBinLen; i++) {
+                        highlightFillTransparentBin[i]._drawHighlightedFill(frame);
                     }
                 }
-
-                if (numTransparentHighlightEdgesMeshes > 0) {
-                    for (i = 0; i < numTransparentHighlightEdgesMeshes; i++) {
-                        transparentHighlightEdgesMeshes[i]._drawHighlightEdges(frame);
+                if (highlightEdgesTransparentBinLen > 0) {
+                    for (i = 0; i < highlightEdgesTransparentBinLen; i++) {
+                        highlightEdgesTransparentBin[i]._drawHighlightedEdges(frame);
                     }
                 }
-
-                if (numTransparentHighlightFillMeshes > 0) {
-                    for (i = 0; i < numTransparentHighlightFillMeshes; i++) {
-                        transparentHighlightFillMeshes[i]._drawHighlightFill(frame);
-                    }
-                }
-
                 gl.disable(gl.BLEND);
-                //        gl.enable(gl.DEPTH_TEST);
             }
 
-            // Selection
-
-            if (numOpaqueSelectedFillMeshes > 0 || numOpaqueSelectedEdgesMeshes > 0 || numOpaqueSelectedVerticesMeshes > 0) {
-
-                // Render opaque selected meshes
-
+            if (selectedFillOpaqueBinLen > 0 || selectedEdgesOpaqueBinLen > 0) {
                 frame.lastProgramId = null;
                 gl.clear(gl.DEPTH_BUFFER_BIT);
-
-                if (numOpaqueSelectedVerticesMeshes > 0) {
-                    for (i = 0; i < numOpaqueSelectedVerticesMeshes; i++) {
-                        opaqueSelectedVerticesMeshes[i]._drawSelectedVertices(frame);
+                if (selectedFillOpaqueBinLen > 0) {
+                    for (i = 0; i < selectedFillOpaqueBinLen; i++) {
+                        selectedFillOpaqueBin[i]._drawSelectedFill(frame);
                     }
                 }
-
-                if (numOpaqueSelectedEdgesMeshes > 0) {
-                    for (i = 0; i < numOpaqueSelectedEdgesMeshes; i++) {
-                        opaqueSelectedEdgesMeshes[i]._drawSelectedEdges(frame);
-                    }
-                }
-
-                if (numOpaqueSelectedFillMeshes > 0) {
-                    for (i = 0; i < numOpaqueSelectedFillMeshes; i++) {
-                        opaqueSelectedFillMeshes[i]._drawSelectedFill(frame);
+                if (selectedEdgesOpaqueBinLen > 0) {
+                    for (i = 0; i < selectedEdgesOpaqueBinLen; i++) {
+                        selectedEdgesOpaqueBin[i]._drawSelectedEdges(frame);
                     }
                 }
             }
 
-            if (numTransparentSelectedFillMeshes > 0 || numTransparentSelectedEdgesMeshes > 0 || numTransparentSelectedVerticesMeshes > 0) {
-
-                // Render transparent selected meshes
-
+            if (selectedFillTransparentBinLen > 0 || selectedEdgesTransparentBinLen > 0) {
                 frame.lastProgramId = null;
-
                 gl.clear(gl.DEPTH_BUFFER_BIT);
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-                //          gl.disable(gl.DEPTH_TEST);
-
-                if (numTransparentSelectedVerticesMeshes > 0) {
-                    for (i = 0; i < numTransparentSelectedVerticesMeshes; i++) {
-                        transparentSelectedVerticesMeshes[i]._drawSelectedVertices(frame);
+                if (selectedFillTransparentBinLen > 0) {
+                    for (i = 0; i < selectedFillTransparentBinLen; i++) {
+                        selectedFillTransparentBin[i]._drawSelectedFill(frame);
                     }
                 }
-
-                if (numTransparentSelectedEdgesMeshes > 0) {
-                    for (i = 0; i < numTransparentSelectedEdgesMeshes; i++) {
-                        transparentSelectedEdgesMeshes[i]._drawSelectedEdges(frame);
+                if (selectedEdgesTransparentBinLen > 0) {
+                    for (i = 0; i < selectedEdgesTransparentBinLen; i++) {
+                        selectedEdgesTransparentBin[i]._drawSelectedEdges(frame);
                     }
                 }
-
-                if (numTransparentSelectedFillMeshes > 0) {
-                    for (i = 0; i < numTransparentSelectedFillMeshes; i++) {
-                        transparentSelectedFillMeshes[i]._drawSelectedFill(frame);
-                    }
-                }
-
                 gl.disable(gl.BLEND);
-                //        gl.enable(gl.DEPTH_TEST);
             }
 
             const endTime = Date.now();
@@ -750,7 +598,7 @@ const Renderer = function ( scene, options) {
     })();
 
     /**
-     * Picks a mesh in the scene.
+     * Picks a drawable in the scene.
      */
     this.pick = (function () {
 
@@ -851,8 +699,8 @@ const Renderer = function ( scene, options) {
         const includeMeshIds = params.includeMeshIds;
         const excludeMeshIds = params.excludeMeshIds;
 
-        for (i = 0, len = meshListLen; i < len; i++) {
-            mesh = meshList[i];
+        for (i = 0, len = drawableListSortedLen; i < len; i++) {
+            mesh = drawableListSorted[i];
             if (mesh._state.culled === true || mesh._state.visible === false || mesh._state.pickable === false) {
                 continue;
             }
@@ -866,12 +714,34 @@ const Renderer = function ( scene, options) {
             mesh._pickMesh(frame);
         }
 
+        // for (var id in self.drawables) { // OPTIMIZE
+        //     self.drawables[id]._pick(frame);
+        // }
+
         const pix = pickBuf.read(Math.round(canvasX), Math.round(canvasY));
         let pickedMeshIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
 
         pickedMeshIndex--;
 
-        return pickedMeshIndex >= 0 ? meshPickList[pickedMeshIndex] : null;
+        //console.log("pickMesh() = " + pickedMeshIndex);
+
+        if (pickedMeshIndex === 0) {
+            return null;
+        }
+
+        mesh = meshPickList[pickedMeshIndex];
+
+        if (mesh) {
+            return mesh;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////
+        // TODO: attempt to find object in drawables, or on Scene?
+        // TODO: binary search to find the right layer in BigModel?
+        /////////////////////////////////////////////////////////////////////////////
+
+        return null;
+
     }
 
     function pickTriangle(mesh, canvasX, canvasY, pickViewMatrix, pickProjMatrix) {

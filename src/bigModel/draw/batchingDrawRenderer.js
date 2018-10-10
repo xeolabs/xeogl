@@ -5,27 +5,29 @@
 import {Map} from "../../utils/map.js";
 import {BatchingDrawShaderSource} from "./batchingDrawShaderSource.js";
 import {Program} from "../../webgl/program.js";
+import {RENDER_PASSES} from './../renderPasses.js';
 import {stats} from './../../stats.js';
 
 const ids = new Map({});
 
-const BatchingDrawRenderer = function (hash, tile) {
+const BatchingDrawRenderer = function (hash, layer) {
     this.id = ids.addItem({});
     this._hash = hash;
-    this._scene = tile.scene;
+    this._scene = layer.scene;
     this._useCount = 0;
-    this._shaderSource = new BatchingDrawShaderSource(tile);
-    this._allocate(tile);
+    this._shaderSource = new BatchingDrawShaderSource(layer);
+    this._allocate(layer);
 };
 
 const renderers = {};
+const defaultColorize = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 
-BatchingDrawRenderer.get = function (tile) {
-    const scene = tile.scene;
-    const hash = [scene.canvas.canvas.id, "", scene._lightsState.getHash(), scene._clipsState.getHash()].join(";");
+BatchingDrawRenderer.get = function (layer) {
+    const scene = layer.scene;
+    const hash = getHash(scene);
     let renderer = renderers[hash];
     if (!renderer) {
-        renderer = new BatchingDrawRenderer(hash, tile);
+        renderer = new BatchingDrawRenderer(hash, layer);
         if (renderer.errors) {
             console.log(renderer.errors.join("\n"));
             return null;
@@ -35,6 +37,14 @@ BatchingDrawRenderer.get = function (tile) {
     }
     renderer._useCount++;
     return renderer;
+};
+
+function getHash(scene) {
+    return [scene.canvas.canvas.id, "", scene._lightsState.getHash(), scene._clipsState.getHash()].join(";")
+}
+
+BatchingDrawRenderer.prototype.getValid = function () {
+    return this._hash === getHash(this._scene);
 };
 
 BatchingDrawRenderer.prototype.put = function () {
@@ -52,7 +62,8 @@ BatchingDrawRenderer.prototype.webglContextRestored = function () {
     this._program = null;
 };
 
-BatchingDrawRenderer.prototype.drawLayer = function (frame, layer) {
+BatchingDrawRenderer.prototype.drawLayer = function (frame, layer, renderPass) {
+    const model = layer.model;
     const scene = layer.scene;
     const gl = scene.canvas.gl;
     const state = layer._state;
@@ -63,18 +74,38 @@ BatchingDrawRenderer.prototype.drawLayer = function (frame, layer) {
         frame.lastProgramId = this._program.id;
         this._bindProgram(frame, layer);
     }
-    this._aPosition.bindArrayBuffer(state.positionsBuf, gl.UNSIGNED_SHORT);
+    gl.uniform1i(this._uRenderPass, renderPass);
+    gl.uniformMatrix4fv(this._uModelMatrix, gl.FALSE, model.worldMatrix);
+    gl.uniformMatrix4fv(this._uModelNormalMatrix, gl.FALSE, model.worldNormalMatrix);
+    this._aPosition.bindArrayBuffer(state.positionsBuf, gl.UNSIGNED_SHORT, false);
     frame.bindArray++;
-
-    this._aNormal.bindArrayBuffer(state.normalsBuf, gl.BYTE);
-    frame.bindArray++;
-
-    //   this._aColor.bindArrayBuffer(state.colorsBuf);
-    frame.bindArray++;
-
+    if (this._aNormal) {
+        this._aNormal.bindArrayBuffer(state.normalsBuf, gl.BYTE, false);
+        frame.bindArray++;
+    }
+    if (this._aColor) {
+        this._aColor.bindArrayBuffer(state.colorsBuf, gl.UNSIGNED_BYTE, false);
+        frame.bindArray++;
+    }
+    if (this._aFlags) {
+        this._aFlags.bindArrayBuffer(state.flagsBuf, gl.UNSIGNED_BYTE, true);
+        frame.bindArray++;
+    }
     state.indicesBuf.bind();
     frame.bindArray++;
-
+    if (renderPass === RENDER_PASSES.GHOST) {
+        const material = scene.ghostMaterial._state;
+        const fillColor = material.fillColor;
+        const fillAlpha = material.fillAlpha;
+        gl.uniform4f(this._uColorize, fillColor[0], fillColor[1], fillColor[2], fillAlpha);
+    } else if (renderPass === RENDER_PASSES.HIGHLIGHT) {
+        const material = scene.highlightMaterial._state;
+        const fillColor = material.fillColor;
+        const fillAlpha = material.fillAlpha;
+        gl.uniform4f(this._uColorize, fillColor[0], fillColor[1], fillColor[2], fillAlpha);
+    } else {
+        gl.uniform4fv(this._uColorize, defaultColorize);
+    }
     gl.drawElements(state.primitive, state.indicesBuf.numItems, state.indicesBuf.itemType, 0);
     frame.drawElements++;
 };
@@ -89,10 +120,14 @@ BatchingDrawRenderer.prototype._allocate = function (layer) {
         return;
     }
     const program = this._program;
+    this._uRenderPass = program.getLocation("renderPass");
     this._uPositionsDecodeMatrix = program.getLocation("positionsDecodeMatrix");
+    this._uModelMatrix = program.getLocation("modelMatrix");
+    this._uModelNormalMatrix = program.getLocation("modelNormalMatrix");
     this._uViewMatrix = program.getLocation("viewMatrix");
     this._uViewNormalMatrix = program.getLocation("viewNormalMatrix");
     this._uProjMatrix = program.getLocation("projMatrix");
+    this._uColorize = program.getLocation("colorize");
     this._uLightAmbient = [];
     this._uLightColor = [];
     this._uLightDir = [];
@@ -138,6 +173,7 @@ BatchingDrawRenderer.prototype._allocate = function (layer) {
     this._aPosition = program.getAttribute("position");
     this._aNormal = program.getAttribute("normal");
     this._aColor = program.getAttribute("color");
+    this._aFlags = program.getAttribute("flags");
 };
 
 BatchingDrawRenderer.prototype._bindProgram = function (frame, layer) {
@@ -153,7 +189,7 @@ BatchingDrawRenderer.prototype._bindProgram = function (frame, layer) {
     const camera = scene.camera;
     const cameraState = camera._state;
     gl.uniformMatrix4fv(this._uViewMatrix, false, cameraState.matrix);
- //   gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
+    gl.uniformMatrix4fv(this._uViewNormalMatrix, false, cameraState.normalMatrix);
     gl.uniformMatrix4fv(this._uProjMatrix, false, camera._project._state.matrix);
     gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, layer._state.positionsDecodeMatrix);
     for (var i = 0, len = lights.length; i < len; i++) {

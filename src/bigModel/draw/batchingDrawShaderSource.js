@@ -2,14 +2,16 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-const BatchingDrawShaderSource = function (tile) {
-    this.vertex = buildVertex(tile);
-    this.fragment = buildFragment(tile);
+import {RENDER_PASSES} from './../renderPasses.js';
+
+const BatchingDrawShaderSource = function (layer) {
+    this.vertex = buildVertex(layer);
+    this.fragment = buildFragment(layer);
 };
 
-function buildVertex(tile) {
-    const clipsState = tile.scene._clipsState;
-    const lightsState = tile.scene._lightsState;
+function buildVertex(layer) {
+    const clipsState = layer.scene._clipsState;
+    const lightsState = layer.scene._lightsState;
     const clipping = clipsState.clips.length > 0;
     let i;
     let len;
@@ -18,13 +20,22 @@ function buildVertex(tile) {
 
     src.push("// Batched geometry drawing vertex shader");
 
+    src.push("uniform int renderPass;");
+
     src.push("attribute vec3 position;");
-    src.push("attribute vec3 normal;");
+    src.push("attribute vec4 color;");
+    src.push("attribute vec4 flags;");
+    src.push("attribute vec2 normal;");
+
+    src.push("uniform mat4 modelMatrix;");
+    src.push("uniform mat4 modelNormalMatrix;");
 
     src.push("uniform mat4 viewMatrix;");
     src.push("uniform mat4 projMatrix;");
     src.push("uniform mat4 viewNormalMatrix;");
     src.push("uniform mat4 positionsDecodeMatrix;");
+
+    src.push("uniform vec4 colorize;");
 
     src.push("uniform vec4 lightAmbient;");
 
@@ -60,13 +71,25 @@ function buildVertex(tile) {
     src.push("varying vec4 vColor;");
 
     src.push("void main(void) {");
-    src.push("vec4 worldPosition = positionsDecodeMatrix * vec4(position, 1.0); ");
+
+
+    src.push("bool visible      = (float(flags.x) > 0.0);");
+    src.push("bool ghosted      = (float(flags.y) > 0.0);");
+    src.push("bool highlighted  = (float(flags.z) > 0.0);");
+    src.push("bool transparent  = ((float(color.a) / 255.0) < 1.0);");
+
+    //src.push(`if (!visible || (renderPass == ${RENDER_PASSES.OPAQUE} && (transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.TRANSPARENT} && (!transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.GHOST} && !ghosted || highlighted) || (renderPass == ${RENDER_PASSES.HIGHLIGHT} && !highlighted)) {`);
+    src.push(`if (!visible || (renderPass == ${RENDER_PASSES.OPAQUE} && (transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.TRANSPARENT} && (!transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.GHOST} && (!ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.HIGHLIGHT} && !highlighted)) {`);
+    src.push("   gl_Position = vec4(0.0, 0.0, 0.0, 0.0);"); // Cull vertex
+    src.push("} else {");
+
+    src.push("vec4 worldPosition = modelMatrix * (positionsDecodeMatrix * vec4(position, 1.0)); ");
     src.push("vec4 viewPosition  = viewMatrix * worldPosition; ");
-    src.push("vec4 worldNormal = vec4(octDecode(normal.xy), 0.0); ");
+    src.push("vec4 worldNormal = modelNormalMatrix * vec4(octDecode(vec2(float(normal.x), float(normal.y))), 1.0); ");
     src.push("vec3 viewNormal = normalize((viewNormalMatrix * worldNormal).xyz);");
+
     src.push("vec3 reflectedColor = vec3(0.0, 0.0, 0.0);");
     src.push("vec3 viewLightDir = vec3(0.0, 0.0, -1.0);");
-    src.push("vec4 color = vec4(1.0, 1.0, 1.0, 1.0);");
 
     src.push("float lambertian = 1.0;");
     for (i = 0, len = lightsState.lights.length; i < len; i++) {
@@ -78,19 +101,19 @@ function buildVertex(tile) {
             if (light.space === "view") {
                 src.push("viewLightDir = normalize(lightDir" + i + ");");
             } else {
-                src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightDir" + i + ", 0.0)).xyz);");
+                src.push("viewLightDir = normalize((viewMatrix * vec4(lightDir" + i + ", 0.0)).xyz);");
             }
         } else if (light.type === "point") {
             if (light.space === "view") {
                 src.push("viewLightDir = normalize(lightPos" + i + " - viewPosition.xyz);");
             } else {
-                src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightPos" + i + ", 0.0)).xyz);");
+                src.push("viewLightDir = normalize((viewMatrix * vec4(lightPos" + i + ", 0.0)).xyz);");
             }
         } else if (light.type === "spot") {
             if (light.space === "view") {
                 src.push("viewLightDir = normalize(lightDir" + i + ");");
             } else {
-                src.push("viewLightDir = normalize((viewMatrix2 * vec4(lightDir" + i + ", 0.0)).xyz);");
+                src.push("viewLightDir = normalize((viewMatrix * vec4(lightDir" + i + ", 0.0)).xyz);");
             }
         } else {
             continue;
@@ -98,24 +121,28 @@ function buildVertex(tile) {
         src.push("lambertian = max(dot(-viewNormal, viewLightDir), 0.0);");
         src.push("reflectedColor += lambertian * (lightColor" + i + ".rgb * lightColor" + i + ".a);");
     }
-    src.push("vColor = vec4((reflectedColor * color.rgb), color.a);"); // TODO: How to have ambient bright enough for canvas BG but not too bright for scene?
+
+    src.push("vColor = colorize * vec4(reflectedColor * vec3(float(color.r) / 255.0, float(color.g) / 255.0, float(color.b) / 255.0), float(color.a) / 255.0);");
+
     if (clipping) {
         src.push("vWorldPosition = worldPosition;");
     }
-    src.push("   gl_Position = projMatrix * viewPosition;");
+    src.push("gl_Position = projMatrix * viewPosition;");
+    src.push("}");
     src.push("}");
     return src;
 }
 
-function buildFragment(tile) {
-    const scene = tile.scene;
+function buildFragment(layer) {
+    const scene = layer.scene;
     const clipsState = scene._clipsState;
     let i;
     let len;
     const clipping = clipsState.clips.length > 0;
     const src = [];
     src.push("// Batched geometry drawing fragment shader");
-    src.push("precision lowp float;");
+    src.push("precision mediump float;");
+    src.push("precision mediump int;");
     if (clipping) {
         src.push("varying vec4 vWorldPosition;");
         src.push("uniform bool clippable;");
@@ -138,7 +165,8 @@ function buildFragment(tile) {
         src.push("  if (dist > 0.0) { discard; }");
         src.push("}");
     }
-    src.push("gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);");
+//    src.push("gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);");
+    src.push("gl_FragColor = vColor;");
     src.push("}");
     return src;
 }

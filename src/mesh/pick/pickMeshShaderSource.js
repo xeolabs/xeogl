@@ -16,7 +16,7 @@ function buildVertex(mesh) {
     const billboard = mesh._state.billboard;
     const stationary = mesh._state.stationary;
     const src = [];
-    src.push("// mesh picking vertex shader");
+    src.push("// Mesh picking vertex shader");
     src.push("attribute vec3 position;");
     src.push("uniform mat4 modelMatrix;");
     src.push("uniform mat4 viewMatrix;");
@@ -74,7 +74,7 @@ function buildFragment(mesh) {
     const clipsState = scene._clipsState;
     const clipping = clipsState.clips.length > 0;
     const src = [];
-    src.push("// mesh picking fragment shader");
+    src.push("// Mesh picking fragment shader");
     src.push("precision lowp float;");
     src.push("uniform vec4 pickColor;");
     if (clipping) {
