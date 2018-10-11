@@ -667,7 +667,6 @@ class Mesh extends xeoglObject {
             this._emphasisFillRenderer = EmphasisFillRenderer.get(this);
             this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this);
             this._pickMeshRenderer = PickMeshRenderer.get(this);
-            this._renderer.meshListDirty();
         }
     }
 
@@ -1242,11 +1241,11 @@ class Mesh extends xeoglObject {
     }
 
     _getOpaque() {
-        return this._material.alphaMode !== 2 /* blend */ || this._state.colorize[3] === 1
+        return this._material._state.alphaMode !== 2 /* blend */ || this._state.colorize[3] === 1
     }
 
     _getTransparent() {
-        return this._material.alphaMode === 2 /* blend */ || this._state.colorize[3] < 1
+        return this._material._state.alphaMode === 2 /* blend */ || this._state.colorize[3] < 1
     }
 
     _drawOpaque(frame) {
@@ -1382,7 +1381,6 @@ class Mesh extends xeoglObject {
         super.destroy(); // xeogl.Object
         this._putRenderers();
         this._renderer.removeDrawable(this._state.id); // State ID is smaller than Mesh ID
-        this._renderer.meshListDirty();
         this.scene._meshDestroyed(this);
         if (this._state.castShadow) {
             this._renderer.shadowsDirty();
