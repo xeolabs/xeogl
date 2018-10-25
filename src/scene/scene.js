@@ -2214,7 +2214,7 @@ class Scene extends Component {
             }
         );
         if (valid) {
-            const aabb2 = new math.AABB3();
+            const aabb2 = math.AABB3();
             aabb2[0] = xmin;
             aabb2[1] = ymin;
             aabb2[2] = zmin;
