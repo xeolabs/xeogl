@@ -779,16 +779,6 @@
             var byteOffset = bufferViewInfo.byteOffset || 0;
 
             bufferViewInfo._buffer = buffer._buffer.slice(byteOffset, byteOffset + byteLength);
-
-            if (bufferViewInfo.target === 34963) {
-                bufferViewInfo._typedArray = new Uint16Array(bufferViewInfo._buffer);
-
-            } else if (bufferViewInfo.target == 34962) {
-                bufferViewInfo._typedArray = new Float32Array(bufferViewInfo._buffer);
-
-            } else {
-                //ctx.model.log(bufferViewInfo._typedArray)
-            }
         }
 
         function loadAccessors(ctx) {
@@ -801,7 +791,7 @@
         }
 
         function loadAccessor(ctx, accessorInfo) {
-            var arraybuffer = ctx.json.bufferViews[accessorInfo.bufferView];
+            var bufferViewInfo = ctx.json.bufferViews[accessorInfo.bufferView];
             var itemSize = WEBGL_TYPE_SIZES[accessorInfo.type];
             var TypedArray = WEBGL_COMPONENT_TYPES[accessorInfo.componentType];
 
@@ -817,7 +807,7 @@
 //                alert("interleaved buffer!");
 
             } else {
-                accessorInfo._typedArray = new TypedArray(arraybuffer._buffer, accessorInfo.byteOffset || 0, accessorInfo.count * itemSize);
+                accessorInfo._typedArray = new TypedArray(bufferViewInfo._buffer, accessorInfo.byteOffset || 0, accessorInfo.count * itemSize);
                 accessorInfo._itemSize = itemSize;
             }
         }
@@ -1173,7 +1163,6 @@
             var materialIndex;
             var materialInfo;
             var accessorInfo;
-            var bufferViewInfo;
             var attributes;
 
             if (primitivesInfo) {
@@ -1201,7 +1190,6 @@
 
                     if (indicesIndex !== null && indicesIndex !== undefined) {
                         accessorInfo = json.accessors[indicesIndex];
-                        bufferViewInfo = json.bufferViews[accessorInfo.bufferView];
                         geometryCfg.indices = accessorInfo._typedArray;
                     }
 
@@ -1214,7 +1202,6 @@
 
                     if (positionsIndex !== null && positionsIndex !== undefined) {
                         accessorInfo = json.accessors[positionsIndex];
-                        bufferViewInfo = json.bufferViews[accessorInfo.bufferView];
                         geometryCfg.positions = accessorInfo._typedArray;
                     }
 
@@ -1222,7 +1209,6 @@
 
                     if (normalsIndex !== null && normalsIndex !== undefined) {
                         accessorInfo = json.accessors[normalsIndex];
-                        bufferViewInfo = json.bufferViews[accessorInfo.bufferView];
                         geometryCfg.normals = accessorInfo._typedArray;
                     }
 
@@ -1230,7 +1216,6 @@
 
                     if (uv0Index !== null && uv0Index !== undefined) {
                         accessorInfo = json.accessors[uv0Index];
-                        bufferViewInfo = json.bufferViews[accessorInfo.bufferView];
                         geometryCfg.uv = accessorInfo._typedArray;
                     }
 
