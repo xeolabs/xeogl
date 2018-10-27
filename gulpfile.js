@@ -58,7 +58,7 @@ gulp.task('bundle-umd', () => {
             file: './build/xeogl.js',
             format: 'umd',
             name: 'xeogl',
-            sourcemap: false
+            sourcemap: true //////////////// HACK: defeats cache
         });
     });
 });
