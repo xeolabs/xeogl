@@ -10,7 +10,7 @@ class BatchingPickShaderSource {
 }
 
 function buildVertex(layer) {
-    const scene = layer.scene;
+    const scene = layer.model.scene;
     const clipping = scene._clipsState.clips.length > 0;
     const quantizedGeometry = !!layer._state.quantized;
     const src = [];
@@ -52,7 +52,7 @@ function buildVertex(layer) {
 }
 
 function buildFragment(layer) {
-    const scene = layer.scene;
+    const scene = layer.model.scene;
     const clipsState = scene._clipsState;
     const clipping = clipsState.clips.length > 0;
     const src = [];

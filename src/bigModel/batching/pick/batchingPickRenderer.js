@@ -2,17 +2,17 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-import {Map} from "../../utils/map.js";
+import {Map} from "../../../utils/map.js";
 import {BatchingPickShaderSource} from "./batchingPickShaderSource.js";
-import {Program} from "../../webgl/program.js";
-import {stats} from './../../stats.js';
+import {Program} from "../../../webgl/program.js";
+import {stats} from './../../../stats.js';
 
 const ids = new Map({});
 
 const BatchingPickRenderer = function (hash, layer) {
     this.id = ids.addItem({});
     this._hash = hash;
-    this._scene = layer.scene;
+    this._scene = layer.model.scene;
     this._useCount = 0;
     this._shaderSource = new BatchingPickShaderSource(layer);
     this._allocate(layer);
@@ -21,7 +21,7 @@ const BatchingPickRenderer = function (hash, layer) {
 const renderers = {};
 
 BatchingPickRenderer.get = function (layer) {
-    const scene = layer.scene;
+    const scene = layer.model.scene;
     const hash = getHash(scene);
     let renderer = renderers[hash];
     if (!renderer) {
@@ -62,7 +62,7 @@ BatchingPickRenderer.prototype.webglContextRestored = function () {
 
 BatchingPickRenderer.prototype.drawLayer = function (frame, layer, renderPass) {
     const model = layer.model;
-    const scene = layer.scene;
+    const scene = model.scene;
     const gl = scene.canvas.gl;
     const state = layer._state;
     if (!this._program) {
@@ -92,8 +92,9 @@ BatchingPickRenderer.prototype.drawLayer = function (frame, layer, renderPass) {
 };
 
 BatchingPickRenderer.prototype._allocate = function (layer) {
-    const gl = layer.scene.canvas.gl;
-    const clipsState = layer.scene._clipsState;
+    var scene = layer.model.scene;
+    const gl = scene.canvas.gl;
+    const clipsState = scene._clipsState;
     this._program = new Program(gl, this._shaderSource);
     if (this._program.errors) {
         this.errors = this._program.errors;

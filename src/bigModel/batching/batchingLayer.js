@@ -1,37 +1,33 @@
-/**
- A BatchingLayer is a batch containing multiple geometries that is rendered in one draw call.
-
- It consists of a set of geometry attribute arrays and an index array.
-
- */
-import {WEBGL_INFO} from './../webglInfo.js';
+import {WEBGL_INFO} from './../../webglInfo.js';
 import {BatchingDrawRenderer} from "./draw/batchingDrawRenderer.js";
-import {BatchingEdgesRenderer} from "./emphasis/batchingEdgesRenderer.js";
+import {BatchingEmphasisFillRenderer} from "./emphasis/batchingEmphasisFillRenderer.js";
+import {BatchingEmphasisEdgesRenderer} from "./emphasis/batchingEmphasisEdgesRenderer.js";
 import {BatchingPickRenderer} from "./pick/batchingPickRenderer.js";
-import {State} from '../renderer/state.js';
-import {ArrayBuf} from '../webgl/arrayBuf.js';
-import {math} from '../math/math.js';
-import {componentClasses} from "./../componentClasses.js";
-import {RENDER_FLAGS} from './renderFlags.js';
-import {RENDER_PASSES} from './renderPasses.js';
+import {State} from '../../renderer/state.js';
+import {ArrayBuf} from '../../webgl/arrayBuf.js';
+import {math} from '../../math/math.js';
+import {stats} from './../../stats.js';
+import {RENDER_FLAGS} from './../renderFlags.js';
+import {RENDER_PASSES} from './../renderPasses.js';
 
-const type = "xeogl.BatchingLayer";
-
+const bigIndicesSupported = WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
+const uint8Vec4Temp = new Uint8Array((bigIndicesSupported ? 5000000 : 65530) * 4); // Scratch memory for dynamic flags VBO update
 const tempMat4 = math.mat4();
 const tempVec3a = math.vec4([0, 0, 0, 1]);
 const tempVec3b = math.vec4([0, 0, 0, 1]);
-
-// Scratch memory used when updating the flags and colors VBOs
-const bigIndicesSupported = WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
-const uint8Vec4Temp = new Uint8Array((bigIndicesSupported ? 5000000 : 65530) * 4); // Scratch memory for dynamic flags VBO update
 
 var currentBatchingLayer = null;
 
 class BatchingLayer {
 
+    /**
+     * @param model
+     * @param cfg
+     * @param cfg.buffer
+     * @param cfg.primitive
+     */
     constructor(model, cfg) {
         this.model = model;
-        this.scene = model.scene;
         this._buffer = cfg.buffer;
         var primitiveName = cfg.primitive || "triangles";
         var primitive;
@@ -59,7 +55,7 @@ class BatchingLayer {
                 primitive = gl.TRIANGLE_FAN;
                 break;
             default:
-                this.error(`Unsupported value for 'primitive': '${primitiveName}' - supported values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'. Defaulting to 'triangles'.`);
+                throw `Unsupported value for 'primitive': '${primitiveName}' - supported values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'. Defaulting to 'triangles'.`;
                 primitive = gl.TRIANGLES;
                 primitiveName = "triangles";
         }
@@ -91,36 +87,48 @@ class BatchingLayer {
 
         this._finalized = false;
 
-        this.compile();
+        this.compileShaders();
     }
 
+    /**
+     * Tests if there is room for another portion in this BatchingLayer.
+     *
+     * @param lenPositions Number of positions we'd like to create in the portion.
+     * @returns {boolean} True if OK to creatye another portion.
+     */
     canCreatePortion(lenPositions) {
+        if (this._finalized) {
+            throw "Already finalized";
+        }
         return (!this._finalized && this._buffer.lenPositions + lenPositions) < (this._buffer.maxVerts * 3);
     }
 
     /**
-     * Appends geometry info to temp buffer arrays, creating a "portion" within this layer..
      *
-     * - Color is expected to be quantized.
-     * - Transforms the given positions by the given matrix before appending.
-     * - Positions are not quantized until we call finalize(), which is when we know what their boundary is.
-     * - Normals are quantized before appending.
-     * - As we append flags, we count the numbers of visible, ghosted, highlighted and edged objects in this layer.
-     * - Returns a handle to the new portion.
+     * Creates a new portion within this InstancingLayer, returns the new portion ID.
+     *
+     * Gives the portion the specified geometry, flags, color and matrix.
+     *
+     * @param positions Flat float Local-space positions array.
+     * @param normals Flat float normals array.
+     * @param indices  Flat int indices array.
+     * @param edgeIndices Flat int edges indices array.
+     * @param flags Unsigned long int
+     * @param color Quantized RGBA color
+     * @param matrix Flat float 4x4 matrix
+     * @param aabb Flat float AABB
+     * @returns {number} Portion ID
      */
     createPortion(positions, normals, indices, edgeIndices, flags, color, matrix, aabb) {
         if (this._finalized) {
-            this.error("BatchingLayer already finalized - can't create more portions");
-            return;
+            throw "Already finalized";
         }
-        if (!this.canCreatePortion(positions.length)) {
-            this.error("BatchingLayer full - check first with canCreatePortion()");
-            return;
+        if (this._finalized) {
+            throw "BatchingLayer full - check first with canCreatePortion()";
         }
         if (currentBatchingLayer !== null) {
             if (currentBatchingLayer !== this) {
-                this.error("Already packing another BatchingLayer");
-                return;
+                throw "Already packing another BatchingLayer";
             }
         } else {
             currentBatchingLayer = this;
@@ -163,7 +171,7 @@ class BatchingLayer {
             } else {
                 math.identityMat4(modelNormalMatrix, modelNormalMatrix);
             }
-            buffer.lenEncodedNormals = octEncodeNormals(modelNormalMatrix, normals, normals.length, buffer.encodedNormals, buffer.lenEncodedNormals); // BOTTLENECK - better to have these precomputed in the pipeline!
+            buffer.lenNormals = octEncodeNormals(modelNormalMatrix, normals, normals.length, buffer.normals, buffer.lenNormals); // BOTTLENECK - better to have these precomputed in the pipeline!
         }
         if (flags) {
             const lenFlags = (numVerts * 4);
@@ -174,8 +182,7 @@ class BatchingLayer {
             var edges = !!(flags & RENDER_FLAGS.EDGES) ? 255 : 0;
             //   edges = Math.random() < .5;
             for (var i = buffer.lenFlags, len = buffer.lenFlags + lenFlags; i < len; i += 4) {
-                //buffer.flags[i + 0] = visible;
-                buffer.flags[i + 0] = true;
+                buffer.flags[i + 0] = visible;
                 buffer.flags[i + 1] = ghosted;
                 buffer.flags[i + 2] = highlighted;
                 buffer.flags[i + 3] = clippable;
@@ -229,7 +236,7 @@ class BatchingLayer {
         {
             var pickObjectId = this.numObjects;
             const lenPickIDs = (numVerts * 2);
-            for (var i = buffer.lenPickIDs, len = buffer.lenPickIDs + lenPickIDs; i < len; i+=2) {
+            for (var i = buffer.lenPickIDs, len = buffer.lenPickIDs + lenPickIDs; i < len; i += 2) {
                 buffer.pickIDs[i + 0] = pickObjectId;
                 buffer.pickIDs[i + 1] = pickObjectId; // TODO: Make this the prim index
             }
@@ -244,15 +251,14 @@ class BatchingLayer {
     }
 
     /**
-     * Creates VBOs from the arrays that we've built with calls to createPortion().
-     * After this, we're no longer allowed to call createPortion() for this BatchingLayer.
+     * Builds batch VBOs from appended geometries.
+     * No more portions can then be created.
      */
     finalize() {
         if (this._finalized) {
             this.error("Already finalized");
             return;
         }
-        this.clear();
 
         const state = this._state;
         const gl = this.model.scene.canvas.gl;
@@ -260,41 +266,45 @@ class BatchingLayer {
 
         quantizePositions(buffer.positions, buffer.lenPositions, this._aabb, buffer.quantizedPositions, state.positionsDecodeMatrix); // BOTTLENECK
 
-        if (buffer.slicing) {
+        //if (buffer.slicing) {
+        if (buffer.lenPositions > 0) {
             state.positionsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.quantizedPositions.slice(0, buffer.lenPositions), buffer.lenPositions, 3, gl.STATIC_DRAW);
-            if (buffer.lenEncodedNormals > 0) {
-                state.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.encodedNormals.slice(0, buffer.lenEncodedNormals), buffer.lenEncodedNormals, 2, gl.STATIC_DRAW);
-            }
-            if (buffer.lenColors > 0) {
-                state.colorsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.colors.slice(0, buffer.lenColors), buffer.lenColors, 4, gl.STATIC_DRAW);
-            }
-            if (buffer.lenIndices > 0) {
-                state.indicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, buffer.indices.slice(0, buffer.lenIndices), buffer.lenIndices, 1, gl.STATIC_DRAW);
-            }
-            if (buffer.lenEdgeIndices > 0) {
-                state.edgeIndicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, buffer.edgeIndices.slice(0, buffer.lenEdgeIndices), buffer.lenEdgeIndices, 1, gl.STATIC_DRAW);
-            }
-            state.flagsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.flags.slice(0, buffer.lenFlags), buffer.lenFlags, 4, gl.STATIC_DRAW);
-        } else {
-            state.positionsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.quantizedPositions, buffer.quantizedPositions.length, 3, gl.STATIC_DRAW);
-            if (buffer.lenEncodedNormals > 0) {
-                state.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.encodedNormals, buffer.encodedNormals.length, 2, gl.STATIC_DRAW);
-            }
-            if (buffer.lenColors > 0) {
-                state.colorsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.colors, buffer.colors.length, 4, gl.STATIC_DRAW);
-            }
-            state.flagsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.flags, buffer.flags.length, 4, gl.STATIC_DRAW);
-            if (buffer.lenIndices > 0) {
-                state.indicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, buffer.indices, buffer.indices.length, 1, gl.STATIC_DRAW);
-            }
-            if (buffer.lenEdgeIndices > 0) {
-                state.edgeIndicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, buffer.edgeIndices, buffer.edgeIndices.length, 1, gl.STATIC_DRAW);
-            }
         }
+        if (buffer.lenNormals > 0) {
+            state.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.normals.slice(0, buffer.lenNormals), buffer.lenNormals, 2, gl.STATIC_DRAW);
+        }
+        if (buffer.lenColors > 0) {
+            state.colorsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.colors.slice(0, buffer.lenColors), buffer.lenColors, 4, gl.STATIC_DRAW);
+        }
+        if (buffer.lenFlags > 0) {
+            state.flagsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.flags.slice(0, buffer.lenFlags), buffer.lenFlags, 4, gl.STATIC_DRAW);
+        }
+        if (buffer.lenIndices > 0) {
+            state.indicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, buffer.indices.slice(0, buffer.lenIndices), buffer.lenIndices, 1, gl.STATIC_DRAW);
+        }
+        if (buffer.lenEdgeIndices > 0) {
+            state.edgeIndicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, buffer.edgeIndices.slice(0, buffer.lenEdgeIndices), buffer.lenEdgeIndices, 1, gl.STATIC_DRAW);
+        }
+        // } else {
+        //     state.positionsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.quantizedPositions, buffer.quantizedPositions.length, 3, gl.STATIC_DRAW);
+        //     if (buffer.lenNormals > 0) {
+        //         state.normalsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.normals, buffer.normals.length, 2, gl.STATIC_DRAW);
+        //     }
+        //     if (buffer.lenColors > 0) {
+        //         state.colorsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.colors, buffer.colors.length, 4, gl.STATIC_DRAW);
+        //     }
+        //     state.flagsBuf = new ArrayBuf(gl, gl.ARRAY_BUFFER, buffer.flags, buffer.flags.length, 4, gl.STATIC_DRAW);
+        //     if (buffer.lenIndices > 0) {
+        //         state.indicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, buffer.indices, buffer.indices.length, 1, gl.STATIC_DRAW);
+        //     }
+        //     if (buffer.lenEdgeIndices > 0) {
+        //         state.edgeIndicesBuf = new ArrayBuf(gl, gl.ELEMENT_ARRAY_BUFFER, buffer.edgeIndices, buffer.edgeIndices.length, 1, gl.STATIC_DRAW);
+        //     }
+        // }
 
         buffer.lenPositions = 0;
         buffer.lenColors = 0;
-        buffer.lenEncodedNormals = 0;
+        buffer.lenNormals = 0;
         buffer.lenFlags = 0;
         buffer.lenIndices = 0;
         buffer.lenEdgeIndices = 0;
@@ -302,14 +312,13 @@ class BatchingLayer {
         currentBatchingLayer = null;
 
         this._buffer = null;
-
         this._finalized = true;
     }
 
-    /**
-     * Updates the rendering flags for the given portion.
-     */
     setFlags(portionId, flags) {
+        if (!this._finalized) {
+            throw "Not finalized";
+        }
         var portionsIdx = portionId * 2;
         var vertexBase = this._portions[portionsIdx];
         var numVerts = this._portions[portionsIdx + 1];
@@ -328,12 +337,10 @@ class BatchingLayer {
         this._state.flagsBuf.setData(uint8Vec4Temp.slice(0, lenFlags), firstFlag, lenFlags);
     }
 
-    /**
-     * Updates the RGBA values for the given portion.
-     *
-     * Values are assumed to be quantized to unsigned shorts.
-     */
     setColor(portionId, color) {
+        if (!this._finalized) {
+            throw "Not finalized";
+        }
         var portionsIdx = portionId * 2;
         var vertexBase = this._portions[portionsIdx];
         var numVerts = this._portions[portionsIdx + 1];
@@ -352,76 +359,99 @@ class BatchingLayer {
         this._state.colorsBuf.setData(uint8Vec4Temp.slice(0, lenColors), firstColor, lenColors);
     }
 
-    drawOpaque(frame) {
+    setMatrix(portionId, matrix) { // TODO
+    }
+
+    drawOpaqueFill(frame) {
         if (this.numVisibleObjects === 0 || this.numTransparentObjects === this.numObjects || this.numGhostedObjects === this.numObjects) {
             return;
         }
-        this._draw(frame, RENDER_PASSES.OPAQUE);
+        if (this._drawRenderer) {
+            this._drawRenderer.drawLayer(frame, this, RENDER_PASSES.OPAQUE);
+        }
     }
 
-    drawTransparent(frame) {
+    drawOpaqueEdges(frame) {
+        if (this.numEdgesObjects === 0) {
+            return;
+        }
+        if (this._edgesRenderer) {
+            this._edgesRenderer.drawLayer(frame, this, RENDER_PASSES.OPAQUE);
+        }
+    }
+
+    drawTransparentFill(frame) {
         if (this.numVisibleObjects === 0 || this.numTransparentObjects === 0 || this.numGhostedObjects === this.numObjects) {
             return;
         }
-        this._draw(frame, RENDER_PASSES.TRANSPARENT);
+        if (this._drawRenderer) {
+            this._drawRenderer.drawLayer(frame, this, RENDER_PASSES.TRANSPARENT);
+        }
+    }
+
+    drawTransparentEdges(frame) {
+        if (this.numEdgesObjects === 0 || this.numTransparentObjects === 0) {
+            return;
+        }
+        if (this._edgesRenderer) {
+            this._edgesRenderer.drawLayer(frame, this, RENDER_PASSES.TRANSPARENT);
+        }
     }
 
     drawGhostedFill(frame) {
         if (this.numVisibleObjects === 0 || this.numGhostedObjects === 0) {
             return;
         }
-        this._draw(frame, RENDER_PASSES.GHOST);
+        if (this._fillRenderer) {
+            this._fillRenderer.drawLayer(frame, this, RENDER_PASSES.GHOSTED);
+        }
     }
 
     drawGhostedEdges(frame) {
-    }
-
-    drawGhostedVertices(frame) {
+        if (this.numVisibleObjects === 0 || this.numGhostedObjects === 0) {
+            return;
+        }
+        if (this._edgesRenderer) {
+            this._edgesRenderer.drawLayer(frame, this, RENDER_PASSES.GHOSTED);
+        }
     }
 
     drawHighlightedFill(frame) {
         if (this.numVisibleObjects === 0 || this.numHighlightedObjects === 0) {
             return;
         }
-        this._draw(frame, RENDER_PASSES.HIGHLIGHT);
+        if (this._fillRenderer) {
+            this._fillRenderer.drawLayer(frame, this, RENDER_PASSES.HIGHLIGHTED);
+        }
     }
 
     drawHighlightedEdges(frame) {
-    }
-
-    drawHighlightedVertices(frame) {
-    }
-
-    drawSelectedFill(frame) {
-    }
-
-    drawSelectedEdges(frame) {
-    }
-
-    drawSelectedVertices(frame) {
-    }
-
-    _draw(frame, renderPass) {
-        if (this._drawRenderer) {
-            this._drawRenderer.drawLayer(frame, this, renderPass);
-        }
-    }
-
-    /**
-     * Draws edges for edge-enhanced objects.
-     */
-    drawEdges(frame) {
-        if (this.numEdgesObjects === 0) {
+        if (this.numVisibleObjects === 0 || this.numHighlightedObjects === 0) {
             return;
         }
         if (this._edgesRenderer) {
-            this._edgesRenderer.drawLayer(frame, this);
+            this._edgesRenderer.drawLayer(frame, this, RENDER_PASSES.HIGHLIGHTED);
         }
     }
 
-    /**
-     * Attempts to pick a triangle on an object
-     */
+    drawSelectedFill(frame) {
+        if (this.numVisibleObjects === 0 || this.numSelectedObjects === 0) {
+            return;
+        }
+        if (this._fillRenderer) {
+            this._fillRenderer.drawLayer(frame, this, RENDER_PASSES.SELECTED);
+        }
+    }
+
+    drawSelectedEdges(frame) {
+        if (this.numVisibleObjects === 0 || this.numSelectedObjects === 0) {
+            return;
+        }
+        if (this._edgesRenderer) {
+            this._edgesRenderer.drawLayer(frame, this, RENDER_PASSES.SELECTED);
+        }
+    }
+
     pick(frame) {
         if (this.numVisibleObjects === 0) {
             return;
@@ -431,10 +461,56 @@ class BatchingLayer {
         }
     }
 
-    /**
-     * Clears this portion and un-finalizes it so that we can then call createPortion() to rebuild it.
-     */
-    clear() {
+    compileShaders() {
+        if (this._drawRenderer && this._drawRenderer.getValid() === false) {
+            this._drawRenderer.put();
+            this._drawRenderer = null;
+        }
+        if (this._fillRenderer && this._fillRenderer.getValid() === false) {
+            this._fillRenderer.put();
+            this._fillRenderer = null;
+        }
+        if (this._edgesRenderer && this._edgesRenderer.getValid() === false) {
+            this._edgesRenderer.put();
+            this._edgesRenderer = null;
+        }
+        if (this._pickRenderer && this._pickRenderer.getValid() === false) {
+            this._pickRenderer.put();
+            this._pickRenderer = null;
+        }
+        if (!this._drawRenderer) {
+            this._drawRenderer = BatchingDrawRenderer.get(this);
+        }
+        if (!this._fillRenderer) {
+            this._fillRenderer = BatchingEmphasisFillRenderer.get(this);
+        }
+        if (!this._edgesRenderer) {
+            this._edgesRenderer = BatchingEmphasisEdgesRenderer.get(this);
+        }
+        if (!this._pickRenderer) {
+            this._pickRenderer = BatchingPickRenderer.get(this);
+        }
+    }
+
+    destroy() {
+
+        if (this._drawRenderer) {
+            this._drawRenderer.put();
+            this._drawRenderer = null;
+        }
+        if (this._fillRenderer) {
+            this._fillRenderer.put();
+            this._fillRenderer = null;
+        }
+        if (this._edgesRenderer) {
+            this._edgesRenderer.put();
+            this._edgesRenderer = null;
+        }
+        if (this._pickRenderer) {
+            this._pickRenderer.put();
+            this._pickRenderer = null;
+        }
+
         const state = this._state;
         if (state.positionsBuf) {
             state.positionsBuf.destroy();
@@ -460,46 +536,7 @@ class BatchingLayer {
             state.edgeIndicesBuf.destroy();
             state.edgeIndicessBuf = null;
         }
-        this._finalized = false;
-    }
-
-    /**
-     * xeogl hook that creates shaders.
-     */
-    compile() {
-        if (this._drawRenderer && this._drawRenderer.getValid() === false) {
-            this._drawRenderer.put();
-            this._drawRenderer = null;
-        }
-        if (!this._drawRenderer) {
-            this._drawRenderer = BatchingDrawRenderer.get(this);
-        }
-        if (this._edgesRenderer && this._edgesRenderer.getValid() === false) {
-            this._edgesRenderer.put();
-            this._edgesRenderer = null;
-        }
-        if (!this._edgesRenderer) {
-            this._edgesRenderer = BatchingEdgesRenderer.get(this);
-        }
-        if (!this._pickRenderer) {
-            this._pickRenderer = BatchingPickRenderer.get(this);
-        }
-    }
-
-    /**
-     * xeogl hook to destroy this layer.
-     */
-    destroy() {
-        this.clear();
-        if (this._drawRenderer) {
-            this._drawRenderer.put();
-            this._drawRenderer = null;
-        }
-        if (this._edgesRenderer) {
-            this._edgesRenderer.put();
-            this._edgesRenderer = null;
-        }
-        this._state.destroy();
+        state.destroy();
     }
 }
 
@@ -613,7 +650,5 @@ function octDecodeVec2(oct) { // Decode an oct-encoded normal
 function dot(p, vec3) { // Dot product of a normal in an array against a candidate decoding
     return p[0] * vec3[0] + p[1] * vec3[1] + p[2] * vec3[2];
 }
-
-componentClasses[type] = BatchingLayer;
 
 export {BatchingLayer};

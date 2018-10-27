@@ -1,30 +1,113 @@
 import {xeoglObject} from './../objects/object.js';
+import {BigModelObject} from './bigModelObject.js';
 import {componentClasses} from "./../componentClasses.js";
-import {getBatchingBuffer, putBatchingBuffer} from "./batchingBuffer.js";
-import {BatchingLayer} from './batchingLayer.js';
+import {getBatchingBuffer, putBatchingBuffer} from "./batching/batchingBuffer.js";
+import {BatchingLayer} from './batching/batchingLayer.js';
+import {InstancingLayer} from './instancing/instancingLayer.js';
 import {RENDER_FLAGS} from './renderFlags.js';
 import {buildEdgeIndices} from '../math/buildEdges.js';
-
-// import {InstancingLayer} from './instancingLayer.js';
 import {math} from '../math/math.js';
+import {WEBGL_INFO} from './../webglInfo.js';
+
+const instancedArraysSupported = WEBGL_INFO.SUPPORTED_EXTENSIONS["ANGLE_instanced_arrays"];
 
 const type = "xeogl.BigModel";
 
 var tempColor = new Uint8Array(3);
 
 /**
- A **BigModel** is a {{#crossLink "Group"}}{{/crossLink}} that represents a very large model.
+ A **BigModel** is an {{#crossLink "Object"}}{{/crossLink}} that represents a very large model.
 
- * Represents objects as IDs.
- * Does not retain geometry arrays in RAM.
- * For each geometry that is used by exactly one object, creates a portion in a set of attribute arrays.
- *
- matrix and batches the World-space  into a combined set of VBOs. The VBO contains
- an additional per-vertex attribute arrays that hold flags (visibility, clippability etc) that , with each portion  with attribute buffers for
- * {{#crossLink "OBJModel"}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.
- * {{#crossLink "STLModel"}}{{/crossLink}}, which loads its components from .STL files.
- * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
- * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
+ * Used for high-detail engineering visualizations with millions of objects.
+ * Represents each object with a {{#crossLink "BigModelObject"}}{{/crossLink}}.
+ * Renders objects flat-shaded, without textures. Each object has simply color and opacity.
+ * Objects are individually visible, clippable, collidable, ghosted, highlighted, selected, edge-enhanced etc.
+ * Objects are static, ie. cannot be dynamically translated, rotated and scaled.
+ * For memory efficiency, does not retain geometry data in CPU memory. Keeps geometry only in GPU memory (which cannot be read).
+ * Renders efficiently using a combination of geometry batching and WebGL instancing.
+ * Instances objects that share geometries, batches objects that have unique geometries.
+ * To configure appearance when emphasised, BigModelObjects use the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}, {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}},
+ {{#crossLink "Scene/selectedMaterial:property"}}{{/crossLink}} and {{#crossLink "Scene/edgeMaterial:property"}}{{/crossLink}}.
+
+ ## Usage
+
+ TODO: describe hybrid rendering algorithm
+
+ ### Creating objects with unique geometries
+
+ When creating objects that each have their own unique geometry, just specify that geometry data as you create each object:
+
+ ````javascript
+ var bigModel = new xeogl.BigModel();
+
+ // Create a red box object
+
+ var object1 = bigModel.createObject({
+     id: "myObject1",
+     primitive: "triangles",
+     positions: [2, 2, 2, -2, 2, 2, -2, -2, ... ],
+     normals: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, ... ],
+     indices: [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, ... ],
+     color: [1, 0, 0],
+     matrix: xeogl.math.translationMat4c(-7, 0, 0)
+ });
+
+ // Create a green box object
+
+ var object2 = bigModel.createObject({
+     id: "myObject2",
+     primitive: "triangles",
+     positions: [2, 2, 2, -2, 2, 2, -2, -2, ... ],
+     normals: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, ... ],
+     indices: [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, ... ],
+     color: [0, 1, 0],
+     matrix: xeogl.math.translationMat4c(0, 0, 0)
+ });
+ ````
+
+ ### Creating objects with shared geometries
+
+ When multiple objects share the same geometry, create the geometry as a separate element that's referenced by the objects using its ID.
+
+ ```` javascript
+
+ // Create a box-shaped geometry
+
+ bigModel.createGeometry({
+     id: "myGeometry",
+     primitive: "triangles",
+     positions: [2, 2, 2, -2, 2, 2, -2, -2, ... ],
+     normals: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, ... ],
+     indices: [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, ... ],
+ });
+
+ // Create a blue object that instances the geometry
+
+ var object3 = bigModel.createObject({
+     id: "myObject3",
+     geometryId: "mGeometry",
+     color: [0, 0, 1],
+     matrix: xeogl.math.translationMat4c(-7, -7, 0)
+ });
+
+ // Create a yellow object that instances the geometry
+
+ var object4 = bigModel.createObject({
+     id: "myObject4",
+     geometryId: "mGeometry",
+     color: [1, 1, 0],
+     matrix: xeogl.math.translationMat4c(0, -7, 0)
+ });
+ ````
+
+ ### Finalizing
+
+ Once we've created all our objects, we need to finalize the BigModel before it will render. Once finalized, we can no longer
+ create objects within it.
+
+ ```` javascript
+ bigModel.finalize();
+ ````
 
  @class BigModel
  @module xeogl
@@ -68,12 +151,22 @@ class BigModel extends xeoglObject {
     init(cfg) {
 
         this.__aabb = math.collapseAABB3();
-        this._layers = [];
-        this._instancingLayers = {}; // InstancingLayer for each geometry
-        this._currentBatchingLayer = null;
-        this._objects = {};
+        this._layers = []; // For GL state efficiency when drawing, InstancingLayers are in first part, BatchingLayers are in second
+        this._instancingLayers = {}; // InstancingLayer for each geometry - can build many of these concurrently
+        this._currentBatchingLayer = null; // Current BatchingLayer - can only build one of these at a time due to its use of global geometry buffers
         this._objectIds = [];
-        this._buffer = getBatchingBuffer();
+        this._buffer = getBatchingBuffer(); // Each BigModel gets it's own batching buffer - allows multiple BigModels to load concurrently
+
+        /**
+         All contained {{#crossLink "BigModelObject"}}BigModelObjects{{/crossLink}}, mapped to their IDs.
+
+         @property objects
+         @final
+         @type {{String:BigModelObject}}
+         */
+        this.objects = {};
+
+        this.numGeometries = 0; // Number of instance-able geometries created with createGeometry()
 
         // These counts are used to avoid unnecessary render passes
         this.numObjects = 0;
@@ -95,47 +188,96 @@ class BigModel extends xeoglObject {
     //     math.OBB3ToAABB3(obb, aabb);
     // }
 
+    static getGeometryBytesUsed(positions, colors, indices, normals) {
+        // var bytes = 0;
+        // bytes += positions.length * 2;
+        // if (colors != null) {
+        //     bytes += colors.length;
+        // }
+        // //bytes += positions.length * 8;
+        // if (indices.length < 65536 && useSmallIndicesIfPossible) {
+        //     bytes += indices.length * 2;
+        // } else {
+        //     bytes += indices.length * 4;
+        // }
+        // bytes += normals.length;
+        // return bytes;
+    }
+
     /**
-     * Creates a reusable geometry within this BigModel.
-     * @param {*} cfg Geometry properties.
-     * @param {String|Number} cfg.id ID for the geometry.
-     * @param {Array} cfg.positions Flat array of positions.
-     * @param {Array} cfg.normals Flat array of normal vectors.
-     * @param {Array} cfg.indices Array of triangle indices.
-     * @param {Array} cfg.edgeIndices Array of edge line indices.
+     Creates a reusable geometry within this BigModel.
+
+     We can then call {{#crossLink "BigModel/createObject:method"}}createObject(){{/crossLink}} with the
+     ID of the geometry to create an instance of it, that will be rendered using WebGL hardware instancing.
+
+     @method createGeometry
+     @param {*} cfg Geometry properties.
+     @param {String|Number} cfg.id ID for the geometry, to refer to with {{#crossLink "BigModel/createObject:method"}}createObject(){{/crossLink}}
+     @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+     @param {Array} cfg.positions Flat array of positions.
+     @param {Array} cfg.normals Flat array of normal vectors.
+     @param {Array} cfg.indices Array of triangle indices.
+     @param {Array} cfg.edgeIndices Array of edge line indices.
      */
     createGeometry(cfg) {
+        if (!instancedArraysSupported) {
+            this.error("WebGL instanced arrays not supported"); // TODO: Gracefully use batching?
+            return;
+        }
         var geometryId = cfg.id;
         if (geometryId === undefined || geometryId === null) {
             this.error("Config missing: id");
             return;
         }
         if (this._instancingLayers[geometryId]) {
-            this.error("Geometry already loaded: " + geometryId);
+            this.error("Geometry already created: " + geometryId);
             return;
         }
-        var instancingLayer = new InstancingLayer(this.scene, cfg);
-        this._layers.unshift(instancingLayer);
+        var instancingLayer = new InstancingLayer(this, cfg);
+        this._layers.unshift(instancingLayer); // Instancing layers are rendered before batching layers
         this._instancingLayers[geometryId] = instancingLayer;
+        this.numGeometries++;
     }
 
     /**
-     * Creates an object within this BigModel.
-     *
-     * You can either provide geometry data arrays or the ID of a geometry that was previously added
-     * with {{#crossLink "BigModel/addGeometry:method"}}addGeometry(){{/crossLink}}. When you provide arrays,
-     * then that geometry will only be used by the object. When you provide an ID, then your object will potentially
-     * share (instance) that geometry with other objects in this BigModel.
-     *
-     * @method createObject
-     * @param cfg
-     * @returns {null}
+     Creates an object within this BigModel.
+
+     You can either provide geometry data arrays or the ID of a geometry that was previously created
+     with {{#crossLink "BigModel/createGeometry:method"}}createGeometry(){{/crossLink}}.
+
+     When you provide arrays, then that geometry will be used solely by the object, which will be rendered
+     using geometry batching.
+
+     When you provide a geometry ID, then the object will instance that geometry, and will be
+     rendered using WebGL instancing.
+
+     @method createObject
+     @param {*} cfg Object properties.
+     @param {String|Number} [cfg.geometryId] ID of a geometry to instance, previously created with {{#crossLink "BigModel/createGeometry:method"}}createObject(){{/crossLink}}. Overrides all other geometry parameters given to this method.
+     @param [cfg.primitive="triangles"] {String} Geometry primitive type. Ignored when geometryId is given. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+     @param {Array} [cfg.positions] Flat array of geometry positions. Ignored when geometryId is given.
+     @param {Array} [cfg.normals] Flat array of normal vectors. Ignored when geometryId is given.
+     @param {Array} [cfg.indices] Array of triangle indices. Ignored when geometryId is given.
+     @param {Array} [cfg.edgeIndices] Array of edge line indices. Ignored when geometryId is given.
+     @returns {xeogl.BigModelObject}
      */
     createObject(cfg) {
         var id = cfg.id;
         if (this.scene.components[id]) {
             this.error("Scene already has a Component with this ID: " + id);
             return;
+        }
+        var geometryId = cfg.geometryId;
+        var instancing = (geometryId !== undefined);
+        if (instancing) {
+            if (!instancedArraysSupported) {
+                this.error("WebGL instanced arrays not supported"); // TODO: Gracefully use batching?
+                return;
+            }
+            if (!this._instancingLayers[geometryId]) {
+                this.error("Geometry not found: " + geometryId + " - ensure that you create it first with createGeometry()");
+                return;
+            }
         }
         var color = cfg.color;
         color = new Uint8Array([ // Quantize color
@@ -144,10 +286,12 @@ class BigModel extends xeoglObject {
             color ? Math.floor(color[2] * 255) : 255,
             cfg.opacity !== undefined ? Math.floor(cfg.opacity * 255) : 255
         ]);
+        if (color[3] < 255) {
+            this.numTransparentObjects++;
+        }
         var matrix = cfg.matrix;
         var flags = 0;
-        // Apply flags fom xeogl.Object base class
-        if (this._visible && cfg.visible !== false) {
+        if (this._visible && cfg.visible !== false) { // Apply flags fom xeogl.Object base class
             flags = flags | RENDER_FLAGS.VISIBLE;
             this.numVisibleObjects++;
         }
@@ -176,22 +320,13 @@ class BigModel extends xeoglObject {
             flags = flags | RENDER_FLAGS.SELECTED;
             this.numSelectedObjects++;
         }
+        var layer;
+        var portionId;
         var aabb = math.AABB3();
-        var geometryId = cfg.geometryId;
-        var instancing = (geometryId !== undefined);
-        var object = {
-            id: id,
-            model: this,
-            layer: null,
-            portionId: 0,
-            flags: flags,
-            color: color,
-            aabb: aabb
-        };
         if (instancing) {
             var instancingLayer = this._instancingLayers[geometryId];
-            object.layer = instancingLayer;
-            object.portionId = instancingLayer.createPortion(flags, color, matrix, object.aabb);
+            layer = instancingLayer;
+            portionId = instancingLayer.createPortion(flags, color, matrix, aabb);
         } else {
             var primitive = cfg.primitive || "triangles";
             if (primitive !== "points" && primitive !== "lines" && primitive !== "line-loop" &&
@@ -226,23 +361,29 @@ class BigModel extends xeoglObject {
                     primitive: "triangles",
                     buffer: this._buffer
                 });
-                this._layers.push(this._currentBatchingLayer);
+                this._layers.push(this._currentBatchingLayer); // Instancing layers rendered before batching layers
             }
-            object.layer = this._currentBatchingLayer;
+            layer = this._currentBatchingLayer;
             if (!edgeIndices && indices) {
                 edgeIndices = math.buildEdgeIndices(positions, indices, null, 10, false);
             }
-            object.portionId = this._currentBatchingLayer.createPortion(positions, normals, indices, edgeIndices, flags, color, matrix, object.aabb);
-            math.expandAABB3(this.__aabb, object.aabb);
+            portionId = this._currentBatchingLayer.createPortion(positions, normals, indices, edgeIndices, flags, color, matrix, aabb);
+            math.expandAABB3(this.__aabb, aabb);
+            this.numGeometries++;
         }
-        this._objects[id] = object;
+        var object = new BigModelObject(this, cfg.entityType, id, cfg.guid, layer, portionId, flags, color, aabb);
+        this.objects[id] = object;
         this._objectIds.push(id);
         this.numObjects++;
+        return object;
     }
 
     /**
-     * Finalizes this BigModel.
-     * Objects cannot be created within this BigModel once finalized.
+     Finalizes this BigModel.
+
+     Once finalized, you can't create any more objects within this BigModel.
+
+     @method finalize
      */
     finalize() {
         if (this._currentBatchingLayer) {
@@ -253,432 +394,25 @@ class BigModel extends xeoglObject {
             putBatchingBuffer(this._buffer);
             this._buffer = null;
         }
+        for (const geometryId in this._instancingLayers) {
+            if (this._instancingLayers.hasOwnProperty(geometryId)) {
+                this._instancingLayers[geometryId].finalize();
+            }
+        }
         this._renderer.imageDirty();
         this.scene._bigModelCreated(this);
         this.scene._aabbDirty = true;
+        console.log("[BigModel] finalize() - numObjects = " + this.numObjects + ", numGeometries = " + this.numGeometries);
     }
 
     /**
-     * Gets the IDs of objects within this BigModel.
-     * @returns {Array}
+     Gets the IDs of objects within this BigModel.
+
+     @method getObjectIds
+     @returns {Array}
      */
     getObjectIDs() {
         return this._objectIds;
-    }
-
-    /**
-     * Updates a rendering flag for an object within this BigModel.
-     * @param {String} id ID of target object.
-     * @param {Number} flag Target flag to set.
-     * @param {boolean} value New value for that flag.
-     */
-    setFlag(id, flag, value) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        object.flags = value ? (object.flags | flag) : (object.flags & ~flag);
-        object.layer.setFlags(object.portionId, object.flags);
-    }
-
-    /**
-     * Gets the value of a rendering flag of an object within this BigModel.
-     * @param {String} id ID of target object.
-     * @param {Number} flag Target flag to get.
-     * @returns {boolean} Current value of the flag.
-     */
-    getFlag(id, flag) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        return !!(object.flags & flag);
-    }
-
-    /**
-     * Sets the visibility of an object within this BigModel.
-     * @param {String} id ID of the target object.
-     * @param {Boolean} visible New visibility state.
-     */
-    setVisible(id, visible) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        var currentVisible = !!(object.flags & RENDER_FLAGS.VISIBLE);
-        if (currentVisible === visible) {
-            return; // Redundant update
-        }
-        if (visible) {
-            object.flags = object.flags | RENDER_FLAGS.VISIBLE;
-            object.layer.numVisibleObjects++;
-            this.numVisibleObjects++;
-        } else {
-            object.flags = object.flags & ~RENDER_FLAGS.VISIBLE;
-            object.layer.numVisibleObjects--;
-            this.numVisibleObjects--;
-        }
-        object.layer.setFlags(object.portionId, object.flags);
-    }
-
-    /**
-     * Gets the visibility of an object within this BigModel.
-     * @param {String} id ID of the target object.
-     * @returns {boolean} Current visibility of the target object.
-     */
-    getVisible(id) {
-        return this.getFlag(id, RENDER_FLAGS.VISIBLE);
-    }
-
-    /**
-     * Sets whether or not a target object within this BigModel is clippable.
-     *
-     * When false, the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}} will have no effect on the Object.
-     *
-     * @param {String} id ID of the target object.
-     * @param {Boolean} clippable New clippability state.
-     */
-    setClippable(id, clippable) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        var currentClippable = !!(object.flags & RENDER_FLAGS.CLIPPABLE);
-        if (currentClippable === clippable) {
-            return; // Redundant update
-        }
-        if (clippable) {
-            object.flags = object.flags | RENDER_FLAGS.CLIPPABLE;
-        } else {
-            object.flags = object.flags & ~RENDER_FLAGS.CLIPPABLE;
-        }
-        object.layer.setFlags(object.portionId, object.flags);
-    }
-
-    /**
-     * Gets whether or not a target object within this BigModel is clippable.
-     *
-     * When false, the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Clips"}}{{/crossLink}} will have no effect on the Object.
-     *
-     * @param {String} id ID of the target object.
-     * @returns {Boolean} Whether or not the target object is clippable.
-     */
-    getClippable(id) {
-        return this.getFlag(id, RENDER_FLAGS.CLIPPABLE);
-    }
-
-    /**
-     * Sets whether or not a target object within this BigModel is pickable.
-     *
-     * When false, the object will never be picked by calls to the {{#crossLink "Scene/pick:method"}}Scene pick(){{/crossLink}}
-     * method, and picking will happen as "through" the object, to attempt to pick whatever lies on the other side of it.
-     *
-     * @param {String} id ID of the target object.
-     * @param {Boolean} pickable Whether or not the target object is pickable.
-     */
-    setPickable(id, pickable) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        var currentPickable = !!(object.flags & RENDER_FLAGS.PICKABLE);
-        if (currentPickable === pickable) {
-            return; // Redundant update
-        }
-        if (pickable) {
-            object.flags = object.flags | RENDER_FLAGS.PICKABLE;
-        } else {
-            object.flags = object.flags & ~RENDER_FLAGS.PICKABLE;
-        }
-        object.layer.setFlags(object.portionId, object.flags);
-    }
-
-    /**
-     * Gets whether or not a target object within this BigModel is pickable.
-     *
-     * When false, the object will never be picked by calls to the {{#crossLink "Scene/pick:method"}}Scene pick(){{/crossLink}}
-     * method, and picking will happen as "through" the object, to attempt to pick whatever lies on the other side of it.
-     *
-     * @param {String} id ID of the target object.
-     * @return {Boolean} Whether or not the target object is pickable.
-     */
-    getPickable(id) {
-        return this.getFlag(id, RENDER_FLAGS.PICKABLE);
-    }
-
-    /**
-     * Sets whether or not a target object within this BigModel is included in boundary calculations.
-     *
-     * When false, the object's boundary will never be included within the boundary of its {{#crossLink "Scene"}}Scene{{/crossLink}} or BigModel.
-     *
-     * @param {String} id ID of the target object.
-     * @param {Boolean} collidable Whether or not the target object is collidable.
-     */
-    setCollidable(id, collidable) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        var currentCollidable = !!(object.flags & RENDER_FLAGS.COLLIDABLE);
-        if (currentCollidable === collidable) {
-            return; // Redundant update
-        }
-        if (collidable) {
-            object.flags = object.flags | RENDER_FLAGS.COLLIDABLE;
-        } else {
-            object.flags = object.flags & ~RENDER_FLAGS.COLLIDABLE;
-        }
-        object.layer.setFlags(object.portionId, object.flags);
-    }
-
-    /**
-     * Gets whether or not a target object within this BigModel is included in boundary calculations.
-     *
-     * When false, the object's boundary will never be included within the boundary of its {{#crossLink "Scene"}}Scene{{/crossLink}} or BigModel.
-     *
-     * @param {String} id ID of the target object.
-     * @return {Boolean} Whether or not the target object is collidable.
-     */
-    getCollidable(id) {
-        return this.getFlag(id, RENDER_FLAGS.COLLIDABLE);
-    }
-
-    /**
-     * Sets whether or not a target object within this BigModel is rendered as ghosted.
-     *
-     * @param {String} id ID of the target object.
-     * @param {Boolean} ghosted Whether or not the target object is ghosted.
-     */
-    setGhosted(id, ghosted) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        var currentGhosted = !!(object.flags & RENDER_FLAGS.GHOSTED);
-        if (currentGhosted === ghosted) {
-            return; // Redundant update
-        }
-        if (ghosted) {
-            object.flags = object.flags | RENDER_FLAGS.GHOSTED;
-            object.layer.numGhostedObjects++;
-            this.numGhostedObjects++;
-        } else {
-            object.flags = object.flags & ~RENDER_FLAGS.GHOSTED;
-            object.layer.numGhostedObjects--;
-            this.numGhostedObjects--;
-        }
-        object.layer.setFlags(object.portionId, object.flags);
-    }
-
-    /**
-     * Gets whether or not a target object within this BigModel is rendered as ghosted.
-     *
-     * @param {String} id ID of the target object.
-     * @return {Boolean} Whether or not the target object is ghosted.
-     */
-    getGhosted(id) {
-        return this.getFlag(id, RENDER_FLAGS.GHOSTED);
-    }
-
-    /**
-     * Sets whether or not a target object within this BigModel is rendered as highlighted.
-     *
-     * @param {String} id ID of the target object.
-     * @param {Boolean} highlighted Whether or not the target object is highlighted.
-     */
-    setHighlighted(id, highlighted) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        var currentHighlighted = !!(object.flags & RENDER_FLAGS.HIGHLIGHTED);
-        if (currentHighlighted === highlighted) {
-            return; // Redundant update
-        }
-        if (highlighted) {
-            object.flags = object.flags | RENDER_FLAGS.HIGHLIGHTED;
-            object.layer.numHighlightedObjects++;
-            this.numHighlightedObjects++;
-        } else {
-            object.flags = object.flags & ~RENDER_FLAGS.HIGHLIGHTED;
-            object.layer.numHighlightedObjects--;
-            this.numHighlightedObjects--;
-        }
-        object.layer.setFlags(object.portionId, object.flags);
-    }
-
-    /**
-     * Gets whether or not a target object within this BigModel is rendered as highlighted.
-     *
-     * @param {String} id ID of the target object.
-     * @return {Boolean} Whether or not the target object is highlighted.
-     */
-    getHighlighted(id) {
-        return this.getFlag(id, RENDER_FLAGS.HIGHLIGHTED);
-    }
-
-    /**
-     * Sets whether or not the edges on a target object are rendered.
-     *
-     * @param {String} id ID of the target object.
-     * @param {Boolean} edges True to render edges.
-     */
-    setEdges(id, edges) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        var currentEdges = !!(object.flags & RENDER_FLAGS.EDGES);
-        if (currentEdges === edges) {
-            return; // Redundant update
-        }
-        if (edges) {
-            object.flags = object.flags | RENDER_FLAGS.EDGES;
-            object.layer.numEdgesObjects++;
-            this.numEdgesObjects++;
-        } else {
-            object.flags = object.flags & ~RENDER_FLAGS.EDGES;
-            object.layer.numEdgesObjects--;
-            this.numEdgesObjects--;
-        }
-        object.layer.setFlags(object.portionId, object.flags);
-    }
-
-    /**
-     * Gets whether or not the edges on a target object are rendered.
-     *
-     * @param {String} id ID of the target object.
-     * @return {Boolean} True to render edges.
-     */
-    getEdges(id) {
-        return this.getFlag(id, RENDER_FLAGS.EDGES);
-    }
-
-    /**
-     * Sets the RGB color of a target object within this BigModel.
-     *
-     * @param {String} id ID of the target object.
-     * @param {Array} color RGB color for the object.
-     */
-    setColor(id, color) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        object.color[0] = Math.floor(color[0] * 255.0); // Quantize
-        object.color[1] = Math.floor(color[1] * 255.0);
-        object.color[2] = Math.floor(color[2] * 255.0);
-        object.layer.setColor(object.portionId, object.color); // Only set RGB, not alpha
-    }
-
-    /**
-     * Gets the RGB color of a target object within this BigModel.
-     *
-     * The returned value must not be modified, and is valid only until the next call to this method.
-     *
-     * @param {String} id ID of the target object.
-     * @return {Array} RGB color for the object.
-     */
-    getColor(id) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        tempColor[0] = color[0] / 255.0; // Unquantize
-        tempColor[1] = color[1] / 255.0;
-        tempColor[2] = color[2] / 255.0;
-        return tempColor;
-    }
-
-    /**
-     * Sets the opacity of a target object within this BigModel.
-     *
-     * @param {String} id ID of the target object.
-     * @param {Number} opacity Opacity factor in range ````[0..1]````.
-     */
-    setOpacity(id, opacity) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        if (opacity < 0) {
-            opacity = 0;
-        } else if (opacity > 1) {
-            opacity = 1;
-        }
-        opacity = Math.floor(opacity * 255.0); // Quantize
-        var lastOpacity = object.color[3];
-        if (lastOpacity === opacity) {
-            return;
-        }
-        if (opacity < 1.0) {
-            object.layer.numTransparentObjects++;
-            this.numTransparentObjects++;
-        } else {
-            object.layer.numTransparentObjects--;
-            this.numTransparentObjects--;
-        }
-        object.color[3] = opacity; // Only set alpha
-        object.layer.setColor(object.portionId, object.color);
-    }
-
-    /**
-     * Gets the opacity of a target object within this BigModel.
-     *
-     * @param {String} id ID of the target object.
-     * @return {Number} Opacity factor in range ````[0..1]````.
-     */
-    getOpacity(id) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        return object.color[3] / 255.0;
-    }
-
-    /**
-     Returns whether or not there are any opaque objects in this BigModel.
-     @returns {boolean}
-     */
-    get opaque() {
-        return (this.numTransparentObjects < this.numObjects);
-    }
-
-    /**
-     Returns whether or not there are any transparent objects in this BigModel.
-     @returns {boolean}
-     */
-    get transparent() {
-        return (this.numTransparentObjects > 0);
-    }
-
-    /**
-     Gets the axis-aligned World-space bounding box of a target object within this BigModel.
-
-     @method getAABB
-     @param {String|Number} id ID of the target object.
-     @returns {[Number, Number, Number, Number, Number, Number]} An axis-aligned World-space bounding box, given as elements ````[xmin, ymin, zmin, xmax, ymax, zmax]````.
-     */
-    getAABB(id) {
-        var object = this._objects[id];
-        if (!object) {
-            this.error("Object not found: " + id);
-            return;
-        }
-        return object.aabb;
     }
 
     /**
@@ -709,7 +443,7 @@ class BigModel extends xeoglObject {
         visible = visible !== false;
         this._visible = visible;
         for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setVisible(this._objectIds[i], visible);
+            this.objects[this._objectIds[i]].visible = visible;
         }
     }
 
@@ -720,6 +454,8 @@ class BigModel extends xeoglObject {
     /**
      Indicates if objects in this BigModel are highlighted.
 
+     Highlighted appearance for the entire BigModel is configured by the {{#crossLink "Scene/highlightMaterial:property"}}Scene highlightMaterial{{/crossLink}}.
+
      @property highlighted
      @default false
      @type Boolean
@@ -728,7 +464,7 @@ class BigModel extends xeoglObject {
         highlighted = !!highlighted;
         this._highlighted = highlighted;
         for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setHighlighted(this._objectIds[i], highlighted);
+            this.objects[this._objectIds[i]].highlighted = highlighted;
         }
     }
 
@@ -739,6 +475,8 @@ class BigModel extends xeoglObject {
     /**
      Indicates if objects in this BigModel are selected.
 
+     Selected appearance for the entire BigModel is configured by the {{#crossLink "Scene/selectedMaterial:property"}}Scene selectedMaterial{{/crossLink}}.
+
      @property selected
      @default false
      @type Boolean
@@ -747,7 +485,7 @@ class BigModel extends xeoglObject {
         selected = !!selected;
         this._selected = selected;
         for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setSelected(this._objectIds[i], selected);
+            this.objects[this._objectIds[i]].selected = selected;
         }
     }
 
@@ -758,6 +496,8 @@ class BigModel extends xeoglObject {
     /**
      Indicates if objects in this BigModel are ghosted.
 
+     Ghosted appearance for the entire BigModel is configured by the {{#crossLink "Scene/ghostMaterial:property"}}Scene ghostMaterial{{/crossLink}}.
+
      @property ghosted
      @default false
      @type Boolean
@@ -766,7 +506,7 @@ class BigModel extends xeoglObject {
         ghosted = !!ghosted;
         this._ghosted = ghosted;
         for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setGhosted(this._objectIds[i], ghosted);
+            this.objects[this._objectIds[i]].ghosted = ghosted;
         }
     }
 
@@ -777,6 +517,8 @@ class BigModel extends xeoglObject {
     /**
      Indicates if objects in BigModel are shown with emphasized edges.
 
+     Edges appearance for the entire BigModel is configured by the {{#crossLink "Scene/edgeMaterial:property"}}Scene edgeMaterial{{/crossLink}}.
+
      @property edges
      @default false
      @type Boolean
@@ -785,7 +527,7 @@ class BigModel extends xeoglObject {
         edges = !!edges;
         this._edges = edges;
         for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setEdges(this._objectIds[i], edges);
+            this.objects[this._objectIds[i]].edges = edges;
         }
     }
 
@@ -796,7 +538,7 @@ class BigModel extends xeoglObject {
     /**
      Indicates if this BigModel is culled from view.
 
-     Only rendered when {{#crossLink "BigModel/visible:property"}}{{/crossLink}} is true and
+     The BigModel is only rendered when {{#crossLink "BigModel/visible:property"}}{{/crossLink}} is true and
      {{#crossLink "BigModel/culled:property"}}{{/crossLink}} is false.
 
      @property culled
@@ -805,10 +547,7 @@ class BigModel extends xeoglObject {
      */
     set culled(culled) {
         culled = !!culled;
-        this._culled = culled;
-        for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setCulled(this._objectIds[i], culled);
-        }
+        this._culled = culled; // Whole BigModel is culled
     }
 
     get culled() {
@@ -828,7 +567,7 @@ class BigModel extends xeoglObject {
         clippable = clippable !== false;
         this._clippable = clippable;
         for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setClippable(this._objectIds[i], clippable);
+            this.objects[this._objectIds[i]].clippable = clippable;
         }
     }
 
@@ -847,7 +586,7 @@ class BigModel extends xeoglObject {
         collidable = collidable !== false;
         this._collidable = collidable;
         for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setCollidable(this._objectIds[i], collidable);
+            this.objects[this._objectIds[i]].collidable = collidable;
         }
     }
 
@@ -868,7 +607,7 @@ class BigModel extends xeoglObject {
         pickable = pickable !== false;
         this._pickable = pickable;
         for (var i = 0, len = this._objectIds.length; i < len; i++) {
-            this.setPickable(this._objectIds[i], pickable);
+            this.objects[this._objectIds[i]].pickable = pickable;
         }
     }
 
@@ -877,21 +616,35 @@ class BigModel extends xeoglObject {
     }
 
     /**
+     Defines the appearance of edges of objects within this BigModel.
+
+     This is the {{#crossLink "Scene/edgeMaterial:property"}}Scene edgeMaterial{{/crossLink}}.
+
+     @property edgeMaterial
+     @type EdgeMaterial
+     */
+    get edgeMaterial() {
+        return this.scene.edgeMaterial;
+    }
+
+    /**
      Defines the appearance of ghosted objects within this BigModel.
 
-     This is the
+     This is the {{#crossLink "Scene/ghostMaterial:property"}}Scene ghostMaterial{{/crossLink}}.
 
      @property ghostMaterial
      @type EmphasisMaterial
      */
     get ghostMaterial() {
-        return this.scene.highlightMaterial;
+        return this.scene.ghostMaterial;
     }
 
     /**
      Defines the appearance of highlighted objects within this BigModel.
 
-     @property highlightedMaterial
+     This is the {{#crossLink "Scene/highlightMaterial:property"}}Scene highlightMaterial{{/crossLink}}.
+
+     @property highlightMaterial
      @type EmphasisMaterial
      */
     get highlightMaterial() {
@@ -900,6 +653,8 @@ class BigModel extends xeoglObject {
 
     /**
      Defines the appearance of selected objects within this BigModel.
+
+     This is the {{#crossLink "Scene/selectedMaterial:property"}}Scene selectedMaterial{{/crossLink}}.
 
      @property selectedMaterial
      @type EmphasisMaterial
@@ -910,7 +665,7 @@ class BigModel extends xeoglObject {
 
     _compile() {
         for (var i = 0, len = this._layers.length; i < len; i++) {
-            this._layers[i].compile();
+            this._layers[i].compileShaders();
         }
         this._renderer.imageDirty();
     }
@@ -919,33 +674,42 @@ class BigModel extends xeoglObject {
     // Renderer hooks - private and used only by Renderer
     //------------------------------------------------------------------------------------------------------------------
 
-    get _getStateSortable() { // BigModel contains essentially a uniform rendering state, so doesn't need state sorting
+    get _needStateSort() { // BigModel contains essentially a uniform rendering state, so doesn't need state sorting
         return false;
     }
 
-    _getOpaque() { // Whether this BigModel needs _drawOpaque()
+    _needDrawOpaque() { // Whether this BigModel needs an opaque draw pass, ie. which calls _drawOpaque()
         return (this.numTransparentObjects < this.numObjects);
     }
 
-    _getTransparent() { // Whether this BigModel needs _drawTransparent()
+    _needDrawTransparent() { // Whether this BigModel needs a transparent draw pass, ie. which calls _drawTransparent()
         return (this.numTransparentObjects > 0);
     }
 
-    _drawOpaque(frame) {
+    _drawOpaqueFill(frame) {
         if (this.numVisibleObjects === 0 || this.numTransparentObjects === this.numObjects || this.numGhostedObjects === this.numObjects) {
             return;
         }
         for (var i = 0, len = this._layers.length; i < len; i++) {
-            this._layers[i].drawOpaque(frame);
+            this._layers[i].drawOpaqueFill(frame);
         }
     }
 
-    _drawTransparent(frame) {
+    _drawOpaqueEdges(frame) {
+        if (this.numEdgesObjects === 0) {
+            return;
+        }
+        for (var i = 0, len = this._layers.length; i < len; i++) {
+            this._layers[i].drawOpaqueEdges(frame);
+        }
+    }
+
+    _drawTransparentFill(frame) {
         if (this.numVisibleObjects === 0 || this.numTransparentObjects === 0 || this.numGhostedObjects === this.numObjects) {
             return;
         }
         for (var i = 0, len = this._layers.length; i < len; i++) {
-            this._layers[i].drawTransparent(frame);
+            this._layers[i].drawTransparentFill(frame);
         }
     }
 
@@ -959,9 +723,12 @@ class BigModel extends xeoglObject {
     }
 
     _drawGhostedEdges(frame) {
-    }
-
-    _drawGhostedVertices(frame) { // TODO: Needed?
+        if (this.numVisibleObjects === 0 || this.numGhostedObjects === 0) {
+            return;
+        }
+        for (var i = 0, len = this._layers.length; i < len; i++) {
+            this._layers[i].drawGhostedEdges(frame);
+        }
     }
 
     _drawHighlightedFill(frame) {
@@ -969,35 +736,41 @@ class BigModel extends xeoglObject {
             return;
         }
         for (var i = 0, len = this._layers.length; i < len; i++) {
-            this._layers[i]._drawHighlightedFill(frame);
+            this._layers[i].drawHighlightedFill(frame);
         }
     }
 
     _drawHighlightedEdges(frame) {
-    }
-
-    _drawHighlightedVertices(frame) {
-    }
-
-    _drawSelectedFill(frame) {
-    }
-
-    _drawSelectedEdges(frame) {
-    }
-
-    _drawSelectedVertices(frame) {
-    }
-
-    _drawEdges(frame) {
-        if (this.numEdgesObjects === 0) {
+        if (this.numVisibleObjects === 0 || this.numHighlightedObjects === 0) {
             return;
         }
         for (var i = 0, len = this._layers.length; i < len; i++) {
-            this._layers[i].drawEdges(frame);
+            this._layers[i].drawHighlightedEdges(frame);
+        }
+    }
+
+    _drawSelectedFill(frame) {
+        if (this.numVisibleObjects === 0 || this.numSelectedObjects === 0) {
+            return;
+        }
+        for (var i = 0, len = this._layers.length; i < len; i++) {
+            this._layers[i].drawSelectedFill(frame);
+        }
+    }
+
+    _drawSelectedEdges(frame) {
+        if (this.numVisibleObjects === 0 || this.numSelectedObjects === 0) {
+            return;
+        }
+        for (var i = 0, len = this._layers.length; i < len; i++) {
+            this._layers[i].drawSelectedEdges(frame);
         }
     }
 
     _drawOutline(frame) {
+    }
+
+    _drawShadow(frame) {
     }
 
     _pick(frame) {
@@ -1018,10 +791,12 @@ class BigModel extends xeoglObject {
         for (var i = 0, len = this._layers.length; i < len; i++) {
             this._layers[i].destroy();
         }
+        for (var i = 0, len = this._objectIds.length; i < len; i++) {
+            this.objects[this._objectIds[i]]._destroy();
+        }
         this.scene._bigModelDestroyed(this);
         this.scene._aabbDirty = true;
         this._renderer.removeDrawable(this.id, this);
-        this._renderer.imageDirty();
     }
 }
 

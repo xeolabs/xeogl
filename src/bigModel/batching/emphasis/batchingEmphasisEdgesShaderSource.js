@@ -2,15 +2,15 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-import {RENDER_PASSES} from './../renderPasses.js';
+import {RENDER_PASSES} from './../../renderPasses.js';
 
-const BatchingEdgesShaderSource = function (tile) {
-    this.vertex = buildVertex(tile);
-    this.fragment = buildFragment(tile);
+const BatchingEmphasisEdgesShaderSource = function (layer) {
+    this.vertex = buildVertex(layer);
+    this.fragment = buildFragment(layer);
 };
 
-function buildVertex(tile) {
-    const clipsState = tile.scene._clipsState;
+function buildVertex(layer) {
+    const clipsState = layer.model.scene._clipsState;
     const clipping = clipsState.clips.length > 0;
     const src = [];
 
@@ -32,19 +32,19 @@ function buildVertex(tile) {
     src.push("void main(void) {");
 
     /*
-    pass 0 - opaque, non-ghosted objects only
-    pass 1 - transparent, non-ghosted objects only
-    pass 2 - ghosted objects only
-    pass 3 - highlighted objects only
+     pass 0 - opaque, non-ghosted objects only
+     pass 1 - transparent, non-ghosted objects only
+     pass 2 - ghosted objects only
+     pass 3 - highlighted objects only
      */
     src.push("bool visible      = (float(flags.x) > 0.0);");
     src.push("bool ghosted      = (float(flags.y) > 0.0);");
     src.push("bool highlighted  = (float(flags.z) > 0.0);");
     src.push("bool transparent  = ((float(color.a) / 255.0) < 1.0);");
 
-    // src.push(`if (!visible || (renderPass == ${RENDER_PASSES.OPAQUE} && (transparent || ghosted)) || (renderPass == ${RENDER_PASSES.TRANSPARENT} && (!transparent || ghosted)) || (renderPass == ${RENDER_PASSES.GHOST} && !ghosted) || (renderPass == ${RENDER_PASSES.HIGHLIGHT} && !highlighted)) {`);
-    // src.push("   gl_Position = vec4(0.0, 0.0, 0.0, 0.0);"); // Cull vertex
-    // src.push("} else {");
+    src.push(`if (!visible || (renderPass == ${RENDER_PASSES.OPAQUE} && (transparent || ghosted)) || (renderPass == ${RENDER_PASSES.TRANSPARENT} && (!transparent || ghosted)) || (renderPass == ${RENDER_PASSES.GHOSTED} && !ghosted) || (renderPass == ${RENDER_PASSES.HIGHLIGHTED} && !highlighted)) {`);
+    src.push("   gl_Position = vec4(0.0, 0.0, 0.0, 0.0);"); // Cull vertex
+    src.push("} else {");
 
     src.push("  vec4 worldPosition = modelMatrix * (positionsDecodeMatrix * vec4(position, 1.0)); ");
     src.push("  vec4 viewPosition  = viewMatrix * worldPosition; ");
@@ -53,12 +53,12 @@ function buildVertex(tile) {
     }
     src.push("  gl_Position = projMatrix * viewPosition;");
     src.push("}");
-    //src.push("}");
+    src.push("}");
     return src;
 }
 
-function buildFragment(tile) {
-    const scene = tile.scene;
+function buildFragment(layer) {
+    const scene = layer.model.scene;
     const clipsState = scene._clipsState;
     let i;
     let len;
@@ -89,10 +89,9 @@ function buildFragment(tile) {
         src.push("  if (dist > 0.0) { discard; }");
         src.push("}");
     }
-//    src.push("gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);");
     src.push("gl_FragColor = color;");
     src.push("}");
     return src;
 }
 
-export {BatchingEdgesShaderSource};
+export {BatchingEmphasisEdgesShaderSource};

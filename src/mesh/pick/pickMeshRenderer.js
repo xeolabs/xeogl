@@ -131,11 +131,11 @@ PickMeshRenderer.prototype.drawMesh = function (frame, mesh) {
         this._lastGeometryId = geometryState.id;
     }
     // Mesh-indexed color
-    const a = frame.pickmeshIndex >> 24 & 0xFF;
-    const b = frame.pickmeshIndex >> 16 & 0xFF;
-    const g = frame.pickmeshIndex >> 8 & 0xFF;
-    const r = frame.pickmeshIndex & 0xFF;
-    frame.pickmeshIndex++;
+    const a = frame.pickMeshIndex >> 24 & 0xFF;
+    const b = frame.pickMeshIndex >> 16 & 0xFF;
+    const g = frame.pickMeshIndex >> 8 & 0xFF;
+    const r = frame.pickMeshIndex & 0xFF;
+    frame.pickMeshIndex++;
     gl.uniform4f(this._uPickColor, r / 255, g / 255, b / 255, a / 255);
     // Draw (indices bound in prev step)
     if (geometryState.combined) {

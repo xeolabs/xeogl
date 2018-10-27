@@ -20,7 +20,7 @@ const TEXTURE_DECODE_FUNCS = {
 };
 
 function receivesShadow(mesh) {
-    if (!mesh._state.receiveShadow) {
+    if (!mesh.receiveShadow) {
         return false;
     }
     const lights = mesh.scene._lightsState.lights;

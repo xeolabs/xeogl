@@ -184,6 +184,7 @@
 
             loadBuffers(ctx, function () {
                 loadBufferViews(ctx);
+                freeBuffers(ctx); // Don't need buffers once we've created views of them
                 loadMaterials(ctx);
                 loadDefaultScene(ctx);
                 model.scene.loading--; // Re-enables (re)compilation
@@ -291,6 +292,15 @@
             bufferViewInfo._buffer = buffer._buffer.slice(byteOffset, byteOffset + byteLength);
         }
 
+        function freeBuffers(ctx) {
+            var buffers = ctx.json.buffers;
+            if (buffers) {
+                for (var i = 0, len = buffers.length; i < len; i++) {
+                    buffers[i]._buffer = null;
+                }
+            }
+        }
+
         function loadMaterials(ctx) {
             var materialsInfo = ctx.json.materials;
             if (materialsInfo) {
@@ -365,10 +375,8 @@
             if (!nodes) {
                 return;
             }
-
             var json = ctx.json;
             var nodeInfo;
-
             for (var i = 0, len = nodes.length; i < len; i++) {
                 nodeInfo = json.nodes[nodes[i]];
                 if (!nodeInfo) {
@@ -377,7 +385,6 @@
                 }
                 countMeshUsage(ctx, i, nodeInfo);
             }
-
             for (var i = 0, len = nodes.length; i < len; i++) {
                 nodeInfo = json.nodes[nodes[i]];
                 if (nodeInfo) {
@@ -461,17 +468,13 @@
             if (nodeInfo.mesh !== undefined) {
                 var meshInfo = json.meshes[nodeInfo.mesh];
                 if (meshInfo) {
-
                     const numPrimitives = meshInfo.primitives.length;
                     if (numPrimitives > 0) {
-                        for (var i = 0, len = numPrimitives; i < len; i++) {
-
+                        for (var i = 0; i < numPrimitives; i++) {
                             const objectCfg = {
-                                id: model.id + "." + ctx.numObjects, // TODO
-                                matrix: matrix,
-                                instances: meshInfo.instances
+                                id: model.id + "." + ctx.numObjects, // TODO: object ID
+                                matrix: matrix
                             };
-
                             var primitiveInfo = meshInfo.primitives[i];
                             var materialIndex = primitiveInfo.material;
                             var materialInfo;
@@ -485,15 +488,8 @@
                                 objectCfg.color = new Float32Array([1.0, 1.0, 1.0]);
                                 objectCfg.opacity = 1.0;
                             }
-
-                            if (meshInfo.instances > INSTANCE_THRESHOLD) {
-
-                                //--------------------------------------------------------------------------------------
-                                // Instanced geometry - use instanced arrays
-                                //--------------------------------------------------------------------------------------
-
+                            if (meshInfo.instances > INSTANCE_THRESHOLD) { // Instanced geometry
                                 const geometryId = model.id + "." + nodeInfo.mesh;
-
                                 if (!meshInfo.geometryId) {
                                     meshInfo.geometryId = geometryId;
                                     var geometryCfg = {
@@ -502,18 +498,10 @@
                                     loadPrimitiveGeometry(ctx, meshInfo, i, geometryCfg);
                                     model.createGeometry(geometryCfg);
                                 }
-
                                 objectCfg.geometryId = geometryId;
-
-                            } else {
-
-                                //--------------------------------------------------------------------------------------
-                                // Not instanced - batch in VBOs
-                                //--------------------------------------------------------------------------------------
-
+                            } else {   // Not instanced - batch in VBOs
                                 loadPrimitiveGeometry(ctx, meshInfo, i, objectCfg);
                             }
-
                             model.createObject(objectCfg);
                         }
                     }
@@ -571,22 +559,13 @@
         }
 
         function loadAccessorTypedArray(ctx, accessorInfo) {
-            window.test = window.test || {};
-            var id = "" + accessorInfo.bufferView + " " + accessorInfo.byteOffset;
-            if (window.test[id]) {
-                console.log("Repeated loadAccessorTypedArray");
-            } else {
-                window.test[id] = true;
-            }
             var bufferViewInfo = ctx.json.bufferViews[accessorInfo.bufferView];
             var itemSize = WEBGL_TYPE_SIZES[accessorInfo.type];
             var TypedArray = WEBGL_COMPONENT_TYPES[accessorInfo.componentType];
-            // For VEC3: itemSize is 3, elementBytes is 4, itemBytes is 12.
-            var elementBytes = TypedArray.BYTES_PER_ELEMENT;
+            var elementBytes = TypedArray.BYTES_PER_ELEMENT; // For VEC3: itemSize is 3, elementBytes is 4, itemBytes is 12.
             var itemBytes = elementBytes * itemSize;
             if (accessorInfo.byteStride && accessorInfo.byteStride !== itemBytes) { // The buffer is not interleaved if the stride is the item size in bytes.
-                //TODO
-//                alert("interleaved buffer!");
+                console.error("interleaved buffer!"); // TODO
             } else {
                 return new TypedArray(bufferViewInfo._buffer, accessorInfo.byteOffset || 0, accessorInfo.count * itemSize);
             }
