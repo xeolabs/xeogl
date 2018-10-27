@@ -2,7 +2,7 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-import {RENDER_PASSES} from './../renderPasses.js';
+import {RENDER_PASSES} from './../../renderPasses.js';
 
 const BatchingDrawShaderSource = function (layer) {
     this.vertex = buildVertex(layer);
@@ -10,8 +10,9 @@ const BatchingDrawShaderSource = function (layer) {
 };
 
 function buildVertex(layer) {
-    const clipsState = layer.scene._clipsState;
-    const lightsState = layer.scene._lightsState;
+    var scene = layer.model.scene;
+    const clipsState = scene._clipsState;
+    const lightsState = scene._lightsState;
     const clipping = clipsState.clips.length > 0;
     let i;
     let len;
@@ -23,9 +24,9 @@ function buildVertex(layer) {
     src.push("uniform int renderPass;");
 
     src.push("attribute vec3 position;");
+    src.push("attribute vec2 normal;");
     src.push("attribute vec4 color;");
     src.push("attribute vec4 flags;");
-    src.push("attribute vec2 normal;");
 
     src.push("uniform mat4 modelMatrix;");
     src.push("uniform mat4 modelNormalMatrix;");
@@ -78,8 +79,7 @@ function buildVertex(layer) {
     src.push("bool highlighted  = (float(flags.z) > 0.0);");
     src.push("bool transparent  = ((float(color.a) / 255.0) < 1.0);");
 
-    //src.push(`if (!visible || (renderPass == ${RENDER_PASSES.OPAQUE} && (transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.TRANSPARENT} && (!transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.GHOST} && !ghosted || highlighted) || (renderPass == ${RENDER_PASSES.HIGHLIGHT} && !highlighted)) {`);
-    src.push(`if (!visible || (renderPass == ${RENDER_PASSES.OPAQUE} && (transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.TRANSPARENT} && (!transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.GHOST} && (!ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.HIGHLIGHT} && !highlighted)) {`);
+    src.push(`if (!visible || (renderPass == ${RENDER_PASSES.OPAQUE} && (transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.TRANSPARENT} && (!transparent || ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.GHOSTED} && (!ghosted || highlighted)) || (renderPass == ${RENDER_PASSES.HIGHLIGHTED} && !highlighted)) {`);
     src.push("   gl_Position = vec4(0.0, 0.0, 0.0, 0.0);"); // Cull vertex
     src.push("} else {");
 
@@ -134,7 +134,7 @@ function buildVertex(layer) {
 }
 
 function buildFragment(layer) {
-    const scene = layer.scene;
+    const scene = layer.model.scene;
     const clipsState = scene._clipsState;
     let i;
     let len;

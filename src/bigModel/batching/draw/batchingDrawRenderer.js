@@ -2,18 +2,18 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-import {Map} from "../../utils/map.js";
+import {Map} from "../../../utils/map.js";
 import {BatchingDrawShaderSource} from "./batchingDrawShaderSource.js";
-import {Program} from "../../webgl/program.js";
-import {RENDER_PASSES} from './../renderPasses.js';
-import {stats} from './../../stats.js';
+import {Program} from "../../../webgl/program.js";
+import {RENDER_PASSES} from './../../renderPasses.js';
+import {stats} from './../../../stats.js';
 
 const ids = new Map({});
 
 const BatchingDrawRenderer = function (hash, layer) {
     this.id = ids.addItem({});
     this._hash = hash;
-    this._scene = layer.scene;
+    this._scene = layer.model.scene;
     this._useCount = 0;
     this._shaderSource = new BatchingDrawShaderSource(layer);
     this._allocate(layer);
@@ -23,7 +23,7 @@ const renderers = {};
 const defaultColorize = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 
 BatchingDrawRenderer.get = function (layer) {
-    const scene = layer.scene;
+    const scene = layer.model.scene;
     const hash = getHash(scene);
     let renderer = renderers[hash];
     if (!renderer) {
@@ -64,7 +64,7 @@ BatchingDrawRenderer.prototype.webglContextRestored = function () {
 
 BatchingDrawRenderer.prototype.drawLayer = function (frame, layer, renderPass) {
     const model = layer.model;
-    const scene = layer.scene;
+    const scene = model.scene;
     const gl = scene.canvas.gl;
     const state = layer._state;
     if (!this._program) {
@@ -93,12 +93,12 @@ BatchingDrawRenderer.prototype.drawLayer = function (frame, layer, renderPass) {
     }
     state.indicesBuf.bind();
     frame.bindArray++;
-    if (renderPass === RENDER_PASSES.GHOST) {
+    if (renderPass === RENDER_PASSES.GHOSTED) {
         const material = scene.ghostMaterial._state;
         const fillColor = material.fillColor;
         const fillAlpha = material.fillAlpha;
         gl.uniform4f(this._uColorize, fillColor[0], fillColor[1], fillColor[2], fillAlpha);
-    } else if (renderPass === RENDER_PASSES.HIGHLIGHT) {
+    } else if (renderPass === RENDER_PASSES.HIGHLIGHTED) {
         const material = scene.highlightMaterial._state;
         const fillColor = material.fillColor;
         const fillAlpha = material.fillAlpha;
@@ -111,9 +111,10 @@ BatchingDrawRenderer.prototype.drawLayer = function (frame, layer, renderPass) {
 };
 
 BatchingDrawRenderer.prototype._allocate = function (layer) {
-    const gl = layer.scene.canvas.gl;
-    const lightsState = layer.scene._lightsState;
-    const clipsState = layer.scene._clipsState;
+    var scene = layer.model.scene;
+    const gl = scene.canvas.gl;
+    const lightsState = scene._lightsState;
+    const clipsState = scene._clipsState;
     this._program = new Program(gl, this._shaderSource);
     if (this._program.errors) {
         this.errors = this._program.errors;
