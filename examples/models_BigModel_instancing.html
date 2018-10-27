@@ -13,7 +13,8 @@
 <body>
 
 <div id="info">
-    <h1>creating objects in a <a href="../docs/classes/BigModel.html" target="_parent">BigModel</a> that reuse the same geometry</h1>
+    <h1>creating objects in a <a href="../docs/classes/BigModel.html" target="_parent">BigModel</a> that reuse the same
+        geometry</h1>
     <ul>
         <li>saves memory by storing the geometry once, instead of a copy for each object</li>
         <li>internally, BigModel will efficiently render these objects in one draw call using WebGL instancing</li>
@@ -53,7 +54,7 @@
         id: "myObject2",
         geometryId: "myGeometry",
         color: [0, 1, 0],
-        matrix: xeogl.math.translationMat4c(0, 0, 0)
+        matrix: xeogl.math.scalingMat4c(.5, 2, .5)
     });
 
     var object3 = bigModel.createObject({
@@ -67,11 +68,21 @@
 
     var scene = bigModel.scene;
     var camera = scene.camera;
+    var angleRad = 0;
 
     scene.on("tick", function () {
         camera.orbitYaw(0.2);
-        camera.orbitPitch(0.1);
+
+        var transMat = xeogl.math.translationMat4c(7, 0, 0);
+        var rotMat = xeogl.math.rotationMat4v(angleRad, [0, 1, 0], xeogl.math.identityMat4());
+        var matrix = xeogl.math.mulMat4(transMat, rotMat, xeogl.math.identityMat4());
+
+        object3.matrix = matrix;
+
+        angleRad += 0.05;
     });
+
+    camera.zoom(5);
 
     new xeogl.CameraControl();
 
