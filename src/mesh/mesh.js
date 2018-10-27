@@ -601,11 +601,11 @@ class Mesh extends xeoglObject {
     init(cfg) {
 
         this._state = new State({ // NOTE: Renderer gets modeling and normal matrices from xeogl.Object#matrix and xeogl.Object.#normalMatrix
+
             visible: true,
             culled: false,
             pickable: null,
             clippable: null,
-            colorize: null,
             collidable: null,
             castShadow: null,
             receiveShadow: null,
@@ -614,9 +614,10 @@ class Mesh extends xeoglObject {
             highlighted: false,
             selected: false,
             edges: false,
-            layer: null,
-            billboard: this._checkBillboard(cfg.billboard),
             stationary: !!cfg.stationary,
+            billboard: this._checkBillboard(cfg.billboard),
+            layer: null,
+            colorize: null,
             hash: ""
         });
 
@@ -962,7 +963,7 @@ class Mesh extends xeoglObject {
     /**
      Indicates if culled from view.
 
-     The MEsh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
+     The Mesh is only rendered when {{#crossLink "Mesh/visible:property"}}{{/crossLink}} is true and
      {{#crossLink "Mesh/culled:property"}}{{/crossLink}} is false.
 
      @property culled
@@ -1236,25 +1237,31 @@ class Mesh extends xeoglObject {
     // Renderer hooks - private and used only by Renderer
     //------------------------------------------------------------------------------------------------------------------
 
-    get _getStateSortable() {
+    get _needStateSort() {
         return true;
     }
 
-    _getOpaque() {
+    _needDrawOpaque() {
         return this._material._state.alphaMode !== 2 /* blend */ || this._state.colorize[3] === 1
     }
 
-    _getTransparent() {
+    _needDrawTransparent() {
         return this._material._state.alphaMode === 2 /* blend */ || this._state.colorize[3] < 1
     }
 
-    _drawOpaque(frame) {
+    _drawOpaqueFill(frame) {
         if (this._drawRenderer || (this._drawRenderer = DrawRenderer.get(this))) {
             this._drawRenderer.drawMesh(frame, this);
         }
     }
 
-    _drawTransparent(frame) {
+    _drawOpaqueEdges(frame) {
+        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
+            this._emphasisEdgesRenderer.drawMesh(frame, this, 3); // 3 == edges
+        }
+    }
+
+    _drawTransparentFill(frame) {
         if (this._drawRenderer || (this._drawRenderer = DrawRenderer.get(this))) {
             this._drawRenderer.drawMesh(frame, this);
         }
@@ -1296,12 +1303,6 @@ class Mesh extends xeoglObject {
         }
     }
 
-    _drawEdges(frame) {
-        if (this._emphasisEdgesRenderer || (this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this))) {
-            this._emphasisEdgesRenderer.drawMesh(frame, this, 3); // 3 == edges
-        }
-    }
-
     _drawShadow(frame, light) {
         if (this._shadowRenderer || (this._shadowRenderer = ShadowRenderer.get(this))) {
             this._shadowRenderer.drawMesh(frame, this, light);
@@ -1330,16 +1331,6 @@ class Mesh extends xeoglObject {
         if (this._pickVertexRenderer || (this._pickVertexRenderer = PickVertexRenderer.get(this))) {
             this._pickVertexRenderer.drawMesh(frame, this);
         }
-    }
-
-    _getOutlineRenderer() {
-        this._outlineRenderer = OutlineRenderer.get(this);
-        if (this._outlineRenderer.errors) {
-            this.errors = (this.errors || []).concat(this._outlineRenderer.errors);
-            this.error(this._outlineRenderer.errors.join("\n"));
-            return false;
-        }
-        return true;
     }
 
     _putRenderers() {

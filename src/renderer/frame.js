@@ -27,7 +27,7 @@ class Frame {
         this.shadowProjMatrix = null;
         this.pickViewMatrix = null;
         this.pickProjMatrix = null;
-        this.pickmeshIndex = 1;
+        this.pickMeshIndex = 1;
     }
 }
 
