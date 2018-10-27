@@ -55,7 +55,6 @@ export {Model} from "./models/model.js";
 export {Group} from "./objects/group.js";
 export {Mesh} from "./mesh/mesh.js";
 export {xeoglObject as Object} from "./objects/object.js";
-export {BigModel} from "./bigModel/bigModel.js";
 export {Material} from "./materials/material.js";
 export {PhongMaterial} from "./materials/phongMaterial.js";
 export {LambertMaterial} from "./materials/lambertMaterial.js";
@@ -73,5 +72,9 @@ export {Ortho} from "./camera/ortho.js";
 export {Perspective} from "./camera/perspective.js";
 export {CustomProjection} from "./camera/customProjection.js"
 export {Scene} from "./scene/scene.js";
+
+
+export {BigModel} from "./bigModel/bigModel.js";
+export {BigModelObject} from "./bigModel/bigModelObject.js";
 
 
