@@ -1757,7 +1757,7 @@ class xeoglObject extends Component {
         }
         if (this._childList.length) {
             // Clone the _childList before iterating it, so our children don't mess us up when calling removeChild().
-            const tempChildList = this._childList.splice();
+            const tempChildList = this._childList.slice();
             let object;
             for (let i = 0, len = tempChildList.length; i < len; i++) {
                 object = tempChildList[i];
