@@ -799,11 +799,11 @@ class xeoglObject extends Component {
                 }
                 math.expandAABB3(this._aabb, object.aabb);
             }
-            if (!this._aabbCenter) {
-                this._aabbCenter = new Float32Array(3);
-            }
-            math.getAABB3Center(this._aabb, this._aabbCenter);
         }
+        if (!this._aabbCenter) {
+            this._aabbCenter = new Float32Array(3);
+        }
+        math.getAABB3Center(this._aabb, this._aabbCenter);
         this._aabbDirty = false;
     }
 

@@ -747,8 +747,8 @@
                     request.open('GET', ctx.basePath + url, true);
                     request.responseType = 'arraybuffer';
                     request.onreadystatechange = function () {
-                        if (request.readyState == 4) {
-                            if (request.status == "200") {
+                        if (request.readyState === 4) {
+                            if (request.status === "200") {
                                 ok(request.response);
                             } else {
                                 err('loadArrayBuffer error : ' + request.response);
@@ -783,7 +783,7 @@
             if (bufferViewInfo.target === 34963) {
                 bufferViewInfo._typedArray = new Uint16Array(bufferViewInfo._buffer);
 
-            } else if (bufferViewInfo.target == 34962) {
+            } else if (bufferViewInfo.target === 34962) {
                 bufferViewInfo._typedArray = new Float32Array(bufferViewInfo._buffer);
 
             } else {

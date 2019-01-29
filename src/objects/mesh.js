@@ -665,7 +665,7 @@ class Mesh extends xeoglObject {
         this._putRenderers();
         this._makeHash();
         this._drawRenderer = DrawRenderer.get(this);
-        this._shadowRenderer = ShadowRenderer.get(this);
+        //this._shadowRenderer = ShadowRenderer.get(this);
         this._emphasisFillRenderer = EmphasisFillRenderer.get(this);
         this._emphasisEdgesRenderer = EmphasisEdgesRenderer.get(this);
         this._emphasisVerticesRenderer = EmphasisVerticesRenderer.get(this);
@@ -796,9 +796,9 @@ class Mesh extends xeoglObject {
     }
 
     _drawShadow(frame, light) {
-        if (this._shadowRenderer || (this._shadowRenderer = ShadowRenderer.get(this))) {
-            this._shadowRenderer.drawMesh(frame, this, light);
-        }
+        // if (this._shadowRenderer || (this._shadowRenderer = ShadowRenderer.get(this))) {
+        //     this._shadowRenderer.drawMesh(frame, this, light);
+        // }
     }
 
     _drawOutline(frame) {

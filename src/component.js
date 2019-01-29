@@ -82,7 +82,6 @@
  // Evaluates false:
  var isMetallicMaterial = theMaterial.isType("xeogl.MetallicMaterial");
  ````
- Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
 
  ### Metadata
 
