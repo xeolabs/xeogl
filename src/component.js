@@ -899,10 +899,10 @@ class Component {
      *
      * ````javascript
      * var material = myComponent.create({
-         *      type: "xeogl.PhongMaterial",
-         *      diffuse: [1,0,0],
-         *      specular: [1,1,0]
-         * }, "myMaterial");
+     *      type: "xeogl.PhongMaterial",
+     *      diffuse: [1,0,0],
+     *      specular: [1,1,0]
+     * }, "myMaterial");
      * ````
      *
      * @method create
@@ -1047,12 +1047,10 @@ class Component {
         // Release components created with #create
 
         if (this._adoptees) {
-            for (id in this._adoptees) {
-                if (this._adoptees.hasOwnProperty(id)) {
-                    component = this._adoptees[id];
-                    component.destroy();
-                    delete this._adoptees[id];
-                }
+            const ids = Object.keys(this._adoptees);
+            for (i = 0, len = ids.length; i < len; i++) {
+                component = this._adoptees[ids[i]];
+                component.destroy();
             }
         }
 

@@ -748,7 +748,7 @@
                     request.responseType = 'arraybuffer';
                     request.onreadystatechange = function () {
                         if (request.readyState === 4) {
-                            if (request.status === "200") {
+                            if (request.status === "200" || request.status === 200) {
                                 ok(request.response);
                             } else {
                                 err('loadArrayBuffer error : ' + request.response);

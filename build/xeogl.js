@@ -4,7 +4,7 @@
  * WebGL-based 3D visualization library
  * http://xeogl.org/
  *
- * Built on 2019-01-29
+ * Built on 2019-02-09
  *
  * MIT License
  * Copyright 2019, Lindsay Kay
@@ -6061,10 +6061,10 @@ class Component {
      *
      * ````javascript
      * var material = myComponent.create({
-         *      type: "xeogl.PhongMaterial",
-         *      diffuse: [1,0,0],
-         *      specular: [1,1,0]
-         * }, "myMaterial");
+     *      type: "xeogl.PhongMaterial",
+     *      diffuse: [1,0,0],
+     *      specular: [1,1,0]
+     * }, "myMaterial");
      * ````
      *
      * @method create
@@ -6209,12 +6209,10 @@ class Component {
         // Release components created with #create
 
         if (this._adoptees) {
-            for (id in this._adoptees) {
-                if (this._adoptees.hasOwnProperty(id)) {
-                    component = this._adoptees[id];
-                    component.destroy();
-                    delete this._adoptees[id];
-                }
+            const ids = Object.keys(this._adoptees);
+            for (i = 0, len = ids.length; i < len; i++) {
+                component = this._adoptees[ids[i]];
+                component.destroy();
             }
         }
 
@@ -36376,8 +36374,6 @@ const clear = core.clear;
 const _isString = utils.isString; // Backward compat
 const _apply = utils.apply; // Backward compat
 const _isNumeric = utils.isNumeric;
-const _isFunction = utils.isFunction;
-const _isArray = utils.isArray;
 
 exports.scenes = scenes;
 exports.getDefaultScene = getDefaultScene;
@@ -36387,8 +36383,6 @@ exports.clear = clear;
 exports._isString = _isString;
 exports._apply = _apply;
 exports._isNumeric = _isNumeric;
-exports._isFunction = _isFunction;
-exports._isArray = _isArray;
 exports.WEBGL_INFO = WEBGL_INFO;
 exports.stats = stats;
 exports.math = math;

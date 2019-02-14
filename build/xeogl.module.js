@@ -4,7 +4,7 @@
  * WebGL-based 3D visualization library
  * http://xeogl.org/
  *
- * Built on 2019-01-29
+ * Built on 2019-02-09
  *
  * MIT License
  * Copyright 2019, Lindsay Kay
@@ -6055,10 +6055,10 @@ class Component {
      *
      * ````javascript
      * var material = myComponent.create({
-         *      type: "xeogl.PhongMaterial",
-         *      diffuse: [1,0,0],
-         *      specular: [1,1,0]
-         * }, "myMaterial");
+     *      type: "xeogl.PhongMaterial",
+     *      diffuse: [1,0,0],
+     *      specular: [1,1,0]
+     * }, "myMaterial");
      * ````
      *
      * @method create
@@ -6203,12 +6203,10 @@ class Component {
         // Release components created with #create
 
         if (this._adoptees) {
-            for (id in this._adoptees) {
-                if (this._adoptees.hasOwnProperty(id)) {
-                    component = this._adoptees[id];
-                    component.destroy();
-                    delete this._adoptees[id];
-                }
+            const ids = Object.keys(this._adoptees);
+            for (i = 0, len = ids.length; i < len; i++) {
+                component = this._adoptees[ids[i]];
+                component.destroy();
             }
         }
 
@@ -36370,7 +36368,5 @@ const clear = core.clear;
 const _isString = utils.isString; // Backward compat
 const _apply = utils.apply; // Backward compat
 const _isNumeric = utils.isNumeric;
-const _isFunction = utils.isFunction;
-const _isArray = utils.isArray;
 
-export { scenes, getDefaultScene, setDefaultScene, scheduleTask, clear, _isString, _apply, _isNumeric, _isFunction, _isArray, WEBGL_INFO, stats, math, Component, CameraFlightAnimation, Canvas, Spinner, Clip, CameraControl, Geometry, BoxGeometry, TorusGeometry, SphereGeometry, OBBGeometry, AABBGeometry, CylinderGeometry, PlaneGeometry, Input, AmbientLight, DirLight, PointLight, SpotLight, CubeTexture, LightMap, ReflectionMap, Shadow, Model, Mesh, Group, xeoglObject as Object, Material, PhongMaterial, LambertMaterial, SpecularMaterial, MetallicMaterial, EmphasisMaterial, EdgeMaterial, OutlineMaterial, Texture, Fresnel, Viewport, Camera, Frustum, Ortho, Perspective, CustomProjection, Scene };
+export { scenes, getDefaultScene, setDefaultScene, scheduleTask, clear, _isString, _apply, _isNumeric, WEBGL_INFO, stats, math, Component, CameraFlightAnimation, Canvas, Spinner, Clip, CameraControl, Geometry, BoxGeometry, TorusGeometry, SphereGeometry, OBBGeometry, AABBGeometry, CylinderGeometry, PlaneGeometry, Input, AmbientLight, DirLight, PointLight, SpotLight, CubeTexture, LightMap, ReflectionMap, Shadow, Model, Mesh, Group, xeoglObject as Object, Material, PhongMaterial, LambertMaterial, SpecularMaterial, MetallicMaterial, EmphasisMaterial, EdgeMaterial, OutlineMaterial, Texture, Fresnel, Viewport, Camera, Frustum, Ortho, Perspective, CustomProjection, Scene };
