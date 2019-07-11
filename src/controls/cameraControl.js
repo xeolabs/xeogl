@@ -845,7 +845,11 @@ class CameraControl extends Component {
                 const zsize = aabb[5] - aabb[2];
                 let max = (xsize > ysize ? xsize : ysize);
                 max = (zsize > max ? zsize : max);
-                return max / 30;
+                if (isFinite(max)){
+                    return max / 30;
+                } else {
+                    return 0;
+                }
             }
 
             document.addEventListener("keyDown", function (e) {
