@@ -1,4 +1,4 @@
 {
-    "yuiGridsUrl": "http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css",
-    "yuiSeedUrl": "http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"
+    "yuiGridsUrl": "https://xeogl.org/yuiDocThemes/xeogl/assets/css//cssgrids-min.css",
+    "yuiSeedUrl": "https://xeogl.org/yuiDocThemes/xeogl/assets/js/yui-min.js"
 }
