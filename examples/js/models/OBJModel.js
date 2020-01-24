@@ -700,6 +700,9 @@
         var basePath = state.basePath;
         var srcList = Object.keys(state.materialLibraries);
         var numToLoad = srcList.length;
+        if (numToLoad === 0) {
+            ok();
+        }
         for (var i = 0, len = numToLoad; i < len; i++) {
             loadMTL(model, basePath, basePath + srcList[i], function () {
                 if (--numToLoad === 0) {
