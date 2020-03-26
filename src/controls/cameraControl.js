@@ -852,7 +852,7 @@ class CameraControl extends Component {
                 }
             }
 
-            document.addEventListener("keyDown", function (e) {
+            document.addEventListener("keydown", self._specialKeyDownListener=function (e) {
                 if (!self._active) {
                     return;
                 }
@@ -864,7 +864,7 @@ class CameraControl extends Component {
                 }
             }, true);
 
-            document.addEventListener("keyup", function (e) {
+            document.addEventListener("keyup", self._keyUpListener=function (e) {
                 if (!self._active) {
                     return;
                 }
@@ -951,7 +951,7 @@ class CameraControl extends Component {
                     yDelta = 0;
                 });
 
-                document.addEventListener("mouseup", function (e) {
+                document.addEventListener("mouseup", self._mouseUpListener=function (e) {
                     if (!self._active) {
                         return;
                     }
@@ -1662,7 +1662,7 @@ class CameraControl extends Component {
                 up: new Float32Array(3)
             };
 
-            document.addEventListener("keydown", function (e) {
+            document.addEventListener("keydown", self._cameraAxisKeyDownListener=function (e) {
 
                 if (!self._active) {
                     return;
@@ -1801,6 +1801,10 @@ class CameraControl extends Component {
 
     destroy() {
         this.active = false;
+        document.removeEventListener("keydown",this._specialKeyDownListener,true);
+        document.removeEventListener("keyup",this._keyUpListener);
+        document.removeEventListener("keydown",this._cameraAxisKeyDownListener);
+        document.removeEventListener("mouseup", this._mouseUpListener);
         super.destroy();
     }
 }
