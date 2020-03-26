@@ -114,7 +114,7 @@ const core = {
                     scene.clear();
                 } else {
                     scene.destroy();
-                    delete core.scenes[scene.id];
+                    // delete core.scenes[scene.id];
                 }
             }
         }
