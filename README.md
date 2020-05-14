@@ -10,9 +10,11 @@
 **xeogl** is a data-driven WebGL-based engine created by [xeolabs](http://xeolabs.com) for 3D visualization in the browser 
 without using plugins. 
 
-Follow xeolabs on Twitter for updates: [@xeolabs](https://twitter.com/xeolabs)  
+**xeolabs does not actively maintain xeogl**, however we provide it here under an MIT lcense in case it's useful to the 3D Web community. 
 
-> Need more performance than xeogl? Consider using [xeokit](http://xeokit.io), the next-generation WebGL SDK from xeolabs.
+If you need an actively-developed WebGL engine with all the capabilities of xeogl, plus more performance and features, consider using the [xeokit SDK](http://xeokit.io) instead. 
+
+Follow xeolabs on Twitter for updates: [@xeolabs](https://twitter.com/xeolabs)  
 
 [![screenshot from 2018-02-01 02-02-50](http://xeogl.org/assets/images/screenshots/officePlan.png)](http://xeogl.org/examples/#importing_gltf_OfficePlan)
 
