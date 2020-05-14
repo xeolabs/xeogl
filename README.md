@@ -12,7 +12,7 @@ without using plugins.
 
 **xeolabs does not actively maintain xeogl**, however we provide it here under an MIT lcense in case it's useful to the 3D Web community. 
 
-If you need an actively-developed WebGL engine with all the capabilities of xeogl, plus more performance and features, consider using the [xeokit SDK](http://xeokit.io) instead. 
+If you need an actively-developed WebGL engine with all the capabilities of xeogl, plus more performance and features, consider using the **[xeokit SDK](http://xeokit.io)** instead. 
 
 Follow xeolabs on Twitter for updates: [@xeolabs](https://twitter.com/xeolabs)  
 
