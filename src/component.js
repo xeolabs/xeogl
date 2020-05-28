@@ -1056,6 +1056,12 @@ class Component {
 
         this.scene._removeComponent(this);
 
+        /**
+         * Fired when this Component is destroyed.
+         * @event destroyed
+         */
+        this.fire("destroyed", this.destroyed = true);
+
         // Memory leak avoidance
         this._attached = {};
         this._attachments = null;
@@ -1066,12 +1072,6 @@ class Component {
         this._eventCallDepth = 0;
         this._adoptees = null;
         this._updateScheduled = false;
-
-        /**
-         * Fired when this Component is destroyed.
-         * @event destroyed
-         */
-        this.fire("destroyed", this.destroyed = true);
     }
 }
 
