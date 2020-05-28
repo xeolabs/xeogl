@@ -588,11 +588,6 @@ class CameraControl extends Component {
             const mousePos = math.vec2();
             let panToMouse = false;
 
-            let ctrlDown = false;
-            let altDown = false;
-            let shiftDown = false;
-            const keyDown = {};
-
             const EPSILON = 0.001;
 
             const getEyeLookDist = (function () {
@@ -852,36 +847,6 @@ class CameraControl extends Component {
                 }
             }
 
-            document.addEventListener("keydown", self._specialKeyDownListener=function (e) {
-                if (!self._active) {
-                    return;
-                }
-                if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
-                    ctrlDown = e.ctrlKey || e.keyCode === 17 || e.metaKey; // !important, treat Windows or Mac Command Key as ctrl
-                    altDown = e.altKey || e.keyCode === 18;
-                    shiftDown = e.keyCode === 16;
-                    keyDown[e.keyCode] = true;
-                }
-            }, true);
-
-            document.addEventListener("keyup", self._keyUpListener=function (e) {
-                if (!self._active) {
-                    return;
-                }
-                if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
-                    if (e.ctrlKey || e.keyCode === 17) {
-                        ctrlDown = false;
-                    }
-                    if (e.altKey || e.keyCode === 18) {
-                        altDown = false;
-                    }
-                    if (e.keyCode === 16) {
-                        shiftDown = false;
-                    }
-                    keyDown[e.keyCode] = false;
-                }
-            });
-
             // Mouse camera rotate, pan and zoom
 
             (function () {
@@ -927,28 +892,6 @@ class CameraControl extends Component {
                         default:
                             break;
                     }
-                });
-
-                canvas.addEventListener("mouseup", function (e) {
-                    if (!self._active) {
-                        return;
-                    }
-                    switch (e.which) {
-                        case 1: // Left button
-                            mouseDownLeft = false;
-                            break;
-                        case 2: // Middle/both buttons
-                            mouseDownMiddle = false;
-                            break;
-                        case 3: // Right button
-                            mouseDownRight = false;
-                            break;
-                        default:
-                            break;
-                    }
-                    down = false;
-                    xDelta = 0;
-                    yDelta = 0;
                 });
 
                 document.addEventListener("mouseup", self._mouseUpListener=function (e) {
@@ -1019,7 +962,7 @@ class CameraControl extends Component {
                         return;
                     }
 
-                    const panning = shiftDown || mouseDownRight;
+                    const panning = input.keyDown[input.KEY_SHIFT] || mouseDownRight;
 
                     if (panning) {
 
@@ -1068,7 +1011,7 @@ class CameraControl extends Component {
                         return;
                     }
                     const elapsed = e.deltaTime;
-                    if (!self.ctrlDown && !self.altDown) {
+                    if (!input.ctrlDown && !input.altDown) {
                         const wkey = input.keyDown[input.KEY_ADD];
                         const skey = input.keyDown[input.KEY_SUBTRACT];
                         if (wkey || skey) {
@@ -1801,8 +1744,6 @@ class CameraControl extends Component {
 
     destroy() {
         this.active = false;
-        document.removeEventListener("keydown",this._specialKeyDownListener,true);
-        document.removeEventListener("keyup",this._keyUpListener);
         document.removeEventListener("keydown",this._cameraAxisKeyDownListener);
         document.removeEventListener("mouseup", this._mouseUpListener);
         super.destroy();

@@ -1760,23 +1760,19 @@ class Input extends Component {
 
             if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
 
-                if (e.ctrlKey) {
-                    self.ctrlDown = true;
+                self.ctrlDown = e.ctrlKey || e.metaKey;// !important, treat Windows or Mac Command Key as ctrl
+                self.altDown = e.altKey;
 
-                } else if (e.altKey) {
-                    self.altDown = true;
-
-                } else {
+                if (e.keyCode !== self.KEY_CTRL && e.keyCode !== self.KEY_ALT)
                     self.keyDown[e.keyCode] = true;
 
-                    /**
-                     * Fired whenever a key is pressed while the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
-                     * @event keydown
-                     * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
-                     */
-                    self.fire("keydown", e.keyCode, true);
-                }
+                /**
+                 * Fired whenever a key is pressed while the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
+                 * @event keydown
+                 * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
+                 */
+                self.fire("keydown", e.keyCode, true);
             }
 
             if (self.mouseover) {
@@ -1793,23 +1789,19 @@ class Input extends Component {
 
             if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
 
-                if (e.ctrlKey) {
-                    self.ctrlDown = false;
+                self.ctrlDown = e.ctrlKey || e.metaKey;
+                self.altDown = e.altKey;
 
-                } else if (e.altKey) {
-                    self.altDown = false;
-
-                } else {
+                if (e.keyCode !== self.KEY_CTRL && e.keyCode !== self.KEY_ALT)
                     self.keyDown[e.keyCode] = false;
 
-                    /**
-                     * Fired whenever a key is released while the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
-                     * @event keyup
-                     * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
-                     */
-                    self.fire("keyup", e.keyCode, true);
-                }
+                /**
+                 * Fired whenever a key is released while the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
+                 * @event keyup
+                 * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
+                 */
+                self.fire("keyup", e.keyCode, true);
             }
         });
 
@@ -1850,7 +1842,6 @@ class Input extends Component {
              */
             self.fire("mouseleave", coords, true);
         });
-
 
         cfg.element.addEventListener("mousedown", this._mouseDownListener = function (e) {
 
