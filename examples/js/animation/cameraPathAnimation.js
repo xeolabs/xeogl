@@ -179,7 +179,7 @@ xeogl.CameraPathAnimation = class xeoglCameraPathAnimation extends xeogl.Compone
                 this._t += this._playingRate * f;
 
                 const numFrames = this.cameraPath.frames.length;
-                if (numFrames === 0 || (this._playingDir < 0 && this._t <= 0) || (this._playingDir > 0 && this._t >= this.cameraPath.frames[numFrames - 1].t)) {
+                if (numFrames === 0 || (this._playingDir < 0 && this._t <= 0) || (this._playingDir > 0 && this._t >= 1.0)) {
                     this.state = xeogl.CameraPathAnimation.SCRUBBING;
                     this._t = this.cameraPath.frames[numFrames - 1].t;
                     return;
